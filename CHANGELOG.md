@@ -1,38 +1,11 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to BizSync will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
-- Initial project setup and architecture
-- Core business management features
-- Advanced tax calculation system
-- CRDT-based offline synchronization
-- P2P device communication
-- Enterprise-grade security features
-
-### Changed
-- N/A
-
-### Deprecated
-- N/A
-
-### Removed
-- N/A
-
-### Fixed
-- N/A
-
-### Security
-- Implemented SQLCipher database encryption
-- Added end-to-end P2P encryption
-- Secure key management system
-
-## [1.0.0] - 2025-01-XX (Planned)
+## [1.0.0] - 2025-08-02
 
 ### Added
 
