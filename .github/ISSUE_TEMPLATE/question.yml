@@ -1,0 +1,98 @@
+name: ❓ Question
+description: Ask a question about BizSync
+title: "[QUESTION] "
+labels: ["question", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about BizSync? We're here to help! Please provide as much context as possible.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: Please describe your question in detail
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What category does your question fall into?
+      options:
+        - Installation/Setup
+        - Usage/How-to
+        - Features/Functionality
+        - Security/Privacy
+        - Performance
+        - Business/Tax Features
+        - P2P Sync/Networking
+        - Development/Contributing
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Please provide any relevant context or background information
+      placeholder: What are you trying to accomplish? What have you tried so far?
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Which platform are you using?
+      options:
+        - Android
+        - Linux (Ubuntu/Debian)
+        - Linux (Other)
+        - Windows
+        - macOS
+        - Multiple Platforms
+        - Not Platform Specific
+
+  - type: input
+    id: app-version
+    attributes:
+      label: BizSync Version
+      description: What version of BizSync are you using?
+      placeholder: "1.0.0"
+
+  - type: textarea
+    id: attempts
+    attributes:
+      label: What Have You Tried?
+      description: Please describe what you've already tried or researched
+      placeholder: List any solutions you've attempted or documentation you've consulted
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Outcome
+      description: What outcome are you hoping to achieve?
+      placeholder: Describe what you're trying to accomplish
+
+  - type: checkboxes
+    id: research
+    attributes:
+      label: Pre-submission Checklist
+      description: Before submitting, please confirm you have
+      options:
+        - label: I have searched existing issues and discussions
+        - label: I have checked the documentation and README
+        - label: I have searched for similar questions online
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

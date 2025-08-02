@@ -1,0 +1,221 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# iOS
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Android
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+*.jks
+
+# Linux
+**/linux/flutter/ephemeral/
+
+# Windows
+**/windows/flutter/ephemeral/
+
+# macOS
+**/macos/Flutter/ephemeral/
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Web
+/web/
+lib/generated_plugin_registrant.dart
+
+# Coverage
+coverage/
+
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# Build artifacts
+build/
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# Local configuration files
+.env
+.env.local
+.env.production
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Logs and temporary files
+logs/
+tmp/
+temp/
+*.tmp
+*.temp
+
+# IDE specific files
+.project
+.classpath
+.settings/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+
+# Keystore files
+*.keystore
+*.jks
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.config.dart
+*.mocks.dart
+
+# Test reports
+test-results/
+junit.xml
+
+# Documentation build
+doc/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Local development files
+.local/
+local.properties
+
+# Custom ignores for BizSync
+BIZSYNC_*.md
+BUILD_*.md
+*_SUMMARY.md
+*_REPORT.md
+*_STATUS.md
+*_GUIDE.md
+*_INSTRUCTIONS.md
+*_COMPLETE.md
+*_FIX*.md
+build_*.sh
+test_*.sh
+verify_*.sh
+run_*.sh
+*.txt.bak
+build_logs/
+testing_screenshots/
+test_screenshots/
+*_screenshots/
+window_dump*.xml
+lifecycle.db*
+
+# Temporary analysis files
+analyze_output.txt
+compile_check*.txt
+*_output.txt
+*_final*.txt
+build_final*.txt
+*_test.log
+
+# Demo and test files (excluding main test directory)
+*_demo.dart
+compilation_test.dart
+debug_parse.dart
+tax_calculation_demo.dart
+test_paynow*.dart
+
+# Desktop files
+*.desktop
+*.iml
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar

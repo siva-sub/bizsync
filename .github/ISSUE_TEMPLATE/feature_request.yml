@@ -1,0 +1,132 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for BizSync
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide as much detail as possible.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature Summary
+      description: A clear and concise summary of the feature you'd like to see
+      placeholder: Brief description of the feature
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: A clear description of what the problem is. Ex. I'm always frustrated when [...]
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: A clear and concise description of what you want to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Describe any alternative solutions or features you've considered
+      placeholder: A clear description of any alternative solutions or features you've considered
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: What type of feature is this?
+      options:
+        - New Business Functionality
+        - UI/UX Improvement
+        - Performance Enhancement
+        - Security Feature
+        - Integration/API
+        - Developer Experience
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would be helpful
+        - High - Important for my workflow
+        - Critical - Blocking my usage
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Target Platforms
+      description: Which platforms should this feature support?
+      options:
+        - label: Android
+        - label: Linux Desktop
+        - label: Windows Desktop
+        - label: macOS Desktop
+        - label: All Platforms
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: Describe this feature as a user story
+      placeholder: "As a [type of user], I want [functionality] so that [benefit/goal]"
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Design Ideas
+      description: If you have any mockups, sketches, or design ideas, please share them
+      placeholder: Attach images or describe visual ideas
+
+  - type: textarea
+    id: business-case
+    attributes:
+      label: Business Case
+      description: How would this feature benefit BizSync users?
+      placeholder: Describe the business value and user benefits
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Ideas
+      description: If you have technical ideas about implementation, please share
+      placeholder: Any technical thoughts or suggestions for implementation
+
+  - type: checkboxes
+    id: research
+    attributes:
+      label: Research
+      description: Have you researched this feature?
+      options:
+        - label: I have searched existing issues and discussions
+        - label: I have checked if similar features exist in other apps
+        - label: I have considered the technical feasibility
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

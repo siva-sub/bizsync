@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/siva-sub/bizsync/discussions
+    about: Ask questions, share ideas, and discuss BizSync with the community
+  - name: 📧 Direct Contact
+    url: mailto:hello@sivasub.com
+    about: Contact the maintainer directly for private matters
+  - name: 🔒 Critical Security Issues
+    url: mailto:security@sivasub.com
+    about: Report critical security vulnerabilities privately
+  - name: 📖 Documentation
+    url: https://github.com/siva-sub/bizsync#readme
+    about: Check our comprehensive documentation and guides
+  - name: 🌐 Website
+    url: https://sivasub.com
+    about: Visit the maintainer's website for more information

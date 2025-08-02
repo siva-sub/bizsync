@@ -1,0 +1,124 @@
+name: 🔒 Security Issue
+description: Report a security vulnerability (for non-critical issues only)
+title: "[SECURITY] "
+labels: ["security", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚠️ Important Security Notice
+        
+        **For critical security vulnerabilities, please DO NOT use this form.**
+        
+        Instead, please email us directly at: **security@sivasub.com**
+        
+        This form should only be used for:
+        - Non-critical security suggestions
+        - Security-related questions
+        - Security documentation improvements
+        - General security discussions
+
+  - type: checkboxes
+    id: severity-check
+    attributes:
+      label: Severity Confirmation
+      description: Please confirm this is NOT a critical security issue
+      options:
+        - label: This is NOT a critical security vulnerability that could cause immediate harm
+          required: true
+        - label: I understand that critical vulnerabilities should be reported via email to security@sivasub.com
+          required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What type of security-related issue is this?
+      options:
+        - Security Enhancement Suggestion
+        - Security Documentation Improvement
+        - Security Best Practices Question
+        - Security Configuration Question
+        - Low-Priority Security Finding
+        - Other Security Discussion
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please describe the security-related issue or suggestion
+      placeholder: Provide a clear description of the security concern or suggestion
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential Impact
+      description: What is the potential security impact?
+      placeholder: Describe any potential security implications
+
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommendation
+      description: What do you recommend to address this?
+      placeholder: Suggest improvements or solutions
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Which platform does this affect?
+      options:
+        - Android
+        - Linux Desktop
+        - Windows Desktop
+        - macOS Desktop
+        - All Platforms
+        - Documentation/General
+
+  - type: input
+    id: app-version
+    attributes:
+      label: BizSync Version
+      description: What version of BizSync are you using?
+      placeholder: "1.0.0"
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Demonstrate (if applicable)
+      description: If this relates to a specific behavior, how can it be demonstrated?
+      placeholder: Provide steps if relevant
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other relevant information
+      placeholder: Add any other context about the security concern
+
+  - type: checkboxes
+    id: responsible-disclosure
+    attributes:
+      label: Responsible Disclosure Agreement
+      description: Security reporting commitment
+      options:
+        - label: I commit to responsible disclosure practices
+          required: true
+        - label: I will not publicly disclose this issue until it is resolved
+          required: true
+        - label: I have read the Security Policy (SECURITY.md)
+          required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

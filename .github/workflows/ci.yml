@@ -1,0 +1,354 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+
+env:
+  FLUTTER_VERSION: '3.16.9'
+  JAVA_VERSION: '11'
+
+jobs:
+  analyze:
+    name: 🔍 Analyze Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 🔧 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔧 Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: ✅ Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: 🔍 Analyze project source
+        run: flutter analyze --fatal-infos
+
+      - name: 🧪 Run tests
+        run: flutter test --coverage
+
+      - name: 📊 Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+
+  test:
+    name: 🧪 Test Suite
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        flutter-version: ['3.16.9']
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 🔧 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: 'stable'
+          cache: true
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔧 Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: 🧪 Run unit tests
+        run: flutter test
+
+      - name: 🧪 Run integration tests
+        run: flutter test integration_test/
+        if: matrix.os == 'ubuntu-latest'
+
+  build-android:
+    name: 🤖 Build Android
+    runs-on: ubuntu-latest
+    needs: [analyze, test]
+    if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 🔧 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔧 Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: 🔑 Setup Android signing
+        if: github.event_name == 'release'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+          echo "storeFile=keystore.jks" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+          echo "storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+
+      - name: 🏗️ Build APK (Debug)
+        if: github.event_name == 'push'
+        run: flutter build apk --debug --split-per-abi
+
+      - name: 🏗️ Build APK (Release)
+        if: github.event_name == 'release'
+        run: flutter build apk --release --split-per-abi
+
+      - name: 🏗️ Build App Bundle (Release)
+        if: github.event_name == 'release'
+        run: flutter build appbundle --release
+
+      - name: 📤 Upload APK artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/*.apk
+
+      - name: 📤 Upload App Bundle artifacts
+        if: github.event_name == 'release'
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-aab
+          path: build/app/outputs/bundle/release/*.aab
+
+  build-linux:
+    name: 🐧 Build Linux
+    runs-on: ubuntu-latest
+    needs: [analyze, test]
+    if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Install Linux dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y build-essential cmake ninja-build clang
+          sudo apt-get install -y gtk+-3.0-dev libblkid-dev liblzma-dev
+
+      - name: 🔧 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 🔧 Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔧 Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: 🏗️ Build Linux app
+        run: flutter build linux --release
+
+      - name: 📦 Package Linux app
+        run: |
+          cd build/linux/x64/release/bundle
+          tar -czf ../../../../../bizsync-linux-x64.tar.gz .
+
+      - name: 📤 Upload Linux artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-x64
+          path: bizsync-linux-x64.tar.gz
+
+  build-windows:
+    name: 🪟 Build Windows
+    runs-on: windows-latest
+    needs: [analyze, test]
+    if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 🔧 Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔧 Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: 🏗️ Build Windows app
+        run: flutter build windows --release
+
+      - name: 📦 Package Windows app
+        run: |
+          Compress-Archive -Path "build\windows\runner\Release\*" -DestinationPath "bizsync-windows-x64.zip"
+
+      - name: 📤 Upload Windows artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-x64
+          path: bizsync-windows-x64.zip
+
+  build-macos:
+    name: 🍎 Build macOS
+    runs-on: macos-latest
+    needs: [analyze, test]
+    if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 🔧 Enable macOS desktop
+        run: flutter config --enable-macos-desktop
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔧 Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: 🏗️ Build macOS app
+        run: flutter build macos --release
+
+      - name: 📦 Package macOS app
+        run: |
+          cd build/macos/Build/Products/Release
+          tar -czf ../../../../../bizsync-macos.tar.gz BizSync.app
+
+      - name: 📤 Upload macOS artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-universal
+          path: bizsync-macos.tar.gz
+
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: 📤 Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  release:
+    name: 🚀 Create Release
+    runs-on: ubuntu-latest
+    needs: [build-android, build-linux, build-windows, build-macos]
+    if: github.event_name == 'release'
+    steps:
+      - name: 📥 Download all artifacts
+        uses: actions/download-artifact@v3
+
+      - name: 📝 Generate release notes
+        id: release_notes
+        run: |
+          echo "## 🎉 What's New" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### 📱 Downloads" >> release_notes.md
+          echo "- **Android APK**: Available in the assets below" >> release_notes.md
+          echo "- **Android App Bundle**: For Google Play Store" >> release_notes.md
+          echo "- **Linux**: Desktop application for Ubuntu 20.04+" >> release_notes.md
+          echo "- **Windows**: Desktop application for Windows 10+" >> release_notes.md
+          echo "- **macOS**: Desktop application for macOS 10.14+" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### 🔧 Installation" >> release_notes.md
+          echo "See the [README](https://github.com/siva-sub/bizsync#installation) for detailed installation instructions." >> release_notes.md
+          
+      - name: 📤 Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            android-apk/*.apk
+            android-aab/*.aab
+            linux-x64/*.tar.gz
+            windows-x64/*.zip
+            macos-universal/*.tar.gz
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-play-store:
+    name: 🏪 Deploy to Play Store
+    runs-on: ubuntu-latest
+    needs: [build-android]
+    if: github.event_name == 'release' && contains(github.event.release.tag_name, 'stable')
+    steps:
+      - name: 📥 Download App Bundle
+        uses: actions/download-artifact@v3
+        with:
+          name: android-aab
+
+      - name: 🚀 Deploy to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.bizsync.app
+          releaseFiles: '**/*.aab'
+          track: production
+          status: completed
