@@ -144,7 +144,14 @@ class CRDTInvoiceEnhanced implements CRDTModel {
     Map<String, dynamic>? automation,
     this.isDeleted = false,
   }) {
-    // Initialize all LWW-Registers
+    // Validate required non-null parameters
+    if (invoiceNum.isEmpty) {
+      throw ArgumentError('Invoice number cannot be empty');
+    }
+    if (curr.isEmpty) {
+      throw ArgumentError('Currency cannot be empty');
+    }
+    // Initialize all LWW-Registers with null-safe values
     invoiceNumber = LWWRegister(invoiceNum, createdAt);
     customerId = LWWRegister(customer, createdAt);
     customerName = LWWRegister(customerNameValue, createdAt);
@@ -507,16 +514,16 @@ class CRDTInvoiceEnhanced implements CRDTModel {
       'id': id,
       'invoice_number': invoiceNumber.value,
       'customer_id': customerId.value,
-      'customer_name': customerName.value,
-      'customer_email': customerEmail.value,
-      'billing_address': billingAddress.value,
-      'shipping_address': shippingAddress.value,
+      'customer_name': customerName.value ?? '',
+      'customer_email': customerEmail.value ?? '',
+      'billing_address': billingAddress.value ?? '',
+      'shipping_address': shippingAddress.value ?? '',
       'issue_date': issueDate.value.millisecondsSinceEpoch,
       'due_date': dueDate.value?.millisecondsSinceEpoch,
       'calculated_due_date': calculateDueDate()?.millisecondsSinceEpoch,
       'payment_terms': paymentTerms.value.value,
-      'po_number': poNumber.value,
-      'reference': reference.value,
+      'po_number': poNumber.value ?? '',
+      'reference': reference.value ?? '',
       'status': status.value.value,
       'sent_date': sentDate.value?.millisecondsSinceEpoch,
       'viewed_date': viewedDate.value?.millisecondsSinceEpoch,
@@ -536,12 +543,12 @@ class CRDTInvoiceEnhanced implements CRDTModel {
       'is_overdue': isOverdue,
       'last_reminder_sent': lastReminderSent.value?.millisecondsSinceEpoch,
       'reminder_count': reminderCount.value,
-      'notes': notes.value,
-      'terms_and_conditions': termsAndConditions.value,
-      'footer_text': footerText.value,
+      'notes': notes.value ?? '',
+      'terms_and_conditions': termsAndConditions.value ?? '',
+      'footer_text': footerText.value ?? '',
       'custom_fields': customFields.value,
-      'pdf_url': pdfUrl.value,
-      'pdf_hash': pdfHash.value,
+      'pdf_url': pdfUrl.value ?? '',
+      'pdf_hash': pdfHash.value ?? '',
       'last_pdf_generated': lastPdfGenerated.value?.millisecondsSinceEpoch,
       'item_ids': itemIds.elements.toList(),
       'payment_ids': paymentIds.elements.toList(),
@@ -549,10 +556,10 @@ class CRDTInvoiceEnhanced implements CRDTModel {
       'attachment_ids': attachmentIds.elements.toList(),
       'tags': tags.elements.toList(),
       'is_disputed': isDisputed.value,
-      'dispute_reason': disputeReason.value,
+      'dispute_reason': disputeReason.value ?? '',
       'dispute_date': disputeDate.value?.millisecondsSinceEpoch,
       'adjustment_amount': adjustmentAmount.value,
-      'adjustment_reason': adjustmentReason.value,
+      'adjustment_reason': adjustmentReason.value ?? '',
       'auto_reminders': autoReminders.value,
       'reminder_days_before': reminderDaysBefore.value,
       'auto_follow_up': autoFollowUp.value,

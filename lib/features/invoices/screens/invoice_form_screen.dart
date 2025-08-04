@@ -1146,59 +1146,106 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
 
   Future<InvoiceOperationResult<CRDTInvoiceEnhanced>>
       _createNewInvoice() async {
+    
+    // Validate required fields
+    if (_customerNameController.text.trim().isEmpty) {
+      return InvoiceOperationResult.failure('Customer name is required');
+    }
+    
+    if (_lineItems.isEmpty || _lineItems.every((item) => 
+        (item['description']?.toString().trim().isEmpty ?? true) && 
+        (item['unit_price'] ?? 0) == 0)) {
+      return InvoiceOperationResult.failure('At least one line item is required');
+    }
+    
+    if (_currency.trim().isEmpty) {
+      return InvoiceOperationResult.failure('Currency is required');
+    }
+    
+    if (_exchangeRate <= 0) {
+      return InvoiceOperationResult.failure('Exchange rate must be positive');
+    }
+    
+    // Ensure we have a valid customer ID
+    final customerId = _selectedCustomerId?.trim().isNotEmpty == true 
+        ? _selectedCustomerId! 
+        : 'temp_${DateTime.now().millisecondsSinceEpoch}';
+    
     return await widget.invoiceService.createInvoice(
-      customerId: _selectedCustomerId ?? 'temp',
-      customerName: _customerNameController.text,
-      customerEmail: _customerEmailController.text.isNotEmpty
-          ? _customerEmailController.text
+      customerId: customerId,
+      customerName: _customerNameController.text.trim(),
+      customerEmail: _customerEmailController.text.trim().isNotEmpty
+          ? _customerEmailController.text.trim()
           : null,
-      billingAddress: _billingAddressController.text.isNotEmpty
-          ? _billingAddressController.text
+      billingAddress: _billingAddressController.text.trim().isNotEmpty
+          ? _billingAddressController.text.trim()
           : null,
-      shippingAddress: _shippingAddressController.text.isNotEmpty
-          ? _shippingAddressController.text
+      shippingAddress: _shippingAddressController.text.trim().isNotEmpty
+          ? _shippingAddressController.text.trim()
           : null,
       issueDate: _issueDate,
       dueDate: _dueDate,
       paymentTerms: _paymentTerms,
-      poNumber:
-          _poNumberController.text.isNotEmpty ? _poNumberController.text : null,
-      reference: _referenceController.text.isNotEmpty
-          ? _referenceController.text
+      poNumber: _poNumberController.text.trim().isNotEmpty 
+          ? _poNumberController.text.trim() 
           : null,
-      notes: _notesController.text.isNotEmpty ? _notesController.text : null,
-      termsAndConditions:
-          _termsController.text.isNotEmpty ? _termsController.text : null,
-      lineItems: _lineItems,
-      currency: _currency,
+      reference: _referenceController.text.trim().isNotEmpty
+          ? _referenceController.text.trim()
+          : null,
+      notes: _notesController.text.trim().isNotEmpty 
+          ? _notesController.text.trim() 
+          : null,
+      termsAndConditions: _termsController.text.trim().isNotEmpty 
+          ? _termsController.text.trim() 
+          : null,
+      lineItems: _sanitizeLineItems(_lineItems),
+      currency: _currency.trim(),
       exchangeRate: _exchangeRate,
     );
   }
 
   Future<InvoiceOperationResult<CRDTInvoiceEnhanced>>
       _updateExistingInvoice() async {
+    
+    // Validate required fields
+    if (_customerNameController.text.trim().isEmpty) {
+      return InvoiceOperationResult.failure('Customer name is required');
+    }
+    
+    if (_currency.trim().isEmpty) {
+      return InvoiceOperationResult.failure('Currency is required');
+    }
+    
+    if (_exchangeRate <= 0) {
+      return InvoiceOperationResult.failure('Exchange rate must be positive');
+    }
+    
     final updates = <String, dynamic>{
-      'customer_name': _customerNameController.text,
-      'customer_email': _customerEmailController.text.isNotEmpty
-          ? _customerEmailController.text
+      'customer_name': _customerNameController.text.trim(),
+      'customer_email': _customerEmailController.text.trim().isNotEmpty
+          ? _customerEmailController.text.trim()
           : null,
-      'billing_address': _billingAddressController.text.isNotEmpty
-          ? _billingAddressController.text
+      'billing_address': _billingAddressController.text.trim().isNotEmpty
+          ? _billingAddressController.text.trim()
           : null,
-      'shipping_address': _shippingAddressController.text.isNotEmpty
-          ? _shippingAddressController.text
+      'shipping_address': _shippingAddressController.text.trim().isNotEmpty
+          ? _shippingAddressController.text.trim()
           : null,
       'issue_date': _issueDate.millisecondsSinceEpoch,
       'due_date': _dueDate?.millisecondsSinceEpoch,
-      'po_number':
-          _poNumberController.text.isNotEmpty ? _poNumberController.text : null,
-      'reference': _referenceController.text.isNotEmpty
-          ? _referenceController.text
+      'po_number': _poNumberController.text.trim().isNotEmpty 
+          ? _poNumberController.text.trim() 
           : null,
-      'notes': _notesController.text.isNotEmpty ? _notesController.text : null,
-      'terms_and_conditions':
-          _termsController.text.isNotEmpty ? _termsController.text : null,
-      'currency': _currency,
+      'reference': _referenceController.text.trim().isNotEmpty
+          ? _referenceController.text.trim()
+          : null,
+      'notes': _notesController.text.trim().isNotEmpty 
+          ? _notesController.text.trim() 
+          : null,
+      'terms_and_conditions': _termsController.text.trim().isNotEmpty 
+          ? _termsController.text.trim() 
+          : null,
+      'currency': _currency.trim(),
       'exchange_rate': _exchangeRate,
       'discount_amount': _discountAmount,
       'shipping_amount': _shippingAmount,
@@ -1251,5 +1298,35 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
       case PaymentTerm.custom:
         return 'Custom';
     }
+  }
+
+  /// Sanitize line items to ensure all values are valid
+  List<Map<String, dynamic>> _sanitizeLineItems(List<Map<String, dynamic>> items) {
+    return items.where((item) {
+      // Filter out completely empty items
+      final description = item['description']?.toString().trim() ?? '';
+      final unitPrice = (item['unit_price'] as num?)?.toDouble() ?? 0.0;
+      final quantity = (item['quantity'] as num?)?.toDouble() ?? 1.0;
+      
+      return description.isNotEmpty || unitPrice > 0;
+    }).map((item) {
+      // Sanitize each item
+      return {
+        'id': item['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        'description': item['description']?.toString().trim() ?? '',
+        'quantity': (item['quantity'] as num?)?.toDouble() ?? 1.0,
+        'unit_price': (item['unit_price'] as num?)?.toDouble() ?? 0.0,
+        'tax_rate': (item['tax_rate'] as num?)?.toDouble() ?? 9.0,
+        'gst_category': item['gst_category']?.toString() ?? 'standard',
+        'tax_method': item['tax_method']?.toString() ?? 'exclusive',
+        'net_amount': (item['net_amount'] as num?)?.toDouble() ?? 0.0,
+        'gst_amount': (item['gst_amount'] as num?)?.toDouble() ?? 0.0,
+        'line_total': (item['line_total'] as num?)?.toDouble() ?? 0.0,
+        'product_id': item['product_id']?.toString(),
+        'item_type': item['item_type']?.toString() ?? 'product',
+        'discount': (item['discount'] as num?)?.toDouble() ?? 0.0,
+        'metadata': item['metadata'] as Map<String, dynamic>?,
+      };
+    }).toList();
   }
 }

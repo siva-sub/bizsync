@@ -151,6 +151,17 @@ class InvoiceService {
     String currency = 'SGD',
     double exchangeRate = 1.0,
   }) async {
+    // Validate required parameters
+    if (customerId.isEmpty) {
+      return InvoiceOperationResult.failure('Customer ID cannot be empty');
+    }
+    if (currency.isEmpty) {
+      return InvoiceOperationResult.failure('Currency cannot be empty');
+    }
+    if (exchangeRate <= 0) {
+      return InvoiceOperationResult.failure('Exchange rate must be positive');
+    }
+    
     return await _transactionManager.runInTransaction((transaction) async {
       try {
         final invoiceId = UuidGenerator.generateId();
@@ -159,7 +170,7 @@ class InvoiceService {
         // Generate invoice number
         final invoiceNumber = await _generateInvoiceNumber();
 
-        // Create the invoice
+        // Create the invoice with null-safe parameters
         final invoice = CRDTInvoiceEnhanced(
           id: invoiceId,
           nodeId: _nodeId,
@@ -167,18 +178,18 @@ class InvoiceService {
           updatedAt: timestamp,
           version: VectorClock(_nodeId),
           invoiceNum: invoiceNumber,
-          customer: customerId,
-          customerNameValue: customerName,
-          customerEmailValue: customerEmail,
-          billingAddr: billingAddress,
-          shippingAddr: shippingAddress,
+          customer: customerId.isNotEmpty ? customerId : null,
+          customerNameValue: customerName?.isNotEmpty == true ? customerName : null,
+          customerEmailValue: customerEmail?.isNotEmpty == true ? customerEmail : null,
+          billingAddr: billingAddress?.isNotEmpty == true ? billingAddress : null,
+          shippingAddr: shippingAddress?.isNotEmpty == true ? shippingAddress : null,
           issue: issueDate,
           due: dueDate,
           payment: paymentTerms,
-          po: poNumber,
-          ref: reference,
-          invoiceNotes: notes,
-          terms: termsAndConditions,
+          po: poNumber?.isNotEmpty == true ? poNumber : null,
+          ref: reference?.isNotEmpty == true ? reference : null,
+          invoiceNotes: notes?.isNotEmpty == true ? notes : null,
+          terms: termsAndConditions?.isNotEmpty == true ? termsAndConditions : null,
           custom: customFields,
           curr: currency,
           exchange: exchangeRate,
@@ -244,25 +255,40 @@ class InvoiceService {
         final timestamp = HLCTimestamp.now(_nodeId);
         bool needsRecalculation = false;
 
-        // Apply updates
+        // Apply updates with null safety
         if (updates.containsKey('customer_id')) {
-          invoiceData.customerId.setValue(updates['customer_id'], timestamp);
+          final customerId = updates['customer_id'] as String?;
+          if (customerId != null && customerId.isNotEmpty) {
+            invoiceData.customerId.setValue(customerId, timestamp);
+          }
         }
         if (updates.containsKey('customer_name')) {
-          invoiceData.customerName
-              .setValue(updates['customer_name'], timestamp);
+          final customerName = updates['customer_name'] as String?;
+          invoiceData.customerName.setValue(
+            customerName?.isNotEmpty == true ? customerName : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('customer_email')) {
-          invoiceData.customerEmail
-              .setValue(updates['customer_email'], timestamp);
+          final customerEmail = updates['customer_email'] as String?;
+          invoiceData.customerEmail.setValue(
+            customerEmail?.isNotEmpty == true ? customerEmail : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('billing_address')) {
-          invoiceData.billingAddress
-              .setValue(updates['billing_address'], timestamp);
+          final billingAddress = updates['billing_address'] as String?;
+          invoiceData.billingAddress.setValue(
+            billingAddress?.isNotEmpty == true ? billingAddress : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('shipping_address')) {
-          invoiceData.shippingAddress
-              .setValue(updates['shipping_address'], timestamp);
+          final shippingAddress = updates['shipping_address'] as String?;
+          invoiceData.shippingAddress.setValue(
+            shippingAddress?.isNotEmpty == true ? shippingAddress : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('issue_date')) {
           invoiceData.issueDate.setValue(
@@ -283,20 +309,39 @@ class InvoiceService {
           );
         }
         if (updates.containsKey('po_number')) {
-          invoiceData.poNumber.setValue(updates['po_number'], timestamp);
+          final poNumber = updates['po_number'] as String?;
+          invoiceData.poNumber.setValue(
+            poNumber?.isNotEmpty == true ? poNumber : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('reference')) {
-          invoiceData.reference.setValue(updates['reference'], timestamp);
+          final reference = updates['reference'] as String?;
+          invoiceData.reference.setValue(
+            reference?.isNotEmpty == true ? reference : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('notes')) {
-          invoiceData.notes.setValue(updates['notes'], timestamp);
+          final notes = updates['notes'] as String?;
+          invoiceData.notes.setValue(
+            notes?.isNotEmpty == true ? notes : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('terms_and_conditions')) {
-          invoiceData.termsAndConditions
-              .setValue(updates['terms_and_conditions'], timestamp);
+          final termsAndConditions = updates['terms_and_conditions'] as String?;
+          invoiceData.termsAndConditions.setValue(
+            termsAndConditions?.isNotEmpty == true ? termsAndConditions : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('footer_text')) {
-          invoiceData.footerText.setValue(updates['footer_text'], timestamp);
+          final footerText = updates['footer_text'] as String?;
+          invoiceData.footerText.setValue(
+            footerText?.isNotEmpty == true ? footerText : null, 
+            timestamp
+          );
         }
         if (updates.containsKey('custom_fields')) {
           invoiceData.customFields
@@ -817,6 +862,22 @@ class InvoiceService {
     int sortOrder = 0,
     bool skipCalculation = false,
   }) async {
+    // Validate required fields
+    final description = itemData['description']?.toString().trim() ?? '';
+    if (description.isEmpty) {
+      return InvoiceOperationResult.failure('Line item description cannot be empty');
+    }
+    
+    final quantity = (itemData['quantity'] as num?)?.toDouble() ?? 1.0;
+    if (quantity <= 0) {
+      return InvoiceOperationResult.failure('Line item quantity must be positive');
+    }
+    
+    final unitPrice = (itemData['unit_price'] as num?)?.toDouble() ?? 0.0;
+    if (unitPrice < 0) {
+      return InvoiceOperationResult.failure('Line item unit price cannot be negative');
+    }
+    
     final itemId = UuidGenerator.generateId();
     final timestamp = HLCTimestamp.now(_nodeId);
 
@@ -827,20 +888,20 @@ class InvoiceService {
       updatedAt: timestamp,
       version: VectorClock(_nodeId),
       invoiceItemInvoiceId: invoice.id,
-      invoiceItemProductId: itemData['product_id'],
-      invoiceItemDescription: itemData['description'] ?? '',
+      invoiceItemProductId: itemData['product_id']?.toString(),
+      invoiceItemDescription: description,
       invoiceItemType: itemData['item_type'] != null
-          ? LineItemType.fromString(itemData['item_type'])
+          ? LineItemType.fromString(itemData['item_type'].toString())
           : LineItemType.product,
-      invoiceItemQuantity: itemData['quantity']?.toDouble() ?? 1.0,
-      invoiceItemUnitPrice: itemData['unit_price']?.toDouble() ?? 0.0,
-      invoiceItemDiscount: itemData['discount']?.toDouble() ?? 0.0,
-      invoiceItemTaxRate: itemData['tax_rate']?.toDouble() ?? 0.0,
+      invoiceItemQuantity: quantity,
+      invoiceItemUnitPrice: unitPrice,
+      invoiceItemDiscount: (itemData['discount'] as num?)?.toDouble() ?? 0.0,
+      invoiceItemTaxRate: (itemData['tax_rate'] as num?)?.toDouble() ?? 0.0,
       invoiceItemTaxMethod: itemData['tax_method'] != null
-          ? TaxCalculationMethod.fromString(itemData['tax_method'])
+          ? TaxCalculationMethod.fromString(itemData['tax_method'].toString())
           : TaxCalculationMethod.exclusive,
       invoiceItemSortOrder: sortOrder,
-      invoiceItemMetadata: itemData['metadata'],
+      invoiceItemMetadata: itemData['metadata'] as Map<String, dynamic>?,
     );
 
     // Calculate line total

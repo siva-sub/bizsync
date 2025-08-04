@@ -54,10 +54,26 @@ class LWWRegister<T> {
     };
   }
 
+  /// Convert to JSON map with null safety
+  Map<String, dynamic> toJsonSafe() {
+    return {
+      'value': _value,
+      'timestamp': _timestamp.toString(),
+    };
+  }
+
   /// Create from JSON map
   static LWWRegister<T> fromJson<T>(Map<String, dynamic> json) {
     return LWWRegister<T>(
       json['value'] as T,
+      HLCTimestamp.parse(json['timestamp'] as String),
+    );
+  }
+
+  /// Create from JSON map with null safety
+  static LWWRegister<T?> fromJsonNullable<T>(Map<String, dynamic> json) {
+    return LWWRegister<T?>(
+      json['value'] as T?,
       HLCTimestamp.parse(json['timestamp'] as String),
     );
   }
