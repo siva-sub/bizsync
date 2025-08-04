@@ -82,7 +82,7 @@ dependencies:
   json_annotation: ^4.8.1
   
   # Platform Integration
-  permission_handler: ^12.0.1
+  permission_handler: ^11.0.1
   device_info_plus: ^9.1.0
   
   # Mobile-specific Features
