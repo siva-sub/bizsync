@@ -141,7 +141,7 @@ class PerformanceOptimizer extends ChangeNotifier {
   }
 
   // Performance optimization methods
-  void enablePerformanceMonitoring(bool enable) {
+  void setPerformanceMonitoring(bool enable) {
     _enablePerformanceMonitoring = enable;
     if (enable) {
       _startPerformanceMonitoring();
@@ -150,12 +150,12 @@ class PerformanceOptimizer extends ChangeNotifier {
     }
   }
 
-  void enableImageCaching(bool enable) {
+  void setImageCaching(bool enable) {
     _enableImageCaching = enable;
     notifyListeners();
   }
 
-  void enableLazyLoading(bool enable) {
+  void setLazyLoading(bool enable) {
     _enableLazyLoading = enable;
     notifyListeners();
   }

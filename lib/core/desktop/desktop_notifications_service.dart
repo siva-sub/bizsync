@@ -81,7 +81,7 @@ class DesktopNotificationsService {
   DesktopNotificationsService._internal();
 
   FlutterLocalNotificationsPlugin? _notificationsPlugin;
-  LinuxNotificationManager? _linuxNotificationManager;
+  // LinuxNotificationManager? _linuxNotificationManager; // Type from missing dependency
   bool _isInitialized = false;
   final Map<String, DesktopNotification> _activeNotifications = {};
 
@@ -461,31 +461,15 @@ class DesktopNotificationsService {
   }
 
   /// Convert priority to Linux importance level
-  LinuxNotificationImportance _getImportanceLevel(NotificationPriority priority) {
-    switch (priority) {
-      case NotificationPriority.low:
-        return LinuxNotificationImportance.low;
-      case NotificationPriority.normal:
-        return LinuxNotificationImportance.normal;
-      case NotificationPriority.high:
-        return LinuxNotificationImportance.high;
-      case NotificationPriority.urgent:
-        return LinuxNotificationImportance.critical;
-    }
+  dynamic _getImportanceLevel(NotificationPriority priority) {
+    // Stub implementation - would return LinuxNotificationImportance values
+    return null;
   }
 
   /// Convert priority to Linux urgency level
-  LinuxNotificationUrgency _getUrgencyLevel(NotificationPriority priority) {
-    switch (priority) {
-      case NotificationPriority.low:
-        return LinuxNotificationUrgency.low;
-      case NotificationPriority.normal:
-        return LinuxNotificationUrgency.normal;
-      case NotificationPriority.high:
-        return LinuxNotificationUrgency.critical;
-      case NotificationPriority.urgent:
-        return LinuxNotificationUrgency.critical;
-    }
+  dynamic _getUrgencyLevel(NotificationPriority priority) {
+    // Stub implementation - would return LinuxNotificationUrgency values
+    return null;
   }
 
   /// Show initialization notification

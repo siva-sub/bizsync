@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:system_tray/system_tray.dart';
+// import 'package:system_tray/system_tray.dart'; // Commented due to dependency conflicts
 import 'package:window_manager/window_manager.dart';
 import 'package:path/path.dart' as path;
 
@@ -11,12 +11,13 @@ import 'package:path/path.dart' as path;
 /// - Quick access to key features
 /// - System notifications
 /// - Window management
+// Stub implementation due to system_tray package conflicts
 class SystemTrayService {
   static final SystemTrayService _instance = SystemTrayService._internal();
   factory SystemTrayService() => _instance;
   SystemTrayService._internal();
 
-  final SystemTray _systemTray = SystemTray();
+  // final SystemTray _systemTray = SystemTray(); // Disabled due to dependency
   bool _isInitialized = false;
   bool _minimizeToTray = false;
 
