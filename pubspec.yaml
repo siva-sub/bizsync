@@ -93,8 +93,8 @@ dependencies:
   speech_to_text: ^7.0.0  # Voice recognition
   camera: ^0.11.0+2  # Camera integration
   image_picker: ^1.1.2  # Image selection
-  google_mlkit_text_recognition: ^0.14.0  # OCR for receipt scanning
-  google_mlkit_barcode_scanning: ^0.11.0  # Barcode scanning
+  # google_mlkit_text_recognition: ^0.14.0  # OCR - version conflicts
+  # google_mlkit_barcode_scanning: ^0.12.1  # Barcode - version conflicts
   cached_network_image: ^3.4.1  # Image caching for performance
   flutter_cache_manager: ^3.4.1  # General caching
   quick_actions: ^1.0.7  # App shortcuts
@@ -131,12 +131,11 @@ dependencies:
   top_snackbar_flutter: ^3.1.0
   
   # Linux Desktop Features
-  system_tray: ^2.0.3  # System tray integration
+  # system_tray: ^2.0.3  # System tray integration - conflicts with uuid
   hotkey_manager: ^0.2.3  # Global keyboard shortcuts
   window_manager: ^0.3.9  # Multi-window support and window management
-  desktop_drop: ^1.4.4  # Drag & drop file support
+  desktop_drop: ^0.4.4  # Drag & drop file support
   file_selector: ^1.0.3  # Native file dialogs
-  printing: ^5.12.0  # Already included - print support
   desktop_lifecycle: ^0.1.1  # Desktop lifecycle management
   desktop_webview_window: ^0.2.3  # Additional window support
   watcher: ^1.1.0  # File system watching
@@ -144,7 +143,7 @@ dependencies:
   ffi: ^2.1.0  # For native system integrations
   
   # Enhanced notifications for Linux
-  flutter_local_notifications_linux: ^4.0.0  # Linux-specific notifications
+  # flutter_local_notifications_linux included via flutter_local_notifications
   
   # Enhanced data visualization
   syncfusion_flutter_charts: ^24.2.9  # Professional charts with zoom/pan
