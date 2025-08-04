@@ -90,7 +90,7 @@ dependencies:
   connectivity_plus: ^6.0.3  # Network connectivity monitoring
   vibration: ^2.0.0  # Haptic feedback
   flutter_tts: ^4.0.2  # Text-to-speech
-  speech_to_text: ^6.6.2  # Voice recognition
+  speech_to_text: ^6.6.0  # Voice recognition
   camera: ^0.10.5+9  # Camera integration
   image_picker: ^1.0.8  # Image selection
   # google_mlkit_text_recognition: ^0.14.0  # OCR - version conflicts
