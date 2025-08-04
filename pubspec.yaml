@@ -61,7 +61,7 @@ dependencies:
   
   # Data Compression and Serialization
   archive: ^3.4.10
-  protobuf: ^4.1.1
+  protobuf: ^3.1.0
   
   # Additional Backup System Dependencies  
   tar: ^0.5.6
