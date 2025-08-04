@@ -71,7 +71,7 @@ dependencies:
   # workmanager: ^0.5.2  # Mobile only - disabled
   
   # File System and Storage
-  file_picker: ^10.2.0
+  file_picker: ^8.0.3
   share_plus: ^10.0.0
   csv: ^6.0.0
   
