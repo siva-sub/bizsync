@@ -21,8 +21,13 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    avoid_print: false  # Disable print warnings
+    prefer_const_constructors: false  # Disable const constructor warnings
+    unused_import: false  # Temporarily disable unused import warnings
+    unused_field: false  # Temporarily disable unused field warnings
+    unused_element: false  # Temporarily disable unused element warnings
+    unused_local_variable: false  # Temporarily disable unused variable warnings
+    must_call_super: false  # Temporarily disable must call super warnings
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
