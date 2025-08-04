@@ -83,7 +83,7 @@ dependencies:
   
   # Platform Integration
   permission_handler: ^12.0.1
-  device_info_plus: ^11.5.0
+  device_info_plus: ^9.1.0
   
   # Mobile-specific Features
   local_auth: ^2.3.0  # Biometric authentication
