@@ -333,11 +333,8 @@ class OfflineService extends ChangeNotifier {
             debugPrint('Max retries reached for operation: ${operation.id}');
           } else {
             // Update operation with retry count
-            final index = _pendingOperations.toList().indexOf(operation);
-            if (index != -1) {
-              _pendingOperations.removeAt(index);
-              _pendingOperations.insert(index, updatedOperation);
-            }
+            _pendingOperations.remove(operation);
+            _pendingOperations.add(updatedOperation);
           }
         }
       } catch (e) {

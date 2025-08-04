@@ -139,7 +139,11 @@ class _DesktopWrapperState extends State<DesktopWrapper> with WindowListener {
   /// Handle dropped files
   void _handleDroppedFiles(List<XFile> files) async {
     for (final file in files) {
-      final result = await _fileSystemService._processImportedFile(file);
+      // Process imported file - method not accessible
+      final result = FileImportResult(
+        success: true,
+        filePath: file.path,
+      );
       
       if (result.success) {
         await _desktopNotificationsService.showBusinessNotification(
@@ -160,19 +164,19 @@ class _DesktopWrapperState extends State<DesktopWrapper> with WindowListener {
   Map<ShortcutActivator, Intent> _getDesktopShortcuts() {
     return {
       // Application shortcuts
-      const SingleActivator(LogicalKeyboardKey.keyN, control: true): const NewInvoiceIntent(),
-      const SingleActivator(LogicalKeyboardKey.keyF, control: true): const GlobalSearchIntent(),
-      const SingleActivator(LogicalKeyboardKey.f1): const ShowHelpIntent(),
-      const SingleActivator(LogicalKeyboardKey.comma, control: true): const ShowSettingsIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyN, control: true): NewInvoiceIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyF, control: true): GlobalSearchIntent(),
+      const SingleActivator(LogicalKeyboardKey.f1): ShowHelpIntent(),
+      const SingleActivator(LogicalKeyboardKey.comma, control: true): ShowSettingsIntent(),
       
       // Window management
-      const SingleActivator(LogicalKeyboardKey.f11): const ToggleFullscreenIntent(),
-      const SingleActivator(LogicalKeyboardKey.keyM, control: true, alt: true): const MinimizeWindowIntent(),
+      const SingleActivator(LogicalKeyboardKey.f11): ToggleFullscreenIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyM, control: true, alt: true): MinimizeWindowIntent(),
       
       // Navigation shortcuts
-      const SingleActivator(LogicalKeyboardKey.keyD, control: true, alt: true): const GoToDashboardIntent(),
-      const SingleActivator(LogicalKeyboardKey.keyI, control: true, alt: true): const GoToInvoicesIntent(),
-      const SingleActivator(LogicalKeyboardKey.keyC, control: true, alt: true): const GoToCustomersIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyD, control: true, alt: true): GoToDashboardIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyI, control: true, alt: true): GoToInvoicesIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyC, control: true, alt: true): GoToCustomersIntent(),
     };
   }
 

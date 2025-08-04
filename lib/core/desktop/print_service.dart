@@ -116,10 +116,16 @@ class PrintService {
       _availablePrinters = await Printing.listPrinters();
       
       // Find default printer
-      _defaultPrinter = _availablePrinters.firstWhere(
-        (printer) => printer.isDefault,
-        orElse: () => _availablePrinters.isNotEmpty ? _availablePrinters.first : Printer(),
-      );
+      try {
+        _defaultPrinter = _availablePrinters.firstWhere(
+          (printer) => printer.isDefault,
+        );
+      } catch (e) {
+        // If no default printer, use first available
+        if (_availablePrinters.isNotEmpty) {
+          _defaultPrinter = _availablePrinters.first;
+        }
+      }
       
       debugPrint('Available printers:');
       for (final printer in _availablePrinters) {

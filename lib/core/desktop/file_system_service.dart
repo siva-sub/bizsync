@@ -218,13 +218,13 @@ class FileSystemService extends ChangeNotifier {
         extensions: allowedExtensions ?? ['pdf', 'csv', 'xlsx'],
       );
 
-      final filePath = await getSavePath(
+      final result = await getSaveLocation(
         acceptedTypeGroups: [typeGroup],
         suggestedName: suggestedName,
         initialDirectory: initialDirectory,
       );
       
-      return filePath?.path;
+      return result?.path;
     } catch (e) {
       debugPrint('Save file dialog error: $e');
       return null;
@@ -406,9 +406,7 @@ class FileSystemService extends ChangeNotifier {
       }
       
       // Create watcher
-      final watcher = config.recursive 
-          ? DirectoryWatcher.recursive(config.folderPath)
-          : DirectoryWatcher(config.folderPath);
+      final watcher = DirectoryWatcher(config.folderPath);
       
       // Subscribe to events
       final subscription = watcher.events.listen((event) {

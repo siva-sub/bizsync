@@ -49,8 +49,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'new_invoice',
       HotKey(
-        KeyCode.keyN,
-        modifiers: [KeyModifier.control],
+        key: LogicalKeyboardKey.keyN,
+        modifiers: [HotKeyModifier.control],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('new_invoice'),
@@ -60,8 +60,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'new_customer',
       HotKey(
-        KeyCode.keyU,
-        modifiers: [KeyModifier.control, KeyModifier.shift],
+        key: LogicalKeyboardKey.keyU,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.shift],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('new_customer'),
@@ -71,8 +71,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'new_product',
       HotKey(
-        KeyCode.keyP,
-        modifiers: [KeyModifier.control, KeyModifier.shift],
+        key: LogicalKeyboardKey.keyP,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.shift],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('new_product'),
@@ -83,8 +83,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'dashboard',
       HotKey(
-        KeyCode.keyD,
-        modifiers: [KeyModifier.control, KeyModifier.alt],
+        key: LogicalKeyboardKey.keyD,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.alt],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('dashboard'),
@@ -94,8 +94,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'invoices',
       HotKey(
-        KeyCode.keyI,
-        modifiers: [KeyModifier.control, KeyModifier.alt],
+        key: LogicalKeyboardKey.keyI,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.alt],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('invoices'),
@@ -105,8 +105,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'customers',
       HotKey(
-        KeyCode.keyC,
-        modifiers: [KeyModifier.control, KeyModifier.alt],
+        key: LogicalKeyboardKey.keyC,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.alt],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('customers'),
@@ -116,8 +116,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'inventory',
       HotKey(
-        KeyCode.keyV,
-        modifiers: [KeyModifier.control, KeyModifier.alt],
+        key: LogicalKeyboardKey.keyV,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.alt],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('inventory'),
@@ -127,8 +127,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'reports',
       HotKey(
-        KeyCode.keyR,
-        modifiers: [KeyModifier.control, KeyModifier.alt],
+        key: LogicalKeyboardKey.keyR,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.alt],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('reports'),
@@ -139,8 +139,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'global_search',
       HotKey(
-        KeyCode.keyF,
-        modifiers: [KeyModifier.control],
+        key: LogicalKeyboardKey.keyF,
+        modifiers: [HotKeyModifier.control],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('global_search'),
@@ -150,7 +150,7 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'help',
       HotKey(
-        KeyCode.f1,
+        key: LogicalKeyboardKey.f1,
         modifiers: [],
         scope: HotKeyScope.system,
       ),
@@ -162,8 +162,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'minimize_window',
       HotKey(
-        KeyCode.keyM,
-        modifiers: [KeyModifier.control, KeyModifier.alt],
+        key: LogicalKeyboardKey.keyM,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.alt],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('minimize_window'),
@@ -173,7 +173,7 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'toggle_fullscreen',
       HotKey(
-        KeyCode.f11,
+        key: LogicalKeyboardKey.f11,
         modifiers: [],
         scope: HotKeyScope.system,
       ),
@@ -184,8 +184,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'show_hide_window',
       HotKey(
-        KeyCode.keyH,
-        modifiers: [KeyModifier.control, KeyModifier.alt],
+        key: LogicalKeyboardKey.keyH,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.alt],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('show_hide_window'),
@@ -196,8 +196,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'settings',
       HotKey(
-        KeyCode.comma,
-        modifiers: [KeyModifier.control],
+        key: LogicalKeyboardKey.comma,
+        modifiers: [HotKeyModifier.control],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('settings'),
@@ -208,8 +208,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'export_data',
       HotKey(
-        KeyCode.keyE,
-        modifiers: [KeyModifier.control, KeyModifier.shift],
+        key: LogicalKeyboardKey.keyE,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.shift],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('export_data'),
@@ -219,8 +219,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'import_data',
       HotKey(
-        KeyCode.keyI,
-        modifiers: [KeyModifier.control, KeyModifier.shift],
+        key: LogicalKeyboardKey.keyI,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.shift],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('import_data'),
@@ -231,8 +231,8 @@ class KeyboardShortcutsService {
     await _registerShortcut(
       'quick_calculator',
       HotKey(
-        KeyCode.keyQ,
-        modifiers: [KeyModifier.control, KeyModifier.shift],
+        key: LogicalKeyboardKey.keyQ,
+        modifiers: [HotKeyModifier.control, HotKeyModifier.shift],
         scope: HotKeyScope.system,
       ),
       () => _handleShortcut('quick_calculator'),

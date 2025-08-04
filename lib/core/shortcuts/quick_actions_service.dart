@@ -52,31 +52,26 @@ class QuickActionsService extends ChangeNotifier {
       const ShortcutItem(
         type: 'create_invoice',
         localizedTitle: 'Create Invoice',
-        localizedDescription: 'Quickly create a new invoice',
         icon: 'ic_create_invoice',
       ),
       const ShortcutItem(
         type: 'add_customer',
         localizedTitle: 'Add Customer',
-        localizedDescription: 'Add a new customer',
         icon: 'ic_add_customer',
       ),
       const ShortcutItem(
         type: 'add_product',
         localizedTitle: 'Add Product',
-        localizedDescription: 'Add a new product to inventory',
         icon: 'ic_add_product',
       ),
       const ShortcutItem(
         type: 'view_reports',
         localizedTitle: 'View Reports',
-        localizedDescription: 'View business reports and analytics',
         icon: 'ic_reports',
       ),
       const ShortcutItem(
         type: 'sync_data',
         localizedTitle: 'Sync Data',
-        localizedDescription: 'Sync offline data to cloud',
         icon: 'ic_sync',
       ),
     ]);
@@ -115,7 +110,6 @@ class QuickActionsService extends ChangeNotifier {
       shortcuts.add(const ShortcutItem(
         type: 'create_invoice',
         localizedTitle: 'Create Invoice',
-        localizedDescription: 'Quickly create a new invoice',
         icon: 'ic_create_invoice',
       ));
     }
@@ -124,7 +118,6 @@ class QuickActionsService extends ChangeNotifier {
       shortcuts.add(const ShortcutItem(
         type: 'add_customer',
         localizedTitle: 'Add Customer',
-        localizedDescription: 'Add a new customer',
         icon: 'ic_add_customer',
       ));
     }
@@ -133,7 +126,6 @@ class QuickActionsService extends ChangeNotifier {
       shortcuts.add(const ShortcutItem(
         type: 'add_product',
         localizedTitle: 'Add Product',
-        localizedDescription: 'Add a new product to inventory',
         icon: 'ic_add_product',
       ));
     }
@@ -142,7 +134,6 @@ class QuickActionsService extends ChangeNotifier {
       shortcuts.add(const ShortcutItem(
         type: 'view_reports',
         localizedTitle: 'View Reports',
-        localizedDescription: 'View business reports and analytics',
         icon: 'ic_reports',
       ));
     }
@@ -151,7 +142,6 @@ class QuickActionsService extends ChangeNotifier {
       shortcuts.add(const ShortcutItem(
         type: 'sync_data',
         localizedTitle: 'Sync Data',
-        localizedDescription: 'Sync offline data to cloud',
         icon: 'ic_sync',
       ));
     }

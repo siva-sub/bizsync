@@ -197,7 +197,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         selectionBehavior: _selectionBehavior,
         onPointTap: (pointInteractionDetails) {
           if (widget.onDataPointTapped != null) {
-            final dataPoint = widget.series[pointInteractionDetails.seriesIndex]
+            final dataPoint = widget.series[pointInteractionDetails.seriesIndex!]
                 .dataPoints[pointInteractionDetails.pointIndex!];
             widget.onDataPointTapped!(dataPoint);
           }

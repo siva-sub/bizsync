@@ -27,6 +27,21 @@ export 'data_visualization_service.dart';
 // Desktop Integration Wrapper
 export 'desktop_wrapper.dart';
 
+// Import required libraries
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+
+// Import all services for internal use
+import 'system_tray_service.dart';
+import 'keyboard_shortcuts_service.dart';
+import 'multi_window_service.dart';
+import 'desktop_notifications_service.dart';
+import 'file_system_service.dart';
+import 'print_service.dart';
+import 'cli_service.dart';
+import 'advanced_search_service.dart';
+import 'data_visualization_service.dart';
+
 /// Desktop Services Manager
 /// 
 /// Provides a centralized way to initialize and manage all desktop services

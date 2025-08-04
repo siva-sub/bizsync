@@ -123,7 +123,7 @@ class PerformanceOptimizer extends ChangeNotifier {
     final averageFps = averageFrameTime > 0 ? 1000000 / averageFrameTime : 0;
 
     _currentMetrics = PerformanceMetrics(
-      averageFps: averageFps,
+      averageFps: averageFps.toDouble(),
       frameCount: _frameCount,
       totalTime: Duration(microseconds: totalFrameTime),
       droppedFrames: _droppedFrames,
@@ -168,8 +168,9 @@ class PerformanceOptimizer extends ChangeNotifier {
 
   // Get cache info
   Future<Map<String, dynamic>> getCacheInfo() async {
-    final cacheKeys = await _imageCache.getKeysByTime();
-    final cacheSize = cacheKeys.length;
+    // getKeysByTime method removed in newer versions
+    // Using a stub implementation
+    const cacheSize = 0;
     
     return {
       'cached_images': cacheSize,

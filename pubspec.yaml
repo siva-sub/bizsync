@@ -146,7 +146,7 @@ dependencies:
   # flutter_local_notifications_linux included via flutter_local_notifications
   
   # Enhanced data visualization
-  syncfusion_flutter_charts: ^24.2.9  # Professional charts with zoom/pan
+  syncfusion_flutter_charts: ^26.1.35  # Professional charts with zoom/pan
   flutter_charts: ^0.5.2  # Additional chart types
 
 dev_dependencies:

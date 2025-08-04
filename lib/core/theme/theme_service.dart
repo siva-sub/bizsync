@@ -380,7 +380,7 @@ class ThemeService extends ChangeNotifier {
       ),
       
       // List Tile Theme
-      listTileThemeData: ListTileThemeData(
+      listTileTheme: ListTileThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),

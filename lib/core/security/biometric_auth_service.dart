@@ -196,25 +196,6 @@ class BiometricAuthService extends ChangeNotifier {
     try {
       final bool didAuthenticate = await _localAuth.authenticate(
         localizedReason: reason,
-        authMessages: const [
-          AndroidAuthMessages(
-            signInTitle: 'BizSync Authentication',
-            biometricHint: 'Verify your identity',
-            biometricNotRecognized: 'Biometric not recognized, try again',
-            biometricSuccess: 'Authentication successful',
-            cancelButton: 'Cancel',
-            deviceCredentialsRequiredTitle: 'Device credentials required',
-            biometricRequiredTitle: 'Biometric authentication required',
-            goToSettingsButton: 'Go to settings',
-            goToSettingsDescription: 'Please set up biometric authentication on your device',
-          ),
-          IOSAuthMessages(
-            cancelButton: 'Cancel',
-            goToSettingsButton: 'Settings',
-            goToSettingsDescription: 'Please set up biometric authentication',
-            lockOut: 'Please enable biometric authentication',
-          ),
-        ],
         options: AuthenticationOptions(
           stickyAuth: stickyAuth,
           biometricOnly: biometricOnly,

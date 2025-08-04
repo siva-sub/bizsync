@@ -400,8 +400,6 @@ class EnhancedPushNotificationService extends ChangeNotifier {
           tz.TZDateTime.from(notification.scheduledTime, tz.local),
           notificationDetails,
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          uiLocalNotificationDateInterpretation:
-              UILocalNotificationDateInterpretation.absoluteTime,
           payload: _stringifyJson(notification.payload ?? {}),
         );
       }
@@ -433,8 +431,6 @@ class EnhancedPushNotificationService extends ChangeNotifier {
         tz.TZDateTime.from(nextScheduleTime, tz.local),
         notificationDetails,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         payload: _stringifyJson(notification.payload ?? {}),
       );
 

@@ -96,19 +96,19 @@ class DesktopNotificationsService {
       // Initialize Flutter Local Notifications
       _notificationsPlugin = FlutterLocalNotificationsPlugin();
       
-      // Initialize Linux-specific notification manager
-      _linuxNotificationManager = LinuxNotificationManager(
-        applicationName: 'BizSync',
-        applicationId: 'com.bizsync.app',
-      );
+      // Linux notification manager disabled - type dependencies missing
+      // _linuxNotificationManager = LinuxNotificationManager(
+      //   applicationName: 'BizSync',
+      //   applicationId: 'com.bizsync.app',
+      // );
 
       // Configure notification settings
-      const LinuxInitializationSettings initializationSettingsLinux = LinuxInitializationSettings(
+      final LinuxInitializationSettings initializationSettingsLinux = LinuxInitializationSettings(
         defaultActionName: 'Open notification',
         defaultIcon: AssetsLinuxIcon('assets/icon/app_icon.png'),
       );
 
-      const InitializationSettings initializationSettings = InitializationSettings(
+      final InitializationSettings initializationSettings = InitializationSettings(
         linux: initializationSettingsLinux,
       );
 
@@ -200,26 +200,15 @@ class DesktopNotificationsService {
       final linuxDetails = LinuxNotificationDetails(
         icon: notification.iconPath != null 
             ? FilePathLinuxIcon(notification.iconPath!)
-            : const AssetsLinuxIcon('assets/icon/app_icon.png'),
-        importance: importance,
+            : AssetsLinuxIcon('assets/icon/app_icon.png'),
         category: LinuxNotificationCategory.email, // Generic category
-        urgency: _getUrgencyLevel(notification.priority),
-        timeout: notification.timeout != null 
-            ? LinuxNotificationTimeout.fromDuration(notification.timeout!)
-            : LinuxNotificationTimeout.systemDefault,
-        customHint: notification.persistent 
-            ? {'resident': true} 
-            : null,
         actions: notification.actions.map((action) => LinuxNotificationAction(
           key: action.id,
           label: action.label,
         )).toList(),
-        sound: notification.soundPath != null 
-            ? FilePathLinuxSound(notification.soundPath!)
-            : null,
       );
 
-      const platformChannelSpecifics = NotificationDetails(
+      final platformChannelSpecifics = NotificationDetails(
         linux: linuxDetails,
       );
 
