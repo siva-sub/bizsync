@@ -6,10 +6,6 @@
 ![Platform](https://img.shields.io/badge/Platform-Android%20|%20iOS%20|%20Web%20|%20Desktop-blue?style=for-the-badge)
 ![GST](https://img.shields.io/badge/GST-9%25%20Ready-success?style=for-the-badge)
 
-<p align="center">
-  <img src="assets/app_icon.png" width="200" alt="BizSync Logo">
-</p>
-
 ## 🚀 Overview
 
 BizSync is a comprehensive, offline-first business management solution designed specifically for Singapore's Small and Medium Enterprises (SMEs). Built with Flutter, it provides a modern, intuitive interface for managing invoices, inventory, payments, and more - all while working seamlessly offline.
@@ -44,6 +40,7 @@ BizSync is a comprehensive, offline-first business management solution designed 
 - Automated invoice numbering
 - PDF generation and sharing
 - Payment tracking and reminders
+- Export to Excel/CSV formats
 
 #### 📦 **Inventory Management**
 - Real-time stock tracking
@@ -51,12 +48,14 @@ BizSync is a comprehensive, offline-first business management solution designed 
 - Barcode scanning support
 - Product categorization
 - Stock movement history
+- Batch operations
 
 #### 💳 **Singapore Payment Integration**
 - PayNow QR code generation (Mobile, UEN, NRIC)
 - SGQR support for multiple payment methods
 - Payment status tracking
 - Transaction history
+- Automated reconciliation
 
 #### 📊 **Tax Management**
 - GST 9% automatic calculations
@@ -64,26 +63,119 @@ BizSync is a comprehensive, offline-first business management solution designed 
 - Tax period tracking
 - IRAS compliance features
 - Tax payment reminders
+- Multi-currency support
 
 #### 👥 **Customer Relationship Management**
 - Customer database with full details
 - Communication history
 - Credit limit management
-- Customer analytics
+- Customer analytics & segmentation
 - Bulk SMS/Email capabilities
+- Behavioral insights
 
 #### 📈 **Analytics & Reporting**
 - Real-time business dashboard
-- Sales analytics
+- Sales analytics with forecasting
 - Inventory reports
 - Financial statements
 - Customizable reports
+- Interactive data visualization
+
+### 📱 Mobile-Specific Features (NEW)
+
+#### 🔐 **Biometric Authentication**
+- Fingerprint and Face ID support
+- Secure access to sensitive data
+- Configurable security levels
+- Session timeout management
+
+#### 🌙 **Dark Mode**
+- System-aware theme switching
+- Custom color schemes
+- OLED-optimized dark theme
+- Persistent preferences
+
+#### 📴 **Enhanced Offline Mode**
+- Real-time connectivity monitoring
+- Automatic sync queue management
+- Conflict resolution UI
+- Offline operation indicators
+
+#### 👆 **Advanced Gestures**
+- Swipe to delete/archive
+- Pull-to-refresh everywhere
+- Tab swipe navigation
+- Customizable swipe actions
+
+#### 🔔 **Smart Notifications**
+- Payment reminders
+- Invoice due alerts
+- Low inventory warnings
+- Quiet hours support
+- Priority filtering
+
+#### ⚡ **Performance Optimizations**
+- 60fps smooth animations
+- Lazy loading lists
+- Image caching
+- Memory optimization
+
+### 🖥️ Linux Desktop Features (NEW)
+
+#### 🔧 **System Integration**
+- System tray with quick actions
+- Minimize to tray
+- Native notifications
+- Desktop widgets
+
+#### ⌨️ **Productivity Shortcuts**
+- Global keyboard shortcuts (Ctrl+N, Ctrl+F, etc.)
+- Quick navigation (Ctrl+Tab)
+- Window management shortcuts
+- Custom shortcut configuration
+
+#### 🪟 **Multi-Window Support**
+- Open invoices in separate windows
+- Detachable panels
+- Window position memory
+- Cascade/tile arrangements
+
+#### 📄 **File System Integration**
+- Drag & drop imports
+- Watch folders for auto-import
+- Native file dialogs
+- Recent files menu
+
+#### 🖨️ **Professional Printing**
+- Direct invoice printing
+- Print preview
+- Custom print layouts
+- Batch printing
+
+#### 💻 **Command Line Interface**
+```bash
+# Create invoice from CLI
+bizsync invoice --action create --customer "John Doe" --amount 1000
+
+# Export data
+bizsync export --type customers --format csv
+
+# Batch operations
+bizsync batch --file operations.json
+```
+
+#### 🔍 **Advanced Search**
+- Global search across all modules
+- Advanced filters
+- Search history
+- Saved searches
+- Real-time suggestions
 
 ### Technical Features
 
 - **Offline Synchronization**: Conflict-free Replicated Data Types (CRDT) for seamless offline/online sync
 - **Multi-User Support**: Role-based access control with admin, manager, and staff roles
-- **Data Security**: SQLCipher encryption, biometric authentication, secure key storage
+- **Data Security**: SQLite encryption, biometric authentication, secure key storage
 - **Backup & Restore**: Automated cloud backups, local backup options
 - **Performance Optimized**: Lazy loading, efficient caching, optimized for low-end devices
 - **Internationalization**: Support for English, Chinese, Malay, and Tamil
@@ -118,19 +210,10 @@ cd bizsync
 flutter pub get
 ```
 
-### 3. Configure Environment
+### 3. Generate Code
 
-Create a `.env` file in the project root:
-
-```env
-# Singapore-specific configurations
-GST_RATE=0.09
-CURRENCY=SGD
-COUNTRY_CODE=SG
-
-# API Keys (Optional for enhanced features)
-GOOGLE_MAPS_API_KEY=your_api_key_here
-FIREBASE_PROJECT_ID=your_project_id
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
 ### 4. Run the Application
@@ -143,7 +226,6 @@ flutter run
 flutter run -d android
 flutter run -d ios
 flutter run -d chrome
-flutter run -d macos
 flutter run -d linux
 flutter run -d windows
 ```
@@ -156,6 +238,10 @@ flutter run -d windows
 bizsync/
 ├── lib/
 │   ├── core/           # Core functionality (database, utils, themes)
+│   │   ├── desktop/    # Linux desktop-specific features
+│   │   ├── mobile/     # Mobile-specific features
+│   │   ├── offline/    # Offline sync functionality
+│   │   └── security/   # Security & authentication
 │   ├── features/       # Feature modules (invoices, inventory, etc.)
 │   ├── shared/         # Shared widgets and components
 │   └── main.dart       # Application entry point
@@ -177,13 +263,14 @@ flutter build appbundle --release
 # iOS
 flutter build ios --release
 
-# Web
-flutter build web --release
-
-# Desktop
-flutter build windows --release
-flutter build macos --release
+# Linux
 flutter build linux --release
+
+# Windows
+flutter build windows --release
+
+# macOS
+flutter build macos --release
 ```
 
 ### Running Tests
@@ -203,7 +290,7 @@ flutter test --coverage
 
 BizSync follows Clean Architecture principles with the following layers:
 
-1. **Presentation Layer** - Flutter UI with BLoC/Provider state management
+1. **Presentation Layer** - Flutter UI with Riverpod state management
 2. **Domain Layer** - Business logic and use cases
 3. **Data Layer** - Repository pattern with local and remote data sources
 4. **Core Layer** - Shared utilities, themes, and configurations
@@ -211,12 +298,13 @@ BizSync follows Clean Architecture principles with the following layers:
 ### Technology Stack
 
 - **Frontend**: Flutter, Material Design 3
-- **State Management**: Provider, BLoC
-- **Database**: SQLite with SQLCipher encryption
+- **State Management**: Riverpod
+- **Database**: SQLite with encryption
 - **Offline Sync**: CRDT (Conflict-free Replicated Data Types)
 - **Authentication**: Biometric, PIN, Pattern
 - **Payment Integration**: PayNow API, SGQR standards
-- **CI/CD**: GitHub Actions
+- **Desktop**: System tray, native notifications, file system integration
+- **Mobile**: Push notifications, haptic feedback, quick actions
 
 ## 🤝 Contributing
 
@@ -248,20 +336,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Open source community for various packages used
 - Beta testers and early adopters
 
-## 📸 Screenshots
+## 🚦 Project Status
 
-<p align="center">
-  <img src="docs/screenshots/dashboard.png" width="250" alt="Dashboard">
-  <img src="docs/screenshots/invoice.png" width="250" alt="Invoice">
-  <img src="docs/screenshots/inventory.png" width="250" alt="Inventory">
-</p>
+**Current Version**: 1.0.0  
+**Status**: Production Ready  
+**Last Updated**: December 2024
 
-## 🚦 Status
-
-![Build Status](https://img.shields.io/github/actions/workflow/status/siva-sub/bizsync/flutter.yml?style=for-the-badge)
-![Last Commit](https://img.shields.io/github/last-commit/siva-sub/bizsync?style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/siva-sub/bizsync?style=for-the-badge)
-![Pull Requests](https://img.shields.io/github/issues-pr/siva-sub/bizsync?style=for-the-badge)
+### Recent Updates
+- ✅ Added comprehensive mobile features (biometric auth, dark mode, gestures)
+- ✅ Implemented Linux desktop features (system tray, CLI, multi-window)
+- ✅ Enhanced offline synchronization
+- ✅ Improved performance and user experience
+- ✅ Added advanced analytics and reporting
 
 ---
 

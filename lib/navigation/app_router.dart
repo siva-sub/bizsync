@@ -19,6 +19,7 @@ import '../features/notifications/ui/notification_center_screen.dart';
 import '../presentation/screens/settings_screen.dart';
 import '../features/invoices/models/enhanced_invoice.dart';
 import '../core/demo/models/demo_employee.dart';
+import '../core/demo/demo_data_service.dart';
 import '../features/onboarding/screens/welcome_screen.dart';
 import '../features/onboarding/screens/company_setup_screen.dart';
 import '../features/onboarding/screens/user_profile_screen.dart';
@@ -344,10 +345,15 @@ class _FunctionalInvoiceListScreenState extends State<FunctionalInvoiceListScree
     });
 
     try {
-      // TODO: Load real invoices from database
-      _invoices = [];
+      // Load real invoices from demo service (replace with actual database service when available)
+      final demoService = DemoDataService();
+      if (!demoService.isInitialized) {
+        await demoService.initializeDemoData();
+      }
+      _invoices = demoService.invoices;
     } catch (e) {
       print('Error loading invoices: $e');
+      _invoices = []; // Fallback to empty list
     }
 
     setState(() {
@@ -562,10 +568,15 @@ class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailS
     });
 
     try {
-      // TODO: Load real invoice from database
-      _invoice = null;
+      // Load real invoice from demo service (replace with actual database service when available)
+      final demoService = DemoDataService();
+      if (!demoService.isInitialized) {
+        await demoService.initializeDemoData();
+      }
+      _invoice = demoService.getInvoiceById(widget.invoiceId);
     } catch (e) {
       print('Error loading invoice: $e');
+      _invoice = null; // Fallback to null
     }
 
     setState(() {
@@ -949,11 +960,50 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     });
 
     try {
-      // TODO: Load real employees from database
-      _employees = [];
+      // Load demo employees for now - replace with real service when fully implemented
+      _employees = [
+        Employee(
+          id: '1',
+          name: 'John Doe',
+          position: 'Software Engineer',
+          email: 'john@example.com',
+          phone: '+65 9123 4567',
+          workPassType: 'Employment Pass',
+          nric: 'G1234567X',
+          basicSalary: 8000.0,
+          cpfContribution: 1600.0,
+          joinDate: DateTime(2023, 1, 15),
+        ),
+        Employee(
+          id: '2',
+          name: 'Jane Smith',
+          position: 'Product Manager',
+          email: 'jane@example.com',
+          phone: '+65 9234 5678',
+          workPassType: 'Citizen',
+          nric: 'S9876543A',
+          basicSalary: 9500.0,
+          cpfContribution: 1900.0,
+          joinDate: DateTime(2022, 8, 10),
+        ),
+        Employee(
+          id: '3',
+          name: 'Bob Wilson',
+          position: 'Designer',
+          email: 'bob@example.com',
+          phone: '+65 9345 6789',
+          workPassType: 'Permanent Resident',
+          nric: 'T8765432B',
+          basicSalary: 7200.0,
+          cpfContribution: 1440.0,
+          joinDate: DateTime(2023, 6, 20),
+        ),
+      ];
       _sortEmployees();
     } catch (e) {
       print('Error loading employees: $e');
+      _employees = []; // Fallback to empty list
+      _sortEmployees();
     }
 
     setState(() {

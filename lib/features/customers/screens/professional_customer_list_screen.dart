@@ -65,8 +65,10 @@ class _ProfessionalCustomerListScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
+      body: RefreshIndicator(
+        onRefresh: _loadCustomers,
+        child: Column(
+          children: [
           // Header with search
           Card(
             margin: const EdgeInsets.all(16),
@@ -252,6 +254,7 @@ class _ProfessionalCustomerListScreenState
                       ),
           ),
         ],
+        ),
       ),
     );
   }

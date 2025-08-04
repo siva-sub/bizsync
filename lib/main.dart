@@ -3,17 +3,47 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, exit;
 import 'navigation/app_router.dart';
 import 'core/database/crdt_database_service.dart';
 import 'core/storage/database_service.dart';
 import 'core/platform/wayland_helper.dart';
 import 'core/utils/mesa_rendering_detector.dart';
 import 'core/utils/mesa_rendering_config.dart';
+import 'core/theme/theme_service.dart';
+import 'core/security/biometric_auth_service.dart';
+import 'core/offline/offline_service.dart';
+import 'core/feedback/haptic_service.dart';
+import 'core/notifications/enhanced_push_notification_service.dart';
+import 'core/performance/performance_optimizer.dart';
+import 'core/shortcuts/quick_actions_service.dart';
+import 'core/desktop/index.dart';
 
-void main() async {
+void main(List<String> args) async {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Handle CLI mode first
+  if (args.isNotEmpty) {
+    final cliService = CLIService();
+    await cliService.initialize();
+    
+    // Check if running in headless mode
+    if (cliService.isHeadlessMode(args)) {
+      debugPrint('🖥️ Running in headless mode');
+      
+      // Process CLI commands without GUI
+      final result = await cliService.processArguments(args);
+      if (result.output != null) {
+        print(result.output);
+      }
+      if (result.error != null) {
+        print('Error: ${result.error}');
+      }
+      
+      exit(result.exitCode);
+    }
+  }
   
   // Configure Wayland-specific optimizations for Linux
   if (Platform.isLinux) {
@@ -27,6 +57,63 @@ void main() async {
     if (kDebugMode) {
       MesaRenderingDetector.printDebugInfo();
     }
+  }
+
+  // Initialize desktop services for Linux
+  if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+    debugPrint('🖥️ Initializing desktop services...');
+    try {
+      await DesktopServicesManager().initializeAll();
+      debugPrint('✅ Desktop services initialized successfully');
+    } catch (e) {
+      debugPrint('⚠️ Error initializing desktop services: $e');
+      // Continue with app startup - desktop features will have limited functionality
+    }
+  }
+
+  // Initialize mobile-specific services  
+  debugPrint('📱 Initializing mobile services...');
+  
+  try {
+    // Initialize theme service first
+    final themeService = ThemeService();
+    await themeService.initialize();
+    debugPrint('✅ Theme service initialized');
+
+    // Initialize biometric authentication
+    final biometricService = BiometricAuthService();
+    await biometricService.initialize();
+    debugPrint('✅ Biometric authentication service initialized');
+
+    // Initialize offline service
+    final offlineService = OfflineService();
+    await offlineService.initialize();
+    debugPrint('✅ Offline service initialized');
+
+    // Initialize haptic feedback service
+    final hapticService = HapticService();
+    await hapticService.initialize();
+    debugPrint('✅ Haptic feedback service initialized');
+
+    // Initialize notification service
+    final notificationService = EnhancedPushNotificationService();
+    await notificationService.initialize();
+    debugPrint('✅ Push notification service initialized');
+
+    // Initialize performance optimizer
+    final performanceOptimizer = PerformanceOptimizer();
+    await performanceOptimizer.initialize();
+    debugPrint('✅ Performance optimizer initialized');
+
+    // Initialize quick actions
+    final quickActionsService = QuickActionsService();
+    await quickActionsService.initialize();
+    debugPrint('✅ Quick actions service initialized');
+
+    debugPrint('📱 All mobile services initialized successfully');
+  } catch (e) {
+    debugPrint('⚠️ Error initializing mobile services: $e');
+    // Continue with app startup - mobile features will have limited functionality
   }
   
   // Initialize the database services with comprehensive error handling
@@ -146,213 +233,40 @@ class BizSyncApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
-      title: 'BizSync - Professional Business Management',
-      debugShowCheckedModeBanner: false,
-      theme: _buildLightTheme(),
-      darkTheme: _buildDarkTheme(),
-      themeMode: ThemeMode.system,
-      routerConfig: AppRouter.router,
-      builder: (context, child) => WaylandOptimizedWidget(
-        child: ResponsiveBreakpoints.builder(
-          child: child!,
-          breakpoints: [
-            const Breakpoint(start: 0, end: 450, name: MOBILE),
-            const Breakpoint(start: 451, end: 800, name: TABLET),
-            const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-            const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  ThemeData _buildLightTheme() {
-    // Professional business color scheme - Blue/White/Gray
-    const primaryColor = Color(0xFF1565C0); // Professional blue
-    const surfaceColor = Color(0xFFFAFAFA); // Light gray background
-    const errorColor = Color(0xFFD32F2F); // Professional red
+    final themeService = ref.watch(themeServiceProvider);
     
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: primaryColor,
-      brightness: Brightness.light,
-      primary: primaryColor,
-      secondary: const Color(0xFF424242), // Dark gray
-      surface: surfaceColor,
-      error: errorColor,
-    );
-
-    final baseTheme = ThemeData(
-      colorScheme: colorScheme,
-      useMaterial3: true,
-      fontFamily: 'Roboto',
-      
-      // App Bar Theme
-      appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
-        elevation: MesaRenderingDetector.getAdjustedElevation(1),
-        shadowColor: MesaRenderingDetector.getAdjustedShadowColor(Colors.black12),
-        centerTitle: false,
-        titleTextStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF1565C0),
-        ),
-        toolbarHeight: 64,
-      ),
-      
-      // Card Theme
-      cardTheme: CardThemeData(
-        elevation: MesaRenderingDetector.getAdjustedElevation(2),
-        shadowColor: MesaRenderingDetector.getAdjustedShadowColor(Colors.black12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: Colors.white,
-      ),
-      
-      // Data Table Theme
-      dataTableTheme: DataTableThemeData(
-        headingRowColor: WidgetStateProperty.all(const Color(0xFFF5F5F5)),
-        headingTextStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-          color: Color(0xFF424242),
-        ),
-        dataTextStyle: const TextStyle(
-          fontSize: 14,
-          color: Color(0xFF616161),
-        ),
-        horizontalMargin: 16,
-        columnSpacing: 24,
-      ),
-      
-      // Elevated Button Theme
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          elevation: MesaRenderingDetector.getAdjustedElevation(2),
-          shadowColor: MesaRenderingDetector.getAdjustedShadowColor(Colors.black26),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+    return PerformanceMonitor(
+      showOverlay: kDebugMode,
+      child: MaterialApp.router(
+        title: 'BizSync - Professional Business Management',
+        debugShowCheckedModeBanner: false,
+        theme: themeService.createLightTheme(),
+        darkTheme: themeService.createDarkTheme(),
+        themeMode: themeService.themeMode,
+        routerConfig: AppRouter.router,
+        builder: (context, child) => QuickActionHandler(
+          onQuickAction: (actionType) {
+            // Handle quick actions - this could navigate to appropriate screens
+            debugPrint('Quick action received: $actionType');
+          },
+          child: DesktopWrapper(
+            child: WaylandOptimizedWidget(
+              child: ResponsiveBreakpoints.builder(
+                child: child!,
+                breakpoints: [
+                  const Breakpoint(start: 0, end: 450, name: MOBILE),
+                  const Breakpoint(start: 451, end: 800, name: TABLET),
+                  const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+                  const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+                ],
+              ),
+            ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        ),
-      ),
-      
-      // Input Decoration Theme
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: primaryColor, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: errorColor),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        filled: true,
-        fillColor: Colors.white,
-      ),
-      
-      // Floating Action Button Theme
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        elevation: MesaRenderingDetector.getAdjustedElevation(6),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
         ),
       ),
     );
-    
-    // Apply Mesa safe theme if needed
-    return MesaRenderingConfig().applySafeTheme(baseTheme);
   }
 
-  ThemeData _buildDarkTheme() {
-    const primaryColor = Color(0xFF42A5F5); // Lighter blue for dark theme
-    const surfaceColor = Color(0xFF121212); // Dark surface
-    const errorColor = Color(0xFFEF5350); // Lighter red for dark theme
-    
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: primaryColor,
-      brightness: Brightness.dark,
-      primary: primaryColor,
-      secondary: const Color(0xFFBBBBBB), // Light gray for dark theme
-      surface: surfaceColor,
-      error: errorColor,
-    );
-
-    final baseTheme = ThemeData(
-      colorScheme: colorScheme,
-      useMaterial3: true,
-      fontFamily: 'Roboto',
-      
-      appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFF1E1E1E),
-        foregroundColor: Colors.white,
-        elevation: MesaRenderingDetector.getAdjustedElevation(1),
-        shadowColor: MesaRenderingDetector.getAdjustedShadowColor(Colors.black26),
-        centerTitle: false,
-        titleTextStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF42A5F5),
-        ),
-        toolbarHeight: 64,
-      ),
-      
-      cardTheme: CardThemeData(
-        elevation: MesaRenderingDetector.getAdjustedElevation(2),
-        shadowColor: MesaRenderingDetector.getAdjustedShadowColor(Colors.black26),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: const Color(0xFF1E1E1E),
-      ),
-      
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.white24),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.white24),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: primaryColor, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        filled: true,
-        fillColor: const Color(0xFF2E2E2E),
-      ),
-      
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        elevation: MesaRenderingDetector.getAdjustedElevation(6),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
-    );
-    
-    // Apply Mesa safe theme if needed
-    return MesaRenderingConfig().applySafeTheme(baseTheme);
-  }
 }
 
 

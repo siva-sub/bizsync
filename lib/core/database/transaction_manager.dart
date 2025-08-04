@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 import '../crdt/hybrid_logical_clock.dart';
 import '../error/exceptions.dart' as app_exceptions;
 

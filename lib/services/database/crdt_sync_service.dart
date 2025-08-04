@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 /// CRDT Sync Service for offline-first synchronization (metadata only)

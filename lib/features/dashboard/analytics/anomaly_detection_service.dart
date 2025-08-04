@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import '../models/dashboard_models.dart';
 import '../../../core/types/invoice_types.dart';
-import '../../customers/models/customer.dart';
+import '../../../data/models/customer.dart';
 import '../../inventory/models/product.dart';
 
 /// Advanced anomaly detection service for business data

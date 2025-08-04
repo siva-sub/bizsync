@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:sqflite/sqflite.dart' as sqflite;
-import 'package:sqflite_sqlcipher/sqflite.dart' as sqlcipher;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../constants/app_constants.dart';
 import '../error/exceptions.dart' as app_exceptions;
@@ -23,31 +22,8 @@ class PlatformDatabaseFactory {
   /// Check if SQLCipher plugin is available and functional
   static Future<bool> _checkSqlcipherSupport() async {
     try {
-      // Desktop platforms generally don't support sqlcipher plugin
-      if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
-        return false;
-      }
-      
-      // For mobile platforms, try to use sqlcipher
-      if (Platform.isAndroid || Platform.isIOS) {
-        try {
-          // Attempt to use sqlcipher with a test database
-          final testDb = await sqlcipher.openDatabase(
-            ':memory:',
-            password: 'test',
-            version: 1,
-            onCreate: (db, version) async {
-              await db.execute('CREATE TABLE test (id INTEGER)');
-            },
-          );
-          await testDb.close();
-          return true;
-        } catch (e) {
-          // SQLCipher not available on this platform
-          return false;
-        }
-      }
-      
+      // SQLCipher temporarily disabled for build stability
+      // TODO: Re-enable when sqflite_sqlcipher package is re-added
       return false;
     } catch (e) {
       return false;
@@ -71,55 +47,29 @@ class PlatformDatabaseFactory {
         print('INFO: Initialized SQLite FFI for ${Platform.operatingSystem}');
       }
       
-      final usesSqlcipher = await supportsSqlcipher;
+      // Use SQLite without encryption (SQLCipher support temporarily disabled)
+      print('INFO: Using SQLite without encryption on ${Platform.operatingSystem}');
       
-      if (usesSqlcipher && password != null) {
-        // Use SQLCipher for encrypted database (mobile only)
-        return await sqlcipher.openDatabase(
+      if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+        // Use FFI database for desktop platforms
+        return await databaseFactoryFfi.openDatabase(
           path,
-          version: version,
-          password: password,
-          onCreate: (db, version) async {
-            if (onCreate != null) {
-              await onCreate(db as sqflite.Database, version);
-            }
-          },
-          onUpgrade: (db, oldVersion, newVersion) async {
-            if (onUpgrade != null) {
-              await onUpgrade(db as sqflite.Database, oldVersion, newVersion);
-            }
-          },
-          onOpen: (db) async {
-            if (onOpen != null) {
-              await onOpen(db as sqflite.Database);
-            }
-          },
-        ) as sqflite.Database;
-      } else {
-        // Use SQLite without encryption
-        print('INFO: Using SQLite without encryption on ${Platform.operatingSystem}');
-        
-        if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
-          // Use FFI database for desktop platforms
-          return await databaseFactoryFfi.openDatabase(
-            path,
-            options: OpenDatabaseOptions(
-              version: version,
-              onCreate: onCreate,
-              onUpgrade: onUpgrade,
-              onOpen: onOpen,
-            ),
-          );
-        } else {
-          // Use regular sqflite for mobile platforms
-          return await sqflite.openDatabase(
-            path,
+          options: OpenDatabaseOptions(
             version: version,
             onCreate: onCreate,
             onUpgrade: onUpgrade,
             onOpen: onOpen,
-          );
-        }
+          ),
+        );
+      } else {
+        // Use regular sqflite for mobile platforms
+        return await sqflite.openDatabase(
+          path,
+          version: version,
+          onCreate: onCreate,
+          onUpgrade: onUpgrade,
+          onOpen: onOpen,
+        );
       }
     } catch (e) {
       throw app_exceptions.DatabaseException(
@@ -130,16 +80,15 @@ class PlatformDatabaseFactory {
 
   /// Get database implementation info for debugging
   static Future<Map<String, dynamic>> getDatabaseInfo() async {
-    final usesSqlcipher = await supportsSqlcipher;
-    
     return {
       'platform': Platform.operatingSystem,
-      'supports_sqlcipher': usesSqlcipher,
-      'database_type': usesSqlcipher ? 'SQLCipher (Encrypted)' : 'SQLite (Unencrypted)',
-      'encryption_available': usesSqlcipher,
-      'fallback_reason': usesSqlcipher 
-        ? null 
-        : 'SQLCipher plugin not available on ${Platform.operatingSystem}',
+      'supports_sqlcipher': false,
+      'database_type': 'SQLite (Unencrypted)',
+      'encryption_available': false,
+      'fallback_reason': 'SQLCipher temporarily disabled for build stability',
+      'database_factory': Platform.isLinux || Platform.isWindows || Platform.isMacOS 
+        ? 'sqflite_common_ffi' 
+        : 'sqflite',
     };
   }
 

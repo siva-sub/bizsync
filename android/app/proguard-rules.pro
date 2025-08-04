@@ -10,9 +10,10 @@
 -dontwarn io.flutter.**
 -dontwarn androidx.**
 
-# Keep SQLCipher/SQLite classes
--keep class net.sqlcipher.** { *; }
--keep class net.sqlcipher.database.** { *; }
+# Keep SQLite classes
+# Note: SQLCipher rules removed temporarily for build stability
+# -keep class net.sqlcipher.** { *; }
+# -keep class net.sqlcipher.database.** { *; }
 
 # Keep QR code generation classes
 -keep class com.google.zxing.** { *; }

@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import '../models/dashboard_models.dart';
 import '../../../core/types/invoice_types.dart';
 import '../../../core/crdt/hybrid_logical_clock.dart';
-import '../../customers/models/customer.dart';
+import '../../../data/models/customer.dart';
 import '../../inventory/models/product.dart';
 import '../../invoices/models/enhanced_invoice_model.dart';
 

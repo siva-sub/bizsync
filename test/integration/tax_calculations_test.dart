@@ -7,7 +7,7 @@ import '../test_factories.dart';
 /// Tests GST rates, exemptions, export scenarios, historical rates, and edge cases
 void main() {
   group('Tax Calculations Integration Tests', () {
-    setUp() {
+    setUp(() {
       TestFactories.reset();
     });
 

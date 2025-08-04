@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 import '../utils/uuid_generator.dart';
 import '../error/exceptions.dart' as app_exceptions;
 import 'crdt_database_service.dart';

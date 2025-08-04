@@ -1,6 +1,6 @@
 import '../models/company/company_tax_profile.dart';
 import '../models/rates/tax_rate_model.dart';
-import '../../customers/models/customer.dart';
+import '../../../data/models/customer.dart';
 import '../../../core/database/crdt_database_service.dart';
 
 /// Service to manage tax settings and company/customer GST registration status

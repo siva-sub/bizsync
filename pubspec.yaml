@@ -29,6 +29,7 @@ dependencies:
 
   # UI and Material Design
   cupertino_icons: ^1.0.8
+  font_awesome_flutter: ^10.8.0
   
   # State Management
   flutter_riverpod: ^2.4.9
@@ -38,9 +39,8 @@ dependencies:
   go_router: ^16.0.0
   
   # Database and Storage
-  sqflite_sqlcipher: ^3.1.0
-  sqflite: ^2.3.0  # Fallback for mobile platforms
-  sqflite_common_ffi: ^2.3.0  # For desktop platforms (Linux, Windows, macOS)
+  sqflite: ^2.3.0  # Mobile platforms (Android/iOS)
+  sqflite_common_ffi: ^2.3.0  # Desktop platforms (Linux, Windows, macOS)
   path: ^1.8.3
   path_provider: ^2.1.2
   
@@ -73,6 +73,7 @@ dependencies:
   # File System and Storage
   file_picker: ^10.2.0
   share_plus: ^10.0.0
+  csv: ^6.0.0
   
   # Utilities
   uuid: ^4.3.3
@@ -83,6 +84,20 @@ dependencies:
   # Platform Integration
   permission_handler: ^12.0.1
   device_info_plus: ^11.5.0
+  
+  # Mobile-specific Features
+  local_auth: ^2.3.0  # Biometric authentication
+  connectivity_plus: ^6.0.3  # Network connectivity monitoring
+  vibration: ^2.0.0  # Haptic feedback
+  flutter_tts: ^4.2.0  # Text-to-speech
+  speech_to_text: ^7.0.0  # Voice recognition
+  camera: ^0.11.0+2  # Camera integration
+  image_picker: ^1.1.2  # Image selection
+  google_mlkit_text_recognition: ^0.14.0  # OCR for receipt scanning
+  google_mlkit_barcode_scanning: ^0.11.0  # Barcode scanning
+  cached_network_image: ^3.4.1  # Image caching for performance
+  flutter_cache_manager: ^3.4.1  # General caching
+  quick_actions: ^1.0.7  # App shortcuts
   
   # Charts and Data Visualization
   fl_chart: ^0.69.0
@@ -115,8 +130,25 @@ dependencies:
   fluttertoast: ^8.2.6
   top_snackbar_flutter: ^3.1.0
   
-  # Keyboard Shortcuts
-  # flutter_shortcuts: ^0.1.2
+  # Linux Desktop Features
+  system_tray: ^2.0.3  # System tray integration
+  hotkey_manager: ^0.2.3  # Global keyboard shortcuts
+  window_manager: ^0.3.9  # Multi-window support and window management
+  desktop_drop: ^1.4.4  # Drag & drop file support
+  file_selector: ^1.0.3  # Native file dialogs
+  printing: ^5.12.0  # Already included - print support
+  desktop_lifecycle: ^0.1.1  # Desktop lifecycle management
+  desktop_webview_window: ^0.2.3  # Additional window support
+  watcher: ^1.1.0  # File system watching
+  args: ^2.4.2  # Command line argument parsing
+  ffi: ^2.1.0  # For native system integrations
+  
+  # Enhanced notifications for Linux
+  flutter_local_notifications_linux: ^4.0.0  # Linux-specific notifications
+  
+  # Enhanced data visualization
+  syncfusion_flutter_charts: ^24.2.9  # Professional charts with zoom/pan
+  flutter_charts: ^0.5.2  # Additional chart types
 
 dev_dependencies:
   flutter_test:
@@ -129,9 +161,21 @@ dev_dependencies:
   riverpod_generator: ^2.3.9
   custom_lint: ^0.7.6
   riverpod_lint: ^2.3.7
+  
+  # Icon generation
+  flutter_launcher_icons: ^0.14.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+# Flutter launcher icons configuration
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 23 # android min sdk min:16, default 21
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
 
 # The following section is specific to Flutter packages.
 flutter:

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 import '../crdt/hybrid_logical_clock.dart';
 import '../utils/uuid_generator.dart';
 import 'crdt_database_service.dart';
