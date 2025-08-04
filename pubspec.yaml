@@ -49,7 +49,7 @@ dependencies:
   timezone: ^0.9.4
   
   # P2P Communication  
-  network_info_plus: ^6.1.4
+  network_info_plus: ^4.1.0
   
   # QR Code Generation and Scanning
   qr_flutter: ^4.1.0
