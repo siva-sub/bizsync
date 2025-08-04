@@ -1,5 +1,5 @@
 // Forecasting Feature - Comprehensive Business Forecasting and Reporting System
-// 
+//
 // This feature provides advanced forecasting capabilities including:
 // - Multiple forecasting algorithms (Linear Regression, Moving Averages, Exponential Smoothing, Seasonal Decomposition)
 // - Real-time data integration from invoices, transactions, and business operations

@@ -11,14 +11,13 @@ class NotificationHistoryScreen extends ConsumerStatefulWidget {
   const NotificationHistoryScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<NotificationHistoryScreen> createState() => 
+  ConsumerState<NotificationHistoryScreen> createState() =>
       _NotificationHistoryScreenState();
 }
 
-class _NotificationHistoryScreenState 
+class _NotificationHistoryScreenState
     extends ConsumerState<NotificationHistoryScreen>
     with SingleTickerProviderStateMixin {
-  
   late TabController _tabController;
 
   @override
@@ -69,10 +68,10 @@ class _NotificationHistoryScreenState
           children: [
             // Summary cards
             _buildHistorySummary(notifications),
-            
+
             // Filters
             _buildHistoryFilters(),
-            
+
             // History list
             Expanded(
               child: ListView.builder(
@@ -91,16 +90,20 @@ class _NotificationHistoryScreenState
 
   Widget _buildHistorySummary(List<BizSyncNotification> notifications) {
     final today = DateTime.now();
-    final todayNotifications = notifications.where((n) =>
-        n.createdAt.day == today.day &&
-        n.createdAt.month == today.month &&
-        n.createdAt.year == today.year).length;
-    
-    final thisWeekNotifications = notifications.where((n) =>
-        today.difference(n.createdAt).inDays < 7).length;
-    
+    final todayNotifications = notifications
+        .where((n) =>
+            n.createdAt.day == today.day &&
+            n.createdAt.month == today.month &&
+            n.createdAt.year == today.year)
+        .length;
+
+    final thisWeekNotifications = notifications
+        .where((n) => today.difference(n.createdAt).inDays < 7)
+        .length;
+
     final readNotifications = notifications.where((n) => n.isRead).length;
-    final readRate = notifications.isEmpty ? 0.0 : readNotifications / notifications.length;
+    final readRate =
+        notifications.isEmpty ? 0.0 : readNotifications / notifications.length;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -137,7 +140,8 @@ class _NotificationHistoryScreenState
     );
   }
 
-  Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
+  Widget _buildSummaryCard(
+      String title, String value, IconData icon, Color color) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -148,9 +152,9 @@ class _NotificationHistoryScreenState
             Text(
               value,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             Text(
               title,
@@ -198,13 +202,15 @@ class _NotificationHistoryScreenState
   }
 
   Widget _buildHistoryItem(BizSyncNotification notification) {
-    final formatted = NotificationUtils.formatNotificationForDisplay(notification);
-    
+    final formatted =
+        NotificationUtils.formatNotificationForDisplay(notification);
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Color(int.parse('0xFF${formatted.priorityColor.substring(1)}')),
+          backgroundColor:
+              Color(int.parse('0xFF${formatted.priorityColor.substring(1)}')),
           child: Icon(
             _getCategoryIcon(notification.category),
             color: Colors.white,
@@ -214,7 +220,8 @@ class _NotificationHistoryScreenState
         title: Text(
           notification.title,
           style: TextStyle(
-            fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
+            fontWeight:
+                notification.isRead ? FontWeight.normal : FontWeight.bold,
           ),
         ),
         subtitle: Column(
@@ -237,8 +244,8 @@ class _NotificationHistoryScreenState
                 Text(
                   formatted.formattedTime,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
                 const SizedBox(width: 16),
                 Icon(
@@ -250,8 +257,8 @@ class _NotificationHistoryScreenState
                 Text(
                   notification.category.displayName,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
               ],
             ),
@@ -290,7 +297,7 @@ class _NotificationHistoryScreenState
       builder: (context, ref, child) {
         final notifications = ref.watch(activeNotificationsProvider);
         final metrics = ref.watch(notificationMetricsProvider);
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -298,24 +305,24 @@ class _NotificationHistoryScreenState
             children: [
               // Overview cards
               _buildAnalyticsOverview(notifications, metrics),
-              
+
               const SizedBox(height: 24),
-              
+
               // Category distribution chart
               _buildCategoryDistributionChart(notifications),
-              
+
               const SizedBox(height: 24),
-              
+
               // Priority distribution chart
               _buildPriorityDistributionChart(notifications),
-              
+
               const SizedBox(height: 24),
-              
+
               // Engagement metrics
               _buildEngagementMetrics(metrics),
-              
+
               const SizedBox(height: 24),
-              
+
               // Weekly activity chart
               _buildWeeklyActivityChart(notifications),
             ],
@@ -333,10 +340,14 @@ class _NotificationHistoryScreenState
     final openedCount = metrics.where((m) => m.wasOpened).length;
     final actionCount = metrics.where((m) => m.hadAction).length;
     final dismissedCount = metrics.where((m) => m.wasDismissed).length;
-    
-    final openRate = totalNotifications > 0 ? (openedCount / totalNotifications) * 100 : 0.0;
-    final actionRate = totalNotifications > 0 ? (actionCount / totalNotifications) * 100 : 0.0;
-    final dismissalRate = totalNotifications > 0 ? (dismissedCount / totalNotifications) * 100 : 0.0;
+
+    final openRate =
+        totalNotifications > 0 ? (openedCount / totalNotifications) * 100 : 0.0;
+    final actionRate =
+        totalNotifications > 0 ? (actionCount / totalNotifications) * 100 : 0.0;
+    final dismissalRate = totalNotifications > 0
+        ? (dismissedCount / totalNotifications) * 100
+        : 0.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -393,7 +404,8 @@ class _NotificationHistoryScreenState
     );
   }
 
-  Widget _buildMetricCard(String title, String value, IconData icon, Color color) {
+  Widget _buildMetricCard(
+      String title, String value, IconData icon, Color color) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -404,9 +416,9 @@ class _NotificationHistoryScreenState
             Text(
               value,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             Text(
               title,
@@ -419,11 +431,12 @@ class _NotificationHistoryScreenState
     );
   }
 
-  Widget _buildCategoryDistributionChart(List<BizSyncNotification> notifications) {
+  Widget _buildCategoryDistributionChart(
+      List<BizSyncNotification> notifications) {
     final categoryData = <NotificationCategory, int>{};
-    
+
     for (final notification in notifications) {
-      categoryData[notification.category] = 
+      categoryData[notification.category] =
           (categoryData[notification.category] ?? 0) + 1;
     }
 
@@ -471,31 +484,35 @@ class _NotificationHistoryScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: categoryData.entries.map((entry) =>
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 2),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 12,
-                                height: 12,
-                                color: _getCategoryColor(entry.key),
+                      children: categoryData.entries
+                          .map(
+                            (entry) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    color: _getCategoryColor(entry.key),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      entry.key.displayName,
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ),
+                                  Text(
+                                    entry.value.toString(),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  entry.key.displayName,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                              Text(
-                                entry.value.toString(),
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ).toList(),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 ],
@@ -507,11 +524,12 @@ class _NotificationHistoryScreenState
     );
   }
 
-  Widget _buildPriorityDistributionChart(List<BizSyncNotification> notifications) {
+  Widget _buildPriorityDistributionChart(
+      List<BizSyncNotification> notifications) {
     final priorityData = <NotificationPriority, int>{};
-    
+
     for (final notification in notifications) {
-      priorityData[notification.priority] = 
+      priorityData[notification.priority] =
           (priorityData[notification.priority] ?? 0) + 1;
     }
 
@@ -532,7 +550,8 @@ class _NotificationHistoryScreenState
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
                   barGroups: priorityData.entries.map((entry) {
-                    final index = NotificationPriority.values.indexOf(entry.key);
+                    final index =
+                        NotificationPriority.values.indexOf(entry.key);
                     return BarChartGroupData(
                       x: index,
                       barRods: [
@@ -552,8 +571,10 @@ class _NotificationHistoryScreenState
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          if (value.toInt() < NotificationPriority.values.length) {
-                            final priority = NotificationPriority.values[value.toInt()];
+                          if (value.toInt() <
+                              NotificationPriority.values.length) {
+                            final priority =
+                                NotificationPriority.values[value.toInt()];
                             return Text(
                               priority.name.toUpperCase(),
                               style: const TextStyle(fontSize: 10),
@@ -603,10 +624,13 @@ class _NotificationHistoryScreenState
                     children: [
                       Text(
                         '${(summary.averageEngagement * 100).toStringAsFixed(1)}%',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const Text('Avg Engagement'),
                     ],
@@ -617,10 +641,13 @@ class _NotificationHistoryScreenState
                     children: [
                       Text(
                         '${summary.averageTimeToOpen.inMinutes}m',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const Text('Avg Open Time'),
                     ],
@@ -637,14 +664,16 @@ class _NotificationHistoryScreenState
   Widget _buildWeeklyActivityChart(List<BizSyncNotification> notifications) {
     final weekData = <int, int>{};
     final now = DateTime.now();
-    
+
     for (int i = 6; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
       final dayKey = date.weekday;
-      weekData[dayKey] = notifications.where((n) =>
-          n.createdAt.day == date.day &&
-          n.createdAt.month == date.month &&
-          n.createdAt.year == date.year).length;
+      weekData[dayKey] = notifications
+          .where((n) =>
+              n.createdAt.day == date.day &&
+              n.createdAt.month == date.month &&
+              n.createdAt.year == date.year)
+          .length;
     }
 
     return Card(
@@ -671,7 +700,15 @@ class _NotificationHistoryScreenState
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                          const days = [
+                            'Mon',
+                            'Tue',
+                            'Wed',
+                            'Thu',
+                            'Fri',
+                            'Sat',
+                            'Sun'
+                          ];
                           if (value.toInt() > 0 && value.toInt() <= 7) {
                             return Text(
                               days[value.toInt() - 1],
@@ -685,8 +722,10 @@ class _NotificationHistoryScreenState
                   ),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: weekData.entries.map((entry) =>
-                          FlSpot(entry.key.toDouble(), entry.value.toDouble())).toList(),
+                      spots: weekData.entries
+                          .map((entry) => FlSpot(
+                              entry.key.toDouble(), entry.value.toDouble()))
+                          .toList(),
                       isCurved: true,
                       color: Colors.blue,
                       barWidth: 3,
@@ -707,7 +746,7 @@ class _NotificationHistoryScreenState
       builder: (context, ref, child) {
         final notifications = ref.watch(activeNotificationsProvider);
         final metrics = ref.watch(notificationMetricsProvider);
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -718,17 +757,17 @@ class _NotificationHistoryScreenState
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
-              
+
               // Performance insights
               _buildPerformanceInsights(notifications, metrics),
-              
+
               const SizedBox(height: 16),
-              
+
               // Usage patterns
               _buildUsagePatterns(notifications),
-              
+
               const SizedBox(height: 16),
-              
+
               // Recommendations
               _buildRecommendations(notifications, metrics),
             ],
@@ -812,7 +851,7 @@ class _NotificationHistoryScreenState
     List<NotificationMetrics> metrics,
   ) {
     final recommendations = _generateRecommendations(notifications, metrics);
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -824,8 +863,8 @@ class _NotificationHistoryScreenState
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            ...recommendations.map((recommendation) =>
-              Padding(
+            ...recommendations.map(
+              (recommendation) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -852,7 +891,8 @@ class _NotificationHistoryScreenState
     );
   }
 
-  Widget _buildInsightItem(String title, String value, IconData icon, Color color) {
+  Widget _buildInsightItem(
+      String title, String value, IconData icon, Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -865,14 +905,14 @@ class _NotificationHistoryScreenState
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
               Text(
                 value,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
           ),
@@ -884,7 +924,7 @@ class _NotificationHistoryScreenState
   void _applyFilter(String filter) {
     // Implementation for applying filters
     final notifier = ref.read(notificationSearchProvider.notifier);
-    
+
     switch (filter) {
       case 'unread':
         // Filter to show only unread notifications
@@ -960,41 +1000,41 @@ class _NotificationHistoryScreenState
 
   String _getMostActiveCategory(List<BizSyncNotification> notifications) {
     if (notifications.isEmpty) return 'None';
-    
+
     final categoryCount = <NotificationCategory, int>{};
     for (final notification in notifications) {
-      categoryCount[notification.category] = 
+      categoryCount[notification.category] =
           (categoryCount[notification.category] ?? 0) + 1;
     }
-    
-    final mostActive = categoryCount.entries
-        .reduce((a, b) => a.value > b.value ? a : b);
-    
+
+    final mostActive =
+        categoryCount.entries.reduce((a, b) => a.value > b.value ? a : b);
+
     return mostActive.key.displayName;
   }
 
   String _getPeakHour(List<BizSyncNotification> notifications) {
     if (notifications.isEmpty) return 'N/A';
-    
+
     final hourCount = <int, int>{};
     for (final notification in notifications) {
       final hour = notification.createdAt.hour;
       hourCount[hour] = (hourCount[hour] ?? 0) + 1;
     }
-    
-    final peakHour = hourCount.entries
-        .reduce((a, b) => a.value > b.value ? a : b);
-    
+
+    final peakHour =
+        hourCount.entries.reduce((a, b) => a.value > b.value ? a : b);
+
     return '${peakHour.key}:00';
   }
 
   String _getEngagementTrend(List<NotificationMetrics> metrics) {
     if (metrics.isEmpty) return 'N/A';
-    
-    final avgEngagement = metrics
-        .map((m) => m.engagementScore)
-        .reduce((a, b) => a + b) / metrics.length;
-    
+
+    final avgEngagement =
+        metrics.map((m) => m.engagementScore).reduce((a, b) => a + b) /
+            metrics.length;
+
     if (avgEngagement > 0.7) return 'High';
     if (avgEngagement > 0.4) return 'Medium';
     return 'Low';
@@ -1002,16 +1042,16 @@ class _NotificationHistoryScreenState
 
   String _getMostCommonPriority(List<BizSyncNotification> notifications) {
     if (notifications.isEmpty) return 'None';
-    
+
     final priorityCount = <NotificationPriority, int>{};
     for (final notification in notifications) {
-      priorityCount[notification.priority] = 
+      priorityCount[notification.priority] =
           (priorityCount[notification.priority] ?? 0) + 1;
     }
-    
-    final mostCommon = priorityCount.entries
-        .reduce((a, b) => a.value > b.value ? a : b);
-    
+
+    final mostCommon =
+        priorityCount.entries.reduce((a, b) => a.value > b.value ? a : b);
+
     return mostCommon.key.name.toUpperCase();
   }
 
@@ -1020,49 +1060,54 @@ class _NotificationHistoryScreenState
     List<NotificationMetrics> metrics,
   ) {
     final recommendations = <String>[];
-    
+
     if (notifications.isEmpty) {
-      recommendations.add('No notifications yet. Set up your first notification to get started!');
+      recommendations.add(
+          'No notifications yet. Set up your first notification to get started!');
       return recommendations;
     }
-    
+
     // Analyze engagement
     if (metrics.isNotEmpty) {
-      final avgEngagement = metrics
-          .map((m) => m.engagementScore)
-          .reduce((a, b) => a + b) / metrics.length;
-      
+      final avgEngagement =
+          metrics.map((m) => m.engagementScore).reduce((a, b) => a + b) /
+              metrics.length;
+
       if (avgEngagement < 0.3) {
-        recommendations.add('Consider reviewing notification content to improve engagement.');
+        recommendations.add(
+            'Consider reviewing notification content to improve engagement.');
       }
     }
-    
+
     // Analyze timing
     final hourCount = <int, int>{};
     for (final notification in notifications) {
       final hour = notification.createdAt.hour;
       hourCount[hour] = (hourCount[hour] ?? 0) + 1;
     }
-    
+
     if (hourCount.isNotEmpty) {
-      final peakHour = hourCount.entries
-          .reduce((a, b) => a.value > b.value ? a : b);
-      
+      final peakHour =
+          hourCount.entries.reduce((a, b) => a.value > b.value ? a : b);
+
       if (peakHour.key < 9 || peakHour.key > 17) {
-        recommendations.add('Most notifications are sent outside business hours. Consider adjusting timing.');
+        recommendations.add(
+            'Most notifications are sent outside business hours. Consider adjusting timing.');
       }
     }
-    
+
     // Analyze frequency
     final dailyAverage = notifications.length / 7;
     if (dailyAverage > 20) {
-      recommendations.add('You receive many notifications daily. Consider enabling batching to reduce interruptions.');
+      recommendations.add(
+          'You receive many notifications daily. Consider enabling batching to reduce interruptions.');
     }
-    
+
     if (recommendations.isEmpty) {
-      recommendations.add('Your notification system is performing well! Keep up the good work.');
+      recommendations.add(
+          'Your notification system is performing well! Keep up the good work.');
     }
-    
+
     return recommendations;
   }
 }

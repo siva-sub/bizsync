@@ -93,7 +93,8 @@ class FxRate {
     );
   }
 
-  String get currencyPair => '${baseCurrency.name.toUpperCase()}/${targetCurrency.name.toUpperCase()}';
+  String get currencyPair =>
+      '${baseCurrency.name.toUpperCase()}/${targetCurrency.name.toUpperCase()}';
 }
 
 @JsonSerializable()
@@ -123,7 +124,7 @@ class FxRateHistory {
       if (preferredType != null && rate.rateType != preferredType) continue;
 
       final difference = date.difference(rate.effectiveDate).abs();
-      
+
       if (closestRate == null || difference < closestDifference!) {
         closestRate = rate;
         closestDifference = difference;
@@ -136,7 +137,7 @@ class FxRateHistory {
   List<FxRate> getRatesInPeriod(DateTime startDate, DateTime endDate) {
     return rates.where((rate) {
       return rate.effectiveDate.isAfter(startDate) &&
-             rate.effectiveDate.isBefore(endDate);
+          rate.effectiveDate.isBefore(endDate);
     }).toList();
   }
 
@@ -144,7 +145,8 @@ class FxRateHistory {
     final periodRates = getRatesInPeriod(startDate, endDate);
     if (periodRates.isEmpty) return null;
 
-    final totalRate = periodRates.fold<double>(0, (sum, rate) => sum + rate.rate);
+    final totalRate =
+        periodRates.fold<double>(0, (sum, rate) => sum + rate.rate);
     return totalRate / periodRates.length;
   }
 }
@@ -186,7 +188,8 @@ class TaxTreatyRate {
   final String countryCode;
   final String countryName;
   final Currency currency;
-  final Map<String, double> withholdingTaxRates; // e.g., {'dividends': 0.05, 'interest': 0.10}
+  final Map<String, double>
+      withholdingTaxRates; // e.g., {'dividends': 0.05, 'interest': 0.10}
   final DateTime effectiveFrom;
   final DateTime? effectiveTo;
   final Map<String, dynamic> specialProvisions;
@@ -213,7 +216,8 @@ class TaxTreatyRate {
   }
 
   bool isEffectiveOn(DateTime date) {
-    final isAfterStart = date.isAfter(effectiveFrom) || date.isAtSameMomentAs(effectiveFrom);
+    final isAfterStart =
+        date.isAfter(effectiveFrom) || date.isAtSameMomentAs(effectiveFrom);
     final isBeforeEnd = effectiveTo == null || date.isBefore(effectiveTo!);
     return isAfterStart && isBeforeEnd;
   }
@@ -222,7 +226,7 @@ class TaxTreatyRate {
 // Singapore-specific FX and international tax configurations
 class SingaporeFxConfig {
   static const Currency baseCurrency = Currency.sgd;
-  
+
   static final Map<Currency, String> currencyNames = {
     Currency.sgd: 'Singapore Dollar',
     Currency.usd: 'US Dollar',
@@ -284,7 +288,6 @@ class SingaporeFxConfig {
       timestamp: DateTime(2024, 1, 1, 9, 0),
       sourceReference: 'MAS Reference Rate',
     ),
-    
     FxRate(
       id: 'eur_sgd_2024_01',
       baseCurrency: Currency.eur,
@@ -296,7 +299,6 @@ class SingaporeFxConfig {
       timestamp: DateTime(2024, 1, 1, 9, 0),
       sourceReference: 'MAS Reference Rate',
     ),
-    
     FxRate(
       id: 'gbp_sgd_2024_01',
       baseCurrency: Currency.gbp,
@@ -330,7 +332,6 @@ class SingaporeFxConfig {
       },
       treatyReference: 'Singapore-US DTA',
     ),
-    
     TaxTreatyRate(
       treatyId: 'sg_uk_treaty',
       countryCode: 'GB',
@@ -344,7 +345,6 @@ class SingaporeFxConfig {
       effectiveFrom: DateTime(1997, 1, 1),
       treatyReference: 'Singapore-UK DTA',
     ),
-    
     TaxTreatyRate(
       treatyId: 'sg_china_treaty',
       countryCode: 'CN',
@@ -358,7 +358,6 @@ class SingaporeFxConfig {
       effectiveFrom: DateTime(2009, 1, 1),
       treatyReference: 'Singapore-China DTA',
     ),
-    
     TaxTreatyRate(
       treatyId: 'sg_india_treaty',
       countryCode: 'IN',
@@ -385,11 +384,13 @@ class SingaporeFxConfig {
 
   static TaxTreatyRate? getTreatyRate(String countryCode, DateTime date) {
     return taxTreatyRates
-        .where((treaty) => treaty.countryCode == countryCode && treaty.isEffectiveOn(date))
+        .where((treaty) =>
+            treaty.countryCode == countryCode && treaty.isEffectiveOn(date))
         .firstOrNull;
   }
 
-  static double? getWithholdingTaxRate(String countryCode, String incomeType, DateTime date) {
+  static double? getWithholdingTaxRate(
+      String countryCode, String incomeType, DateTime date) {
     final treaty = getTreatyRate(countryCode, date);
     return treaty?.getWithholdingTaxRate(incomeType);
   }

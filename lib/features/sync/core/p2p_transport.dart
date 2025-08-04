@@ -103,10 +103,12 @@ enum P2PConnectionEvent {
 
 /// P2P transport factory for creating transport instances
 class P2PTransportFactory {
-  static final Map<TransportType, P2PTransport Function()> _transportCreators = {};
+  static final Map<TransportType, P2PTransport Function()> _transportCreators =
+      {};
 
   /// Register a transport creator
-  static void registerTransport(TransportType type, P2PTransport Function() creator) {
+  static void registerTransport(
+      TransportType type, P2PTransport Function() creator) {
     _transportCreators[type] = creator;
   }
 

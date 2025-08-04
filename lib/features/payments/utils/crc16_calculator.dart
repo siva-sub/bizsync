@@ -1,8 +1,8 @@
 /// CRC16 checksum calculator for SGQR/PayNow QR codes
-/// 
+///
 /// This implementation follows the CRC-16-CCITT (0x1021) polynomial
 /// as specified in the EMVCo QR Code Specification for Payment Systems.
-/// 
+///
 /// Uses polynomial 0x1021 with initial value 0x1D0F to match EMVCo standard.
 /// Test vector: "123456789" -> E5CC
 class CRC16Calculator {
@@ -13,16 +13,16 @@ class CRC16Calculator {
   static const int _initialValue = 0x1D0F;
 
   /// Calculate CRC16 checksum for the given data
-  /// 
+  ///
   /// [data] - Input string to calculate checksum for
   /// Returns the 4-character hexadecimal checksum in uppercase
   static String calculate(String data) {
     int crc = _initialValue;
-    
+
     for (int i = 0; i < data.length; i++) {
       final int byte = data.codeUnitAt(i);
       crc ^= (byte << 8);
-      
+
       for (int j = 0; j < 8; j++) {
         if ((crc & 0x8000) != 0) {
           crc = ((crc << 1) ^ _polynomial) & 0xFFFF;
@@ -31,12 +31,12 @@ class CRC16Calculator {
         }
       }
     }
-    
+
     return crc.toRadixString(16).toUpperCase().padLeft(4, '0');
   }
 
   /// Validate CRC16 checksum for SGQR string
-  /// 
+  ///
   /// [sgqrString] - Complete SGQR string including checksum
   /// Returns true if checksum is valid, false otherwise
   static bool validate(String sgqrString) {
@@ -47,15 +47,15 @@ class CRC16Calculator {
     // Extract the data part (everything except the last 4 characters)
     final String data = sgqrString.substring(0, sgqrString.length - 4);
     final String providedChecksum = sgqrString.substring(sgqrString.length - 4);
-    
+
     // Calculate expected checksum
     final String expectedChecksum = calculate(data);
-    
+
     return providedChecksum.toUpperCase() == expectedChecksum.toUpperCase();
   }
 
   /// Add CRC16 checksum to SGQR data
-  /// 
+  ///
   /// [data] - SGQR data without checksum
   /// Returns complete SGQR string with checksum appended
   static String addChecksum(String data) {
@@ -64,7 +64,7 @@ class CRC16Calculator {
   }
 
   /// Remove CRC16 checksum from SGQR string
-  /// 
+  ///
   /// [sgqrString] - Complete SGQR string with checksum
   /// Returns SGQR data without checksum
   static String removeChecksum(String sgqrString) {
@@ -80,10 +80,10 @@ class CRC16Calculator {
   /// Generate CRC lookup table for faster calculation
   static List<int> _generateCRCTable() {
     final List<int> table = List<int>.filled(256, 0);
-    
+
     for (int i = 0; i < 256; i++) {
       int crc = i << 8;
-      
+
       for (int j = 0; j < 8; j++) {
         if ((crc & 0x8000) != 0) {
           crc = ((crc << 1) ^ _polynomial) & 0xFFFF;
@@ -91,26 +91,26 @@ class CRC16Calculator {
           crc = (crc << 1) & 0xFFFF;
         }
       }
-      
+
       table[i] = crc;
     }
-    
+
     return table;
   }
 
   /// Fast CRC16 calculation using lookup table
-  /// 
+  ///
   /// [data] - Input string to calculate checksum for
   /// Returns the 4-character hexadecimal checksum in uppercase
   static String calculateFast(String data) {
     int crc = _initialValue;
-    
+
     for (int i = 0; i < data.length; i++) {
       final int byte = data.codeUnitAt(i);
       final int tableIndex = ((crc >> 8) ^ byte) & 0xFF;
       crc = ((_crcTable[tableIndex] ^ (crc << 8)) & 0xFFFF);
     }
-    
+
     return crc.toRadixString(16).toUpperCase().padLeft(4, '0');
   }
 }
@@ -192,7 +192,8 @@ class EnhancedCRC16Calculator extends CRC16Calculator {
 
     try {
       final String data = sgqrString.substring(0, sgqrString.length - 4);
-      final String providedChecksum = sgqrString.substring(sgqrString.length - 4);
+      final String providedChecksum =
+          sgqrString.substring(sgqrString.length - 4);
       final String calculatedChecksum = CRC16Calculator.calculate(data);
 
       if (providedChecksum.toUpperCase() == calculatedChecksum.toUpperCase()) {
@@ -218,11 +219,11 @@ class EnhancedCRC16Calculator extends CRC16Calculator {
     List<String> sgqrStrings,
   ) {
     final Map<String, CRC16ValidationResult> results = {};
-    
+
     for (final String sgqr in sgqrStrings) {
       results[sgqr] = validateDetailed(sgqr);
     }
-    
+
     return results;
   }
 }

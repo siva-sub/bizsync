@@ -14,7 +14,7 @@ class PaymentDemoScreen extends StatefulWidget {
 class _PaymentDemoScreenState extends State<PaymentDemoScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   // Demo data
   String _merchantName = 'BizSync Demo Store';
   String _merchantCity = 'Singapore';
@@ -22,7 +22,7 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
   PayNowIdentifierType _identifierType = PayNowIdentifierType.mobile;
   double? _amount;
   CurrencyCode _currency = CurrencyCode.sgd;
-  
+
   // QR Generation
   String? _generatedQR;
   bool _isGenerating = false;
@@ -50,7 +50,8 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
       // Create message from merchant name and amount
       String? message;
       if (_amount != null) {
-        message = 'Payment to $_merchantName - ${_getCurrencySymbol(_currency)}${_amount!.toStringAsFixed(2)}';
+        message =
+            'Payment to $_merchantName - ${_getCurrencySymbol(_currency)}${_amount!.toStringAsFixed(2)}';
       } else {
         message = 'Payment to $_merchantName';
       }
@@ -113,11 +114,10 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
           Text(
             'Merchant Information',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
           TextField(
             decoration: const InputDecoration(
               labelText: 'Merchant Name',
@@ -127,7 +127,6 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             onChanged: (value) => _merchantName = value,
           ),
           const SizedBox(height: 16),
-          
           TextField(
             decoration: const InputDecoration(
               labelText: 'Merchant City',
@@ -137,15 +136,13 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             onChanged: (value) => _merchantCity = value,
           ),
           const SizedBox(height: 24),
-          
           Text(
             'PayNow Configuration',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
           DropdownButtonFormField<PayNowIdentifierType>(
             value: _identifierType,
             decoration: const InputDecoration(
@@ -179,7 +176,6 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             },
           ),
           const SizedBox(height: 16),
-          
           TextField(
             decoration: InputDecoration(
               labelText: _getIdentifierLabel(_identifierType),
@@ -190,15 +186,13 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             onChanged: (value) => _payNowIdentifier = value,
           ),
           const SizedBox(height: 24),
-          
           Text(
             'Payment Configuration',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
           CurrencySelectorWidget(
             selectedCurrency: _currency,
             onCurrencyChanged: (currency) {
@@ -208,7 +202,6 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             },
           ),
           const SizedBox(height: 16),
-          
           AmountInputWidget(
             initialAmount: _amount,
             currency: _currency,
@@ -221,12 +214,11 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             maximumAmount: 999999.99,
           ),
           const SizedBox(height: 32),
-          
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: _isGenerating ? null : _generateQR,
-              icon: _isGenerating 
+              icon: _isGenerating
                   ? const SizedBox(
                       width: 16,
                       height: 16,
@@ -251,7 +243,9 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
               qrData: _generatedQR!,
               title: _merchantName,
               subtitle: _amount != null ? 'Dynamic QR' : 'Static QR',
-              amount: _amount != null ? '${_getCurrencySymbol(_currency)}${_amount!.toStringAsFixed(2)}' : null,
+              amount: _amount != null
+                  ? '${_getCurrencySymbol(_currency)}${_amount!.toStringAsFixed(2)}'
+                  : null,
               styling: QRStylingOptions.singaporeTheme(),
               actions: [
                 IconButton(
@@ -289,8 +283,8 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             Text(
               'Error generating QR code',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.red[700],
-              ),
+                    color: Colors.red[700],
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -309,8 +303,8 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             Text(
               'No QR Code Generated',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
             const SizedBox(height: 8),
             const Text('Go to Setup tab to configure and generate a QR code'),
@@ -322,10 +316,11 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
 
   Widget _buildQRDetails() {
     if (_generatedQR == null) return const SizedBox.shrink();
-    
+
     // Parse the PayNow URL
-    final PayNowParseResult? parsed = PayNowService.parsePayNowURL(_generatedQR!);
-    
+    final PayNowParseResult? parsed =
+        PayNowService.parsePayNowURL(_generatedQR!);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -335,18 +330,23 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             Text(
               'PayNow QR Code Details',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
-            
             if (parsed != null) ...[
-              _buildDetailRow('Type', _amount != null ? 'Dynamic (with amount)' : 'Static (amount editable)'),
+              _buildDetailRow(
+                  'Type',
+                  _amount != null
+                      ? 'Dynamic (with amount)'
+                      : 'Static (amount editable)'),
               _buildDetailRow('Payment Method', 'PayNow'),
               _buildDetailRow('Currency', _currency.name.toUpperCase()),
               if (parsed.amount != null)
-                _buildDetailRow('Amount', '${_getCurrencySymbol(_currency)}${parsed.amount!.toStringAsFixed(2)}'),
-              _buildDetailRow('PayNow ID Type', _getIdentifierTypeName(_identifierType)),
+                _buildDetailRow('Amount',
+                    '${_getCurrencySymbol(_currency)}${parsed.amount!.toStringAsFixed(2)}'),
+              _buildDetailRow(
+                  'PayNow ID Type', _getIdentifierTypeName(_identifierType)),
               _buildDetailRow('PayNow ID', parsed.proxyValue),
               if (parsed.message != null)
                 _buildDetailRow('Message', parsed.message!),
@@ -354,13 +354,12 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
             ] else ...[
               _buildDetailRow('Status', 'Invalid PayNow URL'),
             ],
-            
             const SizedBox(height: 16),
             Text(
               'PayNow URL',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             Container(
@@ -419,61 +418,57 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
           Text(
             'Sharing Options',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
           ListTile(
             leading: const Icon(Icons.copy),
             title: const Text('Copy QR Data'),
             subtitle: const Text('Copy raw QR string to clipboard'),
             onTap: () => _copyToClipboard(_generatedQR!),
           ),
-          
           ListTile(
             leading: const Icon(Icons.share),
             title: const Text('Share as Text'),
             subtitle: const Text('Share QR data as text message'),
             onTap: () => _shareQR(_generatedQR!),
           ),
-          
           ListTile(
             leading: const Icon(Icons.image),
             title: const Text('Share as Image'),
             subtitle: const Text('Generate and share QR code image'),
             onTap: () => _shareQRImage(),
           ),
-          
           ListTile(
             leading: const Icon(Icons.save),
             title: const Text('Save to Device'),
             subtitle: const Text('Save QR code image to device storage'),
             onTap: () => _saveQR(_generatedQR!),
           ),
-          
           ListTile(
             leading: const Icon(Icons.folder),
             title: const Text('Create QR Package'),
-            subtitle: const Text('Create package with image, data, and documentation'),
+            subtitle: const Text(
+                'Create package with image, data, and documentation'),
             onTap: () => _createQRPackage(),
           ),
-          
           const SizedBox(height: 24),
           Text(
             'Styling Options',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildStylePreview('Default', QRStylingOptions.minimal()),
-              _buildStylePreview('Singapore', QRStylingOptions.singaporeTheme()),
-              _buildStylePreview('Professional', QRStylingOptions.professional()),
+              _buildStylePreview(
+                  'Singapore', QRStylingOptions.singaporeTheme()),
+              _buildStylePreview(
+                  'Professional', QRStylingOptions.professional()),
             ],
           ),
         ],
@@ -515,44 +510,38 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
           Text(
             'PayNow QR Information',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
           _buildInfoCard(
             'What is PayNow?',
             'PayNow is Singapore\'s national peer-to-peer fund transfer service that enables instant transfers using mobile numbers, NRIC, or UEN. This implementation uses simple PayNow URLs for compatibility with banking apps.',
             Icons.account_balance_wallet,
           ),
-          
           _buildInfoCard(
             'PayNow URL Format',
             'PayNow QR codes use simple URLs like PAYNOW://0/[MOBILE]?amount=[AMOUNT]&message=[MESSAGE]. This is simpler and more compatible than complex SGQR formatting.',
             Icons.link,
           ),
-          
           _buildInfoCard(
             'Static vs Dynamic QR',
             'Static QR codes allow customers to enter any amount, while Dynamic QR codes have a fixed amount pre-set by the merchant.',
             Icons.compare_arrows,
           ),
-          
           _buildInfoCard(
             'Supported Features',
             '• PayNow mobile, UEN, and NRIC identifiers\n• Simple URL format for better compatibility\n• Works with all Singapore banking apps\n• Customizable styling and branding\n• Offline-first operation',
             Icons.check_circle,
           ),
-          
           const SizedBox(height: 16),
           Text(
             'Module Information',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
-          
           _buildDetailRow('Version', paymentModuleVersion),
           _buildDetailRow('Build Date', paymentModuleBuildDate),
           _buildDetailRow('SGQR Spec', supportedSGQRVersion),
@@ -579,8 +568,8 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(content),
@@ -608,11 +597,12 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
       subject: 'PayNow QR Code',
       text: 'PayNow QR Code from $_merchantName: $data',
     );
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(success ? 'QR shared successfully' : 'Failed to share QR'),
+          content:
+              Text(success ? 'QR shared successfully' : 'Failed to share QR'),
         ),
       );
     }
@@ -628,11 +618,13 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
       ),
       subject: 'PayNow QR Code',
     );
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(success ? 'QR image shared successfully' : 'Failed to share QR image'),
+          content: Text(success
+              ? 'QR image shared successfully'
+              : 'Failed to share QR image'),
         ),
       );
     }
@@ -647,12 +639,12 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
         amount: _amount?.toStringAsFixed(2),
       ),
     );
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.success 
-              ? 'QR saved to ${result.filePath}' 
+          content: Text(result.success
+              ? 'QR saved to ${result.filePath}'
               : 'Failed to save QR: ${result.errors.join(', ')}'),
         ),
       );
@@ -674,12 +666,12 @@ class _PaymentDemoScreenState extends State<PaymentDemoScreen>
         'identifier': _payNowIdentifier,
       },
     );
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.success 
-              ? 'QR package created at ${result.packagePath}' 
+          content: Text(result.success
+              ? 'QR package created at ${result.packagePath}'
               : 'Failed to create package: ${result.errors.join(', ')}'),
         ),
       );

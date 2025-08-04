@@ -62,9 +62,13 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
     final filteredInvoices = invoices.where((invoice) {
       final queryLower = query.toLowerCase();
       return invoice.invoiceNumber.value.toLowerCase().contains(queryLower) ||
-             (invoice.customerName.value ?? '').toLowerCase().contains(queryLower) ||
-             (invoice.customerEmail.value ?? '').toLowerCase().contains(queryLower) ||
-             (invoice.notes.value ?? '').toLowerCase().contains(queryLower);
+          (invoice.customerName.value ?? '')
+              .toLowerCase()
+              .contains(queryLower) ||
+          (invoice.customerEmail.value ?? '')
+              .toLowerCase()
+              .contains(queryLower) ||
+          (invoice.notes.value ?? '').toLowerCase().contains(queryLower);
     }).toList();
 
     if (filteredInvoices.isEmpty) {
@@ -120,7 +124,7 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return _buildEmptyRecentSearches(context);
         }
-        
+
         final recentSearches = snapshot.data!;
         return ListView(
           children: [
@@ -135,17 +139,17 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
               ),
             ),
             ...recentSearches.map((search) => ListTile(
-              leading: const Icon(Icons.history),
-              title: Text(search),
-              trailing: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => _removeRecentSearch(search),
-              ),
-              onTap: () {
-                query = search;
-                showResults(context);
-              },
-            )),
+                  leading: const Icon(Icons.history),
+                  title: Text(search),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => _removeRecentSearch(search),
+                  ),
+                  onTap: () {
+                    query = search;
+                    showResults(context);
+                  },
+                )),
             const Divider(),
             Padding(
               padding: const EdgeInsets.all(16),
@@ -177,13 +181,13 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
       },
     );
   }
-  
+
   /// Get recent searches from shared preferences
   Future<List<String>> _getRecentSearches() async {
     if (_recentSearchesCache != null) {
       return _recentSearchesCache!;
     }
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final recentSearchesJson = prefs.getStringList(_recentSearchesKey) ?? [];
@@ -194,36 +198,38 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
       return [];
     }
   }
-  
+
   /// Save a search term to recent searches
   Future<void> _saveRecentSearch(String searchTerm) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      List<String> recentSearches = prefs.getStringList(_recentSearchesKey) ?? [];
-      
+      List<String> recentSearches =
+          prefs.getStringList(_recentSearchesKey) ?? [];
+
       // Remove if already exists to avoid duplicates
       recentSearches.remove(searchTerm);
-      
+
       // Add to the beginning
       recentSearches.insert(0, searchTerm);
-      
+
       // Keep only the latest searches
       if (recentSearches.length > _maxRecentSearches) {
         recentSearches = recentSearches.take(_maxRecentSearches).toList();
       }
-      
+
       await prefs.setStringList(_recentSearchesKey, recentSearches);
       _recentSearchesCache = recentSearches;
     } catch (e) {
       debugPrint('Error saving recent search: $e');
     }
   }
-  
+
   /// Remove a specific search term from recent searches
   Future<void> _removeRecentSearch(String searchTerm) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      List<String> recentSearches = prefs.getStringList(_recentSearchesKey) ?? [];
+      List<String> recentSearches =
+          prefs.getStringList(_recentSearchesKey) ?? [];
       recentSearches.remove(searchTerm);
       await prefs.setStringList(_recentSearchesKey, recentSearches);
       _recentSearchesCache = recentSearches;
@@ -231,7 +237,7 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
       debugPrint('Error removing recent search: $e');
     }
   }
-  
+
   /// Clear all recent searches
   Future<void> _clearRecentSearches() async {
     try {
@@ -242,7 +248,7 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
       debugPrint('Error clearing recent searches: $e');
     }
   }
-  
+
   /// Build empty recent searches widget
   Widget _buildEmptyRecentSearches(BuildContext context) {
     return ListView(
@@ -270,15 +276,15 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
               Text(
                 'No recent searches',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Your search history will appear here',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[500],
-                ),
+                      color: Colors.grey[500],
+                    ),
               ),
             ],
           ),
@@ -288,7 +294,7 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
       ],
     );
   }
-  
+
   /// Build search suggestions widget
   Widget _buildSearchSuggestions(BuildContext context) {
     return Padding(
@@ -299,9 +305,9 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
           Text(
             'Search Suggestions',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
+                ),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -309,7 +315,8 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
             runSpacing: 8,
             children: [
               _buildSuggestionChip(context, 'Draft invoices', 'status:draft'),
-              _buildSuggestionChip(context, 'Overdue invoices', 'status:overdue'),
+              _buildSuggestionChip(
+                  context, 'Overdue invoices', 'status:overdue'),
               _buildSuggestionChip(context, 'This week', 'week:current'),
               _buildSuggestionChip(context, 'This month', 'month:current'),
               _buildSuggestionChip(context, 'Large amounts', 'amount:>1000'),
@@ -319,9 +326,10 @@ class InvoiceSearchDelegate extends SearchDelegate<String> {
       ),
     );
   }
-  
+
   /// Build a suggestion chip
-  Widget _buildSuggestionChip(BuildContext context, String label, String searchQuery) {
+  Widget _buildSuggestionChip(
+      BuildContext context, String label, String searchQuery) {
     return ActionChip(
       label: Text(label),
       onPressed: () {
@@ -350,7 +358,8 @@ class _InvoiceSearchResultTile extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: _getStatusColor(_convertStatus(invoice.status.value)).withOpacity(0.1),
+          backgroundColor: _getStatusColor(_convertStatus(invoice.status.value))
+              .withOpacity(0.1),
           child: Icon(
             _getStatusIcon(_convertStatus(invoice.status.value)),
             color: _getStatusColor(_convertStatus(invoice.status.value)),
@@ -397,7 +406,8 @@ class _InvoiceSearchResultTile extends StatelessWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                InvoiceStatusChip(status: invoice.status.value, isCompact: true),
+                InvoiceStatusChip(
+                    status: invoice.status.value, isCompact: true),
                 const SizedBox(width: 8),
                 Text(
                   '${invoice.issueDate.value.day}/${invoice.issueDate.value.month}/${invoice.issueDate.value.year}',
@@ -423,7 +433,8 @@ class _InvoiceSearchResultTile extends StatelessWidget {
             Text(
               'Due ${invoice.dueDate.value?.day ?? ''}/${invoice.dueDate.value?.month ?? ''}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: (invoice.dueDate.value?.isBefore(DateTime.now()) ?? false)
+                    color: (invoice.dueDate.value?.isBefore(DateTime.now()) ??
+                            false)
                         ? Colors.red
                         : Colors.grey[600],
                   ),
@@ -480,7 +491,8 @@ class _InvoiceSearchResultTile extends StatelessWidget {
       spans.add(TextSpan(
         text: text.substring(index, index + searchTerm.length),
         style: TextStyle(
-          backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          backgroundColor:
+              Theme.of(context).colorScheme.primary.withOpacity(0.3),
           color: Theme.of(context).colorScheme.primary,
           fontWeight: FontWeight.bold,
         ),

@@ -5,7 +5,7 @@ import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 /// Global Keyboard Shortcuts Service for Linux Desktop
-/// 
+///
 /// Provides system-wide keyboard shortcuts for:
 /// - Quick actions (Ctrl+N for new invoice, etc.)
 /// - Navigation shortcuts (Ctrl+Tab to switch tabs)
@@ -13,7 +13,8 @@ import 'package:window_manager/window_manager.dart';
 /// - Help shortcuts (F1)
 /// - Window management shortcuts
 class KeyboardShortcutsService {
-  static final KeyboardShortcutsService _instance = KeyboardShortcutsService._internal();
+  static final KeyboardShortcutsService _instance =
+      KeyboardShortcutsService._internal();
   factory KeyboardShortcutsService() => _instance;
   KeyboardShortcutsService._internal();
 
@@ -31,10 +32,10 @@ class KeyboardShortcutsService {
     try {
       // Initialize hotkey manager
       await hotKeyManager.unregisterAll();
-      
+
       // Register all shortcuts
       await _registerGlobalShortcuts();
-      
+
       _isInitialized = true;
       debugPrint('✅ Global keyboard shortcuts initialized successfully');
       _printRegisteredShortcuts();
@@ -255,10 +256,9 @@ class KeyboardShortcutsService {
           callback();
         },
       );
-      
+
       _registeredHotkeys[id] = hotKey;
       _shortcutCallbacks[id] = callback;
-      
     } catch (e) {
       debugPrint('Failed to register shortcut $id: $e');
     }
@@ -267,10 +267,10 @@ class KeyboardShortcutsService {
   /// Handle shortcut actions
   Future<void> _handleShortcut(String action) async {
     debugPrint('Keyboard shortcut triggered: $action');
-    
+
     // Ensure window is visible and focused for all actions
     await _ensureWindowVisible();
-    
+
     switch (action) {
       case 'new_invoice':
         _navigateToRoute('/invoices/new');
@@ -453,10 +453,10 @@ class KeyboardShortcutsService {
           callback();
         },
       );
-      
+
       _registeredHotkeys[id] = hotKey;
       _shortcutCallbacks[id] = callback;
-      
+
       debugPrint('Custom shortcut registered: $id ${description ?? ''}');
       return true;
     } catch (e) {
@@ -477,7 +477,7 @@ class KeyboardShortcutsService {
       await hotKeyManager.unregister(hotKey);
       _registeredHotkeys.remove(id);
       _shortcutCallbacks.remove(id);
-      
+
       debugPrint('Shortcut unregistered: $id');
       return true;
     } catch (e) {
@@ -487,7 +487,8 @@ class KeyboardShortcutsService {
   }
 
   /// Get all registered shortcuts
-  Map<String, HotKey> get registeredShortcuts => Map.unmodifiable(_registeredHotkeys);
+  Map<String, HotKey> get registeredShortcuts =>
+      Map.unmodifiable(_registeredHotkeys);
 
   /// Check if shortcuts are initialized
   bool get isInitialized => _isInitialized;

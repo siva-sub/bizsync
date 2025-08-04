@@ -18,12 +18,12 @@ class WaylandHelper {
   /// Detect if running on Wayland
   static bool _detectWayland() {
     if (!Platform.isLinux) return false;
-    
+
     final env = Platform.environment;
     return env['XDG_SESSION_TYPE'] == 'wayland' ||
-           env['WAYLAND_DISPLAY'] != null ||
-           env['WAYLAND_OPTIMIZED'] == '1' ||
-           env['GDK_BACKEND'] == 'wayland';
+        env['WAYLAND_DISPLAY'] != null ||
+        env['WAYLAND_OPTIMIZED'] == '1' ||
+        env['GDK_BACKEND'] == 'wayland';
   }
 
   /// Apply Wayland-specific optimizations
@@ -33,15 +33,15 @@ class WaylandHelper {
     try {
       // Configure system chrome for Wayland
       _configureSystemChrome();
-      
+
       // Set up rendering optimizations
       _configureRendering();
-      
+
       // Configure window behavior
       _configureWindowBehavior();
-      
+
       _optimizationsApplied = true;
-      
+
       if (kDebugMode) {
         debugPrint('✅ Wayland optimizations applied successfully');
       }
@@ -70,7 +70,7 @@ class WaylandHelper {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       SchedulerBinding.instance.ensureVisualUpdate();
     });
-    
+
     // Force frame synchronization
     SchedulerBinding.instance.scheduleFrameCallback((timeStamp) {
       // This helps maintain consistent frame timing on Wayland
@@ -109,13 +109,13 @@ class WaylandHelper {
   static bool get hasHardwareAcceleration {
     final env = Platform.environment;
     return env['LIBGL_ALWAYS_SOFTWARE'] != '1' &&
-           env['HARDWARE_ACCELERATION_ENABLED'] == '1';
+        env['HARDWARE_ACCELERATION_ENABLED'] == '1';
   }
 
   /// Get platform-specific window hints
   static Map<String, dynamic> get windowHints {
     if (!isWayland) return {};
-    
+
     return {
       'compositor': 'wayland',
       'decorations': true,
@@ -128,12 +128,14 @@ class WaylandHelper {
   /// Log platform information for debugging
   static void logPlatformInfo() {
     if (!kDebugMode) return;
-    
+
     debugPrint('🖥️  Platform Information:');
     debugPrint('   Display Server: ${isWayland ? 'Wayland' : 'X11'}');
-    debugPrint('   Hardware Accel: ${hasHardwareAcceleration ? 'Enabled' : 'Disabled'}');
-    debugPrint('   Optimizations: ${_optimizationsApplied ? 'Applied' : 'Not Applied'}');
-    
+    debugPrint(
+        '   Hardware Accel: ${hasHardwareAcceleration ? 'Enabled' : 'Disabled'}');
+    debugPrint(
+        '   Optimizations: ${_optimizationsApplied ? 'Applied' : 'Not Applied'}');
+
     if (isWayland) {
       final env = Platform.environment;
       debugPrint('   Wayland Display: ${env['WAYLAND_DISPLAY'] ?? 'default'}');
@@ -146,7 +148,7 @@ class WaylandHelper {
 class WaylandOptimizedWidget extends StatefulWidget {
   final Widget child;
   final bool enableAnimationOptimizations;
-  
+
   const WaylandOptimizedWidget({
     super.key,
     required this.child,
@@ -159,7 +161,6 @@ class WaylandOptimizedWidget extends StatefulWidget {
 
 class _WaylandOptimizedWidgetState extends State<WaylandOptimizedWidget>
     with TickerProviderStateMixin {
-  
   @override
   void initState() {
     super.initState();
@@ -168,7 +169,7 @@ class _WaylandOptimizedWidgetState extends State<WaylandOptimizedWidget>
 
   void _initializeOptimizations() async {
     await WaylandHelper.applyOptimizations();
-    
+
     if (widget.enableAnimationOptimizations && WaylandHelper.isWayland) {
       // Optimize animation controllers for Wayland
       SchedulerBinding.instance.addPostFrameCallback((_) {

@@ -68,7 +68,7 @@ class NotificationAction {
 }
 
 /// Desktop Notifications Service for Linux
-/// 
+///
 /// Provides native Linux notifications using libnotify:
 /// - Rich notifications with actions
 /// - Different priority levels
@@ -76,7 +76,8 @@ class NotificationAction {
 /// - Notification center integration
 /// - Action handling
 class DesktopNotificationsService {
-  static final DesktopNotificationsService _instance = DesktopNotificationsService._internal();
+  static final DesktopNotificationsService _instance =
+      DesktopNotificationsService._internal();
   factory DesktopNotificationsService() => _instance;
   DesktopNotificationsService._internal();
 
@@ -95,7 +96,7 @@ class DesktopNotificationsService {
     try {
       // Initialize Flutter Local Notifications
       _notificationsPlugin = FlutterLocalNotificationsPlugin();
-      
+
       // Linux notification manager disabled - type dependencies missing
       // _linuxNotificationManager = LinuxNotificationManager(
       //   applicationName: 'BizSync',
@@ -103,12 +104,14 @@ class DesktopNotificationsService {
       // );
 
       // Configure notification settings
-      final LinuxInitializationSettings initializationSettingsLinux = LinuxInitializationSettings(
+      final LinuxInitializationSettings initializationSettingsLinux =
+          LinuxInitializationSettings(
         defaultActionName: 'Open notification',
         defaultIcon: AssetsLinuxIcon('assets/icon/app_icon.png'),
       );
 
-      final InitializationSettings initializationSettings = InitializationSettings(
+      final InitializationSettings initializationSettings =
+          InitializationSettings(
         linux: initializationSettingsLinux,
       );
 
@@ -120,10 +123,9 @@ class DesktopNotificationsService {
 
       _isInitialized = true;
       debugPrint('✅ Desktop notifications service initialized successfully');
-      
+
       // Show initialization notification
       await _showInitializationNotification();
-      
     } catch (e) {
       debugPrint('❌ Failed to initialize desktop notifications: $e');
     }
@@ -133,9 +135,9 @@ class DesktopNotificationsService {
   void _onNotificationResponse(NotificationResponse response) {
     final notificationId = response.id.toString();
     final actionId = response.actionId;
-    
+
     debugPrint('Notification response: ID=$notificationId, Action=$actionId');
-    
+
     final notification = _activeNotifications[notificationId];
     if (notification != null) {
       if (actionId != null) {
@@ -144,7 +146,7 @@ class DesktopNotificationsService {
           (a) => a.id == actionId,
           orElse: () => NotificationAction(id: '', label: ''),
         );
-        
+
         if (action.onPressed != null) {
           action.onPressed!(notificationId, actionId);
         }
@@ -152,7 +154,7 @@ class DesktopNotificationsService {
         // Handle main notification tap
         _handleNotificationTap(notification);
       }
-      
+
       // Remove from active notifications if not persistent
       if (!notification.persistent) {
         _activeNotifications.remove(notificationId);
@@ -163,7 +165,7 @@ class DesktopNotificationsService {
   /// Handle main notification tap
   void _handleNotificationTap(DesktopNotification notification) {
     debugPrint('Notification tapped: ${notification.title}');
-    
+
     // Navigate based on category
     switch (notification.category) {
       case NotificationCategory.invoice:
@@ -191,21 +193,24 @@ class DesktopNotificationsService {
     }
 
     try {
-      final id = int.parse(notification.id.replaceAll(RegExp(r'[^0-9]'), '')) % 2147483647;
-      
+      final id = int.parse(notification.id.replaceAll(RegExp(r'[^0-9]'), '')) %
+          2147483647;
+
       // Convert priority to Linux importance level
       final importance = _getImportanceLevel(notification.priority);
-      
+
       // Set up notification details
       final linuxDetails = LinuxNotificationDetails(
-        icon: notification.iconPath != null 
+        icon: notification.iconPath != null
             ? FilePathLinuxIcon(notification.iconPath!)
             : AssetsLinuxIcon('assets/icon/app_icon.png'),
         category: LinuxNotificationCategory.email, // Generic category
-        actions: notification.actions.map((action) => LinuxNotificationAction(
-          key: action.id,
-          label: action.label,
-        )).toList(),
+        actions: notification.actions
+            .map((action) => LinuxNotificationAction(
+                  key: action.id,
+                  label: action.label,
+                ))
+            .toList(),
       );
 
       final platformChannelSpecifics = NotificationDetails(
@@ -223,9 +228,8 @@ class DesktopNotificationsService {
 
       // Store active notification
       _activeNotifications[notification.id] = notification;
-      
+
       debugPrint('Desktop notification shown: ${notification.title}');
-      
     } catch (e) {
       debugPrint('Failed to show desktop notification: $e');
     }
@@ -248,7 +252,7 @@ class DesktopNotificationsService {
       actions: actions,
       payload: payload,
     );
-    
+
     await showNotification(notification);
   }
 
@@ -260,22 +264,23 @@ class DesktopNotificationsService {
     double? amount,
     List<NotificationAction>? customActions,
   }) async {
-    final actions = customActions ?? [
-      NotificationAction(
-        id: 'view_invoice',
-        label: 'View Invoice',
-        onPressed: (notificationId, actionId) {
-          _navigateToInvoice(invoiceNumber);
-        },
-      ),
-      NotificationAction(
-        id: 'mark_paid',
-        label: 'Mark as Paid',
-        onPressed: (notificationId, actionId) {
-          _markInvoiceAsPaid(invoiceNumber);
-        },
-      ),
-    ];
+    final actions = customActions ??
+        [
+          NotificationAction(
+            id: 'view_invoice',
+            label: 'View Invoice',
+            onPressed: (notificationId, actionId) {
+              _navigateToInvoice(invoiceNumber);
+            },
+          ),
+          NotificationAction(
+            id: 'mark_paid',
+            label: 'Mark as Paid',
+            onPressed: (notificationId, actionId) {
+              _markInvoiceAsPaid(invoiceNumber);
+            },
+          ),
+        ];
 
     final notification = DesktopNotification(
       id: 'invoice_$invoiceNumber',
@@ -290,7 +295,7 @@ class DesktopNotificationsService {
         'amount': amount,
       },
     );
-    
+
     await showNotification(notification);
   }
 
@@ -324,7 +329,7 @@ class DesktopNotificationsService {
         'invoiceNumber': invoiceNumber,
       },
     );
-    
+
     await showNotification(notification);
   }
 
@@ -365,7 +370,7 @@ class DesktopNotificationsService {
         'stockLevel': stockLevel,
       },
     );
-    
+
     await showNotification(notification);
   }
 
@@ -384,7 +389,7 @@ class DesktopNotificationsService {
       category: NotificationCategory.system,
       persistent: persistent,
     );
-    
+
     await showNotification(notification);
   }
 
@@ -416,7 +421,7 @@ class DesktopNotificationsService {
         'details': details,
       },
     );
-    
+
     await showNotification(notification);
   }
 
@@ -425,10 +430,11 @@ class DesktopNotificationsService {
     if (!_isInitialized || _notificationsPlugin == null) return;
 
     try {
-      final id = int.parse(notificationId.replaceAll(RegExp(r'[^0-9]'), '')) % 2147483647;
+      final id = int.parse(notificationId.replaceAll(RegExp(r'[^0-9]'), '')) %
+          2147483647;
       await _notificationsPlugin!.cancel(id);
       _activeNotifications.remove(notificationId);
-      
+
       debugPrint('Notification cancelled: $notificationId');
     } catch (e) {
       debugPrint('Failed to cancel notification: $e');
@@ -442,7 +448,7 @@ class DesktopNotificationsService {
     try {
       await _notificationsPlugin!.cancelAll();
       _activeNotifications.clear();
-      
+
       debugPrint('All notifications cancelled');
     } catch (e) {
       debugPrint('Failed to cancel all notifications: $e');
@@ -518,7 +524,8 @@ class DesktopNotificationsService {
   }
 
   /// Get active notifications
-  List<DesktopNotification> get activeNotifications => _activeNotifications.values.toList();
+  List<DesktopNotification> get activeNotifications =>
+      _activeNotifications.values.toList();
 
   /// Check if service is initialized
   bool get isInitialized => _isInitialized;

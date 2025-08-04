@@ -8,8 +8,9 @@ import '../../../core/services/notification_service.dart';
 /// Service for generating and managing customer statements
 class CustomerStatementService {
   static CustomerStatementService? _instance;
-  static CustomerStatementService get instance => _instance ??= CustomerStatementService._();
-  
+  static CustomerStatementService get instance =>
+      _instance ??= CustomerStatementService._();
+
   CustomerStatementService._();
 
   final CRDTDatabaseService _databaseService = CRDTDatabaseService();
@@ -89,7 +90,8 @@ class CustomerStatementService {
     // Send notification
     await _notificationService.sendNotification(
       title: 'Payment Recorded',
-      message: 'Payment of \$${amount.toStringAsFixed(2)} recorded for ${invoiceNumber ?? invoiceId}',
+      message:
+          'Payment of \$${amount.toStringAsFixed(2)} recorded for ${invoiceNumber ?? invoiceId}',
       data: {
         'type': 'payment_recorded',
         'payment_id': payment.id,
@@ -249,14 +251,15 @@ class CustomerStatementService {
         FROM invoices 
         WHERE customer_id = ? AND issue_date < ?
       ''';
-      
+
       final db = await _databaseService.database;
       final invoicesResult = await db.rawQuery(invoicesSql, [
         customerId,
         asOfDate.toIso8601String(),
       ]);
-      
-      final totalInvoiced = (invoicesResult.first['total_invoiced'] as num?)?.toDouble() ?? 0.0;
+
+      final totalInvoiced =
+          (invoicesResult.first['total_invoiced'] as num?)?.toDouble() ?? 0.0;
 
       // Get total paid before the period
       const paymentsSql = '''
@@ -264,13 +267,14 @@ class CustomerStatementService {
         FROM $_paymentsTable 
         WHERE customer_id = ? AND payment_date < ?
       ''';
-      
+
       final paymentsResult = await db.rawQuery(paymentsSql, [
         customerId,
         asOfDate.toIso8601String(),
       ]);
-      
-      final totalPaid = (paymentsResult.first['total_paid'] as num?)?.toDouble() ?? 0.0;
+
+      final totalPaid =
+          (paymentsResult.first['total_paid'] as num?)?.toDouble() ?? 0.0;
 
       return totalInvoiced - totalPaid;
     } catch (e) {
@@ -288,7 +292,8 @@ class CustomerStatementService {
     required List<CustomerPayment> payments,
     required double openingBalance,
   }) {
-    final totalInvoiced = invoices.fold(0.0, (sum, inv) => sum + inv.totalAmount);
+    final totalInvoiced =
+        invoices.fold(0.0, (sum, inv) => sum + inv.totalAmount);
     final totalPaid = payments.fold(0.0, (sum, pay) => sum + pay.amount);
     final closingBalance = openingBalance + totalInvoiced - totalPaid;
 
@@ -301,7 +306,7 @@ class CustomerStatementService {
     for (final invoice in invoices) {
       if (invoice.status != InvoiceStatus.paid) {
         final daysPastDue = now.difference(invoice.dueDate).inDays;
-        
+
         if (daysPastDue > 90) {
           overdue90 += invoice.totalAmount;
         } else if (daysPastDue > 60) {
@@ -312,7 +317,8 @@ class CustomerStatementService {
       }
     }
 
-    final paidInvoices = invoices.where((inv) => inv.status == InvoiceStatus.paid).length;
+    final paidInvoices =
+        invoices.where((inv) => inv.status == InvoiceStatus.paid).length;
     final unpaidInvoices = invoices.length - paidInvoices;
 
     return CustomerStatementSummary(
@@ -325,7 +331,8 @@ class CustomerStatementService {
       totalInvoiced: totalInvoiced,
       totalPaid: totalPaid,
       closingBalance: closingBalance,
-      currentBalance: closingBalance, // Assuming current balance equals closing balance
+      currentBalance:
+          closingBalance, // Assuming current balance equals closing balance
       overdue30Days: overdue30,
       overdue60Days: overdue60,
       overdue90Days: overdue90,
@@ -360,7 +367,7 @@ class CustomerStatementService {
 
     // Combine and sort invoices and payments by date
     final allEntries = <_TransactionEntry>[];
-    
+
     for (final invoice in invoices) {
       allEntries.add(_TransactionEntry(
         date: invoice.issueDate,
@@ -368,7 +375,7 @@ class CustomerStatementService {
         data: invoice,
       ));
     }
-    
+
     for (final payment in payments) {
       allEntries.add(_TransactionEntry(
         date: payment.paymentDate,
@@ -384,7 +391,7 @@ class CustomerStatementService {
       if (entry.type == 'invoice') {
         final invoice = entry.data as EnhancedInvoice;
         runningBalance += invoice.totalAmount;
-        
+
         transactions.add(StatementTransaction.fromInvoice(
           id: _uuid.v4(),
           invoice: invoice,
@@ -393,7 +400,7 @@ class CustomerStatementService {
       } else if (entry.type == 'payment') {
         final payment = entry.data as CustomerPayment;
         runningBalance -= payment.amount;
-        
+
         transactions.add(StatementTransaction.fromPayment(
           id: _uuid.v4(),
           payment: payment,
@@ -406,7 +413,8 @@ class CustomerStatementService {
   }
 
   /// Get customer balance summary
-  Future<CustomerBalanceSummary> getCustomerBalanceSummary(String customerId) async {
+  Future<CustomerBalanceSummary> getCustomerBalanceSummary(
+      String customerId) async {
     try {
       // Get customer info - placeholder
       const customerName = 'Demo Customer'; // TODO: Get from customers table
@@ -434,7 +442,8 @@ class CustomerStatementService {
         now.toIso8601String(),
       ]);
 
-      final overdueBalance = (overdueResult.first['overdue_amount'] as num?)?.toDouble() ?? 0.0;
+      final overdueBalance =
+          (overdueResult.first['overdue_amount'] as num?)?.toDouble() ?? 0.0;
 
       // Get total invoices count
       const totalInvoicesSql = '''
@@ -445,8 +454,10 @@ class CustomerStatementService {
       ''';
 
       final invoicesResult = await db.rawQuery(totalInvoicesSql, [customerId]);
-      final totalInvoices = (invoicesResult.first['total_invoices'] as int?) ?? 0;
-      final unpaidInvoices = (invoicesResult.first['unpaid_invoices'] as int?) ?? 0;
+      final totalInvoices =
+          (invoicesResult.first['total_invoices'] as int?) ?? 0;
+      final unpaidInvoices =
+          (invoicesResult.first['unpaid_invoices'] as int?) ?? 0;
 
       // Get last invoice date
       const lastInvoiceSql = '''
@@ -456,8 +467,9 @@ class CustomerStatementService {
       ''';
 
       final lastInvoiceResult = await db.rawQuery(lastInvoiceSql, [customerId]);
-      final lastInvoiceDateStr = lastInvoiceResult.first['last_invoice_date'] as String?;
-      final lastInvoiceDate = lastInvoiceDateStr != null 
+      final lastInvoiceDateStr =
+          lastInvoiceResult.first['last_invoice_date'] as String?;
+      final lastInvoiceDate = lastInvoiceDateStr != null
           ? DateTime.parse(lastInvoiceDateStr)
           : DateTime.now();
 
@@ -469,14 +481,14 @@ class CustomerStatementService {
       ''';
 
       final lastPaymentResult = await db.rawQuery(lastPaymentSql, [customerId]);
-      final lastPaymentDateStr = lastPaymentResult.first['last_payment_date'] as String?;
-      final lastPaymentDate = lastPaymentDateStr != null 
+      final lastPaymentDateStr =
+          lastPaymentResult.first['last_payment_date'] as String?;
+      final lastPaymentDate = lastPaymentDateStr != null
           ? DateTime.parse(lastPaymentDateStr)
           : null;
 
-      final daysSinceLastPayment = lastPaymentDate != null
-          ? now.difference(lastPaymentDate).inDays
-          : 0;
+      final daysSinceLastPayment =
+          lastPaymentDate != null ? now.difference(lastPaymentDate).inDays : 0;
 
       return CustomerBalanceSummary(
         customerId: customerId,
@@ -489,7 +501,6 @@ class CustomerStatementService {
         unpaidInvoices: unpaidInvoices,
         daysSinceLastPayment: daysSinceLastPayment,
       );
-
     } catch (e) {
       // Return empty summary if queries fail
       return CustomerBalanceSummary(
@@ -558,12 +569,13 @@ class CustomerStatementService {
     StatementGenerationOptions? options,
   }) async {
     options ??= StatementGenerationOptions.currentMonth();
-    
+
     final customers = await getAllCustomerBalances();
     final statements = <CustomerStatement>[];
 
     for (final customer in customers) {
-      if (!options.includeZeroBalanceCustomers && customer.currentBalance == 0) {
+      if (!options.includeZeroBalanceCustomers &&
+          customer.currentBalance == 0) {
         continue;
       }
 
@@ -583,7 +595,8 @@ class CustomerStatementService {
     // Send bulk notification
     await _notificationService.sendNotification(
       title: 'Bulk Statements Generated',
-      message: '${statements.length} customer statements generated successfully',
+      message:
+          '${statements.length} customer statements generated successfully',
       data: {
         'type': 'bulk_statements_generated',
         'count': statements.length.toString(),

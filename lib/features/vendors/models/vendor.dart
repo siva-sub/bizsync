@@ -15,7 +15,7 @@ class Vendor {
   final String? paymentTerms;
   final String? notes;
   final String? countryCode;
-  
+
   const Vendor({
     required this.id,
     required this.name,
@@ -34,7 +34,7 @@ class Vendor {
     this.notes,
     this.countryCode = 'SG',
   });
-  
+
   factory Vendor.fromJson(Map<String, dynamic> json) {
     return Vendor(
       id: json['id'] as String,
@@ -55,7 +55,7 @@ class Vendor {
       countryCode: json['country_code'] as String? ?? 'SG',
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -76,7 +76,7 @@ class Vendor {
       'country_code': countryCode,
     };
   }
-  
+
   factory Vendor.fromDatabase(Map<String, dynamic> map) {
     return Vendor(
       id: map['id'] as String,
@@ -97,7 +97,7 @@ class Vendor {
       countryCode: map['country_code'] as String? ?? 'SG',
     );
   }
-  
+
   Map<String, dynamic> toDatabase() {
     return {
       'id': id,
@@ -118,7 +118,7 @@ class Vendor {
       'country_code': countryCode,
     };
   }
-  
+
   Vendor copyWith({
     String? id,
     String? name,
@@ -156,7 +156,7 @@ class Vendor {
       countryCode: countryCode ?? this.countryCode,
     );
   }
-  
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -169,11 +169,8 @@ class Vendor {
 
   @override
   int get hashCode =>
-      id.hashCode ^
-      name.hashCode ^
-      email.hashCode ^
-      phone.hashCode;
-  
+      id.hashCode ^ name.hashCode ^ email.hashCode ^ phone.hashCode;
+
   @override
   String toString() {
     return 'Vendor(id: $id, name: $name, email: $email, phone: $phone)';
@@ -183,12 +180,18 @@ class Vendor {
   String get paymentTermsDisplay {
     if (paymentTerms == null || paymentTerms!.isEmpty) return 'Not specified';
     switch (paymentTerms!.toLowerCase()) {
-      case 'net30': return 'Net 30 days';
-      case 'net15': return 'Net 15 days';
-      case 'net7': return 'Net 7 days';
-      case 'cod': return 'Cash on Delivery';
-      case 'advance': return 'Advance Payment';
-      default: return paymentTerms!;
+      case 'net30':
+        return 'Net 30 days';
+      case 'net15':
+        return 'Net 15 days';
+      case 'net7':
+        return 'Net 7 days';
+      case 'cod':
+        return 'Cash on Delivery';
+      case 'advance':
+        return 'Advance Payment';
+      default:
+        return paymentTerms!;
     }
   }
 

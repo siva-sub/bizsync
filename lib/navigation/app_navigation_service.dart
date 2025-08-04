@@ -5,14 +5,16 @@ import '../presentation/widgets/breadcrumb_widget.dart';
 /// Centralized navigation service for the entire application
 /// Provides convenient methods to navigate between modules and features
 class AppNavigationService {
-  static final AppNavigationService _instance = AppNavigationService._internal();
-  
+  static final AppNavigationService _instance =
+      AppNavigationService._internal();
+
   factory AppNavigationService() => _instance;
-  
+
   AppNavigationService._internal();
 
   // Global navigation key for context-free navigation
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   BuildContext? get context => navigatorKey.currentContext;
 
@@ -69,7 +71,7 @@ class AppNavigationService {
       if (amount != null) params['amount'] = amount;
       if (reference != null) params['reference'] = reference;
       if (description != null) params['description'] = description;
-      
+
       if (params.isNotEmpty) {
         context!.go('/payments/sgqr', extra: params);
       } else {
@@ -135,7 +137,7 @@ class AppNavigationService {
       final params = <String, dynamic>{};
       if (income != null) params['income'] = income;
       if (taxYear != null) params['taxYear'] = taxYear;
-      
+
       if (params.isNotEmpty) {
         context!.go('/tax/calculator', extra: params);
       } else {
@@ -292,8 +294,8 @@ class AppNavigationService {
             Text(
               'Quick Actions',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             GridView.count(
@@ -367,7 +369,7 @@ class AppNavigationService {
   }) async {
     // Navigate to create invoice with pre-filled data
     goToCreateInvoice(prefilledData: invoiceData);
-    
+
     // After invoice creation, offer to generate payment QR
     // This would be called from the invoice creation success callback
   }
@@ -394,7 +396,7 @@ class AppNavigationService {
       try {
         // Navigate to invoice detail for sharing options
         context!.go('/invoices/detail/$invoiceId');
-        
+
         // Show sharing options dialog
         await showDialog(
           context: context!,
@@ -571,22 +573,23 @@ class AppNavigationService {
   /// Generate breadcrumbs for current route
   List<BreadcrumbItem> getBreadcrumbs(String currentRoute) {
     final breadcrumbs = <BreadcrumbItem>[];
-    
+
     // Always start with home
     breadcrumbs.add(const BreadcrumbItem(
       label: 'Home',
       path: '/',
       icon: Icons.home,
     ));
-    
+
     // Parse route segments and create breadcrumbs
-    final segments = currentRoute.split('/').where((s) => s.isNotEmpty).toList();
+    final segments =
+        currentRoute.split('/').where((s) => s.isNotEmpty).toList();
     String path = '';
-    
+
     for (int i = 0; i < segments.length; i++) {
       final segment = segments[i];
       path += '/$segment';
-      
+
       switch (segment.toLowerCase()) {
         case 'dashboard':
           breadcrumbs.add(const BreadcrumbItem(
@@ -712,7 +715,7 @@ class AppNavigationService {
           break;
       }
     }
-    
+
     return breadcrumbs;
   }
 }
@@ -744,8 +747,8 @@ class _QuickActionTile extends StatelessWidget {
                 child: Text(
                   label,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ),
             ],

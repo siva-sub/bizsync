@@ -4,7 +4,8 @@ import '../../models/fx/fx_rate_model.dart';
 
 abstract class FxRateProvider {
   Future<FxRate?> fetchRate(Currency from, Currency to, DateTime date);
-  Future<List<FxRate>> fetchHistoricalRates(Currency from, Currency to, DateTime startDate, DateTime endDate);
+  Future<List<FxRate>> fetchHistoricalRates(
+      Currency from, Currency to, DateTime startDate, DateTime endDate);
 }
 
 class MasRateProvider implements FxRateProvider {
@@ -24,13 +25,14 @@ class MasRateProvider implements FxRateProvider {
   ) async {
     final rates = <FxRate>[];
     var currentDate = startDate;
-    
-    while (currentDate.isBefore(endDate) || currentDate.isAtSameMomentAs(endDate)) {
+
+    while (currentDate.isBefore(endDate) ||
+        currentDate.isAtSameMomentAs(endDate)) {
       final rate = await fetchRate(from, to, currentDate);
       if (rate != null) rates.add(rate);
       currentDate = currentDate.add(const Duration(days: 1));
     }
-    
+
     return rates;
   }
 
@@ -50,11 +52,12 @@ class MasRateProvider implements FxRateProvider {
     };
 
     final pairKey = '${from.name.toUpperCase()}_${to.name.toUpperCase()}';
-    final inversePairKey = '${to.name.toUpperCase()}_${from.name.toUpperCase()}';
-    
+    final inversePairKey =
+        '${to.name.toUpperCase()}_${from.name.toUpperCase()}';
+
     double? baseRate;
     bool isInverse = false;
-    
+
     if (baseRates.containsKey(pairKey)) {
       baseRate = baseRates[pairKey];
     } else if (baseRates.containsKey(inversePairKey)) {
@@ -75,14 +78,15 @@ class MasRateProvider implements FxRateProvider {
         baseRate = usdSgdRate / fromUsdRate;
       }
     }
-    
+
     if (baseRate == null) return null;
-    
+
     // Add daily variation (±0.5%)
     final daysSinceEpoch = date.difference(DateTime(2024, 1, 1)).inDays;
-    final variation = math.sin(daysSinceEpoch * 0.1) * 0.005; // 0.5% max variation
+    final variation =
+        math.sin(daysSinceEpoch * 0.1) * 0.005; // 0.5% max variation
     final adjustedRate = baseRate * (1 + variation);
-    
+
     return FxRate(
       id: '${pairKey}_${date.toIso8601String().split('T')[0]}',
       baseCurrency: from,
@@ -155,8 +159,9 @@ class FxRateServiceImpl implements FxRateService {
     DateTime startDate,
     DateTime endDate,
   ) async {
-    final cacheKey = '${from.name}_${to.name}_${startDate.toIso8601String()}_${endDate.toIso8601String()}';
-    
+    final cacheKey =
+        '${from.name}_${to.name}_${startDate.toIso8601String()}_${endDate.toIso8601String()}';
+
     // Check cache first
     if (_cache.containsKey(cacheKey)) {
       final cachedHistory = _cache[cacheKey]!;
@@ -168,7 +173,8 @@ class FxRateServiceImpl implements FxRateService {
     // Fetch from providers
     for (final provider in _providers) {
       try {
-        final rates = await provider.fetchHistoricalRates(from, to, startDate, endDate);
+        final rates =
+            await provider.fetchHistoricalRates(from, to, startDate, endDate);
         if (rates.isNotEmpty) {
           _cacheHistoricalRates(from, to, rates, cacheKey);
           return rates;
@@ -191,11 +197,12 @@ class FxRateServiceImpl implements FxRateService {
   }) async {
     final rate = await getFxRate(from, to, date);
     if (rate == null) {
-      throw Exception('Exchange rate not available for ${from.name} to ${to.name} on $date');
+      throw Exception(
+          'Exchange rate not available for ${from.name} to ${to.name} on $date');
     }
 
     final convertedAmount = rate.convertAmount(amount);
-    
+
     return CurrencyConversion(
       id: 'conv_${DateTime.now().millisecondsSinceEpoch}',
       fromCurrency: from,
@@ -224,13 +231,15 @@ class FxRateServiceImpl implements FxRateService {
 
     final average = rateValues.reduce((a, b) => a + b) / rateValues.length;
     final median = rateValues.length % 2 == 0
-        ? (rateValues[rateValues.length ~/ 2 - 1] + rateValues[rateValues.length ~/ 2]) / 2
+        ? (rateValues[rateValues.length ~/ 2 - 1] +
+                rateValues[rateValues.length ~/ 2]) /
+            2
         : rateValues[rateValues.length ~/ 2];
-    
+
     final min = rateValues.first;
     final max = rateValues.last;
     final volatility = _calculateVolatility(rateValues);
-    
+
     return {
       'currencyPair': '${from.name.toUpperCase()}/${to.name.toUpperCase()}',
       'period': {
@@ -259,7 +268,7 @@ class FxRateServiceImpl implements FxRateService {
     DateTime date,
   ) async {
     final results = <Map<String, dynamic>>[];
-    
+
     for (final target in targetCurrencies) {
       final rate = await getFxRate(baseCurrency, target, date);
       results.add({
@@ -270,40 +279,43 @@ class FxRateServiceImpl implements FxRateService {
         'timestamp': rate?.timestamp.toIso8601String(),
       });
     }
-    
+
     return results;
   }
 
   Future<Map<String, dynamic>> calculateFxExposure({
-    required List<Map<String, dynamic>> positions, // {'currency': Currency, 'amount': double}
+    required List<Map<String, dynamic>>
+        positions, // {'currency': Currency, 'amount': double}
     required Currency baseCurrency,
     required DateTime valuationDate,
   }) async {
     final exposures = <String, double>{};
     double totalExposure = 0;
-    
+
     for (final position in positions) {
       final currency = position['currency'] as Currency;
       final amount = position['amount'] as double;
-      
+
       if (currency == baseCurrency) {
         exposures[currency.name.toUpperCase()] = amount;
         totalExposure += amount;
       } else {
-        final convertedAmount = await convertAmount(amount, currency, baseCurrency, valuationDate);
+        final convertedAmount =
+            await convertAmount(amount, currency, baseCurrency, valuationDate);
         if (convertedAmount != null) {
           exposures[currency.name.toUpperCase()] = convertedAmount;
           totalExposure += convertedAmount;
         }
       }
     }
-    
+
     // Calculate percentage exposure
     final percentageExposures = <String, double>{};
     exposures.forEach((currency, amount) {
-      percentageExposures[currency] = totalExposure != 0 ? (amount / totalExposure) * 100 : 0;
+      percentageExposures[currency] =
+          totalExposure != 0 ? (amount / totalExposure) * 100 : 0;
     });
-    
+
     return {
       'baseCurrency': baseCurrency.name.toUpperCase(),
       'valuationDate': valuationDate.toIso8601String(),
@@ -325,13 +337,15 @@ class FxRateServiceImpl implements FxRateService {
       );
     } else {
       final existing = _cache[key]!;
-      if (!existing.rates.any((r) => r.effectiveDate.isAtSameMomentAs(rate.effectiveDate))) {
+      if (!existing.rates
+          .any((r) => r.effectiveDate.isAtSameMomentAs(rate.effectiveDate))) {
         existing.rates.add(rate);
       }
     }
   }
 
-  void _cacheHistoricalRates(Currency from, Currency to, List<FxRate> rates, String cacheKey) {
+  void _cacheHistoricalRates(
+      Currency from, Currency to, List<FxRate> rates, String cacheKey) {
     _cache[cacheKey] = FxRateHistory(
       baseCurrency: from,
       targetCurrency: to,
@@ -348,21 +362,22 @@ class FxRateServiceImpl implements FxRateService {
 
   double _calculateVolatility(List<double> rates) {
     if (rates.length < 2) return 0;
-    
+
     final mean = rates.reduce((a, b) => a + b) / rates.length;
     final squaredDifferences = rates.map((rate) => math.pow(rate - mean, 2));
-    final variance = squaredDifferences.reduce((a, b) => a + b) / (rates.length - 1);
-    
+    final variance =
+        squaredDifferences.reduce((a, b) => a + b) / (rates.length - 1);
+
     return math.sqrt(variance);
   }
 
   String _calculateTrend(List<FxRate> rates) {
     if (rates.length < 2) return 'insufficient_data';
-    
+
     final firstRate = rates.first.rate;
     final lastRate = rates.last.rate;
     final change = ((lastRate - firstRate) / firstRate) * 100;
-    
+
     if (change > 1) return 'strengthening';
     if (change < -1) return 'weakening';
     return 'stable';
@@ -374,7 +389,7 @@ class FxRateServiceImpl implements FxRateService {
     percentageExposures.values.forEach((percentage) {
       hhi += math.pow(percentage, 2);
     });
-    
+
     // Convert to diversification score (0-100, higher is more diversified)
     return math.max(0, 100 - (hhi / 100));
   }
@@ -383,9 +398,9 @@ class FxRateServiceImpl implements FxRateService {
 // Utility class for FX risk management
 class FxRiskManager {
   final FxRateServiceImpl _fxService;
-  
+
   FxRiskManager(this._fxService);
-  
+
   Future<Map<String, dynamic>> assessFxRisk({
     required List<Map<String, dynamic>> futurePayments,
     required Currency baseCurrency,
@@ -393,27 +408,29 @@ class FxRiskManager {
   }) async {
     final risks = <Map<String, dynamic>>[];
     double totalRiskAmount = 0;
-    
+
     for (final payment in futurePayments) {
       final currency = payment['currency'] as Currency;
       final amount = payment['amount'] as double;
       final paymentDate = DateTime.parse(payment['paymentDate']);
-      
+
       if (currency != baseCurrency) {
         // Calculate potential FX impact
-        final currentRate = await _fxService.getFxRate(currency, baseCurrency, assessmentDate);
+        final currentRate =
+            await _fxService.getFxRate(currency, baseCurrency, assessmentDate);
         final historicalRates = await _fxService.getHistoricalRates(
-          currency, 
-          baseCurrency, 
-          assessmentDate.subtract(const Duration(days: 365)), 
+          currency,
+          baseCurrency,
+          assessmentDate.subtract(const Duration(days: 365)),
           assessmentDate,
         );
-        
+
         if (currentRate != null && historicalRates.isNotEmpty) {
-          final volatility = _calculateVolatility(historicalRates.map((r) => r.rate).toList());
+          final volatility =
+              _calculateVolatility(historicalRates.map((r) => r.rate).toList());
           final potentialImpact = amount * currentRate.rate * volatility;
           totalRiskAmount += potentialImpact;
-          
+
           risks.add({
             'currency': currency.name.toUpperCase(),
             'amount': amount,
@@ -426,7 +443,7 @@ class FxRiskManager {
         }
       }
     }
-    
+
     return {
       'assessmentDate': assessmentDate.toIso8601String(),
       'baseCurrency': baseCurrency.name.toUpperCase(),
@@ -437,53 +454,60 @@ class FxRiskManager {
       'recommendations': _generateRiskRecommendations(risks),
     };
   }
-  
+
   double _calculateVolatility(List<double> rates) {
     if (rates.length < 2) return 0;
-    
+
     final mean = rates.reduce((a, b) => a + b) / rates.length;
     final squaredDifferences = rates.map((rate) => math.pow(rate - mean, 2));
-    final variance = squaredDifferences.reduce((a, b) => a + b) / (rates.length - 1);
-    
+    final variance =
+        squaredDifferences.reduce((a, b) => a + b) / (rates.length - 1);
+
     return math.sqrt(variance);
   }
-  
+
   String _assessRiskLevel(double volatility) {
     if (volatility > 0.05) return 'high';
     if (volatility > 0.02) return 'medium';
     return 'low';
   }
-  
+
   String _assessOverallRisk(List<Map<String, dynamic>> risks) {
     if (risks.isEmpty) return 'none';
-    
+
     final highRiskCount = risks.where((r) => r['riskLevel'] == 'high').length;
-    final mediumRiskCount = risks.where((r) => r['riskLevel'] == 'medium').length;
-    
+    final mediumRiskCount =
+        risks.where((r) => r['riskLevel'] == 'medium').length;
+
     if (highRiskCount > risks.length * 0.3) return 'high';
     if (mediumRiskCount > risks.length * 0.5) return 'medium';
     return 'low';
   }
-  
+
   List<String> _generateRiskRecommendations(List<Map<String, dynamic>> risks) {
     final recommendations = <String>[];
-    
+
     final highRiskCurrencies = risks
         .where((r) => r['riskLevel'] == 'high')
         .map((r) => r['currency'])
         .toSet();
-    
+
     if (highRiskCurrencies.isNotEmpty) {
-      recommendations.add('Consider FX hedging for high-risk currencies: ${highRiskCurrencies.join(', ')}');
+      recommendations.add(
+          'Consider FX hedging for high-risk currencies: ${highRiskCurrencies.join(', ')}');
     }
-    
-    final totalExposure = risks.fold<double>(0, (sum, r) => sum + r['potentialImpact']);
-    if (totalExposure > 100000) { // Threshold for significant exposure
-      recommendations.add('Total FX exposure is significant. Review hedging strategies.');
+
+    final totalExposure =
+        risks.fold<double>(0, (sum, r) => sum + r['potentialImpact']);
+    if (totalExposure > 100000) {
+      // Threshold for significant exposure
+      recommendations
+          .add('Total FX exposure is significant. Review hedging strategies.');
     }
-    
-    recommendations.add('Monitor exchange rates regularly and consider forward contracts for large payments.');
-    
+
+    recommendations.add(
+        'Monitor exchange rates regularly and consider forward contracts for large payments.');
+
     return recommendations;
   }
 }

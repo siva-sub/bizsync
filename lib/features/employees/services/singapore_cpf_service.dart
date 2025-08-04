@@ -16,7 +16,7 @@ class SingaporeCpfService {
   }) {
     final age = _calculateAge(dateOfBirth, calculationDate);
     final ageCategory = _getAgeCategory(age);
-    
+
     // Check CPF eligibility
     if (!_isEligibleForCpf(residencyStatus, age)) {
       return CpfCalculationResult(
@@ -36,7 +36,7 @@ class SingaporeCpfService {
     }
 
     final rates = _getCpfRates(ageCategory, residencyStatus);
-    
+
     // Calculate OW contribution (subject to monthly ceiling)
     final cappedOW = math.min(ordinaryWage, _ordinaryWageCeiling);
     final owEmployeeContribution = cappedOW * rates.employeeRate;
@@ -44,14 +44,18 @@ class SingaporeCpfService {
 
     // Calculate AW contribution (subject to annual ceiling)
     final currentYearCpf = existingCpfForYear ?? 0.0;
-    final remainingAwCeiling = math.max(0.0, _additionalWageCeiling - currentYearCpf);
+    final remainingAwCeiling =
+        math.max(0.0, _additionalWageCeiling - currentYearCpf);
     final cappedAW = math.min(additionalWage, remainingAwCeiling);
     final awEmployeeContribution = cappedAW * rates.employeeRate;
     final awEmployerContribution = cappedAW * rates.employerRate;
 
-    final totalEmployeeContribution = owEmployeeContribution + awEmployeeContribution;
-    final totalEmployerContribution = owEmployerContribution + awEmployerContribution;
-    final totalContribution = totalEmployeeContribution + totalEmployerContribution;
+    final totalEmployeeContribution =
+        owEmployeeContribution + awEmployeeContribution;
+    final totalEmployerContribution =
+        owEmployerContribution + awEmployerContribution;
+    final totalContribution =
+        totalEmployeeContribution + totalEmployerContribution;
 
     // Calculate account allocations
     final breakdown = _calculateAccountBreakdown(
@@ -70,7 +74,8 @@ class SingaporeCpfService {
       employerRate: rates.employerRate,
       ageCategory: ageCategory,
       residencyStatus: residencyStatus,
-      reasoning: 'CPF calculated based on age $age (${ageCategory.displayName})',
+      reasoning:
+          'CPF calculated based on age $age (${ageCategory.displayName})',
       breakdown: breakdown,
       isEligible: true,
       cappedOrdinaryWage: cappedOW,
@@ -85,7 +90,8 @@ class SingaporeCpfService {
   }
 
   /// Get CPF rates based on age category and residency status
-  static CpfRates _getCpfRates(CpfAgeCategory ageCategory, String residencyStatus) {
+  static CpfRates _getCpfRates(
+      CpfAgeCategory ageCategory, String residencyStatus) {
     // Special rates for new Singapore PRs (first 2 years)
     if (residencyStatus == 'pr_first_2_years') {
       return _getNewPrRates(ageCategory);
@@ -93,13 +99,17 @@ class SingaporeCpfService {
 
     switch (ageCategory) {
       case CpfAgeCategory.below55:
-        return const CpfRates(employeeRate: 0.20, employerRate: 0.17); // 20% + 17%
+        return const CpfRates(
+            employeeRate: 0.20, employerRate: 0.17); // 20% + 17%
       case CpfAgeCategory.age55to60:
-        return const CpfRates(employeeRate: 0.13, employerRate: 0.13); // 13% + 13%
+        return const CpfRates(
+            employeeRate: 0.13, employerRate: 0.13); // 13% + 13%
       case CpfAgeCategory.age60to65:
-        return const CpfRates(employeeRate: 0.075, employerRate: 0.09); // 7.5% + 9%
+        return const CpfRates(
+            employeeRate: 0.075, employerRate: 0.09); // 7.5% + 9%
       case CpfAgeCategory.above65:
-        return const CpfRates(employeeRate: 0.05, employerRate: 0.075); // 5% + 7.5%
+        return const CpfRates(
+            employeeRate: 0.05, employerRate: 0.075); // 5% + 7.5%
     }
   }
 
@@ -107,13 +117,17 @@ class SingaporeCpfService {
   static CpfRates _getNewPrRates(CpfAgeCategory ageCategory) {
     switch (ageCategory) {
       case CpfAgeCategory.below55:
-        return const CpfRates(employeeRate: 0.05, employerRate: 0.04); // 5% + 4%
+        return const CpfRates(
+            employeeRate: 0.05, employerRate: 0.04); // 5% + 4%
       case CpfAgeCategory.age55to60:
-        return const CpfRates(employeeRate: 0.035, employerRate: 0.035); // 3.5% + 3.5%
+        return const CpfRates(
+            employeeRate: 0.035, employerRate: 0.035); // 3.5% + 3.5%
       case CpfAgeCategory.age60to65:
-        return const CpfRates(employeeRate: 0.025, employerRate: 0.025); // 2.5% + 2.5%
+        return const CpfRates(
+            employeeRate: 0.025, employerRate: 0.025); // 2.5% + 2.5%
       case CpfAgeCategory.above65:
-        return const CpfRates(employeeRate: 0.025, employerRate: 0.025); // 2.5% + 2.5%
+        return const CpfRates(
+            employeeRate: 0.025, employerRate: 0.025); // 2.5% + 2.5%
     }
   }
 
@@ -124,7 +138,7 @@ class SingaporeCpfService {
     CpfAgeCategory ageCategory,
   ) {
     final totalContribution = employeeContribution + employerContribution;
-    
+
     // CPF allocation rates as of 2024
     CpfAllocation allocation;
     switch (ageCategory) {
@@ -170,14 +184,14 @@ class SingaporeCpfService {
   static bool _isEligibleForCpf(String residencyStatus, int age) {
     // Age limit: CPF contributions stop at 70
     if (age >= 70) return false;
-    
+
     // Residency eligibility
     const eligibleStatuses = [
       'citizen',
       'pr',
       'pr_first_2_years',
     ];
-    
+
     return eligibleStatuses.contains(residencyStatus);
   }
 
@@ -186,24 +200,24 @@ class SingaporeCpfService {
     if (age >= 70) {
       return 'Employee is 70 years or older - not subject to CPF';
     }
-    
+
     if (!['citizen', 'pr', 'pr_first_2_years'].contains(residencyStatus)) {
       return 'Non-resident employees are not subject to CPF';
     }
-    
+
     return 'Not eligible for CPF contributions';
   }
 
   /// Calculate age from date of birth
   static int _calculateAge(DateTime dateOfBirth, DateTime asOf) {
     int age = asOf.year - dateOfBirth.year;
-    
+
     // Adjust for birthday not yet reached this year
-    if (asOf.month < dateOfBirth.month || 
+    if (asOf.month < dateOfBirth.month ||
         (asOf.month == dateOfBirth.month && asOf.day < dateOfBirth.day)) {
       age--;
     }
-    
+
     return age;
   }
 
@@ -220,7 +234,8 @@ class SingaporeCpfService {
     return {
       'ordinary_wage_ceiling_monthly': _ordinaryWageCeiling,
       'additional_wage_ceiling_annual': _additionalWageCeiling,
-      'max_monthly_contribution_below_55': _ordinaryWageCeiling * 0.37, // 20% + 17%
+      'max_monthly_contribution_below_55':
+          _ordinaryWageCeiling * 0.37, // 20% + 17%
       'cpf_minimum_sum_2024': 198800, // Basic Retirement Sum
       'enhanced_retirement_sum_2024': 298200,
       'full_retirement_sum_2024': 397600,
@@ -237,7 +252,7 @@ class SingaporeCpfService {
     int projectionYear = 2024,
   }) {
     final projectionDate = DateTime(projectionYear, 12, 31);
-    
+
     // Calculate monthly contributions
     final monthlyResult = calculateCpfContributions(
       dateOfBirth: dateOfBirth,
@@ -257,9 +272,14 @@ class SingaporeCpfService {
       existingCpfForYear: monthlyResult.totalContribution * 12,
     );
 
-    final annualEmployeeContribution = (monthlyResult.employeeContribution * 12) + bonusResult.employeeContribution;
-    final annualEmployerContribution = (monthlyResult.employerContribution * 12) + bonusResult.employerContribution;
-    final annualTotalContribution = annualEmployeeContribution + annualEmployerContribution;
+    final annualEmployeeContribution =
+        (monthlyResult.employeeContribution * 12) +
+            bonusResult.employeeContribution;
+    final annualEmployerContribution =
+        (monthlyResult.employerContribution * 12) +
+            bonusResult.employerContribution;
+    final annualTotalContribution =
+        annualEmployeeContribution + annualEmployerContribution;
 
     return CpfAnnualProjection(
       projectionYear: projectionYear,
@@ -315,22 +335,22 @@ class CpfCalculationResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'ordinary_wage': ordinaryWage,
-    'additional_wage': additionalWage,
-    'employee_contribution': employeeContribution,
-    'employer_contribution': employerContribution,
-    'total_contribution': totalContribution,
-    'employee_rate': employeeRate,
-    'employer_rate': employerRate,
-    'age_category': ageCategory.name,
-    'residency_status': residencyStatus,
-    'reasoning': reasoning,
-    'breakdown': breakdown.toJson(),
-    'is_eligible': isEligible,
-    'capped_ordinary_wage': cappedOrdinaryWage,
-    'capped_additional_wage': cappedAdditionalWage,
-    'additional_info': additionalInfo,
-  };
+        'ordinary_wage': ordinaryWage,
+        'additional_wage': additionalWage,
+        'employee_contribution': employeeContribution,
+        'employer_contribution': employerContribution,
+        'total_contribution': totalContribution,
+        'employee_rate': employeeRate,
+        'employer_rate': employerRate,
+        'age_category': ageCategory.name,
+        'residency_status': residencyStatus,
+        'reasoning': reasoning,
+        'breakdown': breakdown.toJson(),
+        'is_eligible': isEligible,
+        'capped_ordinary_wage': cappedOrdinaryWage,
+        'capped_additional_wage': cappedAdditionalWage,
+        'additional_info': additionalInfo,
+      };
 }
 
 /// CPF contribution rates
@@ -367,11 +387,11 @@ class CpfBreakdown {
         totalContribution = 0.0;
 
   Map<String, dynamic> toJson() => {
-    'ordinary_account': ordinaryAccount,
-    'special_account': specialAccount,
-    'medisave_account': medisaveAccount,
-    'total_contribution': totalContribution,
-  };
+        'ordinary_account': ordinaryAccount,
+        'special_account': specialAccount,
+        'medisave_account': medisaveAccount,
+        'total_contribution': totalContribution,
+      };
 }
 
 /// CPF allocation percentages

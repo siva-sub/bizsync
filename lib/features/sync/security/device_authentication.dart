@@ -18,15 +18,17 @@ class DeviceAuthenticationService {
   static const Duration _pairingTimeout = Duration(minutes: 5);
   static const Duration _authTimeout = Duration(seconds: 30);
   static const int _pinCodeLength = 6;
-  
+
   final EncryptionService _encryptionService;
-  final StreamController<DevicePairing> _pairingController = StreamController<DevicePairing>.broadcast();
-  final StreamController<AuthenticationEvent> _authController = StreamController<AuthenticationEvent>.broadcast();
-  
+  final StreamController<DevicePairing> _pairingController =
+      StreamController<DevicePairing>.broadcast();
+  final StreamController<AuthenticationEvent> _authController =
+      StreamController<AuthenticationEvent>.broadcast();
+
   final Map<String, DevicePairing> _activePairings = {};
   final Map<String, Timer> _pairingTimers = {};
   final Map<String, SharedPreferences> _prefs = {};
-  
+
   KeyPair? _deviceKeyPair;
   String? _deviceId;
 
@@ -36,7 +38,7 @@ class DeviceAuthenticationService {
   Future<void> initialize() async {
     await _loadDeviceIdentity();
     await _loadPairedDevices();
-    
+
     debugPrint('Device authentication service initialized');
     debugPrint('Device ID: $_deviceId');
   }
@@ -49,7 +51,7 @@ class DeviceAuthenticationService {
     }
     _pairingTimers.clear();
     _activePairings.clear();
-    
+
     await _pairingController.close();
     await _authController.close();
   }
@@ -64,7 +66,8 @@ class DeviceAuthenticationService {
   Stream<DevicePairing> get pairingEvents => _pairingController.stream;
 
   /// Stream of authentication events
-  Stream<AuthenticationEvent> get authenticationEvents => _authController.stream;
+  Stream<AuthenticationEvent> get authenticationEvents =>
+      _authController.stream;
 
   /// Initialize pairing with a remote device using QR code
   Future<DevicePairing> initiatePairingWithQR(
@@ -72,7 +75,7 @@ class DeviceAuthenticationService {
     PairingMethod method,
   ) async {
     final pairingId = const Uuid().v4();
-    
+
     // Generate pairing data
     final pairingData = PairingData(
       pairingId: pairingId,
@@ -82,10 +85,10 @@ class DeviceAuthenticationService {
       method: method,
       timestamp: DateTime.now(),
     );
-    
+
     // Create QR code data
     final qrData = _createQRCodeData(pairingData);
-    
+
     // Create pairing session
     final pairing = DevicePairing(
       pairingId: pairingId,
@@ -96,14 +99,14 @@ class DeviceAuthenticationService {
       createdAt: DateTime.now(),
       qrCode: qrData,
     );
-    
+
     _activePairings[pairingId] = pairing;
-    
+
     // Set pairing timeout
     _setPairingTimeout(pairingId);
-    
+
     _pairingController.add(pairing);
-    
+
     debugPrint('Initiated QR pairing: $pairingId');
     return pairing;
   }
@@ -114,7 +117,7 @@ class DeviceAuthenticationService {
   ) async {
     final pairingId = const Uuid().v4();
     final pinCode = _generatePinCode();
-    
+
     // Create pairing session
     final pairing = DevicePairing(
       pairingId: pairingId,
@@ -125,14 +128,14 @@ class DeviceAuthenticationService {
       createdAt: DateTime.now(),
       pairingCode: pinCode,
     );
-    
+
     _activePairings[pairingId] = pairing;
-    
+
     // Set pairing timeout
     _setPairingTimeout(pairingId);
-    
+
     _pairingController.add(pairing);
-    
+
     debugPrint('Initiated PIN pairing: $pairingId with code: $pinCode');
     return pairing;
   }
@@ -141,16 +144,17 @@ class DeviceAuthenticationService {
   Future<DevicePairing> processScannedQR(String qrData) async {
     try {
       final pairingData = _parseQRCodeData(qrData);
-      
+
       // Validate pairing data
-      if (pairingData.timestamp.difference(DateTime.now()).abs() > _pairingTimeout) {
+      if (pairingData.timestamp.difference(DateTime.now()).abs() >
+          _pairingTimeout) {
         throw Exception('QR code has expired');
       }
-      
+
       if (pairingData.localDeviceId == _deviceId) {
         throw Exception('Cannot pair with self');
       }
-      
+
       // Create pairing session
       final pairing = DevicePairing(
         pairingId: pairingData.pairingId,
@@ -161,14 +165,13 @@ class DeviceAuthenticationService {
         createdAt: DateTime.now(),
         qrCode: qrData,
       );
-      
+
       _activePairings[pairingData.pairingId] = pairing;
-      
+
       // Start authentication process
       await _performKeyExchange(pairing, pairingData.localPublicKey);
-      
+
       return pairing;
-      
     } catch (e) {
       throw Exception('Invalid QR code: $e');
     }
@@ -180,11 +183,11 @@ class DeviceAuthenticationService {
     if (pairing == null) {
       throw Exception('Pairing session not found');
     }
-    
+
     if (pairing.pairingCode != pinCode) {
       throw Exception('Invalid PIN code');
     }
-    
+
     // Update pairing state
     final updatedPairing = DevicePairing(
       pairingId: pairing.pairingId,
@@ -195,10 +198,10 @@ class DeviceAuthenticationService {
       createdAt: pairing.createdAt,
       pairingCode: pairing.pairingCode,
     );
-    
+
     _activePairings[pairingId] = updatedPairing;
     _pairingController.add(updatedPairing);
-    
+
     return updatedPairing;
   }
 
@@ -211,7 +214,7 @@ class DeviceAuthenticationService {
     if (pairedDevice == null) {
       throw Exception('Device not paired: $deviceId');
     }
-    
+
     try {
       // Create authentication challenge
       final authChallenge = AuthenticationChallenge(
@@ -220,10 +223,10 @@ class DeviceAuthenticationService {
         challenge: challenge,
         timestamp: DateTime.now(),
       );
-      
+
       // Sign challenge with device private key
       final signature = await _signChallenge(authChallenge);
-      
+
       // Create authentication response
       final authResponse = AuthenticationResponse(
         challengeId: authChallenge.challengeId,
@@ -232,7 +235,7 @@ class DeviceAuthenticationService {
         publicKey: _deviceKeyPair!.publicKey,
         timestamp: DateTime.now(),
       );
-      
+
       // Emit authentication event
       _authController.add(AuthenticationEvent(
         type: AuthenticationEventType.challengeCreated,
@@ -240,21 +243,20 @@ class DeviceAuthenticationService {
         challenge: authChallenge,
         response: authResponse,
       ));
-      
+
       return AuthenticationResult(
         success: true,
         deviceId: deviceId,
         challenge: authChallenge,
         response: authResponse,
       );
-      
     } catch (e) {
       _authController.add(AuthenticationEvent(
         type: AuthenticationEventType.authenticationFailed,
         deviceId: deviceId,
         error: e.toString(),
       ));
-      
+
       throw Exception('Authentication failed: $e');
     }
   }
@@ -269,26 +271,26 @@ class DeviceAuthenticationService {
       if (response.challengeId != challenge.challengeId) {
         return false;
       }
-      
+
       // Verify response is from expected device
       if (response.responderId != challenge.challengedId) {
         return false;
       }
-      
+
       // Verify response is not too old
       if (DateTime.now().difference(response.timestamp) > _authTimeout) {
         return false;
       }
-      
+
       // Get paired device info
       final pairedDevice = await _getPairedDevice(response.responderId);
       if (pairedDevice == null) {
         return false;
       }
-      
+
       // Verify signature
       final isValid = await _verifySignature(challenge, response);
-      
+
       if (isValid) {
         _authController.add(AuthenticationEvent(
           type: AuthenticationEventType.authenticationSucceeded,
@@ -305,9 +307,8 @@ class DeviceAuthenticationService {
           error: 'Signature verification failed',
         ));
       }
-      
+
       return isValid;
-      
     } catch (e) {
       debugPrint('Authentication verification error: $e');
       return false;
@@ -318,11 +319,11 @@ class DeviceAuthenticationService {
   Future<List<PairedDevice>> getPairedDevices() async {
     final prefs = await SharedPreferences.getInstance();
     final pairedDevicesJson = prefs.getString(_keyPairedDevices);
-    
+
     if (pairedDevicesJson == null) {
       return [];
     }
-    
+
     try {
       final List<dynamic> deviceList = jsonDecode(pairedDevicesJson);
       return deviceList.map((json) => PairedDevice.fromMap(json)).toList();
@@ -336,9 +337,9 @@ class DeviceAuthenticationService {
   Future<void> unpairDevice(String deviceId) async {
     final pairedDevices = await getPairedDevices();
     pairedDevices.removeWhere((device) => device.deviceId == deviceId);
-    
+
     await _savePairedDevices(pairedDevices);
-    
+
     debugPrint('Unpaired device: $deviceId');
   }
 
@@ -353,14 +354,14 @@ class DeviceAuthenticationService {
   /// Load or create device identity
   Future<void> _loadDeviceIdentity() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Load device ID
     _deviceId = prefs.getString(_keyDeviceId);
     if (_deviceId == null) {
       _deviceId = const Uuid().v4();
       await prefs.setString(_keyDeviceId, _deviceId!);
     }
-    
+
     // Load or generate key pair
     final keyPairJson = prefs.getString(_keyDeviceKeyPair);
     if (keyPairJson != null) {
@@ -410,7 +411,7 @@ class DeviceAuthenticationService {
   /// Set pairing timeout
   void _setPairingTimeout(String pairingId) {
     _pairingTimers[pairingId]?.cancel();
-    
+
     _pairingTimers[pairingId] = Timer(_pairingTimeout, () {
       final pairing = _activePairings[pairingId];
       if (pairing != null && pairing.state != PairingState.completed) {
@@ -424,13 +425,13 @@ class DeviceAuthenticationService {
           pairingCode: pairing.pairingCode,
           qrCode: pairing.qrCode,
         );
-        
+
         _activePairings[pairingId] = expiredPairing;
         _pairingController.add(expiredPairing);
-        
+
         debugPrint('Pairing expired: $pairingId');
       }
-      
+
       _pairingTimers.remove(pairingId);
     });
   }
@@ -452,7 +453,7 @@ class DeviceAuthenticationService {
       'method': pairingData.method.name,
       'timestamp': pairingData.timestamp.millisecondsSinceEpoch,
     };
-    
+
     final json = jsonEncode(data);
     return base64.encode(utf8.encode(json));
   }
@@ -461,7 +462,7 @@ class DeviceAuthenticationService {
   PairingData _parseQRCodeData(String qrData) {
     final json = utf8.decode(base64.decode(qrData));
     final data = jsonDecode(json) as Map<String, dynamic>;
-    
+
     return PairingData(
       pairingId: data['pairingId'],
       localDeviceId: data['deviceId'],
@@ -473,7 +474,8 @@ class DeviceAuthenticationService {
   }
 
   /// Perform key exchange during pairing
-  Future<void> _performKeyExchange(DevicePairing pairing, Uint8List remotePublicKey) async {
+  Future<void> _performKeyExchange(
+      DevicePairing pairing, Uint8List remotePublicKey) async {
     try {
       // Update pairing state
       final authenticatingPairing = DevicePairing(
@@ -486,16 +488,16 @@ class DeviceAuthenticationService {
         pairingCode: pairing.pairingCode,
         qrCode: pairing.qrCode,
       );
-      
+
       _activePairings[pairing.pairingId] = authenticatingPairing;
       _pairingController.add(authenticatingPairing);
-      
+
       // Perform ECDH key exchange
       final sharedSecret = _encryptionService.performKeyExchange(
         _deviceKeyPair!.privateKey,
         remotePublicKey,
       );
-      
+
       // Create paired device record
       final pairedDevice = PairedDevice(
         deviceId: pairing.remoteDeviceId,
@@ -505,13 +507,13 @@ class DeviceAuthenticationService {
         pairedAt: DateTime.now(),
         pairingMethod: pairing.method,
       );
-      
+
       // Save paired device
       final pairedDevices = await getPairedDevices();
       pairedDevices.removeWhere((d) => d.deviceId == pairing.remoteDeviceId);
       pairedDevices.add(pairedDevice);
       await _savePairedDevices(pairedDevices);
-      
+
       // Complete pairing
       final completedPairing = DevicePairing(
         pairingId: pairing.pairingId,
@@ -525,16 +527,15 @@ class DeviceAuthenticationService {
         qrCode: pairing.qrCode,
         sharedSecret: sharedSecret,
       );
-      
+
       _activePairings[pairing.pairingId] = completedPairing;
       _pairingController.add(completedPairing);
-      
+
       // Cancel timeout timer
       _pairingTimers[pairing.pairingId]?.cancel();
       _pairingTimers.remove(pairing.pairingId);
-      
+
       debugPrint('Pairing completed: ${pairing.pairingId}');
-      
     } catch (e) {
       // Pairing failed
       final failedPairing = DevicePairing(
@@ -547,10 +548,10 @@ class DeviceAuthenticationService {
         pairingCode: pairing.pairingCode,
         qrCode: pairing.qrCode,
       );
-      
+
       _activePairings[pairing.pairingId] = failedPairing;
       _pairingController.add(failedPairing);
-      
+
       debugPrint('Pairing failed: ${pairing.pairingId} - $e');
       throw Exception('Key exchange failed: $e');
     }
@@ -559,7 +560,8 @@ class DeviceAuthenticationService {
   /// Sign authentication challenge
   Future<Uint8List> _signChallenge(AuthenticationChallenge challenge) async {
     final challengeBytes = challenge.toBytes();
-    return _encryptionService.createMAC(challengeBytes, _deviceKeyPair!.privateKey);
+    return _encryptionService.createMAC(
+        challengeBytes, _deviceKeyPair!.privateKey);
   }
 
   /// Verify authentication signature
@@ -571,7 +573,7 @@ class DeviceAuthenticationService {
     if (pairedDevice == null) {
       return false;
     }
-    
+
     final challengeBytes = challenge.toBytes();
     return _encryptionService.verifyMAC(
       challengeBytes,
@@ -636,7 +638,8 @@ class PairedDevice {
       publicKey: base64.decode(map['publicKey']),
       sharedSecret: base64.decode(map['sharedSecret']),
       pairedAt: DateTime.fromMillisecondsSinceEpoch(map['pairedAt']),
-      pairingMethod: PairingMethod.values.firstWhere((m) => m.name == map['pairingMethod']),
+      pairingMethod: PairingMethod.values
+          .firstWhere((m) => m.name == map['pairingMethod']),
     );
   }
 }
@@ -665,7 +668,7 @@ class AuthenticationChallenge {
       'challenge': base64.encode(challenge),
       'timestamp': timestamp.millisecondsSinceEpoch,
     };
-    
+
     final json = jsonEncode(data);
     return Uint8List.fromList(utf8.encode(json));
   }
@@ -695,7 +698,7 @@ class AuthenticationResponse {
       'publicKey': base64.encode(publicKey),
       'timestamp': timestamp.millisecondsSinceEpoch,
     };
-    
+
     final json = jsonEncode(data);
     return Uint8List.fromList(utf8.encode(json));
   }

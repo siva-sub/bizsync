@@ -5,11 +5,11 @@ import '../providers/app_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentTab = ref.watch(currentTabProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConstants.appName),
@@ -75,7 +75,7 @@ class DashboardScreen extends ConsumerWidget {
       floatingActionButton: _buildFloatingActionButton(context, currentTab),
     );
   }
-  
+
   Widget? _buildFloatingActionButton(BuildContext context, int currentTab) {
     switch (currentTab) {
       case 1: // Customers
@@ -107,7 +107,7 @@ class DashboardScreen extends ConsumerWidget {
 
 class _DashboardHomeTab extends StatelessWidget {
   const _DashboardHomeTab();
-  
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -118,12 +118,12 @@ class _DashboardHomeTab extends StatelessWidget {
           Text(
             'Welcome back!',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-          
+
           const SizedBox(height: AppConstants.largePadding),
-          
+
           // Quick stats cards
           Row(
             children: [
@@ -146,9 +146,9 @@ class _DashboardHomeTab extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: AppConstants.defaultPadding),
-          
+
           Row(
             children: [
               Expanded(
@@ -170,19 +170,19 @@ class _DashboardHomeTab extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: AppConstants.largePadding),
-          
+
           // Quick actions
           Text(
             'Quick Actions',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-          
+
           const SizedBox(height: AppConstants.defaultPadding),
-          
+
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -236,14 +236,14 @@ class _StatsCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
-  
+
   const _StatsCard({
     required this.title,
     required this.value,
     required this.icon,
     required this.color,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -260,9 +260,9 @@ class _StatsCard extends StatelessWidget {
                 Text(
                   value,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
                 ),
               ],
             ),
@@ -270,8 +270,8 @@ class _StatsCard extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
           ],
         ),
@@ -285,14 +285,14 @@ class _QuickActionCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
-  
+
   const _QuickActionCard({
     required this.title,
     required this.icon,
     required this.color,
     required this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -314,8 +314,8 @@ class _QuickActionCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                      fontWeight: FontWeight.w500,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -328,7 +328,7 @@ class _QuickActionCard extends StatelessWidget {
 
 class _CustomersTab extends StatelessWidget {
   const _CustomersTab();
-  
+
   @override
   Widget build(BuildContext context) {
     return const Center(
@@ -339,7 +339,7 @@ class _CustomersTab extends StatelessWidget {
 
 class _InventoryTab extends StatelessWidget {
   const _InventoryTab();
-  
+
   @override
   Widget build(BuildContext context) {
     return const Center(
@@ -350,7 +350,7 @@ class _InventoryTab extends StatelessWidget {
 
 class _SalesTab extends StatelessWidget {
   const _SalesTab();
-  
+
   @override
   Widget build(BuildContext context) {
     return const Center(
@@ -361,7 +361,7 @@ class _SalesTab extends StatelessWidget {
 
 class _ReportsTab extends StatelessWidget {
   const _ReportsTab();
-  
+
   @override
   Widget build(BuildContext context) {
     return const Center(

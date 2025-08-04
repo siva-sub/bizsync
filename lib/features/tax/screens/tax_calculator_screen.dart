@@ -16,20 +16,21 @@ enum CalculatorType {
 
 class TaxCalculatorScreen extends ConsumerStatefulWidget {
   final CalculatorType calculatorType;
-  
+
   const TaxCalculatorScreen({
     super.key,
     required this.calculatorType,
   });
 
   @override
-  ConsumerState<TaxCalculatorScreen> createState() => _TaxCalculatorScreenState();
+  ConsumerState<TaxCalculatorScreen> createState() =>
+      _TaxCalculatorScreenState();
 }
 
 class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
-  
+
   // Form fields
   DateTime _calculationDate = DateTime.now();
   CompanyType _companyType = CompanyType.privateLimited;
@@ -38,7 +39,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
   String _recipientCountry = 'SG';
   String _incomeType = 'dividends';
   String _instrumentType = 'shares';
-  
+
   TaxCalculationResult? _result;
   bool _isCalculating = false;
 
@@ -118,11 +119,12 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            
+
             // Amount field
             TextFormField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
               ],
@@ -147,9 +149,9 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
                 return null;
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Date field
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -159,9 +161,9 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: _selectDate,
             ),
-            
+
             const Divider(),
-            
+
             // Calculator-specific fields
             ..._buildSpecificFields(),
           ],
@@ -193,9 +195,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         value: _isGstRegistered,
         onChanged: (value) => setState(() => _isGstRegistered = value),
       ),
-      
       const SizedBox(height: 8),
-      
       DropdownButtonFormField<Currency>(
         value: _currency,
         decoration: const InputDecoration(
@@ -205,7 +205,8 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         items: Currency.values.map((currency) {
           return DropdownMenuItem(
             value: currency,
-            child: Text('${currency.name.toUpperCase()} - ${_getCurrencyName(currency)}'),
+            child: Text(
+                '${currency.name.toUpperCase()} - ${_getCurrencyName(currency)}'),
           );
         }).toList(),
         onChanged: (value) => setState(() => _currency = value!),
@@ -229,30 +230,26 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         }).toList(),
         onChanged: (value) => setState(() => _companyType = value!),
       ),
-      
       const SizedBox(height: 16),
-      
       Text(
         'Tax Reliefs & Exemptions',
         style: Theme.of(context).textTheme.titleMedium,
       ),
       const SizedBox(height: 8),
-      
       if (_companyType == CompanyType.startup)
         const ListTile(
           leading: Icon(Icons.stars, color: Colors.orange),
           title: Text('Startup Tax Exemption'),
           subtitle: Text('First S\$100,000 exempt, next S\$200,000 at 8.5%'),
         ),
-      
       if (_companyType == CompanyType.charity)
         const ListTile(
           leading: Icon(Icons.favorite, color: Colors.red),
           title: Text('Charity Tax Exemption'),
           subtitle: Text('Full exemption from corporate tax'),
         ),
-      
-      if ([CompanyType.privateLimited, CompanyType.publicLimited].contains(_companyType))
+      if ([CompanyType.privateLimited, CompanyType.publicLimited]
+          .contains(_companyType))
         const ListTile(
           leading: Icon(Icons.discount, color: Colors.blue),
           title: Text('Partial Tax Exemption'),
@@ -273,14 +270,14 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
           DropdownMenuItem(value: 'dividends', child: Text('Dividends')),
           DropdownMenuItem(value: 'interest', child: Text('Interest')),
           DropdownMenuItem(value: 'royalties', child: Text('Royalties')),
-          DropdownMenuItem(value: 'management_fees', child: Text('Management Fees')),
-          DropdownMenuItem(value: 'technical_fees', child: Text('Technical Fees')),
+          DropdownMenuItem(
+              value: 'management_fees', child: Text('Management Fees')),
+          DropdownMenuItem(
+              value: 'technical_fees', child: Text('Technical Fees')),
         ],
         onChanged: (value) => setState(() => _incomeType = value!),
       ),
-      
       const SizedBox(height: 16),
-      
       DropdownButtonFormField<String>(
         value: _recipientCountry,
         decoration: const InputDecoration(
@@ -299,7 +296,6 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         ],
         onChanged: (value) => setState(() => _recipientCountry = value!),
       ),
-      
       if (_recipientCountry != 'SG') ...[
         const SizedBox(height: 16),
         Container(
@@ -341,7 +337,6 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         ],
         onChanged: (value) => setState(() => _instrumentType = value!),
       ),
-      
       if (_instrumentType == 'property') ...[
         const SizedBox(height: 16),
         Container(
@@ -357,13 +352,15 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
                 children: [
                   const Icon(Icons.warning, color: Colors.orange),
                   const SizedBox(width: 8),
-                  const Text('Property Stamp Duty Rates', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Property Stamp Duty Rates',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ],
               ),
               const SizedBox(height: 8),
               const Text('• Citizens (first property): 1-4% progressive rates'),
               const Text('• Additional Buyer\'s Stamp Duty may apply'),
-              const Text('• Rates vary based on property value and buyer status'),
+              const Text(
+                  '• Rates vary based on property value and buyer status'),
             ],
           ),
         ),
@@ -386,9 +383,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
           return null;
         },
       ),
-      
       const SizedBox(height: 16),
-      
       DropdownButtonFormField<String>(
         value: 'SG',
         decoration: const InputDecoration(
@@ -404,9 +399,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         ],
         onChanged: (value) {},
       ),
-      
       const SizedBox(height: 16),
-      
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -420,7 +413,8 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
               children: [
                 const Icon(Icons.local_offer, color: Colors.green),
                 const SizedBox(width: 8),
-                const Text('Preferential Trade Agreements', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Preferential Trade Agreements',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 8),
@@ -454,11 +448,8 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            
             _buildResultSummary(),
-            
             const SizedBox(height: 16),
-            
             if (_result!.breakdown.isNotEmpty) ...[
               Text(
                 'Breakdown',
@@ -467,7 +458,6 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
               const SizedBox(height: 8),
               ..._result!.breakdown.map(_buildBreakdownItem),
             ],
-            
             if (_result!.appliedReliefs.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
@@ -495,8 +485,11 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
           _buildSummaryRow('Gross Amount', _result!.grossAmount),
           if (_result!.taxableAmount != _result!.grossAmount)
             _buildSummaryRow('Taxable Amount', _result!.taxableAmount),
-          _buildSummaryRow('Tax Rate', '${(_result!.taxRate * 100).toStringAsFixed(2)}%', isRate: true),
-          _buildSummaryRow('Tax Amount', _result!.taxAmount, isHighlighted: true),
+          _buildSummaryRow(
+              'Tax Rate', '${(_result!.taxRate * 100).toStringAsFixed(2)}%',
+              isRate: true),
+          _buildSummaryRow('Tax Amount', _result!.taxAmount,
+              isHighlighted: true),
           const Divider(),
           _buildSummaryRow('Net Amount', _result!.netAmount, isTotal: true),
         ],
@@ -504,14 +497,21 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
     );
   }
 
-  Widget _buildSummaryRow(String label, dynamic value, {bool isRate = false, bool isHighlighted = false, bool isTotal = false}) {
-    final textStyle = isTotal 
-        ? Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)
+  Widget _buildSummaryRow(String label, dynamic value,
+      {bool isRate = false, bool isHighlighted = false, bool isTotal = false}) {
+    final textStyle = isTotal
+        ? Theme.of(context)
+            .textTheme
+            .titleMedium
+            ?.copyWith(fontWeight: FontWeight.bold)
         : isHighlighted
-            ? Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).primaryColor)
+            ? Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(color: Theme.of(context).primaryColor)
             : Theme.of(context).textTheme.bodyLarge;
 
-    final displayValue = isRate 
+    final displayValue = isRate
         ? value.toString()
         : '${_getCurrencySymbol()}${(value as double).toStringAsFixed(2)}';
 
@@ -532,7 +532,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         title: Text(breakdown.description),
-        subtitle: breakdown.legislation != null 
+        subtitle: breakdown.legislation != null
             ? Text('Legislation: ${breakdown.legislation}')
             : null,
         trailing: Column(
@@ -636,7 +636,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
 
     try {
       final amount = double.parse(_amountController.text);
-      
+
       // Create dummy profile for calculation
       final profile = CompanyTaxProfile(
         companyId: 'temp',
@@ -665,14 +665,13 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
       );
 
       final taxType = _getTaxTypeFromCalculator();
-      
+
       // Simulate calculation (in real app, would use actual service)
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       final result = await _performCalculation(amount, taxType, context);
-      
+
       setState(() => _result = result);
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -709,7 +708,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
     double taxRate = 0;
     String description = '';
     List<TaxCalculationBreakdown> breakdown = [];
-    
+
     switch (taxType) {
       case TaxType.gst:
         if (_isGstRegistered) {
@@ -720,7 +719,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
       case TaxType.corporateTax:
         taxRate = 0.17; // Standard corporate tax rate
         description = 'Corporate Tax 17%';
-        
+
         // Apply exemptions for startups
         if (_companyType == CompanyType.startup) {
           if (amount <= 100000) {
@@ -731,7 +730,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
             final exemptPortion = 100000;
             final partialPortion = amount - 100000;
             final partialTax = partialPortion * 0.085;
-            
+
             return TaxCalculationResult(
               grossAmount: amount,
               taxableAmount: amount,
@@ -748,7 +747,8 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
                   legislation: 'Income Tax Act Section 43A',
                 ),
                 TaxCalculationBreakdown(
-                  description: 'Startup Partial Exemption - Next S\$200,000 at 8.5%',
+                  description:
+                      'Startup Partial Exemption - Next S\$200,000 at 8.5%',
                   amount: partialPortion,
                   rate: 0.085,
                   taxAmount: partialTax,
@@ -805,8 +805,8 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
     }
 
     final taxAmount = amount * taxRate;
-    final netAmount = taxType == TaxType.gst 
-        ? amount + taxAmount  // GST is added
+    final netAmount = taxType == TaxType.gst
+        ? amount + taxAmount // GST is added
         : amount - taxAmount; // Other taxes are deducted
 
     breakdown.add(TaxCalculationBreakdown(
@@ -859,7 +859,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
 
   void _shareResult() {
     if (_result == null) return;
-    
+
     // TODO: Implement share functionality
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Share functionality coming soon')),

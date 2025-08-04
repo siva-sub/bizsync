@@ -115,7 +115,8 @@ class CitData {
   final String professionalFees;
   final String propertyTaxOther;
   final String rentExp;
-  final String repairMaintenanceExcludingUpkeepOfPrivateVehiclesAndExpRentalIncome;
+  final String
+      repairMaintenanceExcludingUpkeepOfPrivateVehiclesAndExpRentalIncome;
   final String repairsMaintenanceForPrivateVehicles;
   final String salesAndMarketingExpense;
   final String skillsDevelopmentForeignWorkerLevy;
@@ -322,8 +323,10 @@ class CitAsset {
 @JsonSerializable()
 class CitHpAsset extends CitAsset {
   final String depositOrPrincipalExcludingInterestIncludingDownpaymentEachAsset;
-  final String? depositOrPrincipalMinus1ExcludingInterestIncludingDownpaymentEachAsset;
-  final String? depositOrPrincipalMinus2ExcludingInterestIncludingDownpaymentEachAsset;
+  final String?
+      depositOrPrincipalMinus1ExcludingInterestIncludingDownpaymentEachAsset;
+  final String?
+      depositOrPrincipalMinus2ExcludingInterestIncludingDownpaymentEachAsset;
   final String? totalPrincipalTillDateEachAsset;
 
   const CitHpAsset({
@@ -487,7 +490,8 @@ CitConversionRequest createSampleCitRequest() {
       professionalFees: '1000',
       propertyTaxOther: '1000',
       rentExp: '1000',
-      repairMaintenanceExcludingUpkeepOfPrivateVehiclesAndExpRentalIncome: '1000',
+      repairMaintenanceExcludingUpkeepOfPrivateVehiclesAndExpRentalIncome:
+          '1000',
       repairsMaintenanceForPrivateVehicles: '2000',
       salesAndMarketingExpense: '1000',
       skillsDevelopmentForeignWorkerLevy: '1000',

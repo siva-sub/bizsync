@@ -22,56 +22,50 @@ enum BusinessNotificationType {
   invoiceReminder,
   invoicePaid,
   invoiceCancelled,
-  
+
   // Payment related
   paymentReceived,
   paymentFailed,
   paymentDue,
   paymentReminder,
-  
+
   // Tax related
   taxDeadline,
   taxCalculationComplete,
   taxFilingReminder,
   gstDue,
-  
+
   // Backup related
   backupComplete,
   backupFailed,
   backupScheduled,
   backupReminder,
-  
+
   // Business insights
   salesMilestone,
   revenueAlert,
   lowInventory,
   customerInsight,
   cashFlowAlert,
-  
+
   // Reminders
   taskReminder,
   meetingReminder,
   followUpReminder,
   documentExpiry,
-  
+
   // System
   syncComplete,
   syncFailed,
   updateAvailable,
   maintenanceMode,
-  
+
   // Custom
   custom
 }
 
 /// Priority levels for notifications
-enum NotificationPriority {
-  critical,
-  high,
-  medium,
-  low,
-  info
-}
+enum NotificationPriority { critical, high, medium, low, info }
 
 /// Notification display styles
 enum NotificationStyle {
@@ -275,44 +269,44 @@ extension BusinessNotificationTypeExtension on BusinessNotificationType {
       case BusinessNotificationType.invoicePaid:
       case BusinessNotificationType.invoiceCancelled:
         return NotificationCategory.invoice;
-      
+
       case BusinessNotificationType.paymentReceived:
       case BusinessNotificationType.paymentFailed:
       case BusinessNotificationType.paymentDue:
       case BusinessNotificationType.paymentReminder:
         return NotificationCategory.payment;
-      
+
       case BusinessNotificationType.taxDeadline:
       case BusinessNotificationType.taxCalculationComplete:
       case BusinessNotificationType.taxFilingReminder:
       case BusinessNotificationType.gstDue:
         return NotificationCategory.tax;
-      
+
       case BusinessNotificationType.backupComplete:
       case BusinessNotificationType.backupFailed:
       case BusinessNotificationType.backupScheduled:
       case BusinessNotificationType.backupReminder:
         return NotificationCategory.backup;
-      
+
       case BusinessNotificationType.salesMilestone:
       case BusinessNotificationType.revenueAlert:
       case BusinessNotificationType.lowInventory:
       case BusinessNotificationType.customerInsight:
       case BusinessNotificationType.cashFlowAlert:
         return NotificationCategory.insight;
-      
+
       case BusinessNotificationType.taskReminder:
       case BusinessNotificationType.meetingReminder:
       case BusinessNotificationType.followUpReminder:
       case BusinessNotificationType.documentExpiry:
         return NotificationCategory.reminder;
-      
+
       case BusinessNotificationType.syncComplete:
       case BusinessNotificationType.syncFailed:
       case BusinessNotificationType.updateAvailable:
       case BusinessNotificationType.maintenanceMode:
         return NotificationCategory.system;
-      
+
       case BusinessNotificationType.custom:
         return NotificationCategory.custom;
     }
@@ -327,13 +321,13 @@ extension BusinessNotificationTypeExtension on BusinessNotificationType {
       case BusinessNotificationType.cashFlowAlert:
       case BusinessNotificationType.syncFailed:
         return NotificationPriority.critical;
-      
+
       case BusinessNotificationType.invoiceDue:
       case BusinessNotificationType.paymentDue:
       case BusinessNotificationType.gstDue:
       case BusinessNotificationType.documentExpiry:
         return NotificationPriority.high;
-      
+
       case BusinessNotificationType.invoiceReminder:
       case BusinessNotificationType.paymentReminder:
       case BusinessNotificationType.taxFilingReminder:
@@ -342,14 +336,14 @@ extension BusinessNotificationTypeExtension on BusinessNotificationType {
       case BusinessNotificationType.meetingReminder:
       case BusinessNotificationType.followUpReminder:
         return NotificationPriority.medium;
-      
+
       case BusinessNotificationType.invoicePaid:
       case BusinessNotificationType.paymentReceived:
       case BusinessNotificationType.backupComplete:
       case BusinessNotificationType.syncComplete:
       case BusinessNotificationType.salesMilestone:
         return NotificationPriority.low;
-      
+
       default:
         return NotificationPriority.info;
     }

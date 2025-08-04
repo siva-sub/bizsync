@@ -9,7 +9,8 @@ class InventoryListScreen extends ConsumerStatefulWidget {
   const InventoryListScreen({super.key});
 
   @override
-  ConsumerState<InventoryListScreen> createState() => _InventoryListScreenState();
+  ConsumerState<InventoryListScreen> createState() =>
+      _InventoryListScreenState();
 }
 
 class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
@@ -198,10 +199,15 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
                       Expanded(
                         child: SegmentedButton<String>(
                           segments: const [
-                            ButtonSegment(value: 'all', label: Text('All Products')),
-                            ButtonSegment(value: 'in_stock', label: Text('In Stock')),
-                            ButtonSegment(value: 'low_stock', label: Text('Low Stock')),
-                            ButtonSegment(value: 'out_of_stock', label: Text('Out of Stock')),
+                            ButtonSegment(
+                                value: 'all', label: Text('All Products')),
+                            ButtonSegment(
+                                value: 'in_stock', label: Text('In Stock')),
+                            ButtonSegment(
+                                value: 'low_stock', label: Text('Low Stock')),
+                            ButtonSegment(
+                                value: 'out_of_stock',
+                                label: Text('Out of Stock')),
                           ],
                           selected: {_selectedFilter},
                           onSelectionChanged: (Set<String> selected) {
@@ -253,19 +259,22 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
                             DataColumn2(
                               label: const Text('Product'),
                               size: ColumnSize.L,
-                              onSort: (columnIndex, ascending) => _onSortChanged('name'),
+                              onSort: (columnIndex, ascending) =>
+                                  _onSortChanged('name'),
                             ),
                             DataColumn2(
                               label: const Text('Price'),
                               size: ColumnSize.S,
                               numeric: true,
-                              onSort: (columnIndex, ascending) => _onSortChanged('price'),
+                              onSort: (columnIndex, ascending) =>
+                                  _onSortChanged('price'),
                             ),
                             DataColumn2(
                               label: const Text('Stock'),
                               size: ColumnSize.S,
                               numeric: true,
-                              onSort: (columnIndex, ascending) => _onSortChanged('stock'),
+                              onSort: (columnIndex, ascending) =>
+                                  _onSortChanged('stock'),
                             ),
                             const DataColumn2(
                               label: Text('Profit'),
@@ -279,7 +288,8 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
                             DataColumn2(
                               label: const Text('Created'),
                               size: ColumnSize.M,
-                              onSort: (columnIndex, ascending) => _onSortChanged('created'),
+                              onSort: (columnIndex, ascending) =>
+                                  _onSortChanged('created'),
                             ),
                             const DataColumn2(
                               label: Text('Actions'),
@@ -292,7 +302,8 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
                               cells: [
                                 DataCell(
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
@@ -301,7 +312,8 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      if (product.description?.isNotEmpty == true)
+                                      if (product.description?.isNotEmpty ==
+                                          true)
                                         Text(
                                           product.description!,
                                           style: Theme.of(context)
@@ -397,13 +409,15 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
                                     children: [
                                       IconButton(
                                         icon: const Icon(Icons.edit, size: 20),
-                                        onPressed: () => context
-                                            .go('/inventory/edit/${product.id}'),
+                                        onPressed: () => context.go(
+                                            '/inventory/edit/${product.id}'),
                                         tooltip: 'Edit Product',
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.more_vert, size: 20),
-                                        onPressed: () => _showProductActions(product),
+                                        icon: const Icon(Icons.more_vert,
+                                            size: 20),
+                                        onPressed: () =>
+                                            _showProductActions(product),
                                         tooltip: 'More Actions',
                                       ),
                                     ],
@@ -426,8 +440,8 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            _searchQuery.isNotEmpty || _selectedFilter != 'all' 
-                ? Icons.search_off 
+            _searchQuery.isNotEmpty || _selectedFilter != 'all'
+                ? Icons.search_off
                 : Icons.inventory_2_outlined,
             size: 64,
             color: Colors.grey[400],
@@ -465,7 +479,7 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
   Widget _buildStatusChip(Product product) {
     Color color;
     String text;
-    
+
     if (product.stockQuantity == 0) {
       color = Colors.red;
       text = 'Out of Stock';
@@ -502,11 +516,16 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
 
   int? _getSortColumnIndex() {
     switch (_sortBy) {
-      case 'name': return 0;
-      case 'price': return 1;
-      case 'stock': return 2;
-      case 'created': return 5;
-      default: return null;
+      case 'name':
+        return 0;
+      case 'price':
+        return 1;
+      case 'stock':
+        return 2;
+      case 'created':
+        return 5;
+      default:
+        return null;
     }
   }
 
@@ -525,11 +544,14 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
               if (product.cost != null)
                 _DetailRow('Cost', '\$${product.cost!.toStringAsFixed(2)}'),
               _DetailRow('Stock Quantity', product.stockQuantity.toString()),
-              _DetailRow('Profit Margin', '${product.profitMarginPercentage.toStringAsFixed(1)}%'),
+              _DetailRow('Profit Margin',
+                  '${product.profitMarginPercentage.toStringAsFixed(1)}%'),
               if (product.barcode?.isNotEmpty == true)
                 _DetailRow('Barcode/SKU', product.barcode!),
-              _DetailRow('Created', '${product.createdAt.day}/${product.createdAt.month}/${product.createdAt.year}'),
-              _DetailRow('Last Updated', '${product.updatedAt.day}/${product.updatedAt.month}/${product.updatedAt.year}'),
+              _DetailRow('Created',
+                  '${product.createdAt.day}/${product.createdAt.month}/${product.createdAt.year}'),
+              _DetailRow('Last Updated',
+                  '${product.updatedAt.day}/${product.updatedAt.month}/${product.updatedAt.year}'),
             ],
           ),
         ),
@@ -591,7 +613,8 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete Product', style: TextStyle(color: Colors.red)),
+              title: const Text('Delete Product',
+                  style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 _showDeleteConfirmation(product);
@@ -635,7 +658,9 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
               TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  labelText: adjustmentType == 'set' ? 'New Stock Quantity' : 'Quantity',
+                  labelText: adjustmentType == 'set'
+                      ? 'New Stock Quantity'
+                      : 'Quantity',
                   border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
@@ -675,7 +700,9 @@ class _InventoryListScreenState extends ConsumerState<InventoryListScreen> {
         newStock = product.stockQuantity + quantity;
         break;
       case 'remove':
-        newStock = (product.stockQuantity - quantity).clamp(0, double.infinity).toInt();
+        newStock = (product.stockQuantity - quantity)
+            .clamp(0, double.infinity)
+            .toInt();
         break;
       case 'set':
         newStock = quantity.clamp(0, double.infinity).toInt();

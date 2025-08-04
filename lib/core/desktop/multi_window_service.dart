@@ -28,32 +28,34 @@ class WindowConfig {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'width': size.width,
-    'height': size.height,
-    'x': position.dx,
-    'y': position.dy,
-    'isMaximized': isMaximized,
-    'isMinimized': isMinimized,
-    'route': route,
-    'params': params,
-  };
+        'id': id,
+        'title': title,
+        'width': size.width,
+        'height': size.height,
+        'x': position.dx,
+        'y': position.dy,
+        'isMaximized': isMaximized,
+        'isMinimized': isMinimized,
+        'route': route,
+        'params': params,
+      };
 
   factory WindowConfig.fromJson(Map<String, dynamic> json) => WindowConfig(
-    id: json['id'],
-    title: json['title'],
-    size: Size(json['width']?.toDouble() ?? 800.0, json['height']?.toDouble() ?? 600.0),
-    position: Offset(json['x']?.toDouble() ?? 100.0, json['y']?.toDouble() ?? 100.0),
-    isMaximized: json['isMaximized'] ?? false,
-    isMinimized: json['isMinimized'] ?? false,
-    route: json['route'],
-    params: json['params'] ?? {},
-  );
+        id: json['id'],
+        title: json['title'],
+        size: Size(json['width']?.toDouble() ?? 800.0,
+            json['height']?.toDouble() ?? 600.0),
+        position: Offset(
+            json['x']?.toDouble() ?? 100.0, json['y']?.toDouble() ?? 100.0),
+        isMaximized: json['isMaximized'] ?? false,
+        isMinimized: json['isMinimized'] ?? false,
+        route: json['route'],
+        params: json['params'] ?? {},
+      );
 }
 
 /// Multi-Window Support Service for Linux Desktop
-/// 
+///
 /// Provides multi-window functionality:
 /// - Open invoices in separate windows
 /// - Detachable panels
@@ -79,10 +81,10 @@ class MultiWindowService extends ChangeNotifier {
     try {
       // Set up main window
       await _initializeMainWindow();
-      
+
       // Load saved window configurations
       await _loadWindowConfigurations();
-      
+
       _isInitialized = true;
       debugPrint('✅ Multi-window service initialized successfully');
     } catch (e) {
@@ -138,7 +140,7 @@ class MultiWindowService extends ChangeNotifier {
 
     try {
       final windowId = 'window_${DateTime.now().millisecondsSinceEpoch}';
-      
+
       // Calculate position if not provided
       position ??= _calculateNewWindowPosition();
 
@@ -272,10 +274,10 @@ class MultiWindowService extends ChangeNotifier {
     try {
       _windowConfigs.remove(windowId);
       _navigatorKeys.remove(windowId);
-      
+
       await _saveWindowConfigurations();
       notifyListeners();
-      
+
       debugPrint('Window closed: $windowId');
     } catch (e) {
       debugPrint('Failed to close window $windowId: $e');
@@ -333,17 +335,18 @@ class MultiWindowService extends ChangeNotifier {
 
   /// Get active windows (not minimized)
   List<WindowConfig> getActiveWindows() {
-    return _windowConfigs.values.where((config) => !config.isMinimized).toList();
+    return _windowConfigs.values
+        .where((config) => !config.isMinimized)
+        .toList();
   }
 
   /// Save window configurations to persistent storage
   Future<void> _saveWindowConfigurations() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final configsJson = _windowConfigs.values
-          .map((config) => config.toJson())
-          .toList();
-      
+      final configsJson =
+          _windowConfigs.values.map((config) => config.toJson()).toList();
+
       await prefs.setString('window_configurations', jsonEncode(configsJson));
       debugPrint('Window configurations saved');
     } catch (e) {
@@ -356,10 +359,10 @@ class MultiWindowService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final configsString = prefs.getString('window_configurations');
-      
+
       if (configsString != null) {
         final configsList = jsonDecode(configsString) as List;
-        
+
         for (final configJson in configsList) {
           final config = WindowConfig.fromJson(configJson);
           if (config.id != _mainWindowId) {
@@ -367,7 +370,7 @@ class MultiWindowService extends ChangeNotifier {
             _navigatorKeys[config.id] = GlobalKey<NavigatorState>();
           }
         }
-        
+
         debugPrint('Loaded ${configsList.length} window configurations');
       }
     } catch (e) {
@@ -428,7 +431,7 @@ class MultiWindowService extends ChangeNotifier {
 /// Window event listener for tracking window state changes
 class _WindowListener extends WindowListener {
   final MultiWindowService _service;
-  
+
   _WindowListener(this._service);
 
   @override

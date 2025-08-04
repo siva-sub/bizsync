@@ -120,11 +120,12 @@ class CustomerStatementSummary {
 
   /// Calculate aging analysis
   Map<String, double> get agingAnalysis => {
-    'current': currentBalance - overdue30Days - overdue60Days - overdue90Days,
-    '30_days': overdue30Days,
-    '60_days': overdue60Days,
-    '90_days': overdue90Days,
-  };
+        'current':
+            currentBalance - overdue30Days - overdue60Days - overdue90Days,
+        '30_days': overdue30Days,
+        '60_days': overdue60Days,
+        '90_days': overdue90Days,
+      };
 }
 
 /// Customer statement transaction entry
@@ -188,7 +189,8 @@ class StatementTransaction {
       id: id,
       date: payment.paymentDate,
       type: StatementTransactionType.payment,
-      description: 'Payment for Invoice ${payment.invoiceNumber ?? payment.invoiceId}',
+      description:
+          'Payment for Invoice ${payment.invoiceNumber ?? payment.invoiceId}',
       reference: payment.reference,
       debit: 0.0,
       credit: payment.amount,
@@ -266,7 +268,7 @@ class StatementGenerationOptions {
     );
   }
 
-  /// Generate options for last month  
+  /// Generate options for last month
   factory StatementGenerationOptions.lastMonth() {
     final now = DateTime.now();
     final lastMonth = DateTime(now.year, now.month - 1);
@@ -355,9 +357,7 @@ class CustomerBalanceSummary {
 
   /// Check if customer is high risk
   bool get isHighRisk {
-    return overdueBalance > 0 || 
-           isOverLimit || 
-           daysSinceLastPayment > 90;
+    return overdueBalance > 0 || isOverLimit || daysSinceLastPayment > 90;
   }
 
   /// Get risk level

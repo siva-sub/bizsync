@@ -154,7 +154,7 @@ class _InteractiveLineChartState extends State<InteractiveLineChart>
                           sideTitles: SideTitles(
                             showTitles: true,
                             reservedSize: 30,
-                            interval: widget.data.length > 10 
+                            interval: widget.data.length > 10
                                 ? (widget.data.length / 5).ceil().toDouble()
                                 : 1,
                             getTitlesWidget: (value, meta) {
@@ -202,13 +202,15 @@ class _InteractiveLineChartState extends State<InteractiveLineChart>
                       ),
                       lineTouchData: LineTouchData(
                         enabled: widget.showTooltip,
-                        touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
-                          if (response != null && response.lineBarSpots != null) {
+                        touchCallback:
+                            (FlTouchEvent event, LineTouchResponse? response) {
+                          if (response != null &&
+                              response.lineBarSpots != null) {
                             final spot = response.lineBarSpots!.first;
                             setState(() {
                               touchedIndex = spot.spotIndex;
                             });
-                            
+
                             if (widget.onPointTap != null) {
                               final dataPoint = widget.data[spot.spotIndex];
                               widget.onPointTap!(dataPoint);
@@ -421,13 +423,14 @@ class _InteractiveBarChartState extends State<InteractiveBarChart>
                       ),
                       barTouchData: BarTouchData(
                         enabled: true,
-                        touchCallback: (FlTouchEvent event, BarTouchResponse? response) {
+                        touchCallback:
+                            (FlTouchEvent event, BarTouchResponse? response) {
                           if (response != null && response.spot != null) {
                             final index = response.spot!.touchedBarGroupIndex;
                             setState(() {
                               touchedIndex = index;
                             });
-                            
+
                             if (widget.onBarTap != null) {
                               widget.onBarTap!(widget.data[index]);
                             }
@@ -564,41 +567,40 @@ class _InteractivePieChartState extends State<InteractivePieChart>
                 builder: (context, child) {
                   return PieChart(
                     PieChartData(
-                      sections: widget.data
-                          .asMap()
-                          .entries
-                          .map((entry) {
-                            final index = entry.key;
-                            final dataPoint = entry.value;
-                            final percentage = (dataPoint.value / total) * 100;
-                            final isTouched = touchedIndex == index;
-                            final radius = isTouched ? 60.0 : 50.0;
-                            
-                            return PieChartSectionData(
-                              value: dataPoint.value * _animation.value,
-                              title: widget.showPercentages 
-                                  ? '${percentage.toStringAsFixed(1)}%'
-                                  : '',
-                              color: colors[index % colors.length],
-                              radius: radius,
-                              titleStyle: TextStyle(
-                                fontSize: isTouched ? 14 : 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            );
-                          })
-                          .toList(),
+                      sections: widget.data.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final dataPoint = entry.value;
+                        final percentage = (dataPoint.value / total) * 100;
+                        final isTouched = touchedIndex == index;
+                        final radius = isTouched ? 60.0 : 50.0;
+
+                        return PieChartSectionData(
+                          value: dataPoint.value * _animation.value,
+                          title: widget.showPercentages
+                              ? '${percentage.toStringAsFixed(1)}%'
+                              : '',
+                          color: colors[index % colors.length],
+                          radius: radius,
+                          titleStyle: TextStyle(
+                            fontSize: isTouched ? 14 : 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        );
+                      }).toList(),
                       sectionsSpace: 2,
                       centerSpaceRadius: 0,
                       pieTouchData: PieTouchData(
-                        touchCallback: (FlTouchEvent event, PieTouchResponse? response) {
-                          if (response != null && response.touchedSection != null) {
-                            final index = response.touchedSection!.touchedSectionIndex;
+                        touchCallback:
+                            (FlTouchEvent event, PieTouchResponse? response) {
+                          if (response != null &&
+                              response.touchedSection != null) {
+                            final index =
+                                response.touchedSection!.touchedSectionIndex;
                             setState(() {
                               touchedIndex = index;
                             });
-                            
+
                             if (widget.onSectionTap != null) {
                               widget.onSectionTap!(widget.data[index]);
                             }
@@ -637,7 +639,8 @@ class _InteractivePieChartState extends State<InteractivePieChart>
     );
   }
 
-  Widget _buildLegendItem(String label, Color color, double value, double total) {
+  Widget _buildLegendItem(
+      String label, Color color, double value, double total) {
     final percentage = (value / total) * 100;
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -718,21 +721,17 @@ class DonutChart extends StatelessWidget {
                 children: [
                   PieChart(
                     PieChartData(
-                      sections: data
-                          .asMap()
-                          .entries
-                          .map((entry) {
-                            final index = entry.key;
-                            final dataPoint = entry.value;
-                            
-                            return PieChartSectionData(
-                              value: dataPoint.value,
-                              title: '',
-                              color: chartColors[index % chartColors.length],
-                              radius: 50,
-                            );
-                          })
-                          .toList(),
+                      sections: data.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final dataPoint = entry.value;
+
+                        return PieChartSectionData(
+                          value: dataPoint.value,
+                          title: '',
+                          color: chartColors[index % chartColors.length],
+                          radius: 50,
+                        );
+                      }).toList(),
                       sectionsSpace: 2,
                       centerSpaceRadius: 80,
                     ),
@@ -744,7 +743,10 @@ class DonutChart extends StatelessWidget {
                         children: [
                           Text(
                             centerText!,
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                             textAlign: TextAlign.center,
@@ -839,8 +841,9 @@ class _ProgressGaugeState extends State<ProgressGauge>
                 animation: _animation,
                 builder: (context, child) {
                   final animatedValue = widget.value * _animation.value;
-                  final percentage = (animatedValue / widget.maxValue * 100).clamp(0, 100);
-                  
+                  final percentage =
+                      (animatedValue / widget.maxValue * 100).clamp(0, 100);
+
                   return Stack(
                     alignment: Alignment.center,
                     children: [
@@ -851,7 +854,8 @@ class _ProgressGaugeState extends State<ProgressGauge>
                           value: percentage / 100,
                           strokeWidth: 20,
                           backgroundColor: Colors.grey[300],
-                          valueColor: AlwaysStoppedAnimation<Color>(widget.color),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(widget.color),
                         ),
                       ),
                       Column(
@@ -859,7 +863,10 @@ class _ProgressGaugeState extends State<ProgressGauge>
                         children: [
                           Text(
                             '${percentage.toStringAsFixed(1)}%',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: widget.color,
                                 ),
@@ -1043,15 +1050,16 @@ class _AnimatedKPICardState extends State<AnimatedKPICard>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
     );
-    
-    _valueAnimation = Tween<double>(begin: 0, end: widget.kpi.currentValue).animate(
+
+    _valueAnimation =
+        Tween<double>(begin: 0, end: widget.kpi.currentValue).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
-    
+
     _animationController.forward();
   }
 
@@ -1126,7 +1134,10 @@ class _AnimatedKPICardState extends State<AnimatedKPICard>
                       builder: (context, child) {
                         return Text(
                           _formatKPIValue(_valueAnimation.value),
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                         );
@@ -1135,7 +1146,9 @@ class _AnimatedKPICardState extends State<AnimatedKPICard>
                     if (widget.kpi.targetValue != null) ...[
                       const SizedBox(height: 8),
                       LinearProgressIndicator(
-                        value: (widget.kpi.currentValue / widget.kpi.targetValue!).clamp(0.0, 1.0),
+                        value:
+                            (widget.kpi.currentValue / widget.kpi.targetValue!)
+                                .clamp(0.0, 1.0),
                         backgroundColor: Colors.grey[300],
                         valueColor: AlwaysStoppedAnimation<Color>(trendColor),
                       ),
@@ -1157,9 +1170,9 @@ class _AnimatedKPICardState extends State<AnimatedKPICard>
 
   String _formatKPIValue(double value) {
     String formattedValue = '';
-    
+
     if (widget.kpi.prefix != null) formattedValue += widget.kpi.prefix!;
-    
+
     if (value >= 1000000) {
       formattedValue += '${(value / 1000000).toStringAsFixed(1)}M';
     } else if (value >= 1000) {
@@ -1167,12 +1180,12 @@ class _AnimatedKPICardState extends State<AnimatedKPICard>
     } else {
       formattedValue += value.toStringAsFixed(widget.kpi.unit == '%' ? 1 : 0);
     }
-    
+
     if (widget.kpi.suffix != null) formattedValue += widget.kpi.suffix!;
     if (widget.kpi.unit.isNotEmpty && widget.kpi.suffix == null) {
       formattedValue += ' ${widget.kpi.unit}';
     }
-    
+
     return formattedValue;
   }
 

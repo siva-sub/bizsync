@@ -13,7 +13,7 @@ class EmailSettingsScreen extends StatefulWidget {
 
 class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
   final InvoiceEmailService _emailService = InvoiceEmailService.instance;
-  
+
   List<EmailConfiguration> _configurations = [];
   bool _isLoading = true;
   String? _testEmail;
@@ -27,7 +27,7 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
 
   Future<void> _loadConfigurations() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final configs = await _emailService.getAllEmailConfigurations();
       setState(() {
@@ -58,15 +58,16 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
     setState(() => _isTesting = true);
 
     try {
-      final result = await _emailService.testEmailConfiguration(config, _testEmail!);
-      
+      final result =
+          await _emailService.testEmailConfiguration(config, _testEmail!);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              result.success 
-                ? 'Test email sent successfully!' 
-                : 'Test failed: ${result.error}',
+              result.success
+                  ? 'Test email sent successfully!'
+                  : 'Test failed: ${result.error}',
             ),
             backgroundColor: result.success ? Colors.green : Colors.red,
           ),
@@ -92,10 +93,10 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
         isDefault: true,
         updatedAt: DateTime.now(),
       );
-      
+
       await _emailService.saveEmailConfiguration(updatedConfig);
       await _loadConfigurations();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -161,8 +162,8 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
             Text(
               'Test Email Configuration',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -186,8 +187,8 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
-                  onPressed: _isTesting 
-                      ? null 
+                  onPressed: _isTesting
+                      ? null
                       : () {
                           final defaultConfig = _configurations
                               .where((c) => c.isDefault)
@@ -197,12 +198,13 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Please set a default email configuration first'),
+                                content: Text(
+                                    'Please set a default email configuration first'),
                               ),
                             );
                           }
                         },
-                  icon: _isTesting 
+                  icon: _isTesting
                       ? const SizedBox(
                           width: 16,
                           height: 16,
@@ -257,7 +259,7 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: config.isDefault 
+          backgroundColor: config.isDefault
               ? Colors.green.withOpacity(0.1)
               : Colors.grey.withOpacity(0.1),
           child: Icon(
@@ -326,7 +328,9 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
                   await _testEmailConfiguration(config);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a test email address first')),
+                    const SnackBar(
+                        content:
+                            Text('Please enter a test email address first')),
                   );
                 }
                 break;
@@ -353,10 +357,11 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
       try {
         await _emailService.saveEmailConfiguration(result);
         await _loadConfigurations();
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Email configuration saved successfully')),
+            const SnackBar(
+                content: Text('Email configuration saved successfully')),
           );
         }
       } catch (e) {
@@ -382,10 +387,11 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
       try {
         await _emailService.saveEmailConfiguration(result);
         await _loadConfigurations();
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Email configuration updated successfully')),
+            const SnackBar(
+                content: Text('Email configuration updated successfully')),
           );
         }
       } catch (e) {
@@ -442,7 +448,8 @@ class EmailConfigurationDialog extends StatefulWidget {
   });
 
   @override
-  State<EmailConfigurationDialog> createState() => _EmailConfigurationDialogState();
+  State<EmailConfigurationDialog> createState() =>
+      _EmailConfigurationDialogState();
 }
 
 class _EmailConfigurationDialogState extends State<EmailConfigurationDialog> {
@@ -514,7 +521,9 @@ class _EmailConfigurationDialogState extends State<EmailConfigurationDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.configuration != null ? 'Edit Email Configuration' : 'Add Email Configuration'),
+      title: Text(widget.configuration != null
+          ? 'Edit Email Configuration'
+          : 'Add Email Configuration'),
       content: SizedBox(
         width: double.maxFinite,
         child: Form(
@@ -594,7 +603,9 @@ class _EmailConfigurationDialogState extends State<EmailConfigurationDialog> {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         validator: (value) {
                           final port = int.tryParse(value ?? '');
                           if (port == null || port < 1 || port > 65535) {
@@ -654,8 +665,11 @@ class _EmailConfigurationDialogState extends State<EmailConfigurationDialog> {
                     hintText: 'App password or regular password',
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
-                      onPressed: () => setState(() => _showPassword = !_showPassword),
-                      icon: Icon(_showPassword ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () =>
+                          setState(() => _showPassword = !_showPassword),
+                      icon: Icon(_showPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility),
                     ),
                   ),
                   obscureText: !_showPassword,
@@ -680,7 +694,8 @@ class _EmailConfigurationDialogState extends State<EmailConfigurationDialog> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter from email';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
                       return 'Please enter valid email';
                     }
                     return null;
@@ -706,7 +721,8 @@ class _EmailConfigurationDialogState extends State<EmailConfigurationDialog> {
 
                 CheckboxListTile(
                   title: const Text('Set as Default'),
-                  subtitle: const Text('Use this configuration for sending invoices'),
+                  subtitle:
+                      const Text('Use this configuration for sending invoices'),
                   value: _isDefault,
                   onChanged: (value) => setState(() => _isDefault = value!),
                 ),
@@ -724,7 +740,8 @@ class _EmailConfigurationDialogState extends State<EmailConfigurationDialog> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               final configuration = EmailConfiguration(
-                id: widget.configuration?.id ?? 'config-${DateTime.now().millisecondsSinceEpoch}',
+                id: widget.configuration?.id ??
+                    'config-${DateTime.now().millisecondsSinceEpoch}',
                 providerName: _providerController.text.trim(),
                 smtpHost: _hostController.text.trim(),
                 smtpPort: int.parse(_portController.text),

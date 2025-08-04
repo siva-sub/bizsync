@@ -8,7 +8,7 @@ import '../models/notification_models.dart';
 
 /// Service for managing notification templates
 class NotificationTemplateService {
-  static final NotificationTemplateService _instance = 
+  static final NotificationTemplateService _instance =
       NotificationTemplateService._internal();
   factory NotificationTemplateService() => _instance;
   NotificationTemplateService._internal();
@@ -28,14 +28,15 @@ class NotificationTemplateService {
   /// Get all available templates (default + custom)
   List<NotificationTemplate> getAllTemplates() {
     return [
-      ...NotificationTemplates.defaultTemplates.map((template) => 
-          template.copyWith(createdAt: DateTime.now())),
+      ...NotificationTemplates.defaultTemplates
+          .map((template) => template.copyWith(createdAt: DateTime.now())),
       ..._customTemplates,
     ];
   }
 
   /// Get templates by category
-  List<NotificationTemplate> getTemplatesByCategory(NotificationCategory category) {
+  List<NotificationTemplate> getTemplatesByCategory(
+      NotificationCategory category) {
     return getAllTemplates()
         .where((template) => template.category == category)
         .toList();
@@ -156,7 +157,8 @@ class NotificationTemplateService {
       style: style ?? existingTemplate.style,
       actions: actions ?? existingTemplate.actions,
       defaultPayload: defaultPayload ?? existingTemplate.defaultPayload,
-      requiredVariables: requiredVariables ?? existingTemplate.requiredVariables,
+      requiredVariables:
+          requiredVariables ?? existingTemplate.requiredVariables,
       enabled: enabled ?? existingTemplate.enabled,
       createdAt: existingTemplate.createdAt,
       updatedAt: DateTime.now(),
@@ -204,8 +206,7 @@ class NotificationTemplateService {
     // Validate required variables
     if (!template.validateVariables(variables)) {
       throw ArgumentError(
-        'Missing required variables: ${template.getMissingVariables(variables).join(', ')}'
-      );
+          'Missing required variables: ${template.getMissingVariables(variables).join(', ')}');
     }
 
     return BizSyncNotification(
@@ -322,7 +323,7 @@ class NotificationTemplateService {
   Future<TemplateUsageStats> getTemplateUsageStats(String templateId) async {
     final prefs = await SharedPreferences.getInstance();
     final usageData = prefs.getString('template_usage_$templateId');
-    
+
     if (usageData != null) {
       try {
         final data = jsonDecode(usageData) as Map<String, dynamic>;
@@ -347,14 +348,14 @@ class NotificationTemplateService {
     double? engagementScore,
   }) async {
     final stats = await getTemplateUsageStats(templateId);
-    
+
     final updatedStats = TemplateUsageStats(
       templateId: templateId,
       totalUsage: stats.totalUsage + 1,
       lastUsed: DateTime.now(),
       averageEngagement: engagementScore != null
-          ? ((stats.averageEngagement * stats.totalUsage) + engagementScore) / 
-            (stats.totalUsage + 1)
+          ? ((stats.averageEngagement * stats.totalUsage) + engagementScore) /
+              (stats.totalUsage + 1)
           : stats.averageEngagement,
       createdAt: stats.createdAt,
     );
@@ -367,7 +368,8 @@ class NotificationTemplateService {
   }
 
   /// Get popular templates based on usage
-  Future<List<NotificationTemplate>> getPopularTemplates({int limit = 10}) async {
+  Future<List<NotificationTemplate>> getPopularTemplates(
+      {int limit = 10}) async {
     final templates = getAllTemplates();
     final templatesWithStats = <TemplateWithStats>[];
 
@@ -383,10 +385,7 @@ class NotificationTemplateService {
       return bScore.compareTo(aScore);
     });
 
-    return templatesWithStats
-        .take(limit)
-        .map((item) => item.template)
-        .toList();
+    return templatesWithStats.take(limit).map((item) => item.template).toList();
   }
 
   /// Export templates to JSON
@@ -399,9 +398,8 @@ class NotificationTemplateService {
     List<NotificationTemplate> templatesToExport;
 
     if (templateIds != null) {
-      templatesToExport = getAllTemplates()
-          .where((t) => templateIds.contains(t.id))
-          .toList();
+      templatesToExport =
+          getAllTemplates().where((t) => templateIds.contains(t.id)).toList();
     } else if (includeDefaultTemplates) {
       templatesToExport = getAllTemplates();
     } else {
@@ -427,9 +425,8 @@ class NotificationTemplateService {
       for (final templateData in templates) {
         try {
           final template = NotificationTemplate.fromJson(
-            templateData as Map<String, dynamic>
-          );
-          
+              templateData as Map<String, dynamic>);
+
           // Generate new ID to avoid conflicts
           final importedTemplate = NotificationTemplate(
             id: _uuid.v4(),
@@ -490,8 +487,9 @@ class NotificationTemplateService {
   /// Load custom templates from storage
   Future<void> _loadCustomTemplates() async {
     final prefs = await SharedPreferences.getInstance();
-    final templatesJson = prefs.getStringList('custom_notification_templates') ?? [];
-    
+    final templatesJson =
+        prefs.getStringList('custom_notification_templates') ?? [];
+
     _customTemplates.clear();
     for (final templateJson in templatesJson) {
       try {
@@ -523,11 +521,11 @@ class NotificationTemplateService {
   /// Get template count by category
   Map<NotificationCategory, int> getTemplateCounts() {
     final counts = <NotificationCategory, int>{};
-    
+
     for (final category in NotificationCategory.values) {
       counts[category] = getTemplatesByCategory(category).length;
     }
-    
+
     return counts;
   }
 }
@@ -579,7 +577,7 @@ class TemplateUsageStats {
     return TemplateUsageStats(
       templateId: json['templateId'] as String,
       totalUsage: json['totalUsage'] as int,
-      lastUsed: json['lastUsed'] != null 
+      lastUsed: json['lastUsed'] != null
           ? DateTime.parse(json['lastUsed'] as String)
           : null,
       averageEngagement: (json['averageEngagement'] as num).toDouble(),

@@ -46,10 +46,11 @@ class PlatformDatabaseFactory {
         databaseFactory = databaseFactoryFfi;
         print('INFO: Initialized SQLite FFI for ${Platform.operatingSystem}');
       }
-      
+
       // Use SQLite without encryption (SQLCipher support temporarily disabled)
-      print('INFO: Using SQLite without encryption on ${Platform.operatingSystem}');
-      
+      print(
+          'INFO: Using SQLite without encryption on ${Platform.operatingSystem}');
+
       if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
         // Use FFI database for desktop platforms
         return await databaseFactoryFfi.openDatabase(
@@ -73,8 +74,7 @@ class PlatformDatabaseFactory {
       }
     } catch (e) {
       throw app_exceptions.DatabaseException(
-        'Failed to open database: $e. Platform: ${Platform.operatingSystem}'
-      );
+          'Failed to open database: $e. Platform: ${Platform.operatingSystem}');
     }
   }
 
@@ -86,9 +86,10 @@ class PlatformDatabaseFactory {
       'database_type': 'SQLite (Unencrypted)',
       'encryption_available': false,
       'fallback_reason': 'SQLCipher temporarily disabled for build stability',
-      'database_factory': Platform.isLinux || Platform.isWindows || Platform.isMacOS 
-        ? 'sqflite_common_ffi' 
-        : 'sqflite',
+      'database_factory':
+          Platform.isLinux || Platform.isWindows || Platform.isMacOS
+              ? 'sqflite_common_ffi'
+              : 'sqflite',
     };
   }
 

@@ -23,22 +23,23 @@ class _ProfessionalInvoiceListScreenState
     extends ConsumerState<ProfessionalInvoiceListScreen> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
-  
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
   }
-  
+
   @override
   void dispose() {
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
-  
+
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
       final notifier = ref.read(invoiceListProvider.notifier);
       final state = ref.read(invoiceListProvider);
       if (!state.isLoading && state.hasMore) {
@@ -65,7 +66,9 @@ class _ProfessionalInvoiceListScreenState
         },
         onChangeStatus: (status) async {
           Navigator.pop(context);
-          ref.read(invoiceListProvider.notifier).changeInvoiceStatus(invoice.id, status);
+          ref
+              .read(invoiceListProvider.notifier)
+              .changeInvoiceStatus(invoice.id, status);
         },
         onDuplicate: () {
           Navigator.pop(context);
@@ -78,7 +81,7 @@ class _ProfessionalInvoiceListScreenState
       ),
     );
   }
-  
+
   Future<bool> _confirmDelete(CRDTInvoiceEnhanced invoice) async {
     final result = await showDialog<bool>(
       context: context,
@@ -104,7 +107,7 @@ class _ProfessionalInvoiceListScreenState
     );
     return result ?? false;
   }
-  
+
   void _showPaymentDialog(CRDTInvoiceEnhanced invoice) {
     // This would show SGQR payment generation dialog
     showDialog(
@@ -183,7 +186,8 @@ class _ProfessionalInvoiceListScreenState
                             controller: _searchController,
                             hintText: 'Search invoices...',
                             leading: const Icon(Icons.search),
-                            onChanged: (query) => notifier.searchInvoices(query),
+                            onChanged: (query) =>
+                                notifier.searchInvoices(query),
                             trailing: [
                               if (state.searchQuery.isNotEmpty)
                                 IconButton(
@@ -217,7 +221,8 @@ class _ProfessionalInvoiceListScreenState
                         children: [
                           if (state.statusFilters.isNotEmpty)
                             Chip(
-                              label: Text('Status: ${state.statusFilters.length} selected'),
+                              label: Text(
+                                  'Status: ${state.statusFilters.length} selected'),
                               deleteIcon: const Icon(Icons.close, size: 18),
                               onDeleted: () => notifier.filterByStatus([]),
                             ),
@@ -227,11 +232,13 @@ class _ProfessionalInvoiceListScreenState
                               deleteIcon: const Icon(Icons.close, size: 18),
                               onDeleted: () => notifier.filterByCustomer(null),
                             ),
-                          if (state.dateFromFilter != null || state.dateToFilter != null)
+                          if (state.dateFromFilter != null ||
+                              state.dateToFilter != null)
                             Chip(
                               label: const Text('Date filtered'),
                               deleteIcon: const Icon(Icons.close, size: 18),
-                              onDeleted: () => notifier.filterByDateRange(null, null),
+                              onDeleted: () =>
+                                  notifier.filterByDateRange(null, null),
                             ),
                           if (_hasActiveFilters(state))
                             TextButton(
@@ -258,7 +265,7 @@ class _ProfessionalInvoiceListScreenState
                         ),
                   ),
                   const Spacer(),
-                  if (state.isLoading) 
+                  if (state.isLoading)
                     const SizedBox(
                       width: 16,
                       height: 16,
@@ -351,8 +358,8 @@ class _ProfessionalInvoiceListScreenState
                       Text(
                         invoice.customerEmail.value!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                              color: Colors.grey[600],
+                            ),
                       ),
                   ],
                 ),
@@ -370,7 +377,8 @@ class _ProfessionalInvoiceListScreenState
                         '${invoice.calculateDueDate()!.day}/${invoice.calculateDueDate()!.month}/${invoice.calculateDueDate()!.year}',
                         style: TextStyle(
                           color: invoice.isOverdue ? Colors.red : null,
-                          fontWeight: invoice.isOverdue ? FontWeight.w600 : null,
+                          fontWeight:
+                              invoice.isOverdue ? FontWeight.w600 : null,
                         ),
                       )
                     : const Text('-'),
@@ -429,9 +437,10 @@ class _ProfessionalInvoiceListScreenState
                     children: [
                       Text(
                         invoice.invoiceNumber.value,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       InvoiceStatusChip(status: invoice.status.value),
                     ],
@@ -440,16 +449,16 @@ class _ProfessionalInvoiceListScreenState
                   Text(
                     invoice.customerName.value ?? 'Unknown Customer',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                   if (invoice.customerEmail.value != null) ...[
                     const SizedBox(height: 4),
                     Text(
                       invoice.customerEmail.value!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
                   ],
                   const SizedBox(height: 12),
@@ -461,20 +470,26 @@ class _ProfessionalInvoiceListScreenState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          Text(
-                            'Amount',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
+                            Text(
+                              'Amount',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                             ),
-                          ),
-                          Text(
-                            '${invoice.currency.value} ${invoice.totalAmount.value.toStringAsFixed(2)}',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                            Text(
+                              '${invoice.currency.value} ${invoice.totalAmount.value.toStringAsFixed(2)}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
                           ],
                         ),
                       ),
@@ -483,21 +498,30 @@ class _ProfessionalInvoiceListScreenState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                          Text(
-                            'Due Date',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
+                            Text(
+                              'Due Date',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                             ),
-                          ),
-                          Text(
-                            invoice.calculateDueDate() != null
-                                ? '${invoice.calculateDueDate()!.day}/${invoice.calculateDueDate()!.month}/${invoice.calculateDueDate()!.year}'
-                                : 'No due date',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: invoice.isOverdue ? Colors.red : null,
-                              fontWeight: invoice.isOverdue ? FontWeight.w600 : null,
+                            Text(
+                              invoice.calculateDueDate() != null
+                                  ? '${invoice.calculateDueDate()!.day}/${invoice.calculateDueDate()!.month}/${invoice.calculateDueDate()!.year}'
+                                  : 'No due date',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color:
+                                        invoice.isOverdue ? Colors.red : null,
+                                    fontWeight: invoice.isOverdue
+                                        ? FontWeight.w600
+                                        : null,
+                                  ),
                             ),
-                          ),
                           ],
                         ),
                       ),
@@ -530,15 +554,15 @@ class _ProfessionalInvoiceListScreenState
           Text(
             'No invoices found',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Create your first invoice to get started',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[500],
-            ),
+                  color: Colors.grey[500],
+                ),
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
@@ -564,7 +588,7 @@ class _ProfessionalInvoiceListScreenState
     if (state.dateFromFilter != null || state.dateToFilter != null) count++;
     return count;
   }
-  
+
   bool _hasActiveFilters(InvoiceListState state) {
     return _getActiveFiltersCount(state) > 0;
   }

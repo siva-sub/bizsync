@@ -52,8 +52,10 @@ class _CustomerPickerState extends State<CustomerPicker> {
         _filteredCustomers = widget.customers
             .where((customer) =>
                 customer.name.toLowerCase().contains(query.toLowerCase()) ||
-                (customer.email?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
-                (customer.uen?.toLowerCase().contains(query.toLowerCase()) ?? false))
+                (customer.email?.toLowerCase().contains(query.toLowerCase()) ??
+                    false) ||
+                (customer.uen?.toLowerCase().contains(query.toLowerCase()) ??
+                    false))
             .toList();
       }
     });
@@ -100,7 +102,8 @@ class _CustomerPickerState extends State<CustomerPicker> {
                     tooltip: 'Clear selection',
                   ),
                 IconButton(
-                  icon: Icon(_showDropdown ? Icons.expand_less : Icons.expand_more),
+                  icon: Icon(
+                      _showDropdown ? Icons.expand_less : Icons.expand_more),
                   onPressed: widget.enabled
                       ? () {
                           setState(() {
@@ -155,13 +158,15 @@ class _CustomerPickerState extends State<CustomerPicker> {
                     itemBuilder: (context, index) {
                       final customer = _filteredCustomers[index];
                       final isSelected = customer.id == _selectedCustomer?.id;
-                      
+
                       return ListTile(
                         selected: isSelected,
                         title: Text(
                           customer.name,
                           style: TextStyle(
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                         subtitle: Column(
@@ -175,9 +180,12 @@ class _CustomerPickerState extends State<CustomerPicker> {
                             if (customer.uen != null)
                               Text(
                                 'UEN: ${customer.uen}',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
                               ),
                           ],
                         ),
@@ -193,7 +201,8 @@ class _CustomerPickerState extends State<CustomerPicker> {
                                   color: Colors.green[800],
                                 ),
                                 padding: EdgeInsets.zero,
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
                               ),
                             if (isSelected)
                               Icon(
@@ -214,7 +223,10 @@ class _CustomerPickerState extends State<CustomerPicker> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+              color: Theme.of(context)
+                  .colorScheme
+                  .primaryContainer
+                  .withOpacity(0.3),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: Theme.of(context).colorScheme.primaryContainer,
@@ -235,8 +247,8 @@ class _CustomerPickerState extends State<CustomerPicker> {
                       Text(
                         _selectedCustomer!.name,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       if (_selectedCustomer!.email != null)
                         Text(
@@ -246,9 +258,10 @@ class _CustomerPickerState extends State<CustomerPicker> {
                       if (_selectedCustomer!.uen != null)
                         Text(
                           'UEN: ${_selectedCustomer!.uen}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
                         ),
                     ],
                   ),

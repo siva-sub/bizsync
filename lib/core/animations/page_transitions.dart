@@ -183,7 +183,8 @@ class PageTransitions {
           end: Offset.zero,
         ).animate(CurvedAnimation(
           parent: animation,
-          curve: const Interval(0.2, 1.0, curve: AnimationConstants.fastOutSlowIn),
+          curve:
+              const Interval(0.2, 1.0, curve: AnimationConstants.fastOutSlowIn),
         ));
 
         final slideOutAnimation = Tween<Offset>(
@@ -191,7 +192,8 @@ class PageTransitions {
           end: Offset(reverse ? 0.3 : -0.3, 0.0),
         ).animate(CurvedAnimation(
           parent: secondaryAnimation,
-          curve: const Interval(0.0, 0.8, curve: AnimationConstants.fastOutSlowIn),
+          curve:
+              const Interval(0.0, 0.8, curve: AnimationConstants.fastOutSlowIn),
         ));
 
         final fadeInAnimation = CurvedAnimation(
@@ -239,7 +241,8 @@ class PageTransitions {
           end: Offset.zero,
         ).animate(CurvedAnimation(
           parent: animation,
-          curve: const Interval(0.2, 1.0, curve: AnimationConstants.fastOutSlowIn),
+          curve:
+              const Interval(0.2, 1.0, curve: AnimationConstants.fastOutSlowIn),
         ));
 
         final fadeInAnimation = CurvedAnimation(
@@ -406,7 +409,8 @@ class TransitionBuilder {
           end: 1.0,
         ).animate(CurvedAnimation(
           parent: animation,
-          curve: const Interval(0.2, 1.0, curve: AnimationConstants.fastOutSlowIn),
+          curve:
+              const Interval(0.2, 1.0, curve: AnimationConstants.fastOutSlowIn),
         )),
         child: child,
       ),
@@ -422,7 +426,8 @@ class TransitionBuilder {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        final radius = animation.value * MediaQuery.of(context).size.longestSide;
+        final radius =
+            animation.value * MediaQuery.of(context).size.longestSide;
         return ClipOval(
           clipper: CircleClipper(radius: radius),
           child: child,

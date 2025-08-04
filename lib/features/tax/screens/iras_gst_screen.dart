@@ -17,7 +17,7 @@ class _IrasGstScreenState extends ConsumerState<IrasGstScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final IrasService _irasService = IrasService.instance;
-  
+
   bool _isLoading = false;
   String? _lastSubmissionResult;
 
@@ -113,7 +113,8 @@ class _IrasGstScreenState extends ConsumerState<IrasGstScreen>
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Icon(Icons.send),
                         label: const Text('Submit Sample F5'),
@@ -367,10 +368,14 @@ class _IrasGstScreenState extends ConsumerState<IrasGstScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _buildNoteItem('GST returns must be submitted by the last day of the month following the end of the taxable period'),
-                  _buildNoteItem('Ensure all amounts are in Singapore Dollars (SGD)'),
-                  _buildNoteItem('Keep proper records and supporting documents for audit purposes'),
-                  _buildNoteItem('Late submission may result in penalties and interest charges'),
+                  _buildNoteItem(
+                      'GST returns must be submitted by the last day of the month following the end of the taxable period'),
+                  _buildNoteItem(
+                      'Ensure all amounts are in Singapore Dollars (SGD)'),
+                  _buildNoteItem(
+                      'Keep proper records and supporting documents for audit purposes'),
+                  _buildNoteItem(
+                      'Late submission may result in penalties and interest charges'),
                 ],
               ),
             ),
@@ -443,10 +448,10 @@ class _IrasGstScreenState extends ConsumerState<IrasGstScreen>
 
       if (response.isSuccess) {
         setState(() {
-          _lastSubmissionResult = 
+          _lastSubmissionResult =
               'Success! Acknowledgment: ${response.data?.filingInfo.ackNo ?? 'N/A'}';
         });
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -466,7 +471,7 @@ class _IrasGstScreenState extends ConsumerState<IrasGstScreen>
       setState(() {
         _lastSubmissionResult = 'Error: ${e.message}';
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -487,7 +492,7 @@ class _IrasGstScreenState extends ConsumerState<IrasGstScreen>
 
     try {
       final response = await _irasService.checkGstRegister(gstRegNo);
-      
+
       if (response.isSuccess && response.data != null) {
         if (mounted) {
           showDialog(

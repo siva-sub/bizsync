@@ -84,7 +84,7 @@ class CompanyTaxProfile {
     // TODO: Implement proper JSON deserialization when build_runner generates the code
     throw UnimplementedError('JSON serialization not yet implemented');
   }
-  
+
   Map<String, dynamic> toJson() {
     // TODO: Implement proper JSON serialization when build_runner generates the code
     throw UnimplementedError('JSON serialization not yet implemented');
@@ -92,15 +92,16 @@ class CompanyTaxProfile {
 
   bool isEligibleForStartupExemption() {
     if (companyType != CompanyType.startup) return false;
-    
-    final yearsSinceIncorporation = DateTime.now().difference(incorporationDate).inDays / 365;
+
+    final yearsSinceIncorporation =
+        DateTime.now().difference(incorporationDate).inDays / 365;
     return yearsSinceIncorporation <= 3; // First 3 consecutive years
   }
 
   bool isQualifiedForPartialExemption() {
     return companyType == CompanyType.privateLimited ||
-           companyType == CompanyType.publicLimited ||
-           companyType == CompanyType.startup;
+        companyType == CompanyType.publicLimited ||
+        companyType == CompanyType.startup;
   }
 
   bool requiresGstRegistration(double annualTurnover) {
@@ -152,7 +153,7 @@ class CompanyTaxProfile {
 
   List<TaxRate> _getCorporateTaxRates(DateTime date) {
     List<TaxRate> rates = [];
-    
+
     if (companyType == CompanyType.charity) {
       rates.add(TaxRate(
         id: 'charity_exemption',
@@ -179,7 +180,7 @@ class CompanyTaxProfile {
         ),
       ]);
     }
-    
+
     // Standard corporate tax rate
     rates.add(TaxRate(
       id: 'standard_corporate',
@@ -188,7 +189,7 @@ class CompanyTaxProfile {
       effectiveFrom: DateTime(2024, 1, 1),
       description: 'Standard Corporate Tax 17%',
     ));
-    
+
     return rates;
   }
 }
@@ -225,8 +226,9 @@ class TaxExemption {
   Map<String, dynamic> toJson() => _$TaxExemptionToJson(this);
 
   bool isValidOn(DateTime date) {
-    return date.isAfter(effectiveFrom) || date.isAtSameMomentAs(effectiveFrom) &&
-           (effectiveTo == null || date.isBefore(effectiveTo!));
+    return date.isAfter(effectiveFrom) ||
+        date.isAtSameMomentAs(effectiveFrom) &&
+            (effectiveTo == null || date.isBefore(effectiveTo!));
   }
 }
 
@@ -261,8 +263,9 @@ class TaxIncentive {
   Map<String, dynamic> toJson() => _$TaxIncentiveToJson(this);
 
   bool isValidOn(DateTime date) {
-    return date.isAfter(effectiveFrom) || date.isAtSameMomentAs(effectiveFrom) &&
-           (effectiveTo == null || date.isBefore(effectiveTo!));
+    return date.isAfter(effectiveFrom) ||
+        date.isAtSameMomentAs(effectiveFrom) &&
+            (effectiveTo == null || date.isBefore(effectiveTo!));
   }
 }
 
@@ -271,7 +274,7 @@ class SingaporeCompanyTaxRules {
   static const double gstRegistrationThreshold = 1000000; // S$1M
   static const double smallCompanyThreshold = 5000000; // S$5M
   static const int startupExemptionYears = 3;
-  
+
   static final Map<CompanyType, Map<String, dynamic>> companyTypeRules = {
     CompanyType.privateLimited: {
       'taxable': true,
@@ -280,7 +283,6 @@ class SingaporeCompanyTaxRules {
       'partialExemptionEligible': true,
       'minimumPaidUpCapital': 1,
     },
-    
     CompanyType.publicLimited: {
       'taxable': true,
       'gstEligible': true,
@@ -288,7 +290,6 @@ class SingaporeCompanyTaxRules {
       'partialExemptionEligible': true,
       'minimumPaidUpCapital': 50000,
     },
-    
     CompanyType.charity: {
       'taxable': false,
       'gstEligible': true,
@@ -296,7 +297,6 @@ class SingaporeCompanyTaxRules {
       'partialExemptionEligible': false,
       'ipcStatusRequired': false,
     },
-    
     CompanyType.startup: {
       'taxable': true,
       'gstEligible': true,
@@ -305,14 +305,12 @@ class SingaporeCompanyTaxRules {
       'partialExemptionEligible': true,
       'localShareholderRequirement': 0.20, // 20% local ownership
     },
-    
     CompanyType.branch: {
       'taxable': true,
       'gstEligible': true,
       'corporateTaxRate': 0.17,
       'branchProfitsRemittanceTax': false, // Singapore doesn't impose this
     },
-    
     CompanyType.representativeOffice: {
       'taxable': false,
       'gstEligible': false,
@@ -320,20 +318,19 @@ class SingaporeCompanyTaxRules {
     },
   };
 
-  static final Map<IndustryClassification, Map<String, dynamic>> industrySpecificRules = {
+  static final Map<IndustryClassification, Map<String, dynamic>>
+      industrySpecificRules = {
     IndustryClassification.financial: {
       'additionalRegulations': ['MAS licensing', 'Financial sector incentives'],
       'specialTaxTreatment': true,
       'witholdingTaxExemptions': ['Qualifying debt securities'],
     },
-    
     IndustryClassification.real_estate: {
       'propertyTax': true,
       'stampDutyApplicable': true,
       'additionalBuyerStampDuty': true,
       'sellerStampDuty': true,
     },
-    
     IndustryClassification.technology: {
       'developmentIncentives': ['PIC scheme', 'R&D tax incentives'],
       'intellectualPropertyTax': 'Reduced rates available',
@@ -357,7 +354,7 @@ class SingaporeCompanyTaxRules {
 
   static List<String> getComplianceRequirements(CompanyTaxProfile profile) {
     List<String> requirements = [];
-    
+
     if (profile.isGstRegistered) {
       requirements.addAll([
         'GST F5 return filing',
@@ -365,7 +362,7 @@ class SingaporeCompanyTaxRules {
         'Tax invoices for GST-registered supplies',
       ]);
     }
-    
+
     if (companyTypeRules[profile.companyType]?['taxable'] == true) {
       requirements.addAll([
         'Corporate income tax return (Form C-S or Form C)',
@@ -373,7 +370,7 @@ class SingaporeCompanyTaxRules {
         'Audit requirements (if revenue > S\$5M)',
       ]);
     }
-    
+
     switch (profile.industryClassification) {
       case IndustryClassification.financial:
         requirements.add('MAS regulatory compliance');
@@ -387,7 +384,7 @@ class SingaporeCompanyTaxRules {
       default:
         break;
     }
-    
+
     return requirements;
   }
 }

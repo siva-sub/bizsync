@@ -37,7 +37,8 @@ class BiometricConfig {
   }) {
     return BiometricConfig(
       enabled: enabled ?? this.enabled,
-      requireForSensitiveData: requireForSensitiveData ?? this.requireForSensitiveData,
+      requireForSensitiveData:
+          requireForSensitiveData ?? this.requireForSensitiveData,
       requireForAppLaunch: requireForAppLaunch ?? this.requireForAppLaunch,
       sessionTimeout: sessionTimeout ?? this.sessionTimeout,
     );
@@ -77,7 +78,8 @@ class BiometricCapabilities {
   });
 
   bool get hasFaceID => availableBiometrics.contains(BiometricType.face);
-  bool get hasFingerprint => availableBiometrics.contains(BiometricType.fingerprint);
+  bool get hasFingerprint =>
+      availableBiometrics.contains(BiometricType.fingerprint);
   bool get hasIris => availableBiometrics.contains(BiometricType.iris);
   bool get hasAny => availableBiometrics.isNotEmpty;
 
@@ -93,7 +95,7 @@ class BiometricCapabilities {
 class BiometricAuthService extends ChangeNotifier {
   static const String _configKey = 'biometric_config';
   static const String _lastAuthKey = 'last_biometric_auth';
-  
+
   final LocalAuthentication _localAuth = LocalAuthentication();
   BiometricConfig _config = const BiometricConfig();
   BiometricCapabilities? _capabilities;
@@ -116,7 +118,7 @@ class BiometricAuthService extends ChangeNotifier {
 
   Future<void> _loadConfig() async {
     if (_prefs == null) return;
-    
+
     final configJson = _prefs!.getString(_configKey);
     if (configJson != null) {
       try {
@@ -131,7 +133,7 @@ class BiometricAuthService extends ChangeNotifier {
 
   void _loadLastAuthTime() {
     if (_prefs == null) return;
-    
+
     final lastAuthTimestamp = _prefs!.getInt(_lastAuthKey);
     if (lastAuthTimestamp != null) {
       _lastAuthTime = DateTime.fromMillisecondsSinceEpoch(lastAuthTimestamp);
@@ -140,7 +142,7 @@ class BiometricAuthService extends ChangeNotifier {
 
   Future<void> _saveConfig() async {
     if (_prefs == null) return;
-    
+
     try {
       final configJson = _stringifyJson(_config.toJson());
       await _prefs!.setString(_configKey, configJson);
@@ -151,7 +153,7 @@ class BiometricAuthService extends ChangeNotifier {
 
   Future<void> _saveLastAuthTime() async {
     if (_prefs == null || _lastAuthTime == null) return;
-    
+
     await _prefs!.setInt(_lastAuthKey, _lastAuthTime!.millisecondsSinceEpoch);
   }
 
@@ -222,7 +224,8 @@ class BiometricAuthService extends ChangeNotifier {
           if (e.code == 'UserCancel') {
             return BiometricAuthResult.cancelled;
           }
-          debugPrint('Biometric authentication error: ${e.code} - ${e.message}');
+          debugPrint(
+              'Biometric authentication error: ${e.code} - ${e.message}');
           return BiometricAuthResult.error;
       }
     } catch (e) {
@@ -311,16 +314,16 @@ class BiometricAuthService extends ChangeNotifier {
   // Simple JSON parsing without dart:convert
   Map<String, dynamic> _parseJson(String jsonString) {
     final Map<String, dynamic> result = {};
-    
+
     final content = jsonString.replaceAll(RegExp(r'[{}"]'), '');
     final pairs = content.split(',');
-    
+
     for (final pair in pairs) {
       final keyValue = pair.split(':');
       if (keyValue.length == 2) {
         final key = keyValue[0].trim();
         final value = keyValue[1].trim();
-        
+
         if (value == 'true') {
           result[key] = true;
         } else if (value == 'false') {
@@ -334,13 +337,13 @@ class BiometricAuthService extends ChangeNotifier {
         }
       }
     }
-    
+
     return result;
   }
 
   String _stringifyJson(Map<String, dynamic> data) {
     final List<String> pairs = [];
-    
+
     data.forEach((key, value) {
       String valueStr;
       if (value == null) {
@@ -354,7 +357,7 @@ class BiometricAuthService extends ChangeNotifier {
       }
       pairs.add('"$key":$valueStr');
     });
-    
+
     return '{${pairs.join(',')}}';
   }
 }
@@ -366,12 +369,14 @@ final biometricAuthServiceProvider = Provider<BiometricAuthService>((ref) {
   return service;
 });
 
-final biometricConfigProvider = StateNotifierProvider<BiometricConfigNotifier, BiometricConfig>((ref) {
+final biometricConfigProvider =
+    StateNotifierProvider<BiometricConfigNotifier, BiometricConfig>((ref) {
   final service = ref.watch(biometricAuthServiceProvider);
   return BiometricConfigNotifier(service);
 });
 
-final biometricCapabilitiesProvider = StateProvider<BiometricCapabilities?>((ref) {
+final biometricCapabilitiesProvider =
+    StateProvider<BiometricCapabilities?>((ref) {
   final service = ref.watch(biometricAuthServiceProvider);
   return service.capabilities;
 });

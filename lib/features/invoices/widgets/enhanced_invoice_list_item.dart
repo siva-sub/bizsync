@@ -137,7 +137,8 @@ class EnhancedInvoiceListItem extends ConsumerWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: _getStatusColor(invoice.status).withOpacity(0.1),
+                              color: _getStatusColor(invoice.status)
+                                  .withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -180,14 +181,14 @@ class EnhancedInvoiceListItem extends ConsumerWidget {
                         'Due: ${_formatDate(invoice.dueDate)}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: invoice.dueDate.isBefore(DateTime.now()) && 
-                                invoice.status != InvoiceStatus.paid
+                          color: invoice.dueDate.isBefore(DateTime.now()) &&
+                                  invoice.status != InvoiceStatus.paid
                               ? Colors.red
                               : Colors.grey[600],
                         ),
                       ),
                       const Spacer(),
-                      if (invoice.dueDate.isBefore(DateTime.now()) && 
+                      if (invoice.dueDate.isBefore(DateTime.now()) &&
                           invoice.status != InvoiceStatus.paid)
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -209,7 +210,7 @@ class EnhancedInvoiceListItem extends ConsumerWidget {
                         ),
                     ],
                   ),
-                  
+
                   // Progress bar for partial payments
                   if (invoice.status == InvoiceStatus.partiallyPaid) ...[
                     const SizedBox(height: 8),
@@ -336,8 +337,8 @@ class EnhancedInvoiceListView extends ConsumerWidget {
   }
 
   void _showDeleteConfirmation(
-    BuildContext context, 
-    WidgetRef ref, 
+    BuildContext context,
+    WidgetRef ref,
     InvoiceModel invoice,
   ) {
     showDialog(
@@ -370,8 +371,8 @@ class EnhancedInvoiceListView extends ConsumerWidget {
   }
 
   void _showMarkPaidConfirmation(
-    BuildContext context, 
-    WidgetRef ref, 
+    BuildContext context,
+    WidgetRef ref,
     InvoiceModel invoice,
   ) {
     showDialog(
@@ -423,7 +424,7 @@ class ConnectionStatusIndicator extends ConsumerWidget {
     final connectionStatus = ref.watch(connectionStatusProvider);
     final syncStats = ref.watch(syncStatsProvider);
 
-    if (connectionStatus == ConnectionStatus.online && 
+    if (connectionStatus == ConnectionStatus.online &&
         syncStats.pendingOperations == 0) {
       return const SizedBox.shrink(); // Hide when everything is good
     }
@@ -432,12 +433,12 @@ class ConnectionStatusIndicator extends ConsumerWidget {
       margin: const EdgeInsets.all(8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: connectionStatus == ConnectionStatus.online 
+        color: connectionStatus == ConnectionStatus.online
             ? Colors.orange.withOpacity(0.1)
             : Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: connectionStatus == ConnectionStatus.online 
+          color: connectionStatus == ConnectionStatus.online
               ? Colors.orange
               : Colors.red,
           width: 1,
@@ -447,11 +448,11 @@ class ConnectionStatusIndicator extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            connectionStatus == ConnectionStatus.online 
+            connectionStatus == ConnectionStatus.online
                 ? Icons.sync_problem
                 : Icons.cloud_off,
             size: 16,
-            color: connectionStatus == ConnectionStatus.online 
+            color: connectionStatus == ConnectionStatus.online
                 ? Colors.orange
                 : Colors.red,
           ),
@@ -462,7 +463,7 @@ class ConnectionStatusIndicator extends ConsumerWidget {
                 : 'Offline mode',
             style: TextStyle(
               fontSize: 12,
-              color: connectionStatus == ConnectionStatus.online 
+              color: connectionStatus == ConnectionStatus.online
                   ? Colors.orange[700]
                   : Colors.red[700],
               fontWeight: FontWeight.w500,

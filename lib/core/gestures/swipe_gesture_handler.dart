@@ -75,7 +75,7 @@ class _SwipeActionWidgetState extends ConsumerState<SwipeActionWidget>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
-  
+
   double _dragDistance = 0;
   bool _isSwipeActive = false;
   SwipeDirection? _swipeDirection;
@@ -106,7 +106,7 @@ class _SwipeActionWidgetState extends ConsumerState<SwipeActionWidget>
     _dragDistance = 0;
     _swipeDirection = null;
     widget.onSwipeStart?.call();
-    
+
     if (widget.config.enableHapticFeedback) {
       ref.read(hapticServiceProvider).swipeGesture();
     }
@@ -121,15 +121,16 @@ class _SwipeActionWidgetState extends ConsumerState<SwipeActionWidget>
 
     // Determine swipe direction
     if (_dragDistance.abs() > 10) {
-      _swipeDirection = _dragDistance > 0 ? SwipeDirection.right : SwipeDirection.left;
+      _swipeDirection =
+          _dragDistance > 0 ? SwipeDirection.right : SwipeDirection.left;
     }
 
     // Trigger haptic feedback when reaching threshold
     if (_dragDistance.abs() > 100 && widget.config.enableHapticFeedback) {
       ref.read(hapticServiceProvider).provideFeedback(
-        HapticFeedbackType.medium,
-        context: 'gesture',
-      );
+            HapticFeedbackType.medium,
+            context: 'gesture',
+          );
     }
   }
 
@@ -138,7 +139,8 @@ class _SwipeActionWidgetState extends ConsumerState<SwipeActionWidget>
     widget.onSwipeEnd?.call();
 
     final velocity = details.velocity.pixelsPerSecond.dx;
-    final threshold = MediaQuery.of(context).size.width * widget.config.threshold;
+    final threshold =
+        MediaQuery.of(context).size.width * widget.config.threshold;
 
     if (_dragDistance.abs() > threshold || velocity.abs() > 500) {
       _executeSwipeAction();
@@ -164,12 +166,12 @@ class _SwipeActionWidgetState extends ConsumerState<SwipeActionWidget>
 
     // Execute the first action for now (could be enhanced to show multiple actions)
     final action = actions.first;
-    
+
     if (widget.config.enableHapticFeedback) {
       ref.read(hapticServiceProvider).provideFeedback(
-        HapticFeedbackType.success,
-        context: 'gesture',
-      );
+            HapticFeedbackType.success,
+            context: 'gesture',
+          );
     }
 
     if (action.dismissible) {
@@ -225,9 +227,9 @@ class _SwipeActionWidgetState extends ConsumerState<SwipeActionWidget>
               color: widget.leftActions.first.backgroundColor,
               child: _buildActionContent(widget.leftActions.first),
             ),
-          
+
           const Spacer(),
-          
+
           // Right actions
           if (widget.rightActions.isNotEmpty)
             Container(
@@ -307,9 +309,9 @@ class _TabSwipeNavigatorState extends ConsumerState<TabSwipeNavigator> {
     setState(() {
       _currentIndex = index;
     });
-    
+
     widget.onPageChanged?.call(index);
-    
+
     // Provide haptic feedback
     ref.read(hapticServiceProvider).swipeGesture();
   }
@@ -319,8 +321,8 @@ class _TabSwipeNavigatorState extends ConsumerState<TabSwipeNavigator> {
     return PageView.builder(
       controller: _pageController,
       onPageChanged: _onPageChanged,
-      physics: widget.enableSwipe 
-          ? const ClampingScrollPhysics() 
+      physics: widget.enableSwipe
+          ? const ClampingScrollPhysics()
           : const NeverScrollableScrollPhysics(),
       itemCount: widget.children.length,
       itemBuilder: (context, index) {
@@ -359,9 +361,9 @@ class PullToRefreshWrapper extends ConsumerWidget {
       onRefresh: () async {
         if (enableHapticFeedback) {
           await ref.read(hapticServiceProvider).provideFeedback(
-            HapticFeedbackType.medium,
-            context: 'gesture',
-          );
+                HapticFeedbackType.medium,
+                context: 'gesture',
+              );
         }
         await onRefresh();
         if (enableHapticFeedback) {
@@ -389,7 +391,8 @@ class CustomSwipeDetector extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<CustomSwipeDetector> createState() => _CustomSwipeDetectorState();
+  ConsumerState<CustomSwipeDetector> createState() =>
+      _CustomSwipeDetectorState();
 }
 
 class _CustomSwipeDetectorState extends ConsumerState<CustomSwipeDetector> {
@@ -407,10 +410,10 @@ class _CustomSwipeDetectorState extends ConsumerState<CustomSwipeDetector> {
 
   void _onPanEnd(DragEndDetails details) {
     final offset = _currentPanPoint - _startPanPoint;
-    
+
     if (offset.distance >= widget.threshold) {
       SwipeDirection? direction;
-      
+
       if (offset.dx.abs() > offset.dy.abs()) {
         // Horizontal swipe
         direction = offset.dx > 0 ? SwipeDirection.right : SwipeDirection.left;
@@ -418,11 +421,11 @@ class _CustomSwipeDetectorState extends ConsumerState<CustomSwipeDetector> {
         // Vertical swipe
         direction = offset.dy > 0 ? SwipeDirection.down : SwipeDirection.up;
       }
-      
+
       if (widget.enableHapticFeedback) {
         ref.read(hapticServiceProvider).swipeGesture();
       }
-      
+
       widget.onSwipe?.call(direction);
     }
   }
@@ -441,60 +444,60 @@ class _CustomSwipeDetectorState extends ConsumerState<CustomSwipeDetector> {
 // Common swipe actions for business app
 class BusinessSwipeActions {
   static SwipeAction get delete => SwipeAction(
-    icon: Icons.delete_outline,
-    label: 'Delete',
-    backgroundColor: Colors.red,
-    onTap: () {},
-    dismissible: true,
-  );
+        icon: Icons.delete_outline,
+        label: 'Delete',
+        backgroundColor: Colors.red,
+        onTap: () {},
+        dismissible: true,
+      );
 
   static SwipeAction get archive => SwipeAction(
-    icon: Icons.archive_outlined,
-    label: 'Archive',
-    backgroundColor: Colors.orange,
-    onTap: () {},
-    dismissible: true,
-  );
+        icon: Icons.archive_outlined,
+        label: 'Archive',
+        backgroundColor: Colors.orange,
+        onTap: () {},
+        dismissible: true,
+      );
 
   static SwipeAction get edit => SwipeAction(
-    icon: Icons.edit_outlined,
-    label: 'Edit',
-    backgroundColor: Colors.blue,
-    onTap: () {},
-  );
+        icon: Icons.edit_outlined,
+        label: 'Edit',
+        backgroundColor: Colors.blue,
+        onTap: () {},
+      );
 
   static SwipeAction get share => SwipeAction(
-    icon: Icons.share_outlined,
-    label: 'Share',
-    backgroundColor: Colors.green,
-    onTap: () {},
-  );
+        icon: Icons.share_outlined,
+        label: 'Share',
+        backgroundColor: Colors.green,
+        onTap: () {},
+      );
 
   static SwipeAction get duplicate => SwipeAction(
-    icon: Icons.copy_outlined,
-    label: 'Duplicate',
-    backgroundColor: Colors.purple,
-    onTap: () {},
-  );
+        icon: Icons.copy_outlined,
+        label: 'Duplicate',
+        backgroundColor: Colors.purple,
+        onTap: () {},
+      );
 
   static SwipeAction get favorite => SwipeAction(
-    icon: Icons.favorite_outline,
-    label: 'Favorite',
-    backgroundColor: Colors.pink,
-    onTap: () {},
-  );
+        icon: Icons.favorite_outline,
+        label: 'Favorite',
+        backgroundColor: Colors.pink,
+        onTap: () {},
+      );
 
   static SwipeAction get markPaid => SwipeAction(
-    icon: Icons.check_circle_outline,
-    label: 'Mark Paid',
-    backgroundColor: Colors.green,
-    onTap: () {},
-  );
+        icon: Icons.check_circle_outline,
+        label: 'Mark Paid',
+        backgroundColor: Colors.green,
+        onTap: () {},
+      );
 
   static SwipeAction get sendReminder => SwipeAction(
-    icon: Icons.notification_important_outlined,
-    label: 'Remind',
-    backgroundColor: Colors.amber,
-    onTap: () {},
-  );
+        icon: Icons.notification_important_outlined,
+        label: 'Remind',
+        backgroundColor: Colors.amber,
+        onTap: () {},
+      );
 }

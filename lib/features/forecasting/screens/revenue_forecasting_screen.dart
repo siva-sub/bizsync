@@ -12,10 +12,12 @@ class RevenueForecastingScreen extends ConsumerStatefulWidget {
   const RevenueForecastingScreen({super.key});
 
   @override
-  ConsumerState<RevenueForecastingScreen> createState() => _RevenueForecastingScreenState();
+  ConsumerState<RevenueForecastingScreen> createState() =>
+      _RevenueForecastingScreenState();
 }
 
-class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScreen> {
+class _RevenueForecastingScreenState
+    extends ConsumerState<RevenueForecastingScreen> {
   late ForecastingService _forecastingService;
   late ForecastExportService _exportService;
 
@@ -36,7 +38,8 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
   @override
   void initState() {
     super.initState();
-    _sessionNameController.text = 'Revenue Forecast ${DateFormat('MMM yyyy').format(DateTime.now())}';
+    _sessionNameController.text =
+        'Revenue Forecast ${DateFormat('MMM yyyy').format(DateTime.now())}';
     _initializeServices();
   }
 
@@ -65,7 +68,8 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
 
       _historicalData = await _forecastingService.getHistoricalData(
         'revenue',
-        startDate: DateTime.now().subtract(const Duration(days: 730)), // 2 years
+        startDate:
+            DateTime.now().subtract(const Duration(days: 730)), // 2 years
         aggregation: _periodicity,
       );
 
@@ -80,7 +84,7 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
 
   void _addDefaultScenarios() {
     _scenarios.clear();
-    
+
     // Linear regression scenario
     _scenarios.add(ForecastScenario(
       id: UuidGenerator.generateId(),
@@ -115,7 +119,8 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
     ));
 
     // Seasonal decomposition scenario
-    if (_historicalData.length >= 24) { // Need at least 2 years for seasonal
+    if (_historicalData.length >= 24) {
+      // Need at least 2 years for seasonal
       _scenarios.add(ForecastScenario(
         id: UuidGenerator.generateId(),
         name: 'Seasonal Analysis',
@@ -155,8 +160,10 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
               : _buildContent(),
       floatingActionButton: _historicalData.isNotEmpty && _scenarios.isNotEmpty
           ? FloatingActionButton.extended(
-              onPressed: _currentSession == null ? _runForecast : _rerunForecast,
-              icon: Icon(_currentSession == null ? Icons.play_arrow : Icons.refresh),
+              onPressed:
+                  _currentSession == null ? _runForecast : _rerunForecast,
+              icon: Icon(
+                  _currentSession == null ? Icons.play_arrow : Icons.refresh),
               label: Text(_currentSession == null ? 'Run Forecast' : 'Rerun'),
             )
           : null,
@@ -237,8 +244,8 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
           Text(
             'You need historical revenue data to create forecasts.\nCreate some invoices first.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -342,8 +349,8 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
                 Text(
                   '${_historicalData.length} data points',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
               ],
             ),
@@ -376,7 +383,8 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
                             final index = value.toInt();
                             if (index >= 0 && index < _historicalData.length) {
                               return Text(
-                                DateFormat('MMM yy').format(_historicalData[index].date),
+                                DateFormat('MMM yy')
+                                    .format(_historicalData[index].date),
                                 style: const TextStyle(fontSize: 10),
                               );
                             }
@@ -384,14 +392,17 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
                           },
                         ),
                       ),
-                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
                     ),
                     borderData: FlBorderData(show: true),
                     lineBarsData: [
                       LineChartBarData(
                         spots: _historicalData.asMap().entries.map((entry) {
-                          return FlSpot(entry.key.toDouble(), entry.value.value);
+                          return FlSpot(
+                              entry.key.toDouble(), entry.value.value);
                         }).toList(),
                         isCurved: true,
                         color: Colors.green,
@@ -443,14 +454,14 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
         Text(
           value,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
-          ),
+                color: Colors.grey[600],
+              ),
         ),
       ],
     );
@@ -502,7 +513,8 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
           backgroundColor: _getScenarioColor(index),
           child: Text(
             '${index + 1}',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
         title: Text(scenario.name),
@@ -608,7 +620,7 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
                   final totalHistorical = _historicalData.length;
-                  
+
                   if (index < totalHistorical) {
                     return Text(
                       DateFormat('MMM yy').format(_historicalData[index].date),
@@ -618,11 +630,14 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
                     // Forecast period
                     final forecastIndex = index - totalHistorical;
                     if (_currentSession!.results.values.isNotEmpty) {
-                      final firstResults = _currentSession!.results.values.first;
+                      final firstResults =
+                          _currentSession!.results.values.first;
                       if (forecastIndex < firstResults.length) {
                         return Text(
-                          DateFormat('MMM yy').format(firstResults[forecastIndex].date),
-                          style: const TextStyle(fontSize: 10, color: Colors.blue),
+                          DateFormat('MMM yy')
+                              .format(firstResults[forecastIndex].date),
+                          style:
+                              const TextStyle(fontSize: 10, color: Colors.blue),
                         );
                       }
                     }
@@ -631,8 +646,10 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
                 },
               ),
             ),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           ),
           borderData: FlBorderData(show: true),
           lineBarsData: _buildForecastChartData(),
@@ -662,11 +679,11 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
     for (int i = 0; i < _scenarios.length; i++) {
       final scenario = _scenarios[i];
       final results = _currentSession!.results[scenario.id];
-      
+
       if (results != null && results.isNotEmpty) {
         final color = _getScenarioColor(i);
         final startIndex = _historicalData.length;
-        
+
         lines.add(
           LineChartBarData(
             spots: results.asMap().entries.map((entry) {
@@ -709,26 +726,30 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
               children: [
                 Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Model', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text('Model',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('R²', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child:
+                      Text('R²', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('MAPE', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text('MAPE',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('RMSE', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text('RMSE',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
             ..._currentSession!.accuracyMetrics.entries.map((entry) {
               final scenario = _scenarios.firstWhere((s) => s.id == entry.key);
               final accuracy = entry.value;
-              
+
               return TableRow(
                 children: [
                   Padding(
@@ -795,18 +816,19 @@ class _RevenueForecastingScreenState extends ConsumerState<RevenueForecastingScr
 
     try {
       _showLoadingDialog('Exporting forecast...');
-      
+
       // Capture chart image
       final chartImage = await _exportService.captureWidgetAsImage(_chartKey);
-      
+
       final file = await _exportService.exportToPdf(
         _currentSession!,
         includeCharts: true,
         chartImages: [chartImage],
       );
-      
+
       Navigator.of(context).pop();
-      await _exportService.shareFile(file, 'Revenue Forecast: ${_currentSession!.name}');
+      await _exportService.shareFile(
+          file, 'Revenue Forecast: ${_currentSession!.name}');
       _showSuccessSnackBar('Forecast exported successfully');
     } catch (e) {
       Navigator.of(context).pop();
@@ -951,7 +973,7 @@ class _CustomScenarioDialogState extends State<_CustomScenarioDialog> {
   @override
   void initState() {
     super.initState();
-    
+
     if (widget.scenario != null) {
       _nameController.text = widget.scenario!.name;
       _descriptionController.text = widget.scenario!.description;
@@ -990,7 +1012,8 @@ class _CustomScenarioDialogState extends State<_CustomScenarioDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.scenario != null ? 'Edit Scenario' : 'Create Custom Scenario'),
+      title: Text(
+          widget.scenario != null ? 'Edit Scenario' : 'Create Custom Scenario'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1069,7 +1092,7 @@ class _CustomScenarioDialogState extends State<_CustomScenarioDialog> {
             }
           },
         );
-      
+
       case ForecastingMethod.exponentialSmoothing:
         return Column(
           children: [
@@ -1106,7 +1129,7 @@ class _CustomScenarioDialogState extends State<_CustomScenarioDialog> {
             ),
           ],
         );
-      
+
       case ForecastingMethod.seasonalDecomposition:
         return Column(
           children: [
@@ -1138,7 +1161,7 @@ class _CustomScenarioDialogState extends State<_CustomScenarioDialog> {
             ),
           ],
         );
-      
+
       default:
         return const Text('No parameters required for this method');
     }

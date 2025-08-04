@@ -24,7 +24,7 @@ class PerformanceMetrics {
     required this.memoryUsage,
   });
 
-  double get droppedFramePercentage => 
+  double get droppedFramePercentage =>
       frameCount > 0 ? (droppedFrames / frameCount) * 100 : 0;
 
   bool get isPerformanceGood => averageFps >= 55 && droppedFramePercentage < 5;
@@ -32,7 +32,8 @@ class PerformanceMetrics {
 
 // Performance optimizer service
 class PerformanceOptimizer extends ChangeNotifier {
-  static final PerformanceOptimizer _instance = PerformanceOptimizer._internal();
+  static final PerformanceOptimizer _instance =
+      PerformanceOptimizer._internal();
   factory PerformanceOptimizer() => _instance;
   PerformanceOptimizer._internal();
 
@@ -85,7 +86,7 @@ class PerformanceOptimizer extends ChangeNotifier {
     if (!_enablePerformanceMonitoring) return;
 
     SchedulerBinding.instance.addPostFrameCallback(_onFrameEnd);
-    
+
     _performanceTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       _updatePerformanceMetrics();
     });
@@ -115,10 +116,10 @@ class PerformanceOptimizer extends ChangeNotifier {
     if (_frameTimes.isEmpty) return;
 
     final totalFrameTime = _frameTimes.fold<int>(
-      0, 
+      0,
       (sum, duration) => sum + duration.inMicroseconds,
     );
-    
+
     final averageFrameTime = totalFrameTime / _frameTimes.length;
     final averageFps = averageFrameTime > 0 ? 1000000 / averageFrameTime : 0;
 
@@ -171,7 +172,7 @@ class PerformanceOptimizer extends ChangeNotifier {
     // getKeysByTime method removed in newer versions
     // Using a stub implementation
     const cacheSize = 0;
-    
+
     return {
       'cached_images': cacheSize,
       'cache_size_mb': cacheSize * 0.5, // Rough estimate
@@ -280,10 +281,12 @@ class LazyLoadingListView<T> extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<LazyLoadingListView<T>> createState() => _LazyLoadingListViewState<T>();
+  ConsumerState<LazyLoadingListView<T>> createState() =>
+      _LazyLoadingListViewState<T>();
 }
 
-class _LazyLoadingListViewState<T> extends ConsumerState<LazyLoadingListView<T>> {
+class _LazyLoadingListViewState<T>
+    extends ConsumerState<LazyLoadingListView<T>> {
   late ScrollController _scrollController;
   bool _isLoading = false;
 
@@ -308,8 +311,9 @@ class _LazyLoadingListViewState<T> extends ConsumerState<LazyLoadingListView<T>>
     if (!widget.hasMore || _isLoading || widget.onLoadMore == null) return;
 
     final position = _scrollController.position;
-    final remainingItems = widget.items.length - 
-        (position.pixels / (position.maxScrollExtent / widget.items.length)).ceil();
+    final remainingItems = widget.items.length -
+        (position.pixels / (position.maxScrollExtent / widget.items.length))
+            .ceil();
 
     if (remainingItems <= widget.loadMoreThreshold) {
       _loadMore();
@@ -484,7 +488,8 @@ class PerformanceMonitor extends ConsumerWidget {
                   Text(
                     'FPS: ${metrics.averageFps.toStringAsFixed(1)}',
                     style: TextStyle(
-                      color: metrics.isPerformanceGood ? Colors.green : Colors.red,
+                      color:
+                          metrics.isPerformanceGood ? Colors.green : Colors.red,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -526,7 +531,8 @@ class MemoryEfficientBuilder<T> extends StatefulWidget {
   });
 
   @override
-  State<MemoryEfficientBuilder<T>> createState() => _MemoryEfficientBuilderState<T>();
+  State<MemoryEfficientBuilder<T>> createState() =>
+      _MemoryEfficientBuilderState<T>();
 }
 
 class _MemoryEfficientBuilderState<T> extends State<MemoryEfficientBuilder<T>> {
@@ -553,14 +559,17 @@ class _MemoryEfficientBuilderState<T> extends State<MemoryEfficientBuilder<T>> {
 
   void _updateVisibleRange() {
     final itemHeight = 100.0; // Estimated item height
-    final scrollOffset = _scrollController.hasClients ? _scrollController.offset : 0;
+    final scrollOffset =
+        _scrollController.hasClients ? _scrollController.offset : 0;
     final viewportHeight = MediaQuery.of(context).size.height;
 
     final visibleStart = (scrollOffset / itemHeight).floor();
     final visibleEnd = ((scrollOffset + viewportHeight) / itemHeight).ceil();
 
-    final newStartIndex = (visibleStart - widget.visibleRange ~/ 2).clamp(0, widget.items.length);
-    final newEndIndex = (visibleEnd + widget.visibleRange ~/ 2).clamp(0, widget.items.length);
+    final newStartIndex =
+        (visibleStart - widget.visibleRange ~/ 2).clamp(0, widget.items.length);
+    final newEndIndex =
+        (visibleEnd + widget.visibleRange ~/ 2).clamp(0, widget.items.length);
 
     if (newStartIndex != _startIndex || newEndIndex != _endIndex) {
       setState(() {

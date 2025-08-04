@@ -118,7 +118,7 @@ class BreadcrumbItem {
   final String label;
   final String path;
   final IconData icon;
-  
+
   const BreadcrumbItem({
     required this.label,
     required this.path,

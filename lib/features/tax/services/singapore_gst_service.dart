@@ -33,7 +33,7 @@ class SingaporeGstService {
 
     // Get the applicable GST rate for the calculation date
     final gstRate = _getGstRateForDate(calculationDate);
-    
+
     // Determine if GST should be applied based on category and circumstances
     final gstApplicable = _isGstApplicable(
       taxCategory: taxCategory,
@@ -69,7 +69,8 @@ class SingaporeGstService {
       gstAmount: gstAmount,
       totalAmount: totalAmount,
       taxCategory: taxCategory,
-      reasoning: 'Standard GST applied at ${(effectiveRate * 100).toStringAsFixed(1)}%',
+      reasoning:
+          'Standard GST applied at ${(effectiveRate * 100).toStringAsFixed(1)}%',
       isGstApplicable: true,
     );
   }
@@ -131,18 +132,22 @@ class SingaporeGstService {
       gstAmount: gstAmount,
       totalAmount: totalAmount,
       taxCategory: taxCategory,
-      reasoning: 'GST inclusive calculation at ${(effectiveRate * 100).toStringAsFixed(1)}%',
+      reasoning:
+          'GST inclusive calculation at ${(effectiveRate * 100).toStringAsFixed(1)}%',
       isGstApplicable: true,
     );
   }
 
   /// Get historical GST rate for a specific date
   static double _getGstRateForDate(DateTime date) {
-    if (date.isAfter(gst9PercentEffectiveDate) || date.isAtSameMomentAs(gst9PercentEffectiveDate)) {
+    if (date.isAfter(gst9PercentEffectiveDate) ||
+        date.isAtSameMomentAs(gst9PercentEffectiveDate)) {
       return 0.09; // 9% from 1 Jan 2023
-    } else if (date.isAfter(gst8PercentEffectiveDate) || date.isAtSameMomentAs(gst8PercentEffectiveDate)) {
+    } else if (date.isAfter(gst8PercentEffectiveDate) ||
+        date.isAtSameMomentAs(gst8PercentEffectiveDate)) {
       return 0.08; // 8% from 1 Jan 2022
-    } else if (date.isAfter(gst7PercentEffectiveDate) || date.isAtSameMomentAs(gst7PercentEffectiveDate)) {
+    } else if (date.isAfter(gst7PercentEffectiveDate) ||
+        date.isAtSameMomentAs(gst7PercentEffectiveDate)) {
       return 0.07; // 7% from 1 Jan 2016
     } else {
       return 0.05; // 5% before 2016
@@ -157,7 +162,8 @@ class SingaporeGstService {
     required bool customerIsGstRegistered,
   }) {
     // Zero-rated supplies (exports)
-    if (isExport || (customerCountry != null && customerCountry.toUpperCase() != 'SG')) {
+    if (isExport ||
+        (customerCountry != null && customerCountry.toUpperCase() != 'SG')) {
       return _GstApplicabilityResult(
         applicable: false,
         reason: 'Zero-rated export supply - 0% GST',
@@ -209,7 +215,7 @@ class SingaporeGstService {
     required DateTime calculationDate,
   }) {
     final gstRate = _getGstRateForDate(calculationDate);
-    
+
     // GST on imports is calculated on CIF + Duty
     final taxableValue = cif + dutyAmount;
     final gstAmount = taxableValue * gstRate;
@@ -221,7 +227,8 @@ class SingaporeGstService {
       gstAmount: gstAmount,
       totalAmount: totalCost,
       taxCategory: GstTaxCategory.standard,
-      reasoning: 'Import GST calculated on CIF + Duty at ${(gstRate * 100).toStringAsFixed(1)}%',
+      reasoning:
+          'Import GST calculated on CIF + Duty at ${(gstRate * 100).toStringAsFixed(1)}%',
       isGstApplicable: true,
       additionalInfo: {
         'cif_value': cif,
@@ -329,7 +336,8 @@ class GstCalculationResult {
       };
 
   @override
-  String toString() => 'GST Calculation: Net: \$${netAmount.toStringAsFixed(2)}, '
+  String toString() =>
+      'GST Calculation: Net: \$${netAmount.toStringAsFixed(2)}, '
       'GST (${(gstRate * 100).toStringAsFixed(1)}%): \$${gstAmount.toStringAsFixed(2)}, '
       'Total: \$${totalAmount.toStringAsFixed(2)}';
 }
@@ -419,12 +427,12 @@ class SingaporeGstExemptions {
   ];
 
   static bool isCategoryExempt(String category) {
-    return exemptCategories.any((exempt) => 
-        category.toLowerCase().contains(exempt.toLowerCase()));
+    return exemptCategories
+        .any((exempt) => category.toLowerCase().contains(exempt.toLowerCase()));
   }
 
   static bool isCategoryZeroRated(String category) {
-    return zeroRatedCategories.any((zeroRated) => 
+    return zeroRatedCategories.any((zeroRated) =>
         category.toLowerCase().contains(zeroRated.toLowerCase()));
   }
 }

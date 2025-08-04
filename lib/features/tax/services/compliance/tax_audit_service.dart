@@ -54,38 +54,38 @@ class AuditEvent {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'eventType': eventType.name,
-    'timestamp': timestamp.toIso8601String(),
-    'userId': userId,
-    'companyId': companyId,
-    'action': action,
-    'description': description,
-    'metadata': metadata,
-    'beforeState': beforeState,
-    'afterState': afterState,
-    'severity': severity.name,
-    'ipAddress': ipAddress,
-    'userAgent': userAgent,
-    'isSystemEvent': isSystemEvent,
-  };
+        'id': id,
+        'eventType': eventType.name,
+        'timestamp': timestamp.toIso8601String(),
+        'userId': userId,
+        'companyId': companyId,
+        'action': action,
+        'description': description,
+        'metadata': metadata,
+        'beforeState': beforeState,
+        'afterState': afterState,
+        'severity': severity.name,
+        'ipAddress': ipAddress,
+        'userAgent': userAgent,
+        'isSystemEvent': isSystemEvent,
+      };
 
   factory AuditEvent.fromJson(Map<String, dynamic> json) => AuditEvent(
-    id: json['id'],
-    eventType: AuditEventType.values.byName(json['eventType']),
-    timestamp: DateTime.parse(json['timestamp']),
-    userId: json['userId'],
-    companyId: json['companyId'],
-    action: json['action'],
-    description: json['description'],
-    metadata: json['metadata'] ?? {},
-    beforeState: json['beforeState'],
-    afterState: json['afterState'],
-    severity: AuditSeverity.values.byName(json['severity']),
-    ipAddress: json['ipAddress'],
-    userAgent: json['userAgent'],
-    isSystemEvent: json['isSystemEvent'] ?? false,
-  );
+        id: json['id'],
+        eventType: AuditEventType.values.byName(json['eventType']),
+        timestamp: DateTime.parse(json['timestamp']),
+        userId: json['userId'],
+        companyId: json['companyId'],
+        action: json['action'],
+        description: json['description'],
+        metadata: json['metadata'] ?? {},
+        beforeState: json['beforeState'],
+        afterState: json['afterState'],
+        severity: AuditSeverity.values.byName(json['severity']),
+        ipAddress: json['ipAddress'],
+        userAgent: json['userAgent'],
+        isSystemEvent: json['isSystemEvent'] ?? false,
+      );
 }
 
 class AuditQuery {
@@ -134,14 +134,14 @@ class AuditReport {
   });
 
   Map<String, dynamic> toJson() => {
-    'generatedAt': generatedAt.toIso8601String(),
-    'totalEvents': totalEvents,
-    'events': events.map((e) => e.toJson()).toList(),
-    'eventTypeCounts': eventTypeCounts,
-    'severityCounts': severityCounts,
-    'topUsers': topUsers,
-    'criticalEvents': criticalEvents.map((e) => e.toJson()).toList(),
-  };
+        'generatedAt': generatedAt.toIso8601String(),
+        'totalEvents': totalEvents,
+        'events': events.map((e) => e.toJson()).toList(),
+        'eventTypeCounts': eventTypeCounts,
+        'severityCounts': severityCounts,
+        'topUsers': topUsers,
+        'criticalEvents': criticalEvents.map((e) => e.toJson()).toList(),
+      };
 }
 
 abstract class TaxAuditService {
@@ -154,14 +154,14 @@ abstract class TaxAuditService {
 
 class TaxAuditServiceImpl implements TaxAuditService {
   final List<AuditEvent> _events = []; // In-memory storage for demo
-  
+
   @override
   Future<void> logEvent(AuditEvent event) async {
     _events.add(event);
-    
+
     // In production, would save to database
     print('Audit Event Logged: ${event.action} by ${event.userId}');
-    
+
     // Check for critical events and trigger alerts
     if (event.severity == AuditSeverity.critical) {
       await _handleCriticalEvent(event);
@@ -172,46 +172,53 @@ class TaxAuditServiceImpl implements TaxAuditService {
   Future<List<AuditEvent>> queryEvents(AuditQuery query) async {
     var filteredEvents = _events.where((event) {
       // Date range filter
-      if (query.startDate != null && event.timestamp.isBefore(query.startDate!)) {
+      if (query.startDate != null &&
+          event.timestamp.isBefore(query.startDate!)) {
         return false;
       }
       if (query.endDate != null && event.timestamp.isAfter(query.endDate!)) {
         return false;
       }
-      
+
       // Event type filter
-      if (query.eventTypes != null && !query.eventTypes!.contains(event.eventType)) {
+      if (query.eventTypes != null &&
+          !query.eventTypes!.contains(event.eventType)) {
         return false;
       }
-      
+
       // Severity filter
-      if (query.severities != null && !query.severities!.contains(event.severity)) {
+      if (query.severities != null &&
+          !query.severities!.contains(event.severity)) {
         return false;
       }
-      
+
       // User filter
       if (query.userId != null && event.userId != query.userId) {
         return false;
       }
-      
+
       // Company filter
       if (query.companyId != null && event.companyId != query.companyId) {
         return false;
       }
-      
+
       // Search term filter
-      if (query.searchTerm != null && 
-          !event.description.toLowerCase().contains(query.searchTerm!.toLowerCase()) &&
-          !event.action.toLowerCase().contains(query.searchTerm!.toLowerCase())) {
+      if (query.searchTerm != null &&
+          !event.description
+              .toLowerCase()
+              .contains(query.searchTerm!.toLowerCase()) &&
+          !event.action
+              .toLowerCase()
+              .contains(query.searchTerm!.toLowerCase())) {
         return false;
       }
-      
+
       return true;
     }).toList();
 
     // Sort by timestamp (newest first)
     filteredEvents.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-    
+
     // Apply pagination
     if (query.offset != null) {
       filteredEvents = filteredEvents.skip(query.offset!).toList();
@@ -219,7 +226,7 @@ class TaxAuditServiceImpl implements TaxAuditService {
     if (query.limit != null) {
       filteredEvents = filteredEvents.take(query.limit!).toList();
     }
-    
+
     return filteredEvents;
   }
 
@@ -231,33 +238,32 @@ class TaxAuditServiceImpl implements TaxAuditService {
       endDate: query.endDate,
       companyId: query.companyId,
     ));
-    
+
     // Calculate statistics
     final eventTypeCounts = <String, int>{};
     final severityCounts = <String, int>{};
     final userCounts = <String, int>{};
     final criticalEvents = <AuditEvent>[];
-    
+
     for (final event in allEvents) {
-      eventTypeCounts[event.eventType.name] = 
+      eventTypeCounts[event.eventType.name] =
           (eventTypeCounts[event.eventType.name] ?? 0) + 1;
-      
-      severityCounts[event.severity.name] = 
+
+      severityCounts[event.severity.name] =
           (severityCounts[event.severity.name] ?? 0) + 1;
-      
+
       userCounts[event.userId] = (userCounts[event.userId] ?? 0) + 1;
-      
+
       if (event.severity == AuditSeverity.critical) {
         criticalEvents.add(event);
       }
     }
-    
+
     // Get top users
-    final topUsers = userCounts.entries
-        .toList()
-        ..sort((a, b) => b.value.compareTo(a.value))
-        ..take(10);
-    
+    final topUsers = userCounts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value))
+      ..take(10);
+
     return AuditReport(
       generatedAt: DateTime.now(),
       query: query,
@@ -272,21 +278,22 @@ class TaxAuditServiceImpl implements TaxAuditService {
 
   @override
   Future<void> archiveOldEvents(DateTime cutoffDate) async {
-    final eventsToArchive = _events.where((event) => 
-        event.timestamp.isBefore(cutoffDate)).toList();
-    
+    final eventsToArchive =
+        _events.where((event) => event.timestamp.isBefore(cutoffDate)).toList();
+
     // In production, would move to archive storage
     for (final event in eventsToArchive) {
       _events.remove(event);
     }
-    
+
     await logEvent(AuditEvent(
       id: 'archive_${DateTime.now().millisecondsSinceEpoch}',
       eventType: AuditEventType.systemAccess,
       timestamp: DateTime.now(),
       userId: 'system',
       action: 'archive_old_events',
-      description: 'Archived ${eventsToArchive.length} events older than $cutoffDate',
+      description:
+          'Archived ${eventsToArchive.length} events older than $cutoffDate',
       severity: AuditSeverity.medium,
       isSystemEvent: true,
     ));
@@ -295,24 +302,24 @@ class TaxAuditServiceImpl implements TaxAuditService {
   @override
   Future<Map<String, dynamic>> getComplianceStatus(String companyId) async {
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-    
+
     final recentEvents = await queryEvents(AuditQuery(
       companyId: companyId,
       startDate: thirtyDaysAgo,
     ));
-    
-    final criticalEvents = recentEvents.where((e) => 
-        e.severity == AuditSeverity.critical).length;
-    
-    final highEvents = recentEvents.where((e) => 
-        e.severity == AuditSeverity.high).length;
-    
+
+    final criticalEvents =
+        recentEvents.where((e) => e.severity == AuditSeverity.critical).length;
+
+    final highEvents =
+        recentEvents.where((e) => e.severity == AuditSeverity.high).length;
+
     // Calculate compliance score
     int complianceScore = 100;
     complianceScore -= criticalEvents * 20; // -20 per critical event
     complianceScore -= highEvents * 10; // -10 per high severity event
     complianceScore = complianceScore.clamp(0, 100);
-    
+
     return {
       'companyId': companyId,
       'complianceScore': complianceScore,
@@ -320,7 +327,7 @@ class TaxAuditServiceImpl implements TaxAuditService {
       'totalEvents': recentEvents.length,
       'criticalEvents': criticalEvents,
       'highSeverityEvents': highEvents,
-      'lastAuditDate': recentEvents.isNotEmpty 
+      'lastAuditDate': recentEvents.isNotEmpty
           ? recentEvents.first.timestamp.toIso8601String()
           : null,
       'recommendations': _generateComplianceRecommendations(
@@ -344,7 +351,8 @@ class TaxAuditServiceImpl implements TaxAuditService {
       userId: userId,
       companyId: companyId,
       action: 'tax_calculation',
-      description: 'Calculated $calculationType tax for amount S\$${amount.toStringAsFixed(2)}',
+      description:
+          'Calculated $calculationType tax for amount S\$${amount.toStringAsFixed(2)}',
       metadata: {
         'calculationType': calculationType,
         'amount': amount,
@@ -362,10 +370,10 @@ class TaxAuditServiceImpl implements TaxAuditService {
     required String status,
     Map<String, dynamic>? metadata,
   }) async {
-    final severity = status.toLowerCase() == 'failed' 
-        ? AuditSeverity.high 
+    final severity = status.toLowerCase() == 'failed'
+        ? AuditSeverity.high
         : AuditSeverity.medium;
-    
+
     await logEvent(AuditEvent(
       id: 'filing_${DateTime.now().millisecondsSinceEpoch}',
       eventType: AuditEventType.complianceFiling,
@@ -396,7 +404,8 @@ class TaxAuditServiceImpl implements TaxAuditService {
       timestamp: DateTime.now(),
       userId: userId,
       action: 'tax_rate_change',
-      description: '$taxType rate changed from ${(oldRate * 100).toStringAsFixed(2)}% to ${(newRate * 100).toStringAsFixed(2)}%',
+      description:
+          '$taxType rate changed from ${(oldRate * 100).toStringAsFixed(2)}% to ${(newRate * 100).toStringAsFixed(2)}%',
       beforeState: {'rate': oldRate},
       afterState: {'rate': newRate},
       metadata: {
@@ -458,34 +467,38 @@ class TaxAuditServiceImpl implements TaxAuditService {
   Future<void> _handleCriticalEvent(AuditEvent event) async {
     // In production, would send alerts, notifications, etc.
     print('CRITICAL AUDIT EVENT: ${event.description}');
-    
+
     // Could integrate with notification service, email alerts, etc.
   }
 
   List<String> _generateComplianceRecommendations(
       int score, int criticalEvents, int highEvents) {
     final recommendations = <String>[];
-    
+
     if (score < 50) {
-      recommendations.add('Immediate attention required - multiple compliance issues detected');
+      recommendations.add(
+          'Immediate attention required - multiple compliance issues detected');
     } else if (score < 80) {
-      recommendations.add('Review recent audit events and address identified issues');
+      recommendations
+          .add('Review recent audit events and address identified issues');
     }
-    
+
     if (criticalEvents > 0) {
-      recommendations.add('Investigate and resolve $criticalEvents critical events');
+      recommendations
+          .add('Investigate and resolve $criticalEvents critical events');
     }
-    
+
     if (highEvents > 5) {
-      recommendations.add('High number of high-severity events - review system processes');
+      recommendations
+          .add('High number of high-severity events - review system processes');
     }
-    
+
     recommendations.addAll([
       'Regularly review audit logs for compliance monitoring',
       'Ensure proper user access controls are in place',
       'Maintain documentation for all tax-related decisions',
     ]);
-    
+
     return recommendations;
   }
 
@@ -527,7 +540,7 @@ class TaxAuditServiceImpl implements TaxAuditService {
         isSystemEvent: true,
       ),
     ];
-    
+
     _events.addAll(sampleEvents);
   }
 

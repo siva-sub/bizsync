@@ -45,18 +45,18 @@ class TaxableIncome {
   });
 
   Map<String, dynamic> toJson() => {
-    'revenue': revenue,
-    'costOfSales': costOfSales,
-    'grossProfit': grossProfit,
-    'operatingExpenses': operatingExpenses,
-    'ebitda': ebitda,
-    'depreciation': depreciation,
-    'ebit': ebit,
-    'interestExpense': interestExpense,
-    'profitBeforeTax': profitBeforeTax,
-    'taxAdjustments': taxAdjustments,
-    'chargeableIncome': chargeableIncome,
-  };
+        'revenue': revenue,
+        'costOfSales': costOfSales,
+        'grossProfit': grossProfit,
+        'operatingExpenses': operatingExpenses,
+        'ebitda': ebitda,
+        'depreciation': depreciation,
+        'ebit': ebit,
+        'interestExpense': interestExpense,
+        'profitBeforeTax': profitBeforeTax,
+        'taxAdjustments': taxAdjustments,
+        'chargeableIncome': chargeableIncome,
+      };
 }
 
 class TaxAdjustment {
@@ -79,14 +79,14 @@ class TaxAdjustment {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'description': description,
-    'amount': amount,
-    'type': type,
-    'category': category,
-    'legislation': legislation,
-    'remarks': remarks,
-  };
+        'id': id,
+        'description': description,
+        'amount': amount,
+        'type': type,
+        'category': category,
+        'legislation': legislation,
+        'remarks': remarks,
+      };
 }
 
 class CorporateTaxComputation {
@@ -133,13 +133,13 @@ class TaxBracket {
   });
 
   Map<String, dynamic> toJson() => {
-    'description': description,
-    'lowerBound': lowerBound,
-    'upperBound': upperBound,
-    'rate': rate,
-    'taxableAmount': taxableAmount,
-    'taxAmount': taxAmount,
-  };
+        'description': description,
+        'lowerBound': lowerBound,
+        'upperBound': upperBound,
+        'rate': rate,
+        'taxableAmount': taxableAmount,
+        'taxAmount': taxAmount,
+      };
 }
 
 class CorporateTaxReturn {
@@ -180,22 +180,24 @@ class CorporateTaxService {
   }) async {
     // Calculate taxable income
     final income = _calculateTaxableIncome(financialData, adjustments);
-    
+
     // Get applicable reliefs
     final reliefs = await _getApplicableReliefs(companyProfile, assessmentYear);
-    
+
     // Apply reliefs to get chargeable income
     final chargeableIncome = _applyReliefs(income.chargeableIncome, reliefs);
-    
+
     // Calculate tax brackets
     final taxBrackets = _calculateTaxBrackets(chargeableIncome, companyProfile);
-    
+
     // Calculate total tax
-    final totalTax = taxBrackets.fold<double>(0, (sum, bracket) => sum + bracket.taxAmount);
-    
+    final totalTax =
+        taxBrackets.fold<double>(0, (sum, bracket) => sum + bracket.taxAmount);
+
     // Calculate effective tax rate
-    final effectiveTaxRate = income.chargeableIncome > 0 ? totalTax / income.chargeableIncome : 0;
-    
+    final effectiveTaxRate =
+        income.chargeableIncome > 0 ? totalTax / income.chargeableIncome : 0;
+
     // Calculate balance due
     final balanceDue = totalTax - estimatedPayments;
 
@@ -213,17 +215,18 @@ class CorporateTaxService {
     );
   }
 
-  Future<TaxFormType> determineFormType(CompanyTaxProfile profile, double revenue) async {
+  Future<TaxFormType> determineFormType(
+      CompanyTaxProfile profile, double revenue) async {
     // Form C-S Lite: Eligible small companies
     if (revenue <= 200000 && _isEligibleForFormCSLite(profile)) {
       return TaxFormType.formCSlite;
     }
-    
+
     // Form C-S: Small companies
     if (revenue <= 5000000) {
       return TaxFormType.formCS;
     }
-    
+
     // Form C: Large companies
     return TaxFormType.formC;
   }
@@ -232,7 +235,7 @@ class CorporateTaxService {
     required CorporateTaxReturn taxReturn,
   }) async {
     final computation = taxReturn.computation;
-    
+
     return {
       'formType': taxReturn.formType.name.toUpperCase(),
       'assessmentYear': taxReturn.assessmentYear,
@@ -241,20 +244,26 @@ class CorporateTaxService {
         'registrationNumber': taxReturn.companyProfile.registrationNumber,
         'gstNumber': taxReturn.companyProfile.gstNumber,
         'companyType': taxReturn.companyProfile.companyType.name,
-        'incorporationDate': taxReturn.companyProfile.incorporationDate.toIso8601String(),
-        'financialYearEnd': taxReturn.companyProfile.financialYearEnd.toIso8601String(),
+        'incorporationDate':
+            taxReturn.companyProfile.incorporationDate.toIso8601String(),
+        'financialYearEnd':
+            taxReturn.companyProfile.financialYearEnd.toIso8601String(),
       },
       'income': computation.income.toJson(),
-      'adjustments': computation.adjustments.map((adj) => adj.toJson()).toList(),
-      'reliefs': computation.reliefs.map((relief) => {
-        'name': relief.name,
-        'type': relief.reliefType.name,
-        'amount': relief.reliefAmount,
-        'legislation': relief.legislation,
-      }).toList(),
+      'adjustments':
+          computation.adjustments.map((adj) => adj.toJson()).toList(),
+      'reliefs': computation.reliefs
+          .map((relief) => {
+                'name': relief.name,
+                'type': relief.reliefType.name,
+                'amount': relief.reliefAmount,
+                'legislation': relief.legislation,
+              })
+          .toList(),
       'computation': {
         'chargeableIncome': computation.chargeableIncome,
-        'taxBrackets': computation.taxBrackets.map((bracket) => bracket.toJson()).toList(),
+        'taxBrackets':
+            computation.taxBrackets.map((bracket) => bracket.toJson()).toList(),
         'totalTax': computation.totalTax,
         'effectiveTaxRate': computation.effectiveTaxRate,
         'estimatedPayments': computation.estimatedPayments,
@@ -268,48 +277,52 @@ class CorporateTaxService {
   Future<List<String>> validateTaxReturn(CorporateTaxReturn taxReturn) async {
     final errors = <String>[];
     final computation = taxReturn.computation;
-    
+
     // Basic validation
     if (computation.chargeableIncome < 0) {
       errors.add('Chargeable income cannot be negative');
     }
-    
+
     if (computation.totalTax < 0) {
       errors.add('Total tax cannot be negative');
     }
-    
+
     // Check if tax computation is reasonable
     if (computation.effectiveTaxRate > 0.20) {
-      errors.add('Effective tax rate seems unusually high (>${computation.effectiveTaxRate * 100}%)');
+      errors.add(
+          'Effective tax rate seems unusually high (>${computation.effectiveTaxRate * 100}%)');
     }
-    
+
     // Check due date
     if (taxReturn.dueDate.isBefore(DateTime.now())) {
       errors.add('Tax return is past due date');
     }
-    
+
     // Validate adjustments
     for (final adjustment in computation.adjustments) {
       if (adjustment.amount == 0) {
-        errors.add('Tax adjustment "${adjustment.description}" has zero amount');
+        errors
+            .add('Tax adjustment "${adjustment.description}" has zero amount');
       }
     }
-    
+
     // Check for required documents based on form type
-    final requiredDocs = _getRequiredDocuments(taxReturn.formType, computation.income.revenue);
+    final requiredDocs =
+        _getRequiredDocuments(taxReturn.formType, computation.income.revenue);
     for (final doc in requiredDocs) {
       if (!taxReturn.supportingDocuments.contains(doc)) {
         errors.add('Missing required document: $doc');
       }
     }
-    
+
     return errors;
   }
 
-  Future<Map<String, dynamic>> generateIrasSubmissionFormat(CorporateTaxReturn taxReturn) async {
+  Future<Map<String, dynamic>> generateIrasSubmissionFormat(
+      CorporateTaxReturn taxReturn) async {
     // Generate data in IRAS-compatible format
     final computation = taxReturn.computation;
-    
+
     return {
       'CorpPassId': taxReturn.companyProfile.registrationNumber,
       'AssessmentYear': taxReturn.assessmentYear,
@@ -322,20 +335,25 @@ class CorporateTaxService {
       'TotalTax': computation.totalTax,
       'EstimatedPayments': computation.estimatedPayments,
       'BalanceDue': computation.balanceDue,
-      'TaxBrackets': computation.taxBrackets.map((bracket) => {
-        'Rate': bracket.rate,
-        'TaxableAmount': bracket.taxableAmount,
-        'TaxAmount': bracket.taxAmount,
-      }).toList(),
-      'Reliefs': computation.reliefs.map((relief) => {
-        'ReliefCode': _getReliefCode(relief.reliefType),
-        'Amount': relief.reliefAmount,
-      }).toList(),
+      'TaxBrackets': computation.taxBrackets
+          .map((bracket) => {
+                'Rate': bracket.rate,
+                'TaxableAmount': bracket.taxableAmount,
+                'TaxAmount': bracket.taxAmount,
+              })
+          .toList(),
+      'Reliefs': computation.reliefs
+          .map((relief) => {
+                'ReliefCode': _getReliefCode(relief.reliefType),
+                'Amount': relief.reliefAmount,
+              })
+          .toList(),
       'SubmissionDate': DateTime.now().toIso8601String(),
     };
   }
 
-  TaxableIncome _calculateTaxableIncome(Map<String, double> financialData, List<TaxAdjustment> adjustments) {
+  TaxableIncome _calculateTaxableIncome(
+      Map<String, double> financialData, List<TaxAdjustment> adjustments) {
     final revenue = financialData['revenue'] ?? 0;
     final costOfSales = financialData['costOfSales'] ?? 0;
     final grossProfit = revenue - costOfSales;
@@ -345,16 +363,16 @@ class CorporateTaxService {
     final ebit = ebitda - depreciation;
     final interestExpense = financialData['interestExpense'] ?? 0;
     final profitBeforeTax = ebit - interestExpense;
-    
+
     // Apply tax adjustments
     final additions = adjustments
         .where((adj) => adj.type == 'addition')
         .fold<double>(0, (sum, adj) => sum + adj.amount);
-    
+
     final deductions = adjustments
         .where((adj) => adj.type == 'deduction')
         .fold<double>(0, (sum, adj) => sum + adj.amount);
-    
+
     final taxAdjustments = additions - deductions;
     final chargeableIncome = profitBeforeTax + taxAdjustments;
 
@@ -373,11 +391,13 @@ class CorporateTaxService {
     );
   }
 
-  Future<List<TaxRelief>> _getApplicableReliefs(CompanyTaxProfile profile, String assessmentYear) async {
+  Future<List<TaxRelief>> _getApplicableReliefs(
+      CompanyTaxProfile profile, String assessmentYear) async {
     final reliefs = <TaxRelief>[];
-    
+
     // Startup exemption
-    if (profile.companyType == CompanyType.startup && profile.isEligibleForStartupExemption()) {
+    if (profile.companyType == CompanyType.startup &&
+        profile.isEligibleForStartupExemption()) {
       reliefs.add(TaxRelief(
         id: 'startup_exemption',
         name: 'Startup Tax Exemption',
@@ -389,7 +409,7 @@ class CorporateTaxService {
         legislation: 'Income Tax Act Section 43A',
       ));
     }
-    
+
     // Partial exemption
     if (profile.isQualifiedForPartialExemption()) {
       reliefs.add(TaxRelief(
@@ -403,13 +423,13 @@ class CorporateTaxService {
         legislation: 'Income Tax Act Section 43B',
       ));
     }
-    
+
     return reliefs;
   }
 
   double _applyReliefs(double chargeableIncome, List<TaxRelief> reliefs) {
     double adjustedIncome = chargeableIncome;
-    
+
     for (final relief in reliefs) {
       switch (relief.reliefType) {
         case ReliefType.startupExemption:
@@ -426,18 +446,21 @@ class CorporateTaxService {
           break;
       }
     }
-    
+
     return adjustedIncome;
   }
 
-  List<TaxBracket> _calculateTaxBrackets(double chargeableIncome, CompanyTaxProfile profile) {
+  List<TaxBracket> _calculateTaxBrackets(
+      double chargeableIncome, CompanyTaxProfile profile) {
     final brackets = <TaxBracket>[];
     double remainingIncome = chargeableIncome;
-    
-    if (profile.companyType == CompanyType.startup && profile.isEligibleForStartupExemption()) {
+
+    if (profile.companyType == CompanyType.startup &&
+        profile.isEligibleForStartupExemption()) {
       // Startup exemption brackets
       if (remainingIncome > 0) {
-        final exemptAmount = remainingIncome > 100000 ? 100000 : remainingIncome;
+        final exemptAmount =
+            remainingIncome > 100000 ? 100000 : remainingIncome;
         brackets.add(TaxBracket(
           description: 'Startup Exemption - First S\$100,000',
           lowerBound: 0,
@@ -448,9 +471,10 @@ class CorporateTaxService {
         ));
         remainingIncome -= exemptAmount;
       }
-      
+
       if (remainingIncome > 0) {
-        final partialAmount = remainingIncome > 200000 ? 200000 : remainingIncome;
+        final partialAmount =
+            remainingIncome > 200000 ? 200000 : remainingIncome;
         brackets.add(TaxBracket(
           description: 'Startup Partial Exemption - Next S\$200,000 at 8.5%',
           lowerBound: 100000,
@@ -475,9 +499,10 @@ class CorporateTaxService {
         ));
         remainingIncome -= exemptAmount;
       }
-      
+
       if (remainingIncome > 0) {
-        final partialAmount = remainingIncome > 190000 ? 190000 : remainingIncome;
+        final partialAmount =
+            remainingIncome > 190000 ? 190000 : remainingIncome;
         brackets.add(TaxBracket(
           description: 'Partial Exemption - Next S\$190,000 at 8.5%',
           lowerBound: 10000,
@@ -489,7 +514,7 @@ class CorporateTaxService {
         remainingIncome -= partialAmount;
       }
     }
-    
+
     // Standard rate for remaining income
     if (remainingIncome > 0) {
       brackets.add(TaxBracket(
@@ -501,20 +526,20 @@ class CorporateTaxService {
         taxAmount: remainingIncome * 0.17,
       ));
     }
-    
+
     return brackets;
   }
 
   bool _isEligibleForFormCSLite(CompanyTaxProfile profile) {
     // Eligibility criteria for Form C-S Lite
     return profile.companyType == CompanyType.privateLimited &&
-           profile.status == CompanyStatus.active &&
-           !profile.isGstRegistered; // Simplified criteria
+        profile.status == CompanyStatus.active &&
+        !profile.isGstRegistered; // Simplified criteria
   }
 
   List<String> _getRequiredDocuments(TaxFormType formType, double revenue) {
     final docs = <String>[];
-    
+
     switch (formType) {
       case TaxFormType.formC:
         docs.addAll([
@@ -540,7 +565,7 @@ class CorporateTaxService {
         ]);
         break;
     }
-    
+
     return docs;
   }
 
@@ -576,10 +601,13 @@ class CorporateTaxService {
     final computation = await computeCorporateTax(
       companyProfile: profile,
       assessmentYear: assessmentYear,
-      financialData: {'revenue': projectedIncome, 'profitBeforeTax': projectedIncome},
+      financialData: {
+        'revenue': projectedIncome,
+        'profitBeforeTax': projectedIncome
+      },
       adjustments: [],
     );
-    
+
     return {
       'projectedIncome': projectedIncome,
       'projectedTax': computation.totalTax,
@@ -589,24 +617,31 @@ class CorporateTaxService {
     };
   }
 
-  List<String> _generateTaxRecommendations(CompanyTaxProfile profile, CorporateTaxComputation computation) {
+  List<String> _generateTaxRecommendations(
+      CompanyTaxProfile profile, CorporateTaxComputation computation) {
     final recommendations = <String>[];
-    
+
     if (computation.effectiveTaxRate > 0.15) {
-      recommendations.add('Consider tax planning strategies to optimize effective tax rate');
+      recommendations.add(
+          'Consider tax planning strategies to optimize effective tax rate');
     }
-    
-    if (profile.companyType != CompanyType.startup && computation.chargeableIncome < 300000) {
-      recommendations.add('Consider startup status if eligible to benefit from startup exemptions');
+
+    if (profile.companyType != CompanyType.startup &&
+        computation.chargeableIncome < 300000) {
+      recommendations.add(
+          'Consider startup status if eligible to benefit from startup exemptions');
     }
-    
+
     if (!profile.isGstRegistered && computation.income.revenue > 800000) {
-      recommendations.add('Consider voluntary GST registration as revenue approaches S\$1M threshold');
+      recommendations.add(
+          'Consider voluntary GST registration as revenue approaches S\$1M threshold');
     }
-    
-    recommendations.add('Ensure proper documentation of all deductible expenses');
-    recommendations.add('Consider timing of income and expenses for tax optimization');
-    
+
+    recommendations
+        .add('Ensure proper documentation of all deductible expenses');
+    recommendations
+        .add('Consider timing of income and expenses for tax optimization');
+
     return recommendations;
   }
 }

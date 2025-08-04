@@ -12,10 +12,12 @@ class FinancialReportsScreen extends ConsumerStatefulWidget {
   const FinancialReportsScreen({super.key});
 
   @override
-  ConsumerState<FinancialReportsScreen> createState() => _FinancialReportsScreenState();
+  ConsumerState<FinancialReportsScreen> createState() =>
+      _FinancialReportsScreenState();
 }
 
-class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen> {
+class _FinancialReportsScreenState
+    extends ConsumerState<FinancialReportsScreen> {
   late ForecastingService _forecastingService;
   late ForecastExportService _exportService;
 
@@ -55,7 +57,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
       setState(() => _isLoading = true);
 
       final dataSources = ['revenue', 'expenses', 'cashflow'];
-      
+
       // Load historical data
       for (final source in dataSources) {
         _historicalData[source] = await _forecastingService.getHistoricalData(
@@ -68,18 +70,19 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
 
       // Load latest forecasts
       for (final source in dataSources) {
-        final sessions = await _forecastingService.getForecastSessionsByDataSource(source);
+        final sessions =
+            await _forecastingService.getForecastSessionsByDataSource(source);
         if (sessions.isNotEmpty) {
           final latestSession = sessions.first;
-          
+
           // Get best performing scenario's forecast
           double bestScore = -1;
           List<ForecastResult>? bestForecast;
-          
+
           for (final scenario in latestSession.scenarios) {
             final accuracy = latestSession.accuracyMetrics[scenario.id];
             final results = latestSession.results[scenario.id];
-            
+
             if (accuracy != null && results != null && results.isNotEmpty) {
               final score = accuracy.r2;
               if (score > bestScore) {
@@ -88,7 +91,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
               }
             }
           }
-          
+
           if (bestForecast != null) {
             _latestForecasts[source] = bestForecast;
           }
@@ -180,8 +183,16 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
   Widget _buildReportTypeSelector() {
     final reportTypes = [
       {'key': 'overview', 'title': 'Overview', 'icon': Icons.dashboard},
-      {'key': 'revenue', 'title': 'Revenue Analysis', 'icon': Icons.trending_up},
-      {'key': 'expenses', 'title': 'Expense Analysis', 'icon': Icons.trending_down},
+      {
+        'key': 'revenue',
+        'title': 'Revenue Analysis',
+        'icon': Icons.trending_up
+      },
+      {
+        'key': 'expenses',
+        'title': 'Expense Analysis',
+        'icon': Icons.trending_down
+      },
       {'key': 'cashflow', 'title': 'Cash Flow', 'icon': Icons.account_balance},
       {'key': 'forecast', 'title': 'Forecast Summary', 'icon': Icons.analytics},
     ];
@@ -261,9 +272,12 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
     final expenseData = _historicalData['expenses'] ?? [];
     final cashflowData = _historicalData['cashflow'] ?? [];
 
-    final totalRevenue = revenueData.fold<double>(0, (sum, point) => sum + point.value);
-    final totalExpenses = expenseData.fold<double>(0, (sum, point) => sum + point.value);
-    final netCashFlow = cashflowData.fold<double>(0, (sum, point) => sum + point.value);
+    final totalRevenue =
+        revenueData.fold<double>(0, (sum, point) => sum + point.value);
+    final totalExpenses =
+        expenseData.fold<double>(0, (sum, point) => sum + point.value);
+    final netCashFlow =
+        cashflowData.fold<double>(0, (sum, point) => sum + point.value);
     final profit = totalRevenue - totalExpenses;
 
     final numberFormatter = NumberFormat.currency(symbol: '\$');
@@ -310,10 +324,11 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
 
   double? _calculateGrowthRate(List<TimeSeriesPoint> data) {
     if (data.length < 2) return null;
-    
-    final recent = data.length >= 2 ? data.skip(data.length - 2).toList() : data;
+
+    final recent =
+        data.length >= 2 ? data.skip(data.length - 2).toList() : data;
     if (recent.length < 2) return null;
-    
+
     final change = recent.last.value - recent.first.value;
     return recent.first.value != 0 ? (change / recent.first.value) * 100 : 0;
   }
@@ -342,15 +357,15 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             Text(
               title,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
               value,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ],
         ),
@@ -434,8 +449,10 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                         },
                       ),
                     ),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                   ),
                   borderData: FlBorderData(show: true),
                   lineBarsData: _buildCombinedChartLines(),
@@ -452,10 +469,10 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
 
   List<LineChartBarData> _buildCombinedChartLines() {
     final lines = <LineChartBarData>[];
-    
+
     final colors = [Colors.green, Colors.red, Colors.blue];
     final sources = ['revenue', 'expenses', 'cashflow'];
-    
+
     for (int i = 0; i < sources.length; i++) {
       final data = _historicalData[sources[i]];
       if (data != null && data.isNotEmpty) {
@@ -473,7 +490,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
         );
       }
     }
-    
+
     return lines;
   }
 
@@ -514,9 +531,13 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
       return const SizedBox.shrink();
     }
 
-    final avgRevenue = revenueData.map((d) => d.value).reduce((a, b) => a + b) / revenueData.length;
-    final avgExpenses = expenseData.map((d) => d.value).reduce((a, b) => a + b) / expenseData.length;
-    final profitMargin = avgRevenue > 0 ? ((avgRevenue - avgExpenses) / avgRevenue) * 100 : 0;
+    final avgRevenue = revenueData.map((d) => d.value).reduce((a, b) => a + b) /
+        revenueData.length;
+    final avgExpenses =
+        expenseData.map((d) => d.value).reduce((a, b) => a + b) /
+            expenseData.length;
+    final profitMargin =
+        avgRevenue > 0 ? ((avgRevenue - avgExpenses) / avgRevenue) * 100 : 0;
 
     return Card(
       child: Padding(
@@ -571,9 +592,9 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
         Text(
           value,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
         ),
         const SizedBox(height: 4),
         Text(
@@ -610,7 +631,9 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
     // Revenue trend analysis
     final revenueData = _historicalData['revenue'] ?? [];
     if (revenueData.length >= 3) {
-      final recentRevenue = revenueData.length >= 3 ? revenueData.skip(revenueData.length - 3).toList() : revenueData;
+      final recentRevenue = revenueData.length >= 3
+          ? revenueData.skip(revenueData.length - 3).toList()
+          : revenueData;
       final trend = _analyzeTrend(recentRevenue);
       insights.add(_buildTrendInsight(
         'Revenue Trend',
@@ -623,7 +646,9 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
     // Expense trend analysis
     final expenseData = _historicalData['expenses'] ?? [];
     if (expenseData.length >= 3) {
-      final recentExpenses = expenseData.length >= 3 ? expenseData.skip(expenseData.length - 3).toList() : expenseData;
+      final recentExpenses = expenseData.length >= 3
+          ? expenseData.skip(expenseData.length - 3).toList()
+          : expenseData;
       final trend = _analyzeTrend(recentExpenses);
       insights.add(_buildTrendInsight(
         'Expense Trend',
@@ -659,7 +684,8 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
     }
   }
 
-  Widget _buildTrendInsight(String title, String trend, String subtitle, Color color) {
+  Widget _buildTrendInsight(
+      String title, String trend, String subtitle, Color color) {
     IconData icon;
     Color trendColor;
 
@@ -694,8 +720,8 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                 Text(
                   '$trend - $subtitle',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
               ],
             ),
@@ -721,13 +747,16 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
       );
     }
 
-    final totalRevenue = revenueData.fold<double>(0, (sum, point) => sum + point.value);
+    final totalRevenue =
+        revenueData.fold<double>(0, (sum, point) => sum + point.value);
     final avgRevenue = totalRevenue / revenueData.length;
-    final maxRevenue = revenueData.map((p) => p.value).reduce((a, b) => a > b ? a : b);
-    final minRevenue = revenueData.map((p) => p.value).reduce((a, b) => a < b ? a : b);
-    
+    final maxRevenue =
+        revenueData.map((p) => p.value).reduce((a, b) => a > b ? a : b);
+    final minRevenue =
+        revenueData.map((p) => p.value).reduce((a, b) => a < b ? a : b);
+
     final currencyFormat = NumberFormat.currency(symbol: '\$');
-    
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -741,14 +770,18 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
             children: [
-              _buildMetricCard('Total Revenue', currencyFormat.format(totalRevenue), Colors.green),
-              _buildMetricCard('Average Revenue', currencyFormat.format(avgRevenue), Colors.blue),
-              _buildMetricCard('Highest Month', currencyFormat.format(maxRevenue), Colors.orange),
-              _buildMetricCard('Lowest Month', currencyFormat.format(minRevenue), Colors.red),
+              _buildMetricCard('Total Revenue',
+                  currencyFormat.format(totalRevenue), Colors.green),
+              _buildMetricCard('Average Revenue',
+                  currencyFormat.format(avgRevenue), Colors.blue),
+              _buildMetricCard('Highest Month',
+                  currencyFormat.format(maxRevenue), Colors.orange),
+              _buildMetricCard('Lowest Month',
+                  currencyFormat.format(minRevenue), Colors.red),
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // Revenue trend chart
           Card(
             child: Padding(
@@ -786,7 +819,8 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                                 final index = value.toInt();
                                 if (index >= 0 && index < revenueData.length) {
                                   return Text(
-                                    DateFormat('MMM').format(revenueData[index].date),
+                                    DateFormat('MMM')
+                                        .format(revenueData[index].date),
                                     style: const TextStyle(fontSize: 10),
                                   );
                                 }
@@ -794,14 +828,17 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                               },
                             ),
                           ),
-                          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
+                          rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
                         ),
                         borderData: FlBorderData(show: true),
                         lineBarsData: [
                           LineChartBarData(
                             spots: revenueData.asMap().entries.map((entry) {
-                              return FlSpot(entry.key.toDouble(), entry.value.value);
+                              return FlSpot(
+                                  entry.key.toDouble(), entry.value.value);
                             }).toList(),
                             isCurved: true,
                             color: Colors.green,
@@ -821,7 +858,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Revenue growth analysis
           Card(
             child: Padding(
@@ -859,13 +896,16 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
       );
     }
 
-    final totalExpenses = expenseData.fold<double>(0, (sum, point) => sum + point.value);
+    final totalExpenses =
+        expenseData.fold<double>(0, (sum, point) => sum + point.value);
     final avgExpenses = totalExpenses / expenseData.length;
-    final maxExpenses = expenseData.map((p) => p.value).reduce((a, b) => a > b ? a : b);
-    final minExpenses = expenseData.map((p) => p.value).reduce((a, b) => a < b ? a : b);
-    
+    final maxExpenses =
+        expenseData.map((p) => p.value).reduce((a, b) => a > b ? a : b);
+    final minExpenses =
+        expenseData.map((p) => p.value).reduce((a, b) => a < b ? a : b);
+
     final currencyFormat = NumberFormat.currency(symbol: '\$');
-    
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -879,14 +919,18 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
             children: [
-              _buildMetricCard('Total Expenses', currencyFormat.format(totalExpenses), Colors.red),
-              _buildMetricCard('Average Expenses', currencyFormat.format(avgExpenses), Colors.orange),
-              _buildMetricCard('Highest Month', currencyFormat.format(maxExpenses), Colors.deepOrange),
-              _buildMetricCard('Lowest Month', currencyFormat.format(minExpenses), Colors.green),
+              _buildMetricCard('Total Expenses',
+                  currencyFormat.format(totalExpenses), Colors.red),
+              _buildMetricCard('Average Expenses',
+                  currencyFormat.format(avgExpenses), Colors.orange),
+              _buildMetricCard('Highest Month',
+                  currencyFormat.format(maxExpenses), Colors.deepOrange),
+              _buildMetricCard('Lowest Month',
+                  currencyFormat.format(minExpenses), Colors.green),
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // Expense trend chart
           Card(
             child: Padding(
@@ -924,7 +968,8 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                                 final index = value.toInt();
                                 if (index >= 0 && index < expenseData.length) {
                                   return Text(
-                                    DateFormat('MMM').format(expenseData[index].date),
+                                    DateFormat('MMM')
+                                        .format(expenseData[index].date),
                                     style: const TextStyle(fontSize: 10),
                                   );
                                 }
@@ -932,14 +977,17 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                               },
                             ),
                           ),
-                          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
+                          rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
                         ),
                         borderData: FlBorderData(show: true),
                         lineBarsData: [
                           LineChartBarData(
                             spots: expenseData.asMap().entries.map((entry) {
-                              return FlSpot(entry.key.toDouble(), entry.value.value);
+                              return FlSpot(
+                                  entry.key.toDouble(), entry.value.value);
                             }).toList(),
                             isCurved: true,
                             color: Colors.red,
@@ -959,7 +1007,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Expense categories analysis
           Card(
             child: Padding(
@@ -978,7 +1026,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Expense optimization suggestions
           Card(
             child: Padding(
@@ -1004,7 +1052,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
   Widget _buildCashFlowAnalysis() {
     final revenueData = _historicalData['revenue'] ?? [];
     final expenseData = _historicalData['expenses'] ?? [];
-    
+
     if (revenueData.isEmpty && expenseData.isEmpty) {
       return const Center(
         child: Column(
@@ -1019,28 +1067,31 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
     }
 
     final currencyFormat = NumberFormat.currency(symbol: '\$');
-    
+
     // Calculate cash flow (revenue - expenses)
     final cashFlowData = <TimeSeriesPoint>[];
     final maxLength = math.max(revenueData.length, expenseData.length);
-    
+
     for (int i = 0; i < maxLength; i++) {
       final revenue = i < revenueData.length ? revenueData[i].value : 0.0;
       final expense = i < expenseData.length ? expenseData[i].value : 0.0;
-      final date = i < revenueData.length ? revenueData[i].date : 
-                   (i < expenseData.length ? expenseData[i].date : DateTime.now());
-      
+      final date = i < revenueData.length
+          ? revenueData[i].date
+          : (i < expenseData.length ? expenseData[i].date : DateTime.now());
+
       cashFlowData.add(TimeSeriesPoint(
         date: date,
         value: revenue - expense,
       ));
     }
-    
-    final totalCashFlow = cashFlowData.fold<double>(0, (sum, point) => sum + point.value);
-    final avgCashFlow = cashFlowData.isNotEmpty ? totalCashFlow / cashFlowData.length : 0.0;
+
+    final totalCashFlow =
+        cashFlowData.fold<double>(0, (sum, point) => sum + point.value);
+    final avgCashFlow =
+        cashFlowData.isNotEmpty ? totalCashFlow / cashFlowData.length : 0.0;
     final positivePeriods = cashFlowData.where((p) => p.value > 0).length;
     final negativePeriods = cashFlowData.where((p) => p.value < 0).length;
-    
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1054,16 +1105,22 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
             children: [
-              _buildMetricCard('Net Cash Flow', currencyFormat.format(totalCashFlow), 
+              _buildMetricCard(
+                  'Net Cash Flow',
+                  currencyFormat.format(totalCashFlow),
                   totalCashFlow >= 0 ? Colors.green : Colors.red),
-              _buildMetricCard('Avg Monthly Flow', currencyFormat.format(avgCashFlow), 
+              _buildMetricCard(
+                  'Avg Monthly Flow',
+                  currencyFormat.format(avgCashFlow),
                   avgCashFlow >= 0 ? Colors.blue : Colors.orange),
-              _buildMetricCard('Positive Periods', '$positivePeriods', Colors.green),
-              _buildMetricCard('Negative Periods', '$negativePeriods', Colors.red),
+              _buildMetricCard(
+                  'Positive Periods', '$positivePeriods', Colors.green),
+              _buildMetricCard(
+                  'Negative Periods', '$negativePeriods', Colors.red),
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // Cash flow trend chart
           Card(
             child: Padding(
@@ -1101,7 +1158,8 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                                 final index = value.toInt();
                                 if (index >= 0 && index < cashFlowData.length) {
                                   return Text(
-                                    DateFormat('MMM').format(cashFlowData[index].date),
+                                    DateFormat('MMM')
+                                        .format(cashFlowData[index].date),
                                     style: const TextStyle(fontSize: 10),
                                   );
                                 }
@@ -1109,14 +1167,17 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                               },
                             ),
                           ),
-                          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
+                          rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
                         ),
                         borderData: FlBorderData(show: true),
                         lineBarsData: [
                           LineChartBarData(
                             spots: cashFlowData.asMap().entries.map((entry) {
-                              return FlSpot(entry.key.toDouble(), entry.value.value);
+                              return FlSpot(
+                                  entry.key.toDouble(), entry.value.value);
                             }).toList(),
                             isCurved: true,
                             color: Colors.blue,
@@ -1136,7 +1197,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Cash flow alerts
           Card(
             child: Padding(
@@ -1180,7 +1241,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // Forecast models comparison
           Card(
             child: Padding(
@@ -1199,7 +1260,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Key insights
           Card(
             child: Padding(
@@ -1311,9 +1372,11 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
 
     return Column(
       children: categories.map((category) {
-        final totalExpenses = categories.fold<double>(0, (sum, cat) => sum + (cat['amount'] as double));
-        final percentage = ((category['amount'] as double) / totalExpenses * 100);
-        
+        final totalExpenses = categories.fold<double>(
+            0, (sum, cat) => sum + (cat['amount'] as double));
+        final percentage =
+            ((category['amount'] as double) / totalExpenses * 100);
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Row(
@@ -1345,10 +1408,26 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
 
   Widget _buildOptimizationSuggestions(List<TimeSeriesPoint> expenseData) {
     final suggestions = [
-      {'icon': Icons.lightbulb, 'title': 'Reduce Office Costs', 'description': 'Consider remote work to save 20% on rent'},
-      {'icon': Icons.autorenew, 'title': 'Automate Processes', 'description': 'Automation could reduce manual costs by 15%'},
-      {'icon': Icons.shopping_cart, 'title': 'Bulk Purchasing', 'description': 'Buy supplies in bulk to save 10% on materials'},
-      {'icon': Icons.energy_savings_leaf, 'title': 'Energy Efficiency', 'description': 'LED lighting could cut utilities by 25%'},
+      {
+        'icon': Icons.lightbulb,
+        'title': 'Reduce Office Costs',
+        'description': 'Consider remote work to save 20% on rent'
+      },
+      {
+        'icon': Icons.autorenew,
+        'title': 'Automate Processes',
+        'description': 'Automation could reduce manual costs by 15%'
+      },
+      {
+        'icon': Icons.shopping_cart,
+        'title': 'Bulk Purchasing',
+        'description': 'Buy supplies in bulk to save 10% on materials'
+      },
+      {
+        'icon': Icons.energy_savings_leaf,
+        'title': 'Energy Efficiency',
+        'description': 'LED lighting could cut utilities by 25%'
+      },
     ];
 
     return Column(
@@ -1370,7 +1449,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
 
   Widget _buildCashFlowAlerts(List<TimeSeriesPoint> cashFlowData) {
     final alerts = <Map<String, dynamic>>[];
-    
+
     // Check for negative cash flow periods
     final negativePeriods = cashFlowData.where((p) => p.value < 0).length;
     if (negativePeriods > 0) {
@@ -1385,14 +1464,16 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
 
     // Check for declining trend
     if (cashFlowData.length >= 3) {
-      final recent = cashFlowData.length > 3 
-          ? cashFlowData.sublist(cashFlowData.length - 3) 
+      final recent = cashFlowData.length > 3
+          ? cashFlowData.sublist(cashFlowData.length - 3)
           : cashFlowData;
-      if (recent[2].value < recent[1].value && recent[1].value < recent[0].value) {
+      if (recent[2].value < recent[1].value &&
+          recent[1].value < recent[0].value) {
         alerts.add({
           'type': 'error',
           'title': 'Declining Cash Flow Trend',
-          'description': 'Cash flow has been declining for 3 consecutive periods',
+          'description':
+              'Cash flow has been declining for 3 consecutive periods',
           'icon': Icons.trending_down,
           'color': Colors.red,
         });
@@ -1444,7 +1525,7 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
       children: models.map((model) {
         final accuracy = (model['accuracy'] as double) * 100;
         final isHighAccuracy = accuracy >= 75;
-        
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Row(
@@ -1561,7 +1642,8 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Export Format'),
-        content: const Text('Choose the export format for your financial report:'),
+        content:
+            const Text('Choose the export format for your financial report:'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

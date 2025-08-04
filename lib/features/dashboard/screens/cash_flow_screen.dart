@@ -30,9 +30,8 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
         ],
       ),
       body: cashFlowData.when(
-        data: (data) => data != null 
-            ? _buildContent(data)
-            : _buildNoDataState(),
+        data: (data) =>
+            data != null ? _buildContent(data) : _buildNoDataState(),
         loading: () => _buildLoadingState(),
         error: (error, stack) => _buildErrorState(error),
       ),
@@ -47,9 +46,9 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
         children: [
           // Cash flow summary cards
           _buildSummaryCards(data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Daily cash flow chart
           InteractiveLineChart(
             data: data.dailyCashFlow,
@@ -58,17 +57,16 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
             lineColor: data.netCashFlow >= 0 ? Colors.green : Colors.red,
             height: 350,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Inflow vs Outflow comparison
           _buildInflowOutflowCharts(data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Cash flow forecasts
-          if (data.forecasts.isNotEmpty)
-            _buildForecastSection(data.forecasts),
+          if (data.forecasts.isNotEmpty) _buildForecastSection(data.forecasts),
         ],
       ),
     );
@@ -111,7 +109,8 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
     );
   }
 
-  Widget _buildSummaryCard(String title, double value, IconData icon, Color color) {
+  Widget _buildSummaryCard(
+      String title, double value, IconData icon, Color color) {
     return Card(
       elevation: 4,
       child: Padding(
@@ -176,11 +175,13 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
   }
 
   Widget _buildForecastSection(List<CashFlowForecast> forecasts) {
-    final forecastData = forecasts.map((forecast) => DataPoint(
-          timestamp: forecast.date,
-          value: forecast.predictedBalance,
-          label: 'Forecast',
-        )).toList();
+    final forecastData = forecasts
+        .map((forecast) => DataPoint(
+              timestamp: forecast.date,
+              value: forecast.predictedBalance,
+              label: 'Forecast',
+            ))
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,7 +299,7 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
   String _formatCurrency(double value) {
     final isNegative = value < 0;
     final absValue = value.abs();
-    
+
     String formatted = '\$';
     if (absValue >= 1000000) {
       formatted += '${(absValue / 1000000).toStringAsFixed(1)}M';
@@ -307,7 +308,7 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
     } else {
       formatted += absValue.toStringAsFixed(0);
     }
-    
+
     return isNegative ? '-$formatted' : formatted;
   }
 

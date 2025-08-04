@@ -18,7 +18,7 @@ enum AccountType {
 
 /// Balance types for accounts
 enum BalanceType {
-  debit,  // Assets, Expenses
+  debit, // Assets, Expenses
   credit, // Liabilities, Equity, Revenue
 }
 
@@ -33,7 +33,7 @@ class JournalEntry {
   final String? reference;
   final DateTime createdAt;
   final Map<String, dynamic>? metadata;
-  
+
   const JournalEntry({
     required this.id,
     required this.transactionId,
@@ -45,16 +45,16 @@ class JournalEntry {
     required this.createdAt,
     this.metadata,
   });
-  
+
   /// Validate that entry has either debit or credit (not both, not neither)
-  bool get isValid => 
-    (debitAmount > 0 && creditAmount == 0) || 
-    (creditAmount > 0 && debitAmount == 0);
-  
+  bool get isValid =>
+      (debitAmount > 0 && creditAmount == 0) ||
+      (creditAmount > 0 && debitAmount == 0);
+
   double get amount => debitAmount > 0 ? debitAmount : creditAmount;
   bool get isDebit => debitAmount > 0;
   bool get isCredit => creditAmount > 0;
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -68,7 +68,7 @@ class JournalEntry {
       'metadata': metadata != null ? jsonEncode(metadata) : null,
     };
   }
-  
+
   factory JournalEntry.fromJson(Map<String, dynamic> json) {
     return JournalEntry(
       id: json['id'] as String,
@@ -79,7 +79,7 @@ class JournalEntry {
       description: json['description'] as String?,
       reference: json['reference'] as String?,
       createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at'] as int),
-      metadata: json['metadata'] != null 
+      metadata: json['metadata'] != null
           ? jsonDecode(json['metadata'] as String) as Map<String, dynamic>
           : null,
     );
@@ -98,7 +98,7 @@ class ChartOfAccountsEntry {
   final String? description;
   final DateTime createdAt;
   final DateTime updatedAt;
-  
+
   const ChartOfAccountsEntry({
     required this.id,
     required this.accountCode,
@@ -111,7 +111,7 @@ class ChartOfAccountsEntry {
     required this.createdAt,
     required this.updatedAt,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -126,7 +126,7 @@ class ChartOfAccountsEntry {
       'updated_at': updatedAt.millisecondsSinceEpoch,
     };
   }
-  
+
   factory ChartOfAccountsEntry.fromJson(Map<String, dynamic> json) {
     return ChartOfAccountsEntry(
       id: json['id'] as String,
@@ -153,14 +153,14 @@ class AccountBalance {
   final double balance;
   final DateTime lastUpdated;
   final int transactionCount;
-  
+
   const AccountBalance({
     required this.accountId,
     required this.balance,
     required this.lastUpdated,
     this.transactionCount = 0,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'account_id': accountId,
@@ -169,12 +169,13 @@ class AccountBalance {
       'transaction_count': transactionCount,
     };
   }
-  
+
   factory AccountBalance.fromJson(Map<String, dynamic> json) {
     return AccountBalance(
       accountId: json['account_id'] as String,
       balance: (json['balance'] as num).toDouble(),
-      lastUpdated: DateTime.fromMillisecondsSinceEpoch(json['last_updated'] as int),
+      lastUpdated:
+          DateTime.fromMillisecondsSinceEpoch(json['last_updated'] as int),
       transactionCount: json['transaction_count'] as int? ?? 0,
     );
   }
@@ -188,7 +189,7 @@ class TrialBalanceEntry {
   final AccountType accountType;
   final double debitBalance;
   final double creditBalance;
-  
+
   const TrialBalanceEntry({
     required this.accountId,
     required this.accountCode,
@@ -197,9 +198,9 @@ class TrialBalanceEntry {
     this.debitBalance = 0.0,
     this.creditBalance = 0.0,
   });
-  
+
   double get netBalance => debitBalance - creditBalance;
-  
+
   Map<String, dynamic> toJson() {
     return {
       'account_id': accountId,
@@ -217,7 +218,7 @@ class TrialBalanceEntry {
 class DoubleEntryService {
   final CRDTDatabaseService _databaseService;
   final AuditService _auditService;
-  
+
   // Standard account codes
   static const Map<String, String> standardAccounts = {
     // Assets
@@ -226,22 +227,22 @@ class DoubleEntryService {
     '1200': 'Inventory',
     '1500': 'Equipment',
     '1600': 'Accumulated Depreciation - Equipment',
-    
+
     // Liabilities
     '2000': 'Accounts Payable',
     '2100': 'Notes Payable',
     '2200': 'Accrued Expenses',
-    
+
     // Equity
     '3000': 'Owner\'s Capital',
     '3100': 'Retained Earnings',
     '3200': 'Dividends',
-    
+
     // Revenue
     '4000': 'Sales Revenue',
     '4100': 'Service Revenue',
     '4200': 'Interest Revenue',
-    
+
     // Expenses
     '5000': 'Cost of Goods Sold',
     '5100': 'Salaries Expense',
@@ -250,20 +251,21 @@ class DoubleEntryService {
     '5400': 'Depreciation Expense',
     '5500': 'Interest Expense',
   };
-  
+
   DoubleEntryService(this._databaseService, this._auditService);
-  
+
   /// Initialize chart of accounts with standard accounts
   Future<void> initializeChartOfAccounts() async {
     final db = await _databaseService.database;
-    
-    await _databaseService.transactionManager.runInTransaction((transaction) async {
+
+    await _databaseService.transactionManager
+        .runInTransaction((transaction) async {
       for (final entry in standardAccounts.entries) {
         final accountCode = entry.key;
         final accountName = entry.value;
         final accountType = _getAccountTypeFromCode(accountCode);
         final balanceType = _getBalanceTypeFromAccountType(accountType);
-        
+
         await db.insert(
           'chart_of_accounts',
           ChartOfAccountsEntry(
@@ -280,7 +282,7 @@ class DoubleEntryService {
       }
     });
   }
-  
+
   /// Create a new account
   Future<ChartOfAccountsEntry> createAccount({
     required String accountCode,
@@ -290,18 +292,19 @@ class DoubleEntryService {
     String? description,
   }) async {
     final db = await _databaseService.database;
-    
+
     // Check if account code already exists
     final existing = await db.query(
       'chart_of_accounts',
       where: 'account_code = ?',
       whereArgs: [accountCode],
     );
-    
+
     if (existing.isNotEmpty) {
-      throw app_exceptions.DatabaseException('Account code $accountCode already exists');
+      throw app_exceptions.DatabaseException(
+          'Account code $accountCode already exists');
     }
-    
+
     final account = ChartOfAccountsEntry(
       id: UuidGenerator.generateId(),
       accountCode: accountCode,
@@ -313,10 +316,11 @@ class DoubleEntryService {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    
-    await _databaseService.transactionManager.runInTransaction((transaction) async {
+
+    await _databaseService.transactionManager
+        .runInTransaction((transaction) async {
       await db.insert('chart_of_accounts', account.toJson());
-      
+
       // Initialize balance
       await db.insert('account_balances', {
         'id': UuidGenerator.generateId(),
@@ -324,7 +328,7 @@ class DoubleEntryService {
         'balance': 0.0,
         'last_updated': DateTime.now().millisecondsSinceEpoch,
       });
-      
+
       // Audit log
       await _auditService.logEvent(
         tableName: 'chart_of_accounts',
@@ -333,10 +337,10 @@ class DoubleEntryService {
         newValues: account.toJson(),
       );
     });
-    
+
     return account;
   }
-  
+
   /// Create a journal entry (must be balanced)
   Future<List<JournalEntry>> createJournalEntry({
     required String transactionId,
@@ -345,29 +349,28 @@ class DoubleEntryService {
     String? reference,
   }) async {
     if (entries.isEmpty) {
-      throw app_exceptions.DatabaseException('Journal entry must have at least one line');
+      throw app_exceptions.DatabaseException(
+          'Journal entry must have at least one line');
     }
-    
+
     // Validate that the entry is balanced
-    final totalDebits = entries
-        .where((e) => e.isDebit)
-        .fold(0.0, (sum, e) => sum + e.amount);
-    
-    final totalCredits = entries
-        .where((e) => e.isCredit)
-        .fold(0.0, (sum, e) => sum + e.amount);
-    
+    final totalDebits =
+        entries.where((e) => e.isDebit).fold(0.0, (sum, e) => sum + e.amount);
+
+    final totalCredits =
+        entries.where((e) => e.isCredit).fold(0.0, (sum, e) => sum + e.amount);
+
     const tolerance = 0.01; // Allow for small rounding differences
     if ((totalDebits - totalCredits).abs() > tolerance) {
       throw app_exceptions.DatabaseException(
-        'Journal entry is not balanced: Debits=$totalDebits, Credits=$totalCredits'
-      );
+          'Journal entry is not balanced: Debits=$totalDebits, Credits=$totalCredits');
     }
-    
+
     final db = await _databaseService.database;
     final journalEntries = <JournalEntry>[];
-    
-    await _databaseService.transactionManager.runInTransaction((transaction) async {
+
+    await _databaseService.transactionManager
+        .runInTransaction((transaction) async {
       for (final line in entries) {
         // Validate account exists
         final accountExists = await db.query(
@@ -375,11 +378,12 @@ class DoubleEntryService {
           where: 'id = ? AND is_active = 1',
           whereArgs: [line.accountId],
         );
-        
+
         if (accountExists.isEmpty) {
-          throw app_exceptions.DatabaseException('Account ${line.accountId} does not exist or is inactive');
+          throw app_exceptions.DatabaseException(
+              'Account ${line.accountId} does not exist or is inactive');
         }
-        
+
         final journalEntry = JournalEntry(
           id: UuidGenerator.generateId(),
           transactionId: transactionId,
@@ -390,13 +394,14 @@ class DoubleEntryService {
           reference: reference,
           createdAt: DateTime.now(),
         );
-        
+
         await db.insert('journal_entries', journalEntry.toJson());
         journalEntries.add(journalEntry);
-        
+
         // Update account balance
-        await _updateAccountBalance(line.accountId, line.isDebit ? line.amount : -line.amount);
-        
+        await _updateAccountBalance(
+            line.accountId, line.isDebit ? line.amount : -line.amount);
+
         // Audit log
         await _auditService.logEvent(
           tableName: 'journal_entries',
@@ -406,41 +411,42 @@ class DoubleEntryService {
         );
       }
     });
-    
+
     return journalEntries;
   }
-  
+
   /// Get account balance
   Future<AccountBalance> getAccountBalance(String accountId) async {
     final db = await _databaseService.database;
-    
+
     final result = await db.query(
       'account_balances',
       where: 'account_id = ?',
       whereArgs: [accountId],
     );
-    
+
     if (result.isEmpty) {
-      throw app_exceptions.DatabaseException('Account balance not found for $accountId');
+      throw app_exceptions.DatabaseException(
+          'Account balance not found for $accountId');
     }
-    
+
     return AccountBalance.fromJson(result.first);
   }
-  
+
   /// Get trial balance
   Future<List<TrialBalanceEntry>> getTrialBalance({
     DateTime? asOfDate,
   }) async {
     final db = await _databaseService.database;
-    
+
     String dateFilter = '';
     List<dynamic> args = [];
-    
+
     if (asOfDate != null) {
       dateFilter = 'AND je.created_at <= ?';
       args.add(asOfDate.millisecondsSinceEpoch);
     }
-    
+
     final result = await db.rawQuery('''
       SELECT 
         coa.id as account_id,
@@ -455,15 +461,15 @@ class DoubleEntryService {
       GROUP BY coa.id, coa.account_code, coa.account_name, coa.account_type
       ORDER BY coa.account_code
     ''', args);
-    
+
     return result.map((row) {
       final accountType = AccountType.values.firstWhere(
         (e) => e.name.toUpperCase() == row['account_type'],
       );
-      
+
       final totalDebits = (row['total_debits'] as num).toDouble();
       final totalCredits = (row['total_credits'] as num).toDouble();
-      
+
       return TrialBalanceEntry(
         accountId: row['account_id'] as String,
         accountCode: row['account_code'] as String,
@@ -474,18 +480,21 @@ class DoubleEntryService {
       );
     }).toList();
   }
-  
+
   /// Validate trial balance
-  Future<Map<String, dynamic>> validateTrialBalance({DateTime? asOfDate}) async {
+  Future<Map<String, dynamic>> validateTrialBalance(
+      {DateTime? asOfDate}) async {
     final trialBalance = await getTrialBalance(asOfDate: asOfDate);
-    
-    final totalDebits = trialBalance.fold(0.0, (sum, entry) => sum + entry.debitBalance);
-    final totalCredits = trialBalance.fold(0.0, (sum, entry) => sum + entry.creditBalance);
-    
+
+    final totalDebits =
+        trialBalance.fold(0.0, (sum, entry) => sum + entry.debitBalance);
+    final totalCredits =
+        trialBalance.fold(0.0, (sum, entry) => sum + entry.creditBalance);
+
     const tolerance = 0.01;
     final isBalanced = (totalDebits - totalCredits).abs() <= tolerance;
     final difference = totalDebits - totalCredits;
-    
+
     return {
       'is_balanced': isBalanced,
       'total_debits': totalDebits,
@@ -496,24 +505,22 @@ class DoubleEntryService {
       'validation_time': DateTime.now().toIso8601String(),
     };
   }
-  
+
   /// Generate financial statements
   Future<Map<String, dynamic>> generateFinancialStatements({
     DateTime? asOfDate,
   }) async {
     final trialBalance = await getTrialBalance(asOfDate: asOfDate);
-    
+
     // Balance Sheet
-    final assets = trialBalance
-        .where((e) => e.accountType == AccountType.asset)
-        .toList();
+    final assets =
+        trialBalance.where((e) => e.accountType == AccountType.asset).toList();
     final liabilities = trialBalance
         .where((e) => e.accountType == AccountType.liability)
         .toList();
-    final equity = trialBalance
-        .where((e) => e.accountType == AccountType.equity)
-        .toList();
-    
+    final equity =
+        trialBalance.where((e) => e.accountType == AccountType.equity).toList();
+
     // Income Statement
     final revenue = trialBalance
         .where((e) => e.accountType == AccountType.revenue)
@@ -521,17 +528,19 @@ class DoubleEntryService {
     final expenses = trialBalance
         .where((e) => e.accountType == AccountType.expense)
         .toList();
-    
+
     final totalAssets = assets.fold(0.0, (sum, e) => sum + e.netBalance);
-    final totalLiabilities = liabilities.fold(0.0, (sum, e) => sum + e.creditBalance);
+    final totalLiabilities =
+        liabilities.fold(0.0, (sum, e) => sum + e.creditBalance);
     final totalEquity = equity.fold(0.0, (sum, e) => sum + e.creditBalance);
     final totalRevenue = revenue.fold(0.0, (sum, e) => sum + e.creditBalance);
     final totalExpenses = expenses.fold(0.0, (sum, e) => sum + e.debitBalance);
-    
+
     final netIncome = totalRevenue - totalExpenses;
-    
+
     return {
-      'as_of_date': asOfDate?.toIso8601String() ?? DateTime.now().toIso8601String(),
+      'as_of_date':
+          asOfDate?.toIso8601String() ?? DateTime.now().toIso8601String(),
       'balance_sheet': {
         'assets': {
           'accounts': assets.map((e) => e.toJson()).toList(),
@@ -546,7 +555,8 @@ class DoubleEntryService {
           'total': totalEquity,
         },
         'total_liabilities_and_equity': totalLiabilities + totalEquity,
-        'is_balanced': (totalAssets - (totalLiabilities + totalEquity)).abs() <= 0.01,
+        'is_balanced':
+            (totalAssets - (totalLiabilities + totalEquity)).abs() <= 0.01,
       },
       'income_statement': {
         'revenue': {
@@ -561,22 +571,22 @@ class DoubleEntryService {
       },
     };
   }
-  
+
   /// Update account balance
   Future<void> _updateAccountBalance(String accountId, double amount) async {
     final db = await _databaseService.database;
-    
+
     await db.rawUpdate('''
       UPDATE account_balances 
       SET balance = balance + ?, last_updated = ?
       WHERE account_id = ?
     ''', [amount, DateTime.now().millisecondsSinceEpoch, accountId]);
   }
-  
+
   /// Get account type from account code
   AccountType _getAccountTypeFromCode(String accountCode) {
     final firstDigit = int.tryParse(accountCode.substring(0, 1)) ?? 0;
-    
+
     switch (firstDigit) {
       case 1:
         return AccountType.asset;
@@ -596,7 +606,7 @@ class DoubleEntryService {
         return AccountType.asset;
     }
   }
-  
+
   /// Get balance type from account type
   BalanceType _getBalanceTypeFromAccountType(AccountType accountType) {
     switch (accountType) {
@@ -617,13 +627,13 @@ class JournalEntryLine {
   final double amount;
   final bool isDebit;
   final String? description;
-  
+
   const JournalEntryLine({
     required this.accountId,
     required this.amount,
     required this.isDebit,
     this.description,
   });
-  
+
   bool get isCredit => !isDebit;
 }

@@ -94,8 +94,8 @@ class CustomSnackBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? Theme.of(context).colorScheme.primary,
         borderRadius: borderRadius ?? BorderRadius.circular(8),
-        boxShadow: MesaRenderingDetector.shouldDisableShadows 
-            ? [] 
+        boxShadow: MesaRenderingDetector.shouldDisableShadows
+            ? []
             : [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.2),

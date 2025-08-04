@@ -134,9 +134,9 @@ class ForecastQuickActions extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[800],
-                ),
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[800],
+                    ),
               ),
             ],
           ),

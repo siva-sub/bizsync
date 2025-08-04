@@ -23,7 +23,8 @@ class GstTransaction {
   final double amount;
   final double gstAmount;
   final String gstRate;
-  final String transactionType; // 'standard', 'zero-rated', 'exempt', 'out-of-scope'
+  final String
+      transactionType; // 'standard', 'zero-rated', 'exempt', 'out-of-scope'
   final String customerSupplier;
   final String? invoiceNumber;
   final String? scheme; // 'standard', 'retail', 'margin'
@@ -42,30 +43,30 @@ class GstTransaction {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'transactionDate': transactionDate.toIso8601String(),
-    'description': description,
-    'amount': amount,
-    'gstAmount': gstAmount,
-    'gstRate': gstRate,
-    'transactionType': transactionType,
-    'customerSupplier': customerSupplier,
-    'invoiceNumber': invoiceNumber,
-    'scheme': scheme,
-  };
+        'id': id,
+        'transactionDate': transactionDate.toIso8601String(),
+        'description': description,
+        'amount': amount,
+        'gstAmount': gstAmount,
+        'gstRate': gstRate,
+        'transactionType': transactionType,
+        'customerSupplier': customerSupplier,
+        'invoiceNumber': invoiceNumber,
+        'scheme': scheme,
+      };
 
   factory GstTransaction.fromJson(Map<String, dynamic> json) => GstTransaction(
-    id: json['id'],
-    transactionDate: DateTime.parse(json['transactionDate']),
-    description: json['description'],
-    amount: json['amount'],
-    gstAmount: json['gstAmount'],
-    gstRate: json['gstRate'],
-    transactionType: json['transactionType'],
-    customerSupplier: json['customerSupplier'],
-    invoiceNumber: json['invoiceNumber'],
-    scheme: json['scheme'],
-  );
+        id: json['id'],
+        transactionDate: DateTime.parse(json['transactionDate']),
+        description: json['description'],
+        amount: json['amount'],
+        gstAmount: json['gstAmount'],
+        gstRate: json['gstRate'],
+        transactionType: json['transactionType'],
+        customerSupplier: json['customerSupplier'],
+        invoiceNumber: json['invoiceNumber'],
+        scheme: json['scheme'],
+      );
 }
 
 class GstF5Data {
@@ -73,40 +74,40 @@ class GstF5Data {
   final DateTime periodStart;
   final DateTime periodEnd;
   final DateTime dueDate;
-  
+
   // Box 1: Total value of standard-rated supplies
   final double box1StandardRatedSupplies;
-  
+
   // Box 2: Total value of zero-rated supplies
   final double box2ZeroRatedSupplies;
-  
+
   // Box 3: Total value of exempt supplies
   final double box3ExemptSupplies;
-  
+
   // Box 4: Total value of supplies (Box 1 + 2 + 3)
   final double box4TotalSupplies;
-  
+
   // Box 5: Total GST charged on supplies (output tax)
   final double box5OutputTax;
-  
+
   // Box 6: Total value of standard-rated purchases
   final double box6StandardRatedPurchases;
-  
+
   // Box 7: Total value of zero-rated purchases
   final double box7ZeroRatedPurchases;
-  
+
   // Box 8: Total value of exempt purchases
   final double box8ExemptPurchases;
-  
+
   // Box 9: Total value of purchases (Box 6 + 7 + 8)
   final double box9TotalPurchases;
-  
+
   // Box 10: Total GST charged on purchases (input tax)
   final double box10InputTax;
-  
+
   // Box 11: Bad debt relief claimed
   final double box11BadDebtRelief;
-  
+
   // Box 12: Net GST due/(refundable) (Box 5 - Box 10 - Box 11)
   final double box12NetGst;
 
@@ -130,23 +131,23 @@ class GstF5Data {
   });
 
   Map<String, dynamic> toJson() => {
-    'returnPeriod': returnPeriod,
-    'periodStart': periodStart.toIso8601String(),
-    'periodEnd': periodEnd.toIso8601String(),
-    'dueDate': dueDate.toIso8601String(),
-    'box1StandardRatedSupplies': box1StandardRatedSupplies,
-    'box2ZeroRatedSupplies': box2ZeroRatedSupplies,
-    'box3ExemptSupplies': box3ExemptSupplies,
-    'box4TotalSupplies': box4TotalSupplies,
-    'box5OutputTax': box5OutputTax,
-    'box6StandardRatedPurchases': box6StandardRatedPurchases,
-    'box7ZeroRatedPurchases': box7ZeroRatedPurchases,
-    'box8ExemptPurchases': box8ExemptPurchases,
-    'box9TotalPurchases': box9TotalPurchases,
-    'box10InputTax': box10InputTax,
-    'box11BadDebtRelief': box11BadDebtRelief,
-    'box12NetGst': box12NetGst,
-  };
+        'returnPeriod': returnPeriod,
+        'periodStart': periodStart.toIso8601String(),
+        'periodEnd': periodEnd.toIso8601String(),
+        'dueDate': dueDate.toIso8601String(),
+        'box1StandardRatedSupplies': box1StandardRatedSupplies,
+        'box2ZeroRatedSupplies': box2ZeroRatedSupplies,
+        'box3ExemptSupplies': box3ExemptSupplies,
+        'box4TotalSupplies': box4TotalSupplies,
+        'box5OutputTax': box5OutputTax,
+        'box6StandardRatedPurchases': box6StandardRatedPurchases,
+        'box7ZeroRatedPurchases': box7ZeroRatedPurchases,
+        'box8ExemptPurchases': box8ExemptPurchases,
+        'box9TotalPurchases': box9TotalPurchases,
+        'box10InputTax': box10InputTax,
+        'box11BadDebtRelief': box11BadDebtRelief,
+        'box12NetGst': box12NetGst,
+      };
 }
 
 class GstF5Return {
@@ -187,8 +188,10 @@ class GstComplianceService {
     }
 
     // Calculate totals for each box
-    final supplies = transactions.where((t) => _isSupplyTransaction(t)).toList();
-    final purchases = transactions.where((t) => _isPurchaseTransaction(t)).toList();
+    final supplies =
+        transactions.where((t) => _isSupplyTransaction(t)).toList();
+    final purchases =
+        transactions.where((t) => _isPurchaseTransaction(t)).toList();
 
     // Box 1: Standard-rated supplies
     final box1 = supplies
@@ -233,7 +236,8 @@ class GstComplianceService {
 
     // Box 10: Input tax (claimable GST on purchases)
     final box10 = purchases
-        .where((t) => t.transactionType == 'standard' && _isClaimableInputTax(t))
+        .where(
+            (t) => t.transactionType == 'standard' && _isClaimableInputTax(t))
         .fold<double>(0, (sum, t) => sum + t.gstAmount);
 
     // Box 11: Bad debt relief
@@ -268,25 +272,36 @@ class GstComplianceService {
     final errors = <String>[];
 
     // Basic validation rules
-    if (data.box4TotalSupplies != (data.box1StandardRatedSupplies + data.box2ZeroRatedSupplies + data.box3ExemptSupplies)) {
-      errors.add('Box 4 (Total Supplies) does not equal sum of Box 1, Box 2, and Box 3');
+    if (data.box4TotalSupplies !=
+        (data.box1StandardRatedSupplies +
+            data.box2ZeroRatedSupplies +
+            data.box3ExemptSupplies)) {
+      errors.add(
+          'Box 4 (Total Supplies) does not equal sum of Box 1, Box 2, and Box 3');
     }
 
-    if (data.box9TotalPurchases != (data.box6StandardRatedPurchases + data.box7ZeroRatedPurchases + data.box8ExemptPurchases)) {
-      errors.add('Box 9 (Total Purchases) does not equal sum of Box 6, Box 7, and Box 8');
+    if (data.box9TotalPurchases !=
+        (data.box6StandardRatedPurchases +
+            data.box7ZeroRatedPurchases +
+            data.box8ExemptPurchases)) {
+      errors.add(
+          'Box 9 (Total Purchases) does not equal sum of Box 6, Box 7, and Box 8');
     }
 
-    if (data.box12NetGst != (data.box5OutputTax - data.box10InputTax - data.box11BadDebtRelief)) {
+    if (data.box12NetGst !=
+        (data.box5OutputTax - data.box10InputTax - data.box11BadDebtRelief)) {
       errors.add('Box 12 (Net GST) calculation is incorrect');
     }
 
     // Check for unreasonable values
     if (data.box5OutputTax > data.box1StandardRatedSupplies * 0.1) {
-      errors.add('Output tax (Box 5) seems unreasonably high compared to standard-rated supplies');
+      errors.add(
+          'Output tax (Box 5) seems unreasonably high compared to standard-rated supplies');
     }
 
     if (data.box10InputTax > data.box6StandardRatedPurchases * 0.1) {
-      errors.add('Input tax (Box 10) seems unreasonably high compared to standard-rated purchases');
+      errors.add(
+          'Input tax (Box 10) seems unreasonably high compared to standard-rated purchases');
     }
 
     // Due date validation
@@ -299,28 +314,38 @@ class GstComplianceService {
 
   Future<String> generateGstF5Csv(GstF5Data data) async {
     final buffer = StringBuffer();
-    
+
     // CSV header
     buffer.writeln('Box,Description,Amount');
-    
+
     // Add data rows
-    buffer.writeln('1,Standard-rated supplies,${data.box1StandardRatedSupplies.toStringAsFixed(2)}');
-    buffer.writeln('2,Zero-rated supplies,${data.box2ZeroRatedSupplies.toStringAsFixed(2)}');
-    buffer.writeln('3,Exempt supplies,${data.box3ExemptSupplies.toStringAsFixed(2)}');
-    buffer.writeln('4,Total supplies,${data.box4TotalSupplies.toStringAsFixed(2)}');
+    buffer.writeln(
+        '1,Standard-rated supplies,${data.box1StandardRatedSupplies.toStringAsFixed(2)}');
+    buffer.writeln(
+        '2,Zero-rated supplies,${data.box2ZeroRatedSupplies.toStringAsFixed(2)}');
+    buffer.writeln(
+        '3,Exempt supplies,${data.box3ExemptSupplies.toStringAsFixed(2)}');
+    buffer.writeln(
+        '4,Total supplies,${data.box4TotalSupplies.toStringAsFixed(2)}');
     buffer.writeln('5,Output tax,${data.box5OutputTax.toStringAsFixed(2)}');
-    buffer.writeln('6,Standard-rated purchases,${data.box6StandardRatedPurchases.toStringAsFixed(2)}');
-    buffer.writeln('7,Zero-rated purchases,${data.box7ZeroRatedPurchases.toStringAsFixed(2)}');
-    buffer.writeln('8,Exempt purchases,${data.box8ExemptPurchases.toStringAsFixed(2)}');
-    buffer.writeln('9,Total purchases,${data.box9TotalPurchases.toStringAsFixed(2)}');
+    buffer.writeln(
+        '6,Standard-rated purchases,${data.box6StandardRatedPurchases.toStringAsFixed(2)}');
+    buffer.writeln(
+        '7,Zero-rated purchases,${data.box7ZeroRatedPurchases.toStringAsFixed(2)}');
+    buffer.writeln(
+        '8,Exempt purchases,${data.box8ExemptPurchases.toStringAsFixed(2)}');
+    buffer.writeln(
+        '9,Total purchases,${data.box9TotalPurchases.toStringAsFixed(2)}');
     buffer.writeln('10,Input tax,${data.box10InputTax.toStringAsFixed(2)}');
-    buffer.writeln('11,Bad debt relief,${data.box11BadDebtRelief.toStringAsFixed(2)}');
+    buffer.writeln(
+        '11,Bad debt relief,${data.box11BadDebtRelief.toStringAsFixed(2)}');
     buffer.writeln('12,Net GST,${data.box12NetGst.toStringAsFixed(2)}');
-    
+
     return buffer.toString();
   }
 
-  Future<Map<String, dynamic>> generateGstF5Json(GstF5Data data, CompanyTaxProfile profile) async {
+  Future<Map<String, dynamic>> generateGstF5Json(
+      GstF5Data data, CompanyTaxProfile profile) async {
     return {
       'formType': 'GST-F5',
       'version': '1.0',
@@ -362,7 +387,7 @@ class GstComplianceService {
     required GstF5Data data,
   }) async {
     final errors = await validateGstF5Return(data);
-    
+
     return GstF5Return(
       id: 'F5_${DateTime.now().millisecondsSinceEpoch}',
       gstNumber: companyProfile.gstNumber ?? '',
@@ -378,7 +403,8 @@ class GstComplianceService {
     );
   }
 
-  Future<Map<String, dynamic>> getGstComplianceStatus(CompanyTaxProfile profile) async {
+  Future<Map<String, dynamic>> getGstComplianceStatus(
+      CompanyTaxProfile profile) async {
     if (!profile.isGstRegistered) {
       return {
         'isCompliant': false,
@@ -398,11 +424,14 @@ class GstComplianceService {
     }
 
     // Check if GST return is due
-    final lastQuarterEnd = DateTime(now.year, ((now.month - 1) ~/ 3) * 3 + 3, 0);
-    final dueDate = lastQuarterEnd.add(const Duration(days: 30)); // 30 days after quarter end
-    
+    final lastQuarterEnd =
+        DateTime(now.year, ((now.month - 1) ~/ 3) * 3 + 3, 0);
+    final dueDate = lastQuarterEnd
+        .add(const Duration(days: 30)); // 30 days after quarter end
+
     if (now.isAfter(dueDate)) {
-      requirements.add('GST F5 return may be overdue for period ending ${lastQuarterEnd.toString().split(' ')[0]}');
+      requirements.add(
+          'GST F5 return may be overdue for period ending ${lastQuarterEnd.toString().split(' ')[0]}');
       isCompliant = false;
     }
 
@@ -430,7 +459,7 @@ class GstComplianceService {
   DateTime _getNextReturnDueDate() {
     final now = DateTime.now();
     final currentQuarter = ((now.month - 1) ~/ 3) + 1;
-    
+
     DateTime quarterEnd;
     if (currentQuarter == 4) {
       quarterEnd = DateTime(now.year + 1, 3, 31);
@@ -446,8 +475,9 @@ class GstComplianceService {
         quarterEnd = DateTime(now.year, 12, 31);
       }
     }
-    
-    return quarterEnd.add(const Duration(days: 30)); // 30 days after quarter end
+
+    return quarterEnd
+        .add(const Duration(days: 30)); // 30 days after quarter end
   }
 
   bool _isSupplyTransaction(GstTransaction transaction) {
@@ -466,7 +496,8 @@ class GstComplianceService {
     return true;
   }
 
-  double _calculateBadDebtRelief(List<GstTransaction> transactions, DateTime start, DateTime end) {
+  double _calculateBadDebtRelief(
+      List<GstTransaction> transactions, DateTime start, DateTime end) {
     // Calculate bad debt relief for the period
     // This would involve checking for bad debts written off that are at least 6 months overdue
     return 0.0; // Simplified

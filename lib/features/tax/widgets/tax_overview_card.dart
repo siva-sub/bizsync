@@ -47,7 +47,8 @@ class TaxOverviewCard extends StatelessWidget {
                   ),
                   if (showTrend && trend != null)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: _getTrendColor(trend!).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -78,23 +79,23 @@ class TaxOverviewCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[500],
-                ),
+                      color: Colors.grey[500],
+                    ),
               ),
               if (onTap != null) ...[
                 const SizedBox(height: 8),
@@ -126,18 +127,26 @@ class TaxOverviewCard extends StatelessWidget {
   }
 
   Color _getTrendColor(String trend) {
-    if (trend.startsWith('+') || trend.contains('up') || trend.contains('increase')) {
+    if (trend.startsWith('+') ||
+        trend.contains('up') ||
+        trend.contains('increase')) {
       return Colors.green;
-    } else if (trend.startsWith('-') || trend.contains('down') || trend.contains('decrease')) {
+    } else if (trend.startsWith('-') ||
+        trend.contains('down') ||
+        trend.contains('decrease')) {
       return Colors.red;
     }
     return Colors.grey;
   }
 
   IconData _getTrendIcon(String trend) {
-    if (trend.startsWith('+') || trend.contains('up') || trend.contains('increase')) {
+    if (trend.startsWith('+') ||
+        trend.contains('up') ||
+        trend.contains('increase')) {
       return Icons.trending_up;
-    } else if (trend.startsWith('-') || trend.contains('down') || trend.contains('decrease')) {
+    } else if (trend.startsWith('-') ||
+        trend.contains('down') ||
+        trend.contains('decrease')) {
       return Icons.trending_down;
     }
     return Icons.trending_flat;

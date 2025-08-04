@@ -129,12 +129,12 @@ class TestFactories {
   }) {
     final itemCount = count ?? 3;
     final items = <Map<String, dynamic>>[];
-    
+
     for (int i = 0; i < itemCount; i++) {
-      final product = products != null && i < products.length 
-          ? products[i] 
+      final product = products != null && i < products.length
+          ? products[i]
           : createProduct(name: 'Invoice Item ${i + 1}');
-      
+
       items.add({
         'id': UuidGenerator.generateId(),
         'product_id': product.id,
@@ -147,7 +147,7 @@ class TestFactories {
         'line_total': product.price * 2.0,
       });
     }
-    
+
     return items;
   }
 
@@ -169,10 +169,10 @@ class TestFactories {
     final now = DateTime.now();
     final testCustomer = customer ?? createCustomer();
     final items = lineItems ?? createInvoiceLineItems();
-    
+
     // Calculate totals
     final subtotal = items.fold<double>(
-      0.0, 
+      0.0,
       (sum, item) => sum + (item['line_total'] as double),
     );
     final discount = discountAmount ?? 0.0;
@@ -182,7 +182,8 @@ class TestFactories {
 
     return {
       'id': id ?? UuidGenerator.generateId(),
-      'invoice_number': invoiceNumber ?? 'INV-${DateTime.now().millisecondsSinceEpoch}',
+      'invoice_number':
+          invoiceNumber ?? 'INV-${DateTime.now().millisecondsSinceEpoch}',
       'customer_id': customerId ?? testCustomer.id,
       'customer_name': testCustomer.name,
       'customer_email': testCustomer.email,
@@ -212,9 +213,8 @@ class TestFactories {
     return createInvoiceData(
       customer: customer,
       status: InvoiceStatus.draft,
-      lineItems: products != null 
-          ? createInvoiceLineItems(products: products)
-          : null,
+      lineItems:
+          products != null ? createInvoiceLineItems(products: products) : null,
     );
   }
 
@@ -236,11 +236,12 @@ class TestFactories {
   }) {
     final items = createInvoiceLineItems();
     final subtotal = items.fold<double>(
-      0.0, 
+      0.0,
       (sum, item) => sum + (item['line_total'] as double),
     );
-    final discountAmount = subtotal * (discountPercentage ?? 0.15); // 15% discount
-    
+    final discountAmount =
+        subtotal * (discountPercentage ?? 0.15); // 15% discount
+
     return createInvoiceData(
       customer: customer,
       lineItems: items,
@@ -262,7 +263,8 @@ class TestFactories {
       'amount': amount ?? 100.0,
       'payment_date': paymentDate ?? DateTime.now(),
       'payment_method': paymentMethod ?? 'PayNow',
-      'reference': reference ?? 'TEST-PAY-${DateTime.now().millisecondsSinceEpoch}',
+      'reference':
+          reference ?? 'TEST-PAY-${DateTime.now().millisecondsSinceEpoch}',
       'currency': 'SGD',
       'status': 'completed',
     };
@@ -280,7 +282,8 @@ class TestFactories {
       'currency': 'SGD',
       'merchant_name': merchantName ?? 'Test Merchant',
       'merchant_uen': merchantUEN ?? '202012345A',
-      'reference': reference ?? 'TEST-REF-${DateTime.now().millisecondsSinceEpoch}',
+      'reference':
+          reference ?? 'TEST-REF-${DateTime.now().millisecondsSinceEpoch}',
       'description': 'Test payment description',
     };
   }
@@ -309,7 +312,7 @@ class TestFactories {
   /// Create multiple tax scenarios for comprehensive testing
   static List<Map<String, dynamic>> createTaxScenarios() {
     final scenarios = <Map<String, dynamic>>[];
-    
+
     // Standard Singapore GST scenarios
     scenarios.add(createTaxScenario(
       scenarioName: 'Standard Singapore B2B GST',
@@ -317,14 +320,14 @@ class TestFactories {
       isGstRegistered: true,
       customerIsGstRegistered: true,
     ));
-    
+
     scenarios.add(createTaxScenario(
       scenarioName: 'Standard Singapore B2C GST',
       amount: 1000.0,
       isGstRegistered: true,
       customerIsGstRegistered: false,
     ));
-    
+
     // Export scenarios (zero-rated)
     scenarios.add(createTaxScenario(
       scenarioName: 'Export to US (Zero-rated)',
@@ -334,7 +337,7 @@ class TestFactories {
       customerCountry: 'US',
       isExport: true,
     ));
-    
+
     // Company not GST registered
     scenarios.add(createTaxScenario(
       scenarioName: 'Non-GST registered company',
@@ -342,7 +345,7 @@ class TestFactories {
       isGstRegistered: false,
       customerIsGstRegistered: false,
     ));
-    
+
     // Historical GST rates
     scenarios.add(createTaxScenario(
       scenarioName: 'Historical 8% GST rate (2022)',
@@ -351,7 +354,7 @@ class TestFactories {
       customerIsGstRegistered: true,
       calculationDate: DateTime(2022, 6, 1),
     ));
-    
+
     scenarios.add(createTaxScenario(
       scenarioName: 'Historical 7% GST rate (2020)',
       amount: 1000.0,
@@ -359,7 +362,7 @@ class TestFactories {
       customerIsGstRegistered: true,
       calculationDate: DateTime(2020, 6, 1),
     ));
-    
+
     return scenarios;
   }
 
@@ -394,36 +397,36 @@ class TestValidators {
     final discount = invoice['discount_amount'] as double? ?? 0.0;
     final taxAmount = invoice['tax_amount'] as double;
     final totalAmount = invoice['total_amount'] as double;
-    
+
     // Calculate expected subtotal
     final expectedSubtotal = lineItems.fold<double>(
       0.0,
       (sum, item) => sum + (item['line_total'] as double),
     );
-    
+
     // Validate subtotal
     if ((expectedSubtotal - subtotal).abs() > 0.01) {
       print('Subtotal mismatch: expected $expectedSubtotal, got $subtotal');
       return false;
     }
-    
+
     // Calculate expected tax (9% GST on net amount)
     final netAmount = subtotal - discount;
     final expectedTax = netAmount * 0.09;
-    
+
     // Validate tax amount (allow 1 cent tolerance for rounding)
     if ((expectedTax - taxAmount).abs() > 0.01) {
       print('Tax amount mismatch: expected $expectedTax, got $taxAmount');
       return false;
     }
-    
+
     // Validate total amount
     final expectedTotal = netAmount + taxAmount;
     if ((expectedTotal - totalAmount).abs() > 0.01) {
       print('Total amount mismatch: expected $expectedTotal, got $totalAmount');
       return false;
     }
-    
+
     return true;
   }
 
@@ -436,9 +439,9 @@ class TestValidators {
   /// Validate PayNow QR code format
   static bool validatePayNowQR(String qrString) {
     // Basic validation - should start with proper payload format
-    return qrString.isNotEmpty && 
-           qrString.startsWith('00') && 
-           qrString.contains('SG.PAYNOW');
+    return qrString.isNotEmpty &&
+        qrString.startsWith('00') &&
+        qrString.contains('SG.PAYNOW');
   }
 
   /// Validate email format

@@ -1,11 +1,11 @@
 import '../models/sgqr_models.dart';
 
 /// Simple PayNow QR Code Service
-/// 
+///
 /// This service generates PayNow QR codes using the simple PAYNOW:// URL format
 /// instead of the complex EMVCo SGQR format. This follows the actual PayNow
 /// specification used by Singapore banking apps.
-/// 
+///
 /// PayNow URL Format:
 /// - Mobile: PAYNOW://0/[MOBILE_NUMBER]?amount=[AMOUNT]&message=[MESSAGE]
 /// - UEN: PAYNOW://2/[UEN]?amount=[AMOUNT]&message=[MESSAGE]
@@ -15,11 +15,11 @@ class PayNowService {
   static const String _mobileProxyType = '0';
   static const String _uenProxyType = '2';
   static const String _nricProxyType = '3';
-  
+
   /// Validate Singapore mobile number (8-digit, starts with 8 or 9)
   static bool isValidSingaporeMobileNumber(String mobile) {
     final String cleanMobile = mobile.replaceAll(RegExp(r'[^\d]'), '');
-    
+
     // Handle country code
     String localMobile;
     if (cleanMobile.startsWith('65')) {
@@ -27,55 +27,57 @@ class PayNowService {
     } else {
       localMobile = cleanMobile;
     }
-    
+
     // Singapore mobile: 8-digit, starts with 8 or 9
     return RegExp(r'^[89]\d{7}$').hasMatch(localMobile);
   }
-  
+
   /// Format Singapore mobile number (remove country code, keep 8 digits)
   static String formatMobileNumber(String mobile) {
     final String cleanMobile = mobile.replaceAll(RegExp(r'[^\d]'), '');
-    
+
     if (cleanMobile.startsWith('65')) {
       return cleanMobile.substring(2);
     }
-    
+
     return cleanMobile;
   }
-  
+
   /// Validate UEN (Unique Entity Number)
   static bool isValidUEN(String uen) {
-    final String cleanUEN = uen.replaceAll(RegExp(r'[^A-Z0-9]'), '').toUpperCase();
-    
+    final String cleanUEN =
+        uen.replaceAll(RegExp(r'[^A-Z0-9]'), '').toUpperCase();
+
     // UEN should be 9-12 characters, alphanumeric
     if (cleanUEN.length < 9 || cleanUEN.length > 12) {
       return false;
     }
-    
+
     // UEN must contain at least one letter (not all numbers)
     // Valid UEN formats: 201234567Z, 53012345A, T08GB0001A, etc.
-    return RegExp(r'^[A-Z0-9]+$').hasMatch(cleanUEN) && 
-           RegExp(r'[A-Z]').hasMatch(cleanUEN);
+    return RegExp(r'^[A-Z0-9]+$').hasMatch(cleanUEN) &&
+        RegExp(r'[A-Z]').hasMatch(cleanUEN);
   }
-  
+
   /// Format UEN
   static String formatUEN(String uen) {
     return uen.replaceAll(RegExp(r'[^A-Z0-9]'), '').toUpperCase();
   }
-  
+
   /// Validate NRIC/FIN
   static bool isValidNRIC(String nric) {
-    final String cleanNRIC = nric.replaceAll(RegExp(r'[^A-Z0-9]'), '').toUpperCase();
-    
+    final String cleanNRIC =
+        nric.replaceAll(RegExp(r'[^A-Z0-9]'), '').toUpperCase();
+
     // NRIC format: Letter + 7 digits + Letter
     return RegExp(r'^[STFG]\d{7}[A-Z]$').hasMatch(cleanNRIC);
   }
-  
+
   /// Format NRIC
   static String formatNRIC(String nric) {
     return nric.replaceAll(RegExp(r'[^A-Z0-9]'), '').toUpperCase();
   }
-  
+
   /// Create PayNow QR for mobile number
   static PayNowResult createMobilePayNowQR({
     required String mobileNumber,
@@ -84,11 +86,12 @@ class PayNowService {
   }) {
     // Validate mobile number
     if (!isValidSingaporeMobileNumber(mobileNumber)) {
-      return PayNowResult.failure('Invalid Singapore mobile number: $mobileNumber');
+      return PayNowResult.failure(
+          'Invalid Singapore mobile number: $mobileNumber');
     }
 
     final String formattedMobile = formatMobileNumber(mobileNumber);
-    
+
     // Build PayNow string in Singapore bank-compatible format
     // Format: NETS~$PAYNOW$[proxy_type]~[proxy_value]~[amount]~[currency]~[reference]
     final StringBuffer payNowString = StringBuffer();
@@ -96,20 +99,20 @@ class PayNowService {
     payNowString.write(_mobileProxyType);
     payNowString.write('~');
     payNowString.write(formattedMobile);
-    
+
     // Add amount and currency if provided
     if (amount != null && amount > 0) {
       payNowString.write('~');
       payNowString.write(amount.toStringAsFixed(2));
       payNowString.write('~SGD');
-      
+
       // Add reference/message if provided
       if (message != null && message.isNotEmpty) {
         payNowString.write('~');
         payNowString.write(message);
       }
     }
-    
+
     return PayNowResult.success(
       payNowString: payNowString.toString(),
       proxyType: 'mobile',
@@ -118,7 +121,7 @@ class PayNowService {
       message: message,
     );
   }
-  
+
   /// Create PayNow QR for UEN
   static PayNowResult createUENPayNowQR({
     required String uen,
@@ -131,7 +134,7 @@ class PayNowService {
     }
 
     final String formattedUEN = formatUEN(uen);
-    
+
     // Build PayNow string in Singapore bank-compatible format
     // Format: NETS~$PAYNOW$[proxy_type]~[proxy_value]~[amount]~[currency]~[reference]
     final StringBuffer payNowString = StringBuffer();
@@ -139,20 +142,20 @@ class PayNowService {
     payNowString.write(_uenProxyType);
     payNowString.write('~');
     payNowString.write(formattedUEN);
-    
+
     // Add amount and currency if provided
     if (amount != null && amount > 0) {
       payNowString.write('~');
       payNowString.write(amount.toStringAsFixed(2));
       payNowString.write('~SGD');
-      
+
       // Add reference/message if provided
       if (message != null && message.isNotEmpty) {
         payNowString.write('~');
         payNowString.write(message);
       }
     }
-    
+
     return PayNowResult.success(
       payNowString: payNowString.toString(),
       proxyType: 'uen',
@@ -161,7 +164,7 @@ class PayNowService {
       message: message,
     );
   }
-  
+
   /// Create PayNow QR for NRIC
   static PayNowResult createNRICPayNowQR({
     required String nric,
@@ -174,7 +177,7 @@ class PayNowService {
     }
 
     final String formattedNRIC = formatNRIC(nric);
-    
+
     // Build PayNow string in Singapore bank-compatible format
     // Format: NETS~$PAYNOW$[proxy_type]~[proxy_value]~[amount]~[currency]~[reference]
     final StringBuffer payNowString = StringBuffer();
@@ -182,20 +185,20 @@ class PayNowService {
     payNowString.write(_nricProxyType);
     payNowString.write('~');
     payNowString.write(formattedNRIC);
-    
+
     // Add amount and currency if provided
     if (amount != null && amount > 0) {
       payNowString.write('~');
       payNowString.write(amount.toStringAsFixed(2));
       payNowString.write('~SGD');
-      
+
       // Add reference/message if provided
       if (message != null && message.isNotEmpty) {
         payNowString.write('~');
         payNowString.write(message);
       }
     }
-    
+
     return PayNowResult.success(
       payNowString: payNowString.toString(),
       proxyType: 'nric',
@@ -204,7 +207,7 @@ class PayNowService {
       message: message,
     );
   }
-  
+
   /// Auto-detect identifier type and generate PayNow QR
   static PayNowResult createPayNowQR({
     required String identifier,
@@ -236,7 +239,7 @@ class PayNowService {
       );
     }
   }
-  
+
   /// Generate invoice payment QR
   static PayNowResult generateInvoicePaymentQR({
     required String identifier,
@@ -244,14 +247,14 @@ class PayNowService {
     required double amount,
   }) {
     final String message = 'Payment for Invoice $invoiceNumber';
-    
+
     return createPayNowQR(
       identifier: identifier,
       amount: amount,
       message: message,
     );
   }
-  
+
   /// Get identifier type for a given identifier
   static PayNowIdentifierType? getIdentifierType(String identifier) {
     if (isValidSingaporeMobileNumber(identifier)) {
@@ -263,16 +266,16 @@ class PayNowService {
     }
     return null;
   }
-  
+
   /// Validate PayNow identifier
   static bool isValidPayNowIdentifier(String identifier) {
     return getIdentifierType(identifier) != null;
   }
-  
+
   /// Format PayNow identifier based on its type
   static String formatPayNowIdentifier(String identifier) {
     final PayNowIdentifierType? type = getIdentifierType(identifier);
-    
+
     switch (type) {
       case PayNowIdentifierType.mobile:
         return formatMobileNumber(identifier);
@@ -284,7 +287,7 @@ class PayNowService {
         return identifier; // Return as-is if invalid
     }
   }
-  
+
   /// Parse PayNow string to extract information
   static PayNowParseResult? parsePayNowURL(String payNowStr) {
     try {
@@ -292,25 +295,25 @@ class PayNowService {
       if (payNowStr.startsWith('NETS~\$PAYNOW\$')) {
         final String dataStr = payNowStr.substring('NETS~\$PAYNOW\$'.length);
         final List<String> parts = dataStr.split('~');
-        
+
         if (parts.length < 2) {
           return null;
         }
-        
+
         final String proxyType = parts[0];
         final String proxyValue = parts[1];
-        
+
         double? amount;
         String? message;
-        
+
         if (parts.length >= 3) {
           amount = double.tryParse(parts[2]);
         }
-        
+
         if (parts.length >= 5) {
           message = parts[4]; // Reference is at index 4 (after currency)
         }
-        
+
         String proxyTypeName;
         switch (proxyType) {
           case _mobileProxyType:
@@ -325,7 +328,7 @@ class PayNowService {
           default:
             return null;
         }
-        
+
         return PayNowParseResult(
           proxyType: proxyTypeName,
           proxyValue: proxyValue,
@@ -337,30 +340,31 @@ class PayNowService {
       // Handle old URL format for backward compatibility: PAYNOW://[type]/[value]?amount=X&message=Y
       else if (payNowStr.startsWith('PAYNOW://')) {
         final Uri uri = Uri.parse(payNowStr);
-        
+
         // For PAYNOW://0/91234567, URI parser treats:
-        // - scheme: "paynow"  
+        // - scheme: "paynow"
         // - host: "0"
         // - path: "/91234567"
-        // 
+        //
         // So we need to combine host and path parts
         final String proxyType = uri.host;
-        
+
         // Get proxy value from path (remove leading /)
-        final List<String> pathParts = uri.path.split('/').where((part) => part.isNotEmpty).toList();
-        
+        final List<String> pathParts =
+            uri.path.split('/').where((part) => part.isNotEmpty).toList();
+
         if (pathParts.isEmpty) {
           return null;
         }
-        
+
         final String proxyValue = pathParts[0];
-        
+
         // Extract query parameters
-        final double? amount = uri.queryParameters['amount'] != null 
+        final double? amount = uri.queryParameters['amount'] != null
             ? double.tryParse(uri.queryParameters['amount']!)
             : null;
         final String? message = uri.queryParameters['message'];
-        
+
         String proxyTypeName;
         switch (proxyType) {
           case _mobileProxyType:
@@ -375,7 +379,7 @@ class PayNowService {
           default:
             return null;
         }
-        
+
         return PayNowParseResult(
           proxyType: proxyTypeName,
           proxyValue: proxyValue,
@@ -384,20 +388,20 @@ class PayNowService {
           originalUrl: payNowStr,
         );
       }
-      
+
       return null;
     } catch (e) {
       return null;
     }
   }
-  
+
   /// Validate PayNow URL format
   static bool isValidPayNowURL(String url) {
     return parsePayNowURL(url) != null;
   }
-  
+
   // Convenience methods for common use cases
-  
+
   /// Personal PayNow QR (mobile number based)
   static PayNowResult createPersonalPayNowQR({
     required String mobileNumber,
@@ -406,7 +410,7 @@ class PayNowService {
       mobileNumber: mobileNumber,
     );
   }
-  
+
   /// Business PayNow QR (UEN based)
   static PayNowResult createBusinessPayNowQR({
     required String uen,
@@ -415,7 +419,7 @@ class PayNowService {
       uen: uen,
     );
   }
-  
+
   /// Payment request PayNow QR (with specific amount)
   static PayNowResult createPaymentRequestQR({
     required String identifier,
@@ -430,7 +434,6 @@ class PayNowService {
   }
 }
 
-
 /// Result of PayNow QR generation
 class PayNowResult {
   final bool success;
@@ -440,7 +443,7 @@ class PayNowResult {
   final double? amount;
   final String? message;
   final String? error;
-  
+
   const PayNowResult({
     required this.success,
     this.payNowString,
@@ -450,7 +453,7 @@ class PayNowResult {
     this.message,
     this.error,
   });
-  
+
   factory PayNowResult.success({
     required String payNowString,
     required String proxyType,
@@ -467,7 +470,7 @@ class PayNowResult {
       message: message,
     );
   }
-  
+
   factory PayNowResult.failure(String error) {
     return PayNowResult(
       success: false,
@@ -483,7 +486,7 @@ class PayNowParseResult {
   final double? amount;
   final String? message;
   final String originalUrl;
-  
+
   const PayNowParseResult({
     required this.proxyType,
     required this.proxyValue,
@@ -539,8 +542,9 @@ class PayNowValidator {
       return PayNowValidationResult.invalid(errors: errors);
     }
 
-    final PayNowIdentifierType? type = PayNowService.getIdentifierType(identifier);
-    
+    final PayNowIdentifierType? type =
+        PayNowService.getIdentifierType(identifier);
+
     if (type == null) {
       errors.add('Invalid PayNow identifier format');
       return PayNowValidationResult.invalid(errors: errors);
@@ -578,13 +582,14 @@ class PayNowValidator {
   }
 
   /// Batch validate multiple identifiers
-  static Map<String, PayNowValidationResult> batchValidate(List<String> identifiers) {
+  static Map<String, PayNowValidationResult> batchValidate(
+      List<String> identifiers) {
     final Map<String, PayNowValidationResult> results = {};
-    
+
     for (final String identifier in identifiers) {
       results[identifier] = validateIdentifier(identifier);
     }
-    
+
     return results;
   }
 }

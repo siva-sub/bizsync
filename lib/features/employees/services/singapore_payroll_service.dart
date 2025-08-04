@@ -11,12 +11,12 @@ import '../models/singapore_tax_models.dart';
 /// Handles comprehensive CPF, SDL, FWL, SHG calculations according to 2024 Singapore regulations
 class SingaporePayrollService {
   final String _nodeId = UuidGenerator.generateId();
-  
+
   // In-memory storage for demo
   final Map<String, CRDTSingaporeCpfCalculation> _cpfCalculations = {};
   final Map<String, CRDTWorkPassManagement> _workPassRecords = {};
   final Map<String, CRDTEnhancedPayrollCalculation> _enhancedPayrolls = {};
-  
+
   /// Calculate CPF contributions for an employee
   Future<CRDTSingaporeCpfCalculation> calculateCpfContributions({
     required String employeeId,
@@ -30,7 +30,7 @@ class SingaporePayrollService {
     final calcDate = calculationDate ?? DateTime.now();
     final ageCategory = EmployeeUtils.getCpfAgeCategory(dateOfBirth);
     final rates = EmployeeUtils.getCpfRates(dateOfBirth, residencyStatus);
-    
+
     final calculation = CRDTSingaporeCpfCalculation(
       id: UuidGenerator.generateId(),
       nodeId: _nodeId,
@@ -48,21 +48,21 @@ class SingaporePayrollService {
       emplerRate: rates['employer_rate'] ?? 0.0,
       cpfSubject: _isSubjectToCpf(residencyStatus, dateOfBirth),
     );
-    
+
     // Calculate contributions
     calculation.calculateCpfContributions(HLCTimestamp.now(_nodeId));
-    
+
     _cpfCalculations[calculation.id] = calculation;
     return calculation;
   }
-  
+
   /// Calculate Skills Development Levy (SDL)
   double calculateSdl(double monthlyWage) {
     // SDL is 0.25% of monthly wages, capped at $4,500
     final cappedWage = min(monthlyWage, EmployeeConstants.sdlCeiling);
     return cappedWage * EmployeeConstants.sdlRate;
   }
-  
+
   /// Calculate Foreign Worker Levy (FWL) using enhanced 2024 rates
   double calculateFwl({
     required String workPassType,
@@ -71,21 +71,18 @@ class SingaporePayrollService {
   }) {
     try {
       final workPass = WorkPassType.values.firstWhere(
-        (e) => e.toString().split('.').last == workPassType.toLowerCase()
-      );
+          (e) => e.toString().split('.').last == workPassType.toLowerCase());
       final industrySector = IndustrySector.values.firstWhere(
-        (e) => e.toString().split('.').last == sector.toLowerCase()
-      );
+          (e) => e.toString().split('.').last == sector.toLowerCase());
       final skill = SkillLevel.values.firstWhere(
-        (e) => e.toString().split('.').last == skillLevel.toLowerCase()
-      );
-      
+          (e) => e.toString().split('.').last == skillLevel.toLowerCase());
+
       return ForeignWorkerLevyRates.getFwlRate(industrySector, skill, workPass);
     } catch (e) {
       return 0.0; // Invalid parameters
     }
   }
-  
+
   /// Create or update work pass record
   Future<CRDTWorkPassManagement> manageWorkPass({
     required String employeeId,
@@ -104,7 +101,7 @@ class SingaporePayrollService {
     Map<String, dynamic>? metadata,
   }) async {
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     final workPass = CRDTWorkPassManagement(
       id: UuidGenerator.generateId(),
       nodeId: _nodeId,
@@ -126,14 +123,14 @@ class SingaporePayrollService {
       foreignEmployees: foreignEmployees,
       passMetadata: metadata,
     );
-    
+
     // Calculate monthly levy
     workPass.calculateMonthlyLevy(timestamp);
-    
+
     _workPassRecords[workPass.id] = workPass;
     return workPass;
   }
-  
+
   /// Calculate comprehensive enhanced payroll
   Future<CRDTEnhancedPayrollCalculation> calculateEnhancedPayroll({
     required String employeeId,
@@ -155,10 +152,10 @@ class SingaporePayrollService {
     Map<String, dynamic>? metadata,
   }) async {
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     // Determine age category
     final ageCategory = _getAgeCategoryFromBirthDate(dateOfBirth);
-    
+
     final payroll = CRDTEnhancedPayrollCalculation(
       id: UuidGenerator.generateId(),
       nodeId: _nodeId,
@@ -185,29 +182,29 @@ class SingaporePayrollService {
       status: 'draft',
       payrollMetadata: metadata,
     );
-    
+
     // Calculate comprehensive payroll
     payroll.calculatePayroll(timestamp);
-    
+
     _enhancedPayrolls[payroll.id] = payroll;
     return payroll;
   }
-  
+
   /// Calculate Self-Help Group contributions
   Map<String, double> calculateShgContributions(String? ethnicity) {
     if (ethnicity == null) return {};
-    
+
     final eligibleSHG = SelfHelpGroupRates.getEligibleSHG(ethnicity);
     final contributions = <String, double>{};
-    
+
     for (final shg in eligibleSHG) {
       final rate = SelfHelpGroupRates.monthlyRates[shg] ?? 0.0;
       contributions[shg.toString().split('.').last] = rate;
     }
-    
+
     return contributions;
   }
-  
+
   /// Check work pass validity and quota compliance
   Map<String, dynamic> validateWorkPassCompliance({
     required String workPassType,
@@ -217,18 +214,18 @@ class SingaporePayrollService {
   }) {
     try {
       final workPass = WorkPassType.values.firstWhere(
-        (e) => e.toString().split('.').last == workPassType.toLowerCase()
-      );
+          (e) => e.toString().split('.').last == workPassType.toLowerCase());
       final sector = IndustrySector.values.firstWhere(
-        (e) => e.toString().split('.').last == industrySector.toLowerCase()
-      );
-      
+          (e) => e.toString().split('.').last == industrySector.toLowerCase());
+
       final quotas = ForeignWorkerLevyRates.getSectorQuota(sector);
-      final currentUsage = totalEmployees > 0 ? (foreignEmployees / totalEmployees * 100) : 0.0;
-      
+      final currentUsage =
+          totalEmployees > 0 ? (foreignEmployees / totalEmployees * 100) : 0.0;
+
       // Check if work pass type has quota restrictions
-      bool hasQuotaRestriction = [WorkPassType.workPermit, WorkPassType.sPass].contains(workPass);
-      
+      bool hasQuotaRestriction =
+          [WorkPassType.workPermit, WorkPassType.sPass].contains(workPass);
+
       if (!hasQuotaRestriction) {
         return {
           'is_compliant': true,
@@ -238,20 +235,21 @@ class SingaporePayrollService {
           'message': 'No quota restrictions apply to this work pass type'
         };
       }
-      
-      final quotaKey = workPass == WorkPassType.workPermit ? 'workPermit' : 'sPass';
+
+      final quotaKey =
+          workPass == WorkPassType.workPermit ? 'workPermit' : 'sPass';
       final allowedQuota = quotas[quotaKey] ?? 0.0;
       final isCompliant = currentUsage <= allowedQuota;
-      
+
       return {
         'is_compliant': isCompliant,
         'has_quota_restriction': true,
         'current_usage': currentUsage,
         'allowed_quota': allowedQuota,
         'quota_available': allowedQuota - currentUsage,
-        'message': isCompliant 
-          ? 'Quota compliant'
-          : 'Quota exceeded by ${(currentUsage - allowedQuota).toStringAsFixed(1)}%'
+        'message': isCompliant
+            ? 'Quota compliant'
+            : 'Quota exceeded by ${(currentUsage - allowedQuota).toStringAsFixed(1)}%'
       };
     } catch (e) {
       return {
@@ -263,7 +261,7 @@ class SingaporePayrollService {
       };
     }
   }
-  
+
   /// Process complete payroll for an employee
   Future<CRDTPayrollRecord> processPayroll({
     required String employeeId,
@@ -281,22 +279,27 @@ class SingaporePayrollService {
       DateTime.now().millisecondsSinceEpoch % 10000,
       payPeriodStart,
     );
-    
+
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     // Calculate basic components
     final basicSalary = employee.basicSalary.value;
     final allowances = employee.allowances.value;
-    
+
     // Calculate overtime pay (1.5x regular rate)
-    final regularHours = _getRegularHoursForPeriod(payPeriodStart, payPeriodEnd);
+    final regularHours =
+        _getRegularHoursForPeriod(payPeriodStart, payPeriodEnd);
     final hourlyRate = basicSalary / regularHours;
     final overtimePay = overtimeHours * hourlyRate * 1.5;
-    
+
     // Calculate gross pay
-    final grossPay = basicSalary + allowances + overtimePay + bonusAmount + 
-                    commissionAmount + reimbursementAmount;
-    
+    final grossPay = basicSalary +
+        allowances +
+        overtimePay +
+        bonusAmount +
+        commissionAmount +
+        reimbursementAmount;
+
     // Calculate CPF contributions
     final cpfCalculation = await calculateCpfContributions(
       employeeId: employeeId,
@@ -304,19 +307,21 @@ class SingaporePayrollService {
       dateOfBirth: employee.dateOfBirth.value ?? DateTime.now(),
       residencyStatus: employee.workPermitType.value,
       ordinaryWage: basicSalary + allowances, // OW = basic + allowances
-      additionalWage: overtimePay + bonusAmount + commissionAmount, // AW = variable components
+      additionalWage: overtimePay +
+          bonusAmount +
+          commissionAmount, // AW = variable components
     );
-    
+
     // Calculate SDL (employer cost)
     final sdlAmount = calculateSdl(basicSalary + allowances);
-    
+
     // Calculate FWL (employer cost, if applicable)
     final fwlAmount = calculateFwl(
       workPassType: employee.workPermitType.value,
       sector: _inferSectorFromDepartment(employee.department.value),
       skillLevel: _inferSkillLevel(employee.jobTitle.value),
     );
-    
+
     // Create payroll record
     final payroll = CRDTPayrollRecord(
       id: UuidGenerator.generateId(),
@@ -348,12 +353,13 @@ class SingaporePayrollService {
       bank: employee.bankCode.value,
       payrollMetadata: metadata,
     );
-    
+
     return payroll;
   }
-  
+
   /// Generate payslip data
-  Map<String, dynamic> generatePayslipData(CRDTPayrollRecord payroll, CRDTEmployee employee) {
+  Map<String, dynamic> generatePayslipData(
+      CRDTPayrollRecord payroll, CRDTEmployee employee) {
     return {
       'employee': {
         'id': employee.employeeId.value,
@@ -408,38 +414,41 @@ class SingaporePayrollService {
       },
     };
   }
-  
+
   /// Generate bank payment file (GIRO format for Singapore)
-  String generateBankPaymentFile(List<CRDTPayrollRecord> payrollRecords, Map<String, CRDTEmployee> employees) {
+  String generateBankPaymentFile(List<CRDTPayrollRecord> payrollRecords,
+      Map<String, CRDTEmployee> employees) {
     final buffer = StringBuffer();
     final now = DateTime.now();
-    
+
     // Header record
-    buffer.writeln('H,${now.toString().substring(0, 10)},${payrollRecords.length}');
-    
+    buffer.writeln(
+        'H,${now.toString().substring(0, 10)},${payrollRecords.length}');
+
     // Detail records
     for (final payroll in payrollRecords) {
       final employee = employees[payroll.employeeId.value];
       if (employee == null || payroll.netPay <= 0) continue;
-      
+
       final bankCode = employee.bankCode.value ?? '';
       final accountNumber = employee.bankAccount.value ?? '';
       final amount = (payroll.netPay * 100).round(); // Convert to cents
       final name = employee.fullName.padRight(35).substring(0, 35);
-      
-      buffer.writeln('D,$bankCode,$accountNumber,$amount,$name,${payroll.payrollNumber.value}');
+
+      buffer.writeln(
+          'D,$bankCode,$accountNumber,$amount,$name,${payroll.payrollNumber.value}');
     }
-    
+
     // Trailer record
     final totalAmount = payrollRecords.fold<double>(
-      0.0, 
+      0.0,
       (sum, payroll) => sum + payroll.netPay,
     );
     buffer.writeln('T,${(totalAmount * 100).round()}');
-    
+
     return buffer.toString();
   }
-  
+
   /// Generate IR8A data for tax reporting
   Map<String, dynamic> generateIR8AData({
     required String employeeId,
@@ -454,7 +463,7 @@ class SingaporePayrollService {
     double totalAllowances = 0.0;
     double totalEmployeeCpf = 0.0;
     double totalEmployerCpf = 0.0;
-    
+
     for (final payroll in yearPayrolls) {
       totalGrossSalary += payroll.basicSalaryCents.value / 100.0;
       totalBonus += payroll.bonusCents.value / 100.0;
@@ -463,9 +472,10 @@ class SingaporePayrollService {
       totalEmployeeCpf += payroll.cpfEmployeeCents.value / 100.0;
       totalEmployerCpf += payroll.cpfEmployerCents.value / 100.0;
     }
-    
-    final totalIncome = totalGrossSalary + totalBonus + totalCommission + totalAllowances;
-    
+
+    final totalIncome =
+        totalGrossSalary + totalBonus + totalCommission + totalAllowances;
+
     return {
       'employee_id': employee.employeeId.value,
       'employee_name': employee.fullName,
@@ -487,7 +497,7 @@ class SingaporePayrollService {
       'is_local_employee': employee.isLocalEmployee.value,
     };
   }
-  
+
   /// Get payroll statistics for a period
   Map<String, dynamic> getPayrollStatistics({
     required DateTime startDate,
@@ -508,40 +518,41 @@ class SingaporePayrollService {
       'department_breakdown': <String, Map<String, dynamic>>{},
     };
   }
-  
+
   // ============================================================================
   // PRIVATE HELPER METHODS
   // ============================================================================
-  
+
   bool _isSubjectToCpf(String residencyStatus, DateTime dateOfBirth) {
     // Non-residents are generally not subject to CPF
     if (residencyStatus == 'non_resident') return false;
-    
+
     // Citizens, PRs, and SPRs are subject to CPF
     return ['citizen', 'pr', 'pr_first_2_years'].contains(residencyStatus);
   }
-  
+
   double _getRegularHoursForPeriod(DateTime start, DateTime end) {
     final workingDays = EmployeeUtils.calculateWorkingDays(start, end);
     return workingDays * 8.0; // Assuming 8 hours per working day
   }
-  
+
   DateTime _getPaymentDate(DateTime periodEnd) {
     // Typically salary is paid on the last working day of the month
     // or first working day of the following month
     final nextMonth = DateTime(periodEnd.year, periodEnd.month + 1, 1);
-    
+
     // Find first working day of next month
-    while (nextMonth.weekday == DateTime.saturday || nextMonth.weekday == DateTime.sunday) {
+    while (nextMonth.weekday == DateTime.saturday ||
+        nextMonth.weekday == DateTime.sunday) {
       nextMonth.add(const Duration(days: 1));
     }
-    
+
     return nextMonth;
   }
-  
+
   String _inferSectorFromDepartment(String? department) {
     if (department == null) return 'services';
-    
+
     final dept = department.toLowerCase();
     if (dept.contains('manufacturing') || dept.contains('production')) {
       return 'manufacturing';
@@ -552,15 +563,15 @@ class SingaporePayrollService {
     } else if (dept.contains('process') || dept.contains('chemical')) {
       return 'process';
     }
-    
+
     return 'services';
   }
-  
+
   String _inferSkillLevel(String jobTitle) {
     final title = jobTitle.toLowerCase();
-    
+
     // Higher skilled positions
-    if (title.contains('manager') || 
+    if (title.contains('manager') ||
         title.contains('director') ||
         title.contains('senior') ||
         title.contains('lead') ||
@@ -569,16 +580,19 @@ class SingaporePayrollService {
         title.contains('analyst')) {
       return 'higher';
     }
-    
+
     return 'basic';
   }
-  
+
   String _getAgeCategoryFromBirthDate(DateTime dateOfBirth) {
     final now = DateTime.now();
-    final age = now.year - dateOfBirth.year - 
-               (now.month < dateOfBirth.month || 
-                (now.month == dateOfBirth.month && now.day < dateOfBirth.day) ? 1 : 0);
-    
+    final age = now.year -
+        dateOfBirth.year -
+        (now.month < dateOfBirth.month ||
+                (now.month == dateOfBirth.month && now.day < dateOfBirth.day)
+            ? 1
+            : 0);
+
     if (age < 55) return 'below55';
     if (age >= 55 && age < 60) return 'age55to60';
     if (age >= 60 && age < 65) return 'age60to65';

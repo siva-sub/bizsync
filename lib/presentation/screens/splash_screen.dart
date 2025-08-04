@@ -22,7 +22,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late AnimationController _progressController;
   late Animation<double> _logoAnimation;
   late Animation<double> _progressAnimation;
-  
+
   String _statusText = 'Initializing BizSync...';
   double _progress = 0.0;
   bool _hasError = false;
@@ -40,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    
+
     _progressController = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
@@ -71,26 +71,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       // Step 1: Initialize Onboarding Service
       _updateStatus('Initializing app...', 0.1);
       await _initializeOnboarding();
-      
+
       // Step 2: Initialize Database
       _updateStatus('Setting up database...', 0.3);
       await _initializeDatabase();
-      
+
       // Step 3: Initialize Core Services
       _updateStatus('Loading services...', 0.6);
       await _initializeCoreServices();
-      
+
       // Step 4: Complete initialization
       _updateStatus('Ready to go!', 1.0);
-      
+
       // Wait a moment to show completion
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // Navigate based on onboarding status
       if (mounted) {
         await _navigateToAppropriateScreen();
       }
-      
     } catch (e) {
       _handleInitializationError(e);
     }
@@ -112,26 +111,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       // Check database platform compatibility first
       final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
       debugPrint('Database Info: $dbInfo');
-      
+
       // Update status to show database type
-      final dbType = dbInfo['encryption_available'] ? 'encrypted' : 'unencrypted';
+      final dbType =
+          dbInfo['encryption_available'] ? 'encrypted' : 'unencrypted';
       _updateStatus('Setting up $dbType database...', 0.25);
-      
+
       final databaseService = CRDTDatabaseService();
       await databaseService.initialize();
-      
+
       _updateStatus('Database ready', 0.3);
       await Future.delayed(const Duration(milliseconds: 200));
     } catch (e) {
       // Enhanced error message with platform information
       final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
-      throw Exception(
-        'Database initialization failed: $e\n\n'
-        'Platform: ${dbInfo['platform']}\n'
-        'Database type: ${dbInfo['database_type']}\n'
-        'Encryption available: ${dbInfo['encryption_available']}\n'
-        '${dbInfo['fallback_reason'] != null ? 'Reason: ${dbInfo['fallback_reason']}' : ''}'
-      );
+      throw Exception('Database initialization failed: $e\n\n'
+          'Platform: ${dbInfo['platform']}\n'
+          'Database type: ${dbInfo['database_type']}\n'
+          'Encryption available: ${dbInfo['encryption_available']}\n'
+          '${dbInfo['fallback_reason'] != null ? 'Reason: ${dbInfo['fallback_reason']}' : ''}');
     }
   }
 
@@ -179,7 +177,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _navigateToAppropriateScreen() async {
     final isOnboardingCompleted = ref.read(isOnboardingCompletedProvider);
-    
+
     if (isOnboardingCompleted) {
       context.go('/');
     } else {
@@ -224,7 +222,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Spacer(flex: 2),
-              
+
               // App Logo and Title
               AnimatedBuilder(
                 animation: _logoAnimation,
@@ -239,15 +237,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(30),
-                            boxShadow: MesaRenderingDetector.shouldDisableShadows 
-                                ? [] 
-                                : [
-                                    BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 10),
-                                    ),
-                                  ],
+                            boxShadow:
+                                MesaRenderingDetector.shouldDisableShadows
+                                    ? []
+                                    : [
+                                        BoxShadow(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.3),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 10),
+                                        ),
+                                      ],
                           ),
                           child: Icon(
                             Icons.business_center,
@@ -258,17 +260,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         const SizedBox(height: 24),
                         Text(
                           'BizSync',
-                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Offline-First Business Management',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withOpacity(0.7),
+                                  ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -276,9 +285,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   );
                 },
               ),
-              
+
               const Spacer(flex: 1),
-              
+
               // Progress Section
               if (_hasError) ...[
                 // Error State
@@ -298,17 +307,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       const SizedBox(height: 16),
                       Text(
                         'Initialization Failed',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.error,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.error,
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         _errorMessage,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onErrorContainer,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -337,7 +349,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           width: double.infinity,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withOpacity(0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: FractionallySizedBox(
@@ -357,38 +372,48 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           ),
                         ),
                         const SizedBox(height: 24),
-                        
+
                         // Status Text
                         Text(
                           _statusText,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withOpacity(0.8),
+                                  ),
                         ),
                         const SizedBox(height: 8),
-                        
+
                         // Progress Percentage
                         Text(
                           '${(_progress * 100).toInt()}%',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                       ],
                     );
                   },
                 ),
               ],
-              
+
               const Spacer(flex: 2),
-              
+
               // Footer
               Text(
                 'Version 1.0.0',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
-                ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onBackground
+                          .withOpacity(0.5),
+                    ),
               ),
             ],
           ),

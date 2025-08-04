@@ -35,7 +35,7 @@ class AuditEntry {
   final String? ipAddress;
   final String? userAgent;
   final Map<String, dynamic>? metadata;
-  
+
   const AuditEntry({
     required this.id,
     required this.tableName,
@@ -52,7 +52,7 @@ class AuditEntry {
     this.userAgent,
     this.metadata,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -71,7 +71,7 @@ class AuditEntry {
       'metadata': metadata != null ? jsonEncode(metadata) : null,
     };
   }
-  
+
   factory AuditEntry.fromJson(Map<String, dynamic> json) {
     return AuditEntry(
       id: json['id'] as String,
@@ -80,10 +80,10 @@ class AuditEntry {
       eventType: AuditEventType.values.firstWhere(
         (e) => e.name == json['event_type'],
       ),
-      oldValues: json['old_values'] != null 
+      oldValues: json['old_values'] != null
           ? jsonDecode(json['old_values'] as String) as Map<String, dynamic>
           : null,
-      newValues: json['new_values'] != null 
+      newValues: json['new_values'] != null
           ? jsonDecode(json['new_values'] as String) as Map<String, dynamic>
           : null,
       userId: json['user_id'] as String?,
@@ -93,7 +93,7 @@ class AuditEntry {
       transactionId: json['transaction_id'] as String?,
       ipAddress: json['ip_address'] as String?,
       userAgent: json['user_agent'] as String?,
-      metadata: json['metadata'] != null 
+      metadata: json['metadata'] != null
           ? jsonDecode(json['metadata'] as String) as Map<String, dynamic>
           : null,
     );
@@ -110,9 +110,9 @@ class AuditService {
     'token',
     'private_key',
   ];
-  
+
   AuditService(this._databaseService);
-  
+
   /// Log an audit event
   Future<void> logEvent({
     required String tableName,
@@ -128,11 +128,11 @@ class AuditService {
   }) async {
     try {
       final db = await _databaseService.database;
-      
+
       // Sanitize sensitive data
       final sanitizedOldValues = _sanitizeData(oldValues);
       final sanitizedNewValues = _sanitizeData(newValues);
-      
+
       final auditEntry = AuditEntry(
         id: UuidGenerator.generateId(),
         tableName: tableName,
@@ -149,18 +149,17 @@ class AuditService {
         userAgent: userAgent,
         metadata: metadata,
       );
-      
+
       await db.insert('audit_trail', auditEntry.toJson());
-      
+
       // Also log to separate audit file for compliance
       await _logToAuditFile(auditEntry);
-      
     } catch (e) {
       // Don't fail the main operation due to audit logging issues
       print('Failed to log audit event: $e');
     }
   }
-  
+
   /// Log data access (SELECT operations)
   Future<void> logDataAccess({
     required String tableName,
@@ -181,7 +180,7 @@ class AuditService {
       },
     );
   }
-  
+
   /// Log bulk operations
   Future<void> logBulkOperation({
     required String tableName,
@@ -206,7 +205,7 @@ class AuditService {
       );
     }
   }
-  
+
   /// Get audit trail for a specific record
   Future<List<AuditEntry>> getAuditTrail({
     required String tableName,
@@ -216,20 +215,20 @@ class AuditService {
     int? limit,
   }) async {
     final db = await _databaseService.database;
-    
+
     String whereClause = 'table_name = ? AND record_id = ?';
     List<dynamic> whereArgs = [tableName, recordId];
-    
+
     if (fromDate != null) {
       whereClause += ' AND timestamp >= ?';
       whereArgs.add(fromDate.millisecondsSinceEpoch);
     }
-    
+
     if (toDate != null) {
       whereClause += ' AND timestamp <= ?';
       whereArgs.add(toDate.millisecondsSinceEpoch);
     }
-    
+
     final result = await db.query(
       'audit_trail',
       where: whereClause,
@@ -237,10 +236,10 @@ class AuditService {
       orderBy: 'timestamp DESC',
       limit: limit,
     );
-    
+
     return result.map((row) => AuditEntry.fromJson(row)).toList();
   }
-  
+
   /// Get audit summary for a time period
   Future<Map<String, dynamic>> getAuditSummary({
     DateTime? fromDate,
@@ -249,30 +248,30 @@ class AuditService {
     String? userId,
   }) async {
     final db = await _databaseService.database;
-    
+
     String whereClause = '1=1';
     List<dynamic> whereArgs = [];
-    
+
     if (fromDate != null) {
       whereClause += ' AND timestamp >= ?';
       whereArgs.add(fromDate.millisecondsSinceEpoch);
     }
-    
+
     if (toDate != null) {
       whereClause += ' AND timestamp <= ?';
       whereArgs.add(toDate.millisecondsSinceEpoch);
     }
-    
+
     if (tableName != null) {
       whereClause += ' AND table_name = ?';
       whereArgs.add(tableName);
     }
-    
+
     if (userId != null) {
       whereClause += ' AND user_id = ?';
       whereArgs.add(userId);
     }
-    
+
     // Get event counts by type
     final eventCounts = await db.rawQuery('''
       SELECT operation as event_type, COUNT(*) as count
@@ -280,7 +279,7 @@ class AuditService {
       WHERE $whereClause
       GROUP BY operation
     ''', whereArgs);
-    
+
     // Get most active tables
     final tableCounts = await db.rawQuery('''
       SELECT table_name, COUNT(*) as count
@@ -290,7 +289,7 @@ class AuditService {
       ORDER BY count DESC
       LIMIT 10
     ''', whereArgs);
-    
+
     // Get most active users
     final userCounts = await db.rawQuery('''
       SELECT user_id, COUNT(*) as count
@@ -300,14 +299,14 @@ class AuditService {
       ORDER BY count DESC
       LIMIT 10
     ''', whereArgs);
-    
+
     // Get total events
     final totalResult = await db.rawQuery('''
       SELECT COUNT(*) as total
       FROM audit_trail
       WHERE $whereClause
     ''', whereArgs);
-    
+
     return {
       'total_events': totalResult.first['total'],
       'event_counts': eventCounts,
@@ -319,7 +318,7 @@ class AuditService {
       },
     };
   }
-  
+
   /// Export audit trail for compliance
   Future<String> exportAuditTrail({
     DateTime? fromDate,
@@ -328,34 +327,34 @@ class AuditService {
     String format = 'json',
   }) async {
     final db = await _databaseService.database;
-    
+
     String whereClause = '1=1';
     List<dynamic> whereArgs = [];
-    
+
     if (fromDate != null) {
       whereClause += ' AND timestamp >= ?';
       whereArgs.add(fromDate.millisecondsSinceEpoch);
     }
-    
+
     if (toDate != null) {
       whereClause += ' AND timestamp <= ?';
       whereArgs.add(toDate.millisecondsSinceEpoch);
     }
-    
+
     if (tableName != null) {
       whereClause += ' AND table_name = ?';
       whereArgs.add(tableName);
     }
-    
+
     final result = await db.query(
       'audit_trail',
       where: whereClause,
       whereArgs: whereArgs,
       orderBy: 'timestamp DESC',
     );
-    
+
     final auditEntries = result.map((row) => AuditEntry.fromJson(row)).toList();
-    
+
     if (format.toLowerCase() == 'csv') {
       return _exportToCSV(auditEntries);
     } else {
@@ -371,7 +370,7 @@ class AuditService {
       });
     }
   }
-  
+
   /// Clean up old audit entries
   Future<int> cleanupOldEntries({
     required Duration retentionPeriod,
@@ -379,25 +378,25 @@ class AuditService {
   }) async {
     final db = await _databaseService.database;
     final cutoffDate = DateTime.now().subtract(retentionPeriod);
-    
+
     String whereClause = 'timestamp < ?';
     List<dynamic> whereArgs = [cutoffDate.millisecondsSinceEpoch];
-    
+
     if (tableName != null) {
       whereClause += ' AND table_name = ?';
       whereArgs.add(tableName);
     }
-    
+
     // Archive before deletion (for compliance)
     await _archiveOldEntries(whereClause, whereArgs);
-    
+
     // Delete old entries
     final deletedCount = await db.delete(
       'audit_trail',
       where: whereClause,
       whereArgs: whereArgs,
     );
-    
+
     // Log the cleanup operation
     await logEvent(
       tableName: 'audit_trail',
@@ -410,15 +409,15 @@ class AuditService {
         'cutoff_date': cutoffDate.toIso8601String(),
       },
     );
-    
+
     return deletedCount;
   }
-  
+
   /// Verify audit trail integrity
   Future<Map<String, dynamic>> verifyIntegrity() async {
     final db = await _databaseService.database;
     final issues = <String>[];
-    
+
     // Check for gaps in timestamps
     final timestampGaps = await db.rawQuery('''
       SELECT 
@@ -429,11 +428,11 @@ class AuditService {
       HAVING gap > 3600000 -- More than 1 hour gap
       ORDER BY timestamp
     ''');
-    
+
     if (timestampGaps.isNotEmpty) {
       issues.add('Found ${timestampGaps.length} significant timestamp gaps');
     }
-    
+
     // Check for missing create events
     final orphanedUpdates = await db.rawQuery('''
       SELECT DISTINCT a1.table_name, a1.record_id
@@ -444,11 +443,12 @@ class AuditService {
       WHERE a1.operation IN ('UPDATE', 'DELETE') 
         AND a2.id IS NULL
     ''');
-    
+
     if (orphanedUpdates.isNotEmpty) {
-      issues.add('Found ${orphanedUpdates.length} records with updates/deletes but no create events');
+      issues.add(
+          'Found ${orphanedUpdates.length} records with updates/deletes but no create events');
     }
-    
+
     // Check for invalid JSON in values
     final invalidJson = await db.rawQuery('''
       SELECT id, table_name, record_id
@@ -456,11 +456,11 @@ class AuditService {
       WHERE (old_values IS NOT NULL AND NOT json_valid(old_values))
          OR (new_values IS NOT NULL AND NOT json_valid(new_values))
     ''');
-    
+
     if (invalidJson.isNotEmpty) {
       issues.add('Found ${invalidJson.length} entries with invalid JSON data');
     }
-    
+
     return {
       'is_valid': issues.isEmpty,
       'issues': issues,
@@ -470,36 +470,38 @@ class AuditService {
       'verification_time': DateTime.now().toIso8601String(),
     };
   }
-  
+
   /// Sanitize sensitive data from audit logs
   Map<String, dynamic>? _sanitizeData(Map<String, dynamic>? data) {
     if (data == null) return null;
-    
+
     final sanitized = Map<String, dynamic>.from(data);
-    
+
     for (final field in _sensitiveFields) {
       if (sanitized.containsKey(field)) {
         sanitized[field] = '[REDACTED]';
       }
     }
-    
+
     return sanitized;
   }
-  
+
   /// Log to separate audit file for compliance
   Future<void> _logToAuditFile(AuditEntry entry) async {
     // Implementation would write to a separate tamper-evident audit file
     // This could be a write-only file with cryptographic signatures
-    print('Audit: ${entry.eventType.name} on ${entry.tableName}:${entry.recordId} at ${entry.timestamp}');
+    print(
+        'Audit: ${entry.eventType.name} on ${entry.tableName}:${entry.recordId} at ${entry.timestamp}');
   }
-  
+
   /// Export audit entries to CSV format
   String _exportToCSV(List<AuditEntry> entries) {
     final buffer = StringBuffer();
-    
+
     // Header
-    buffer.writeln('timestamp,table_name,record_id,event_type,user_id,node_id,transaction_id');
-    
+    buffer.writeln(
+        'timestamp,table_name,record_id,event_type,user_id,node_id,transaction_id');
+
     // Data rows
     for (final entry in entries) {
       buffer.writeln([
@@ -512,12 +514,13 @@ class AuditService {
         entry.transactionId ?? '',
       ].join(','));
     }
-    
+
     return buffer.toString();
   }
-  
+
   /// Archive old audit entries before deletion
-  Future<void> _archiveOldEntries(String whereClause, List<dynamic> whereArgs) async {
+  Future<void> _archiveOldEntries(
+      String whereClause, List<dynamic> whereArgs) async {
     // Implementation would archive to external storage or compressed format
     // This ensures compliance with data retention requirements
     print('Archiving old audit entries matching: $whereClause');

@@ -27,19 +27,19 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
   final _taxIdController = TextEditingController();
   final _bankAccountController = TextEditingController();
   final _notesController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _isActive = true;
   String _countryCode = 'SG';
   String _paymentTerms = 'net30';
   Vendor? _existingVendor;
-  
+
   bool get _isEditing => widget.vendorId != null;
 
   final List<String> _countries = [
     'SG - Singapore',
     'MY - Malaysia',
-    'TH - Thailand', 
+    'TH - Thailand',
     'ID - Indonesia',
     'VN - Vietnam',
     'PH - Philippines',
@@ -85,11 +85,11 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
 
   Future<void> _loadVendor() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final repository = ref.read(vendorRepositoryProvider);
       _existingVendor = await repository.getVendor(widget.vendorId!);
-      
+
       if (_existingVendor != null) {
         _nameController.text = _existingVendor!.name;
         _emailController.text = _existingVendor!.email ?? '';
@@ -111,7 +111,7 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -127,7 +127,7 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
         actions: [
           FilledButton(
             onPressed: _isLoading ? null : _saveVendor,
-            child: _isLoading 
+            child: _isLoading
                 ? const SizedBox(
                     width: 16,
                     height: 16,
@@ -156,9 +156,12 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                           children: [
                             Text(
                               'Basic Information',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
@@ -201,7 +204,9 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                                     keyboardType: TextInputType.emailAddress,
                                     validator: (value) {
                                       if (value?.isNotEmpty == true) {
-                                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                                        if (!RegExp(
+                                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                            .hasMatch(value!)) {
                                           return 'Enter a valid email address';
                                         }
                                       }
@@ -238,15 +243,17 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                             const SizedBox(height: 16),
                             SwitchListTile(
                               title: const Text('Active Vendor'),
-                              subtitle: const Text('Vendor can receive purchase orders'),
+                              subtitle: const Text(
+                                  'Vendor can receive purchase orders'),
                               value: _isActive,
-                              onChanged: (value) => setState(() => _isActive = value),
+                              onChanged: (value) =>
+                                  setState(() => _isActive = value),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
 
                     // Address Information Card
@@ -258,22 +265,28 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                           children: [
                             Text(
                               'Address Information',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             DropdownButtonFormField<String>(
-                              value: '$_countryCode - ${_getCountryName(_countryCode)}',
+                              value:
+                                  '$_countryCode - ${_getCountryName(_countryCode)}',
                               decoration: const InputDecoration(
                                 labelText: 'Country',
                                 prefixIcon: Icon(Icons.public),
                                 border: OutlineInputBorder(),
                               ),
-                              items: _countries.map((country) => DropdownMenuItem(
-                                value: country,
-                                child: Text(country),
-                              )).toList(),
+                              items: _countries
+                                  .map((country) => DropdownMenuItem(
+                                        value: country,
+                                        child: Text(country),
+                                      ))
+                                  .toList(),
                               onChanged: (value) {
                                 if (value != null) {
                                   setState(() {
@@ -297,7 +310,7 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
 
                     // Financial Information Card
@@ -309,9 +322,12 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                           children: [
                             Text(
                               'Financial Information',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             DropdownButtonFormField<String>(
@@ -321,10 +337,12 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                                 prefixIcon: Icon(Icons.payment),
                                 border: OutlineInputBorder(),
                               ),
-                              items: _paymentTermsOptions.map((term) => DropdownMenuItem(
-                                value: term['value'],
-                                child: Text(term['label']!),
-                              )).toList(),
+                              items: _paymentTermsOptions
+                                  .map((term) => DropdownMenuItem(
+                                        value: term['value'],
+                                        child: Text(term['label']!),
+                                      ))
+                                  .toList(),
                               onChanged: (value) {
                                 if (value != null) {
                                   setState(() {
@@ -358,7 +376,7 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
 
                     // Additional Information Card
@@ -370,16 +388,20 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                           children: [
                             Text(
                               'Additional Information',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _notesController,
                               decoration: const InputDecoration(
                                 labelText: 'Notes',
-                                hintText: 'Enter any additional notes or comments',
+                                hintText:
+                                    'Enter any additional notes or comments',
                                 prefixIcon: Icon(Icons.note),
                                 border: OutlineInputBorder(),
                               ),
@@ -389,7 +411,7 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -400,18 +422,30 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
 
   String _getCountryName(String code) {
     switch (code) {
-      case 'SG': return 'Singapore';
-      case 'MY': return 'Malaysia';
-      case 'TH': return 'Thailand';
-      case 'ID': return 'Indonesia';
-      case 'VN': return 'Vietnam';
-      case 'PH': return 'Philippines';
-      case 'CN': return 'China';
-      case 'IN': return 'India';
-      case 'US': return 'United States';
-      case 'GB': return 'United Kingdom';
-      case 'AU': return 'Australia';
-      default: return 'Other';
+      case 'SG':
+        return 'Singapore';
+      case 'MY':
+        return 'Malaysia';
+      case 'TH':
+        return 'Thailand';
+      case 'ID':
+        return 'Indonesia';
+      case 'VN':
+        return 'Vietnam';
+      case 'PH':
+        return 'Philippines';
+      case 'CN':
+        return 'China';
+      case 'IN':
+        return 'India';
+      case 'US':
+        return 'United States';
+      case 'GB':
+        return 'United Kingdom';
+      case 'AU':
+        return 'Australia';
+      default:
+        return 'Other';
     }
   }
 
@@ -423,18 +457,35 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
     try {
       final repository = ref.read(vendorRepositoryProvider);
       final now = DateTime.now();
-      
+
       final vendor = Vendor(
-        id: _existingVendor?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        id: _existingVendor?.id ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
-        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-        address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
-        contactPerson: _contactPersonController.text.trim().isEmpty ? null : _contactPersonController.text.trim(),
-        website: _websiteController.text.trim().isEmpty ? null : _websiteController.text.trim(),
-        taxId: _taxIdController.text.trim().isEmpty ? null : _taxIdController.text.trim(),
-        bankAccount: _bankAccountController.text.trim().isEmpty ? null : _bankAccountController.text.trim(),
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        email: _emailController.text.trim().isEmpty
+            ? null
+            : _emailController.text.trim(),
+        phone: _phoneController.text.trim().isEmpty
+            ? null
+            : _phoneController.text.trim(),
+        address: _addressController.text.trim().isEmpty
+            ? null
+            : _addressController.text.trim(),
+        contactPerson: _contactPersonController.text.trim().isEmpty
+            ? null
+            : _contactPersonController.text.trim(),
+        website: _websiteController.text.trim().isEmpty
+            ? null
+            : _websiteController.text.trim(),
+        taxId: _taxIdController.text.trim().isEmpty
+            ? null
+            : _taxIdController.text.trim(),
+        bankAccount: _bankAccountController.text.trim().isEmpty
+            ? null
+            : _bankAccountController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
         countryCode: _countryCode,
         paymentTerms: _paymentTerms,
         isActive: _isActive,
@@ -451,7 +502,9 @@ class _VendorFormScreenState extends ConsumerState<VendorFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing ? 'Vendor updated successfully' : 'Vendor added successfully'),
+            content: Text(_isEditing
+                ? 'Vendor updated successfully'
+                : 'Vendor added successfully'),
             backgroundColor: Colors.green,
           ),
         );

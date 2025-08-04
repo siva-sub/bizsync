@@ -17,14 +17,14 @@ import '../utils/uuid_generator.dart';
 class CRDTDatabaseService {
   static Database? _database;
   static final CRDTDatabaseService _instance = CRDTDatabaseService._internal();
-  
+
   late HybridLogicalClock _clock;
   late TransactionManager _transactionManager;
   late String _nodeId;
-  
+
   factory CRDTDatabaseService() => _instance;
   CRDTDatabaseService._internal();
-  
+
   /// Initialize the database service
   Future<void> initialize([String? nodeId]) async {
     try {
@@ -32,33 +32,34 @@ class CRDTDatabaseService {
       _clock = HybridLogicalClock(_nodeId);
       _database ??= await _initDatabase();
       _transactionManager = TransactionManager(_database!, _clock);
-      
+
       // Verify tables exist
       await _verifyTablesExist();
-      
+
       print('✅ CRDT Database initialized successfully with node ID: $_nodeId');
     } catch (e) {
       print('❌ Failed to initialize CRDT database: $e');
-      throw app_exceptions.DatabaseException('CRDT Database initialization failed: $e');
+      throw app_exceptions.DatabaseException(
+          'CRDT Database initialization failed: $e');
     }
   }
-  
+
   Future<Database> get database async {
     if (_database == null) {
       await initialize();
     }
     return _database!;
   }
-  
+
   HybridLogicalClock get clock => _clock;
   TransactionManager get transactionManager => _transactionManager;
   String get nodeId => _nodeId;
-  
+
   Future<Database> _initDatabase() async {
     try {
       final documentsDirectory = await getApplicationDocumentsDirectory();
       final path = join(documentsDirectory.path, AppConstants.databaseName);
-      
+
       // Use platform-aware database factory
       return await PlatformDatabaseFactory.openDatabase(
         path,
@@ -70,12 +71,14 @@ class CRDTDatabaseService {
       );
     } catch (e) {
       // If the error is about SQL statements, try without the onOpen callback
-      if (e.toString().contains('SQLITE_OK') || e.toString().contains('rawQuery')) {
+      if (e.toString().contains('SQLITE_OK') ||
+          e.toString().contains('rawQuery')) {
         try {
-          debugPrint('Retrying database initialization without PRAGMA statements');
+          debugPrint(
+              'Retrying database initialization without PRAGMA statements');
           final documentsDirectory = await getApplicationDocumentsDirectory();
           final path = join(documentsDirectory.path, AppConstants.databaseName);
-          
+
           return await PlatformDatabaseFactory.openDatabase(
             path,
             version: AppConstants.databaseVersion,
@@ -88,26 +91,24 @@ class CRDTDatabaseService {
           // Get database info for better error reporting
           final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
           throw app_exceptions.DatabaseException(
-            'Failed to initialize CRDT database after retry: $retryError\n'
-            'Original error: $e\n'
-            'Platform: ${dbInfo['platform']}\n'
-            'Database type: ${dbInfo['database_type']}\n'
-            'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}'
-          );
+              'Failed to initialize CRDT database after retry: $retryError\n'
+              'Original error: $e\n'
+              'Platform: ${dbInfo['platform']}\n'
+              'Database type: ${dbInfo['database_type']}\n'
+              'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}');
         }
       }
-      
+
       // Get database info for better error reporting
       final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
       throw app_exceptions.DatabaseException(
-        'Failed to initialize CRDT database: $e\n'
-        'Platform: ${dbInfo['platform']}\n'
-        'Database type: ${dbInfo['database_type']}\n'
-        'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}'
-      );
+          'Failed to initialize CRDT database: $e\n'
+          'Platform: ${dbInfo['platform']}\n'
+          'Database type: ${dbInfo['database_type']}\n'
+          'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}');
     }
   }
-  
+
   Future<void> _onCreate(Database db, int version) async {
     // Create core business tables with CRDT support
     await _createCRDTBusinessTables(db);
@@ -117,14 +118,14 @@ class CRDTDatabaseService {
     await _createDoubleEntryTables(db);
     await _createIntegrityTables(db);
   }
-  
+
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle database migrations
     for (int version = oldVersion + 1; version <= newVersion; version++) {
       await _migrateToVersion(db, version);
     }
   }
-  
+
   Future<void> _onOpen(Database db) async {
     // Enable foreign keys and other pragmas
     try {
@@ -132,7 +133,7 @@ class CRDTDatabaseService {
     } catch (e) {
       debugPrint('Warning: Could not enable foreign keys: $e');
     }
-    
+
     // Try to set journal mode to WAL, but fall back if not supported
     try {
       await db.execute('PRAGMA journal_mode = WAL');
@@ -140,7 +141,7 @@ class CRDTDatabaseService {
       debugPrint('Warning: Could not set WAL mode, using default: $e');
       // Some Android devices don't support WAL mode
     }
-    
+
     try {
       await db.execute('PRAGMA synchronous = NORMAL');
       await db.execute('PRAGMA cache_size = 10000');
@@ -149,10 +150,10 @@ class CRDTDatabaseService {
       debugPrint('Warning: Could not set performance pragmas: $e');
     }
   }
-  
+
   Future<void> _createCRDTBusinessTables(Database db) async {
     // Create both CRDT and legacy table formats for compatibility
-    
+
     // Legacy customers table for backward compatibility
     await db.execute('''
       CREATE TABLE customers (
@@ -166,7 +167,7 @@ class CRDTDatabaseService {
         sync_status INTEGER DEFAULT 0
       )
     ''');
-    
+
     // Customers CRDT table
     await db.execute('''
       CREATE TABLE customers_crdt (
@@ -187,7 +188,7 @@ class CRDTDatabaseService {
         CHECK(json_valid(crdt_data))
       )
     ''');
-    
+
     // Invoices CRDT table
     await db.execute('''
       CREATE TABLE invoices_crdt (
@@ -214,7 +215,7 @@ class CRDTDatabaseService {
         FOREIGN KEY (customer_id) REFERENCES customers_crdt (id) DEFERRABLE INITIALLY DEFERRED
       )
     ''');
-    
+
     // Accounting Transactions CRDT table
     await db.execute('''
       CREATE TABLE transactions_crdt (
@@ -241,7 +242,7 @@ class CRDTDatabaseService {
         CHECK(ABS(total_debit - total_credit) < 0.01 OR status = 'draft')
       )
     ''');
-    
+
     // Tax Rates CRDT table
     await db.execute('''
       CREATE TABLE tax_rates_crdt (
@@ -266,7 +267,7 @@ class CRDTDatabaseService {
         CHECK(rate >= 0)
       )
     ''');
-    
+
     // Products CRDT table
     await db.execute('''
       CREATE TABLE products_crdt (
@@ -296,7 +297,7 @@ class CRDTDatabaseService {
         CHECK(stock_quantity >= 0)
       )
     ''');
-    
+
     // Legacy products table for backward compatibility
     await db.execute('''
       CREATE TABLE products (
@@ -320,7 +321,7 @@ class CRDTDatabaseService {
         CHECK(stock_quantity >= 0)
       )
     ''');
-    
+
     // Sync metadata table
     await db.execute('''
       CREATE TABLE sync_metadata (
@@ -340,56 +341,84 @@ class CRDTDatabaseService {
         CHECK(json_valid(last_sync_vector))
       )
     ''');
-    
+
     // Create indexes for performance
     await _createCRDTIndexes(db);
   }
-  
+
   Future<void> _createCRDTIndexes(Database db) async {
     // Customer indexes
-    await db.execute('CREATE INDEX idx_customers_name ON customers_crdt(name) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_customers_email ON customers_crdt(email) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_customers_updated ON customers_crdt(updated_at)');
-    await db.execute('CREATE INDEX idx_customers_node ON customers_crdt(node_id)');
-    
+    await db.execute(
+        'CREATE INDEX idx_customers_name ON customers_crdt(name) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_customers_email ON customers_crdt(email) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_customers_updated ON customers_crdt(updated_at)');
+    await db
+        .execute('CREATE INDEX idx_customers_node ON customers_crdt(node_id)');
+
     // Invoice indexes
-    await db.execute('CREATE INDEX idx_invoices_number ON invoices_crdt(invoice_number) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_invoices_customer ON invoices_crdt(customer_id) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_invoices_status ON invoices_crdt(status) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_invoices_issue_date ON invoices_crdt(issue_date) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_invoices_updated ON invoices_crdt(updated_at)');
-    
+    await db.execute(
+        'CREATE INDEX idx_invoices_number ON invoices_crdt(invoice_number) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_invoices_customer ON invoices_crdt(customer_id) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_invoices_status ON invoices_crdt(status) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_invoices_issue_date ON invoices_crdt(issue_date) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_invoices_updated ON invoices_crdt(updated_at)');
+
     // Transaction indexes
-    await db.execute('CREATE INDEX idx_transactions_number ON transactions_crdt(transaction_number) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_transactions_date ON transactions_crdt(transaction_date) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_transactions_status ON transactions_crdt(status) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_transactions_updated ON transactions_crdt(updated_at)');
-    
+    await db.execute(
+        'CREATE INDEX idx_transactions_number ON transactions_crdt(transaction_number) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_transactions_date ON transactions_crdt(transaction_date) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_transactions_status ON transactions_crdt(status) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_transactions_updated ON transactions_crdt(updated_at)');
+
     // Tax rate indexes
-    await db.execute('CREATE INDEX idx_tax_rates_name ON tax_rates_crdt(name) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_tax_rates_active ON tax_rates_crdt(is_active) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_tax_rates_effective ON tax_rates_crdt(effective_from, effective_to) WHERE is_deleted = FALSE');
-    
+    await db.execute(
+        'CREATE INDEX idx_tax_rates_name ON tax_rates_crdt(name) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_tax_rates_active ON tax_rates_crdt(is_active) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_tax_rates_effective ON tax_rates_crdt(effective_from, effective_to) WHERE is_deleted = FALSE');
+
     // Product indexes
-    await db.execute('CREATE INDEX idx_products_name ON products_crdt(name) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_products_category ON products_crdt(category_id) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_products_barcode ON products_crdt(barcode) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_products_stock ON products_crdt(stock_quantity) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX idx_products_updated ON products_crdt(updated_at)');
-    await db.execute('CREATE INDEX idx_products_node ON products_crdt(node_id)');
-    
+    await db.execute(
+        'CREATE INDEX idx_products_name ON products_crdt(name) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_products_category ON products_crdt(category_id) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_products_barcode ON products_crdt(barcode) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_products_stock ON products_crdt(stock_quantity) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_products_updated ON products_crdt(updated_at)');
+    await db
+        .execute('CREATE INDEX idx_products_node ON products_crdt(node_id)');
+
     // Legacy products table indexes
     await db.execute('CREATE INDEX idx_products_legacy_name ON products(name)');
-    await db.execute('CREATE INDEX idx_products_legacy_category ON products(category_id)');
-    await db.execute('CREATE INDEX idx_products_legacy_barcode ON products(barcode)');
-    await db.execute('CREATE INDEX idx_products_legacy_stock ON products(stock_quantity)');
-    
+    await db.execute(
+        'CREATE INDEX idx_products_legacy_category ON products(category_id)');
+    await db.execute(
+        'CREATE INDEX idx_products_legacy_barcode ON products(barcode)');
+    await db.execute(
+        'CREATE INDEX idx_products_legacy_stock ON products(stock_quantity)');
+
     // Sync metadata indexes
-    await db.execute('CREATE INDEX idx_sync_metadata_table_record ON sync_metadata(table_name, record_id)');
-    await db.execute('CREATE INDEX idx_sync_metadata_status ON sync_metadata(sync_status)');
-    await db.execute('CREATE INDEX idx_sync_metadata_timestamp ON sync_metadata(last_sync_timestamp)');
+    await db.execute(
+        'CREATE INDEX idx_sync_metadata_table_record ON sync_metadata(table_name, record_id)');
+    await db.execute(
+        'CREATE INDEX idx_sync_metadata_status ON sync_metadata(sync_status)');
+    await db.execute(
+        'CREATE INDEX idx_sync_metadata_timestamp ON sync_metadata(last_sync_timestamp)');
   }
-  
+
   Future<void> _createUserTables(Database db) async {
     // User settings table (unchanged)
     await db.execute('''
@@ -400,7 +429,7 @@ class CRDTDatabaseService {
         updated_at INTEGER NOT NULL
       )
     ''');
-    
+
     // Business profile table (unchanged)
     await db.execute('''
       CREATE TABLE business_profile (
@@ -418,7 +447,7 @@ class CRDTDatabaseService {
       )
     ''');
   }
-  
+
   Future<void> _createSyncTables(Database db) async {
     // P2P sync log table
     await db.execute('''
@@ -435,7 +464,7 @@ class CRDTDatabaseService {
         hlc_timestamp TEXT
       )
     ''');
-    
+
     // Device registry table
     await db.execute('''
       CREATE TABLE device_registry (
@@ -448,7 +477,7 @@ class CRDTDatabaseService {
         vector_clock TEXT
       )
     ''');
-    
+
     // Conflict resolution log
     await db.execute('''
       CREATE TABLE conflict_resolution_log (
@@ -465,7 +494,7 @@ class CRDTDatabaseService {
       )
     ''');
   }
-  
+
   Future<void> _createAuditTables(Database db) async {
     // Audit trail table
     await db.execute('''
@@ -489,7 +518,7 @@ class CRDTDatabaseService {
         CHECK(json_valid(new_values) OR new_values IS NULL)
       )
     ''');
-    
+
     // Transaction log table
     await db.execute('''
       CREATE TABLE transaction_log (
@@ -503,7 +532,7 @@ class CRDTDatabaseService {
         CHECK(json_valid(metadata) OR metadata IS NULL)
       )
     ''');
-    
+
     // Operation log table
     await db.execute('''
       CREATE TABLE operation_log (
@@ -517,7 +546,7 @@ class CRDTDatabaseService {
       )
     ''');
   }
-  
+
   Future<void> _createDoubleEntryTables(Database db) async {
     // Chart of accounts
     await db.execute('''
@@ -538,7 +567,7 @@ class CRDTDatabaseService {
         FOREIGN KEY (parent_account_id) REFERENCES chart_of_accounts (id)
       )
     ''');
-    
+
     // Journal entries
     await db.execute('''
       CREATE TABLE journal_entries (
@@ -556,7 +585,7 @@ class CRDTDatabaseService {
         FOREIGN KEY (account_id) REFERENCES chart_of_accounts (id)
       )
     ''');
-    
+
     // Account balances (materialized view for performance)
     await db.execute('''
       CREATE TABLE account_balances (
@@ -570,7 +599,7 @@ class CRDTDatabaseService {
       )
     ''');
   }
-  
+
   Future<void> _createIntegrityTables(Database db) async {
     // Data integrity checks
     await db.execute('''
@@ -587,7 +616,7 @@ class CRDTDatabaseService {
         CHECK(check_type IN ('CONSTRAINT', 'BUSINESS_RULE', 'BALANCE', 'FOREIGN_KEY'))
       )
     ''');
-    
+
     // Integrity violations log
     await db.execute('''
       CREATE TABLE integrity_violations (
@@ -604,11 +633,11 @@ class CRDTDatabaseService {
       )
     ''');
   }
-  
+
   /// Insert or update a CRDT customer
   Future<void> upsertCustomer(CRDTCustomer customer) async {
     final db = await database;
-    
+
     await _transactionManager.runInTransaction((transaction) async {
       // Check for existing customer
       final existing = await db.query(
@@ -616,7 +645,7 @@ class CRDTDatabaseService {
         where: 'id = ?',
         whereArgs: [customer.id],
       );
-      
+
       if (existing.isNotEmpty) {
         // Merge with existing
         final existingCustomer = CRDTCustomer.fromCRDTJson(
@@ -625,7 +654,7 @@ class CRDTDatabaseService {
         existingCustomer.mergeWith(customer);
         customer = existingCustomer;
       }
-      
+
       // Upsert the customer
       await db.insert(
         'customers_crdt',
@@ -644,10 +673,10 @@ class CRDTDatabaseService {
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      
+
       // Update sync metadata
       await _updateSyncMetadata('customers_crdt', customer.id, customer);
-      
+
       // Log audit trail
       await _logAuditTrail(
         'customers_crdt',
@@ -658,41 +687,43 @@ class CRDTDatabaseService {
       );
     });
   }
-  
+
   /// Get customer by ID
   Future<CRDTCustomer?> getCustomer(String id) async {
     final db = await database;
-    
+
     final result = await db.query(
       'customers_crdt',
       where: 'id = ? AND is_deleted = FALSE',
       whereArgs: [id],
     );
-    
+
     if (result.isEmpty) return null;
-    
+
     return CRDTCustomer.fromCRDTJson(
       jsonDecode(result.first['crdt_data'] as String),
     );
   }
-  
+
   /// Get all customers
   Future<List<CRDTCustomer>> getAllCustomers() async {
     final db = await database;
-    
+
     final result = await db.query(
       'customers_crdt',
       where: 'is_deleted = FALSE',
       orderBy: 'name ASC',
     );
-    
-    return result.map((row) => CRDTCustomer.fromCRDTJson(
-      jsonDecode(row['crdt_data'] as String),
-    )).toList();
+
+    return result
+        .map((row) => CRDTCustomer.fromCRDTJson(
+              jsonDecode(row['crdt_data'] as String),
+            ))
+        .toList();
   }
-  
+
   /// Generic CRDT entity operations
-  
+
   /// Insert or update any CRDT entity
   Future<void> upsertEntity(String tableName, dynamic entity) async {
     if (tableName == 'customers') {
@@ -709,7 +740,7 @@ class CRDTDatabaseService {
       throw Exception('Unsupported entity table: $tableName');
     }
   }
-  
+
   /// Get any CRDT entity by ID
   Future<dynamic> getEntity(String tableName, String id) async {
     if (tableName == 'customers') {
@@ -726,9 +757,10 @@ class CRDTDatabaseService {
       throw Exception('Unsupported entity table: $tableName');
     }
   }
-  
+
   /// Query entities with filters
-  Future<List<dynamic>> queryEntities(String tableName, Map<String, dynamic> filters) async {
+  Future<List<dynamic>> queryEntities(
+      String tableName, Map<String, dynamic> filters) async {
     if (tableName == 'customers') {
       return await queryCustomers(filters);
     } else if (tableName == 'invoices') {
@@ -743,7 +775,7 @@ class CRDTDatabaseService {
       throw Exception('Unsupported entity table: $tableName');
     }
   }
-  
+
   /// Delete entity (soft delete)
   Future<void> deleteEntity(String tableName, String id) async {
     if (tableName == 'customers') {
@@ -760,11 +792,11 @@ class CRDTDatabaseService {
       throw Exception('Unsupported entity table: $tableName');
     }
   }
-  
+
   /// Invoice operations
   Future<void> upsertInvoice(dynamic invoice) async {
     final db = await database;
-    
+
     await _transactionManager.runInTransaction((transaction) async {
       await db.insert(
         'invoices_crdt',
@@ -786,54 +818,54 @@ class CRDTDatabaseService {
       );
     });
   }
-  
+
   Future<dynamic> getInvoice(String id) async {
     final db = await database;
-    
+
     final result = await db.query(
       'invoices_crdt',
       where: 'id = ? AND is_deleted = FALSE',
       whereArgs: [id],
     );
-    
+
     if (result.isEmpty) return null;
-    
+
     // Return the raw data for now - would need proper deserialization
     return result.first;
   }
-  
+
   Future<List<dynamic>> queryInvoices(Map<String, dynamic> filters) async {
     final db = await database;
-    
+
     String whereClause = 'is_deleted = FALSE';
     List<dynamic> whereArgs = [];
-    
+
     // Build where clause from filters
     if (filters.containsKey('customer_id')) {
       whereClause += ' AND customer_id = ?';
       whereArgs.add(filters['customer_id']);
     }
-    
+
     if (filters.containsKey('status_in')) {
       final statuses = filters['status_in'] as List;
       final placeholders = statuses.map((_) => '?').join(',');
       whereClause += ' AND status IN ($placeholders)';
       whereArgs.addAll(statuses);
     }
-    
+
     final result = await db.query(
       'invoices_crdt',
       where: whereClause,
       whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
       orderBy: 'updated_at DESC',
     );
-    
+
     return result;
   }
-  
+
   Future<void> deleteInvoice(String id) async {
     final db = await database;
-    
+
     await db.update(
       'invoices_crdt',
       {'is_deleted': true, 'updated_at': DateTime.now().millisecondsSinceEpoch},
@@ -841,94 +873,99 @@ class CRDTDatabaseService {
       whereArgs: [id],
     );
   }
-  
+
   /// Invoice item operations
   Future<void> upsertInvoiceItem(dynamic item) async {
     // Placeholder - would implement similar to invoice
   }
-  
+
   Future<dynamic> getInvoiceItem(String id) async {
     // Placeholder
     return null;
   }
-  
+
   Future<List<dynamic>> queryInvoiceItems(Map<String, dynamic> filters) async {
     // Placeholder
     return [];
   }
-  
+
   Future<void> deleteInvoiceItem(String id) async {
     // Placeholder
   }
-  
+
   /// Invoice payment operations
   Future<void> upsertInvoicePayment(dynamic payment) async {
     // Placeholder
   }
-  
+
   Future<dynamic> getInvoicePayment(String id) async {
     // Placeholder
     return null;
   }
-  
-  Future<List<dynamic>> queryInvoicePayments(Map<String, dynamic> filters) async {
+
+  Future<List<dynamic>> queryInvoicePayments(
+      Map<String, dynamic> filters) async {
     // Placeholder
     return [];
   }
-  
+
   Future<void> deleteInvoicePayment(String id) async {
     // Placeholder
   }
-  
+
   /// Invoice workflow operations
   Future<void> upsertInvoiceWorkflow(dynamic workflow) async {
     // Placeholder
   }
-  
+
   Future<dynamic> getInvoiceWorkflow(String id) async {
     // Placeholder
     return null;
   }
-  
-  Future<List<dynamic>> queryInvoiceWorkflow(Map<String, dynamic> filters) async {
+
+  Future<List<dynamic>> queryInvoiceWorkflow(
+      Map<String, dynamic> filters) async {
     // Placeholder
     return [];
   }
-  
+
   Future<void> deleteInvoiceWorkflow(String id) async {
     // Placeholder
   }
-  
+
   /// Customer query operations
-  Future<List<CRDTCustomer>> queryCustomers(Map<String, dynamic> filters) async {
+  Future<List<CRDTCustomer>> queryCustomers(
+      Map<String, dynamic> filters) async {
     final db = await database;
-    
+
     String whereClause = 'is_deleted = FALSE';
     List<dynamic> whereArgs = [];
-    
+
     // Build where clause from filters
     if (filters.containsKey('search_text')) {
       whereClause += ' AND (name LIKE ? OR email LIKE ?)';
       final searchTerm = '%${filters['search_text']}%';
       whereArgs.addAll([searchTerm, searchTerm]);
     }
-    
+
     final result = await db.query(
       'customers_crdt',
       where: whereClause,
       whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
       orderBy: 'name ASC',
     );
-    
-    return result.map((row) => CRDTCustomer.fromCRDTJson(
-      jsonDecode(row['crdt_data'] as String),
-    )).toList();
+
+    return result
+        .map((row) => CRDTCustomer.fromCRDTJson(
+              jsonDecode(row['crdt_data'] as String),
+            ))
+        .toList();
   }
-  
+
   /// Delete customer (soft delete)
   Future<void> deleteCustomer(String id) async {
     final db = await database;
-    
+
     await db.update(
       'customers_crdt',
       {'is_deleted': true, 'updated_at': DateTime.now().millisecondsSinceEpoch},
@@ -936,11 +973,12 @@ class CRDTDatabaseService {
       whereArgs: [id],
     );
   }
-  
+
   /// Update sync metadata
-  Future<void> _updateSyncMetadata(String tableName, String recordId, CRDTModel model) async {
+  Future<void> _updateSyncMetadata(
+      String tableName, String recordId, CRDTModel model) async {
     final db = await database;
-    
+
     await db.insert(
       'sync_metadata',
       {
@@ -957,7 +995,7 @@ class CRDTDatabaseService {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-  
+
   /// Log audit trail
   Future<void> _logAuditTrail(
     String tableName,
@@ -967,7 +1005,7 @@ class CRDTDatabaseService {
     Map<String, dynamic> newValues,
   ) async {
     final db = await database;
-    
+
     try {
       await db.insert('audit_trail', {
         'id': UuidGenerator.generateId(),
@@ -985,16 +1023,16 @@ class CRDTDatabaseService {
       print('Failed to log audit trail: $e');
     }
   }
-  
+
   /// Run integrity checks
   Future<List<Map<String, dynamic>>> runIntegrityChecks() async {
     final db = await database;
     final violations = <Map<String, dynamic>>[];
-    
+
     // Check foreign key constraints
     final fkViolations = await db.rawQuery('PRAGMA foreign_key_check');
     violations.addAll(fkViolations);
-    
+
     // Check double-entry bookkeeping balance
     final balanceCheck = await db.rawQuery('''
       SELECT transaction_id, SUM(debit_amount) as total_debit, SUM(credit_amount) as total_credit
@@ -1003,36 +1041,36 @@ class CRDTDatabaseService {
       HAVING ABS(total_debit - total_credit) > 0.01
     ''');
     violations.addAll(balanceCheck);
-    
+
     // Custom integrity checks
     final customChecks = await db.query(
       'integrity_checks',
       where: 'is_active = TRUE',
     );
-    
+
     for (final check in customChecks) {
       try {
         final results = await db.rawQuery(check['check_sql'] as String);
         if (results.isNotEmpty) {
           violations.addAll(results.map((r) => {
-            ...r,
-            'check_name': check['check_name'],
-            'check_type': check['check_type'],
-          }));
+                ...r,
+                'check_name': check['check_name'],
+                'check_type': check['check_type'],
+              }));
         }
       } catch (e) {
         print('Failed to run integrity check ${check['check_name']}: $e');
       }
     }
-    
+
     return violations;
   }
-  
+
   Future<String> _generateNodeId() async {
     // Generate a unique node ID based on device characteristics
     return '${Platform.operatingSystem}_${DateTime.now().millisecondsSinceEpoch}';
   }
-  
+
   Future<void> _migrateToVersion(Database db, int version) async {
     // Handle specific version migrations
     switch (version) {
@@ -1041,48 +1079,47 @@ class CRDTDatabaseService {
         break;
     }
   }
-  
+
   Future<void> closeDatabase() async {
     if (_database != null) {
       await _database!.close();
       _database = null;
     }
   }
-  
+
   /// Verify that required tables exist, create them if missing
   Future<void> _verifyTablesExist() async {
     final db = await database;
-    
+
     // Check if required tables exist
     final tables = await db.rawQuery(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('customers', 'customers_crdt', 'products', 'products_crdt')"
-    );
-    
+        "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('customers', 'customers_crdt', 'products', 'products_crdt')");
+
     final existingTables = tables.map((row) => row['name'] as String).toSet();
-    
+
     if (!existingTables.contains('customers')) {
       print('⚠️  Creating missing customers table');
       await _createMissingCustomersTable(db);
     }
-    
+
     if (!existingTables.contains('customers_crdt')) {
       print('⚠️  Creating missing customers_crdt table');
       await _createMissingCRDTCustomersTable(db);
     }
-    
+
     if (!existingTables.contains('products')) {
       print('⚠️  Creating missing products table');
       await _createMissingProductsTable(db);
     }
-    
+
     if (!existingTables.contains('products_crdt')) {
       print('⚠️  Creating missing products_crdt table');
       await _createMissingCRDTProductsTable(db);
     }
-    
+
     print('✅ All required tables verified/created');
   }
-  
+
   /// Create missing customers table
   Future<void> _createMissingCustomersTable(Database db) async {
     await db.execute('''
@@ -1098,7 +1135,7 @@ class CRDTDatabaseService {
       )
     ''');
   }
-  
+
   /// Create missing CRDT customers table
   Future<void> _createMissingCRDTCustomersTable(Database db) async {
     await db.execute('''
@@ -1120,14 +1157,18 @@ class CRDTDatabaseService {
         CHECK(json_valid(crdt_data))
       )
     ''');
-    
+
     // Create indexes
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_customers_name ON customers_crdt(name) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_customers_email ON customers_crdt(email) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_customers_updated ON customers_crdt(updated_at)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_customers_node ON customers_crdt(node_id)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_customers_name ON customers_crdt(name) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_customers_email ON customers_crdt(email) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_customers_updated ON customers_crdt(updated_at)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_customers_node ON customers_crdt(node_id)');
   }
-  
+
   /// Create missing products table
   Future<void> _createMissingProductsTable(Database db) async {
     await db.execute('''
@@ -1152,14 +1193,18 @@ class CRDTDatabaseService {
         CHECK(stock_quantity >= 0)
       )
     ''');
-    
+
     // Create indexes
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_legacy_name ON products(name)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_legacy_category ON products(category_id)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_legacy_barcode ON products(barcode)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_legacy_stock ON products(stock_quantity)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_legacy_name ON products(name)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_legacy_category ON products(category_id)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_legacy_barcode ON products(barcode)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_legacy_stock ON products(stock_quantity)');
   }
-  
+
   /// Create missing CRDT products table
   Future<void> _createMissingCRDTProductsTable(Database db) async {
     await db.execute('''
@@ -1190,21 +1235,27 @@ class CRDTDatabaseService {
         CHECK(stock_quantity >= 0)
       )
     ''');
-    
+
     // Create indexes
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_name ON products_crdt(name) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_category ON products_crdt(category_id) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_barcode ON products_crdt(barcode) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_stock ON products_crdt(stock_quantity) WHERE is_deleted = FALSE');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_updated ON products_crdt(updated_at)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_products_node ON products_crdt(node_id)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_name ON products_crdt(name) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_category ON products_crdt(category_id) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_barcode ON products_crdt(barcode) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_stock ON products_crdt(stock_quantity) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_updated ON products_crdt(updated_at)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_products_node ON products_crdt(node_id)');
   }
-  
+
   /// Force creation of all required tables
   Future<void> forceCreateTables() async {
     final db = await database;
     print('🔧 Force creating all required database tables...');
-    
+
     try {
       await _createCRDTBusinessTables(db);
       await _createUserTables(db);
@@ -1212,11 +1263,11 @@ class CRDTDatabaseService {
       await _createAuditTables(db);
       await _createDoubleEntryTables(db);
       await _createIntegrityTables(db);
-      
+
       // Force create products tables if missing
       await _createMissingProductsTable(db);
       await _createMissingCRDTProductsTable(db);
-      
+
       print('✅ All tables force-created successfully');
     } catch (e) {
       print('❌ Error force-creating tables: $e');
@@ -1227,11 +1278,11 @@ class CRDTDatabaseService {
   Future<void> deleteDatabase() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentsDirectory.path, AppConstants.databaseName);
-    
+
     if (await File(path).exists()) {
       await File(path).delete();
     }
-    
+
     if (_database != null) {
       _database = null;
     }

@@ -87,7 +87,8 @@ class BusinessIntelligenceEngine {
     // Group revenue by month
     final monthlyRevenue = <int, List<double>>{};
     for (final invoice in invoices) {
-      if (invoice.status.value == InvoiceStatus.paid && invoice.lastPaymentDate.value != null) {
+      if (invoice.status.value == InvoiceStatus.paid &&
+          invoice.lastPaymentDate.value != null) {
         final month = invoice.lastPaymentDate.value!.month;
         monthlyRevenue[month] ??= [];
         monthlyRevenue[month]!.add(invoice.totalAmount.value);
@@ -97,13 +98,13 @@ class BusinessIntelligenceEngine {
     // Calculate average revenue per month
     final avgMonthlyRevenue = <int, double>{};
     double totalAverage = 0.0;
-    
+
     for (final entry in monthlyRevenue.entries) {
       final avg = entry.value.reduce((a, b) => a + b) / entry.value.length;
       avgMonthlyRevenue[entry.key] = avg;
       totalAverage += avg;
     }
-    
+
     if (avgMonthlyRevenue.isEmpty) {
       return SeasonalityAnalysis(
         hasSeasonality: false,
@@ -120,7 +121,7 @@ class BusinessIntelligenceEngine {
     // Calculate seasonal factors
     final seasonalFactors = <int, double>{};
     double seasonalVariance = 0.0;
-    
+
     for (final entry in avgMonthlyRevenue.entries) {
       final factor = entry.value / totalAverage;
       seasonalFactors[entry.key] = factor;
@@ -171,18 +172,18 @@ class BusinessIntelligenceEngine {
 
     // Prepare historical data
     final historicalData = _prepareRevenueData(invoices);
-    
+
     // Generate forecasts using different methods
     final linearForecast = await _generateLinearRegressionForecast(
       historicalData,
       forecastDays,
     );
-    
+
     final movingAverageForecast = await _generateMovingAverageForecast(
       historicalData,
       forecastDays,
     );
-    
+
     final seasonalForecast = await _generateSeasonalForecast(
       historicalData,
       forecastDays,
@@ -227,16 +228,16 @@ class BusinessIntelligenceEngine {
   ) async {
     // Calculate historical acquisition rates
     final acquisitionData = _calculateAcquisitionRates(customers);
-    
+
     // Calculate churn rates
     final churnData = _calculateChurnRates(customers, invoices);
-    
+
     // Forecast acquisition
     final acquisitionForecast = await _forecastCustomerAcquisition(
       acquisitionData,
       forecastDays,
     );
-    
+
     // Forecast churn
     final churnForecast = await _forecastCustomerChurn(
       churnData,
@@ -270,11 +271,11 @@ class BusinessIntelligenceEngine {
     int forecastDays,
   ) async {
     final productDemandForecasts = <ProductDemandForecast>[];
-    
+
     for (final product in products) {
       // Calculate historical demand for this product
       final demandHistory = _calculateProductDemandHistory(product, invoices);
-      
+
       if (demandHistory.length < 7) {
         // Not enough data for forecasting
         productDemandForecasts.add(ProductDemandForecast(
@@ -322,9 +323,11 @@ class BusinessIntelligenceEngine {
       overallConfidence: productDemandForecasts.isEmpty
           ? 0.0
           : productDemandForecasts
-              .map((f) => f.confidence)
-              .reduce((a, b) => a + b) / productDemandForecasts.length,
-      recommendations: _generateInventoryRecommendations(productDemandForecasts),
+                  .map((f) => f.confidence)
+                  .reduce((a, b) => a + b) /
+              productDemandForecasts.length,
+      recommendations:
+          _generateInventoryRecommendations(productDemandForecasts),
     );
   }
 
@@ -335,7 +338,7 @@ class BusinessIntelligenceEngine {
   ) async {
     // Analyze payment patterns
     final paymentPatterns = _analyzePaymentPatterns(invoices);
-    
+
     // Calculate collection forecasts based on outstanding invoices
     final collectionForecast = await _forecastCollections(
       invoices,
@@ -345,7 +348,7 @@ class BusinessIntelligenceEngine {
 
     // Estimate expense patterns
     final expensePatterns = _estimateExpensePatterns(invoices);
-    
+
     // Generate working capital forecasts
     final workingCapitalForecast = await _forecastWorkingCapital(
       collectionForecast,
@@ -382,13 +385,16 @@ class BusinessIntelligenceEngine {
 
     // Revenue-based recommendations
     if (revenueForecast.confidence > 0.7) {
-      final avgGrowth = _calculateAverageGrowthRate(revenueForecast.forecastData);
-      
-      if (avgGrowth < 0.02) { // Less than 2% growth
+      final avgGrowth =
+          _calculateAverageGrowthRate(revenueForecast.forecastData);
+
+      if (avgGrowth < 0.02) {
+        // Less than 2% growth
         recommendations.add(BusinessRecommendation(
           category: 'Revenue Growth',
           title: 'Revenue Growth Opportunity',
-          description: 'Revenue growth is below optimal levels. Consider new marketing initiatives or product expansion.',
+          description:
+              'Revenue growth is below optimal levels. Consider new marketing initiatives or product expansion.',
           priority: 'High',
           impact: 0.8,
           effort: 0.6,
@@ -406,14 +412,17 @@ class BusinessIntelligenceEngine {
     // Customer-based recommendations
     if (customerForecast.churnForecast.isNotEmpty) {
       final avgChurnRate = customerForecast.churnForecast
-          .map((f) => f.value)
-          .reduce((a, b) => a + b) / customerForecast.churnForecast.length;
-      
-      if (avgChurnRate > 0.05) { // More than 5% churn
+              .map((f) => f.value)
+              .reduce((a, b) => a + b) /
+          customerForecast.churnForecast.length;
+
+      if (avgChurnRate > 0.05) {
+        // More than 5% churn
         recommendations.add(BusinessRecommendation(
           category: 'Customer Retention',
           title: 'High Churn Risk Detected',
-          description: 'Customer churn rate is above acceptable levels. Implement retention strategies.',
+          description:
+              'Customer churn rate is above acceptable levels. Implement retention strategies.',
           priority: 'High',
           impact: 0.9,
           effort: 0.7,
@@ -432,12 +441,13 @@ class BusinessIntelligenceEngine {
     final highRiskProducts = inventoryForecast.productForecasts
         .where((forecast) => forecast.stockoutRisk > 0.7)
         .toList();
-    
+
     if (highRiskProducts.isNotEmpty) {
       recommendations.add(BusinessRecommendation(
         category: 'Inventory Management',
         title: 'Stockout Risk Alert',
-        description: '${highRiskProducts.length} products have high stockout risk. Optimize inventory levels.',
+        description:
+            '${highRiskProducts.length} products have high stockout risk. Optimize inventory levels.',
         priority: 'Medium',
         impact: 0.7,
         effort: 0.4,
@@ -456,11 +466,11 @@ class BusinessIntelligenceEngine {
       final priorityOrder = {'High': 0, 'Medium': 1, 'Low': 2};
       final aPriority = priorityOrder[a.priority] ?? 3;
       final bPriority = priorityOrder[b.priority] ?? 3;
-      
+
       if (aPriority != bPriority) {
         return aPriority.compareTo(bPriority);
       }
-      
+
       return b.impact.compareTo(a.impact);
     });
 
@@ -471,15 +481,17 @@ class BusinessIntelligenceEngine {
 
   List<DataPoint> _prepareRevenueData(List<CRDTInvoiceEnhanced> invoices) {
     final dailyRevenue = <DateTime, double>{};
-    
+
     for (final invoice in invoices) {
-      if (invoice.status.value == InvoiceStatus.paid && invoice.lastPaymentDate.value != null) {
+      if (invoice.status.value == InvoiceStatus.paid &&
+          invoice.lastPaymentDate.value != null) {
         final day = DateTime(
           invoice.lastPaymentDate.value!.year,
           invoice.lastPaymentDate.value!.month,
           invoice.lastPaymentDate.value!.day,
         );
-        dailyRevenue[day] = (dailyRevenue[day] ?? 0) + invoice.totalAmount.value;
+        dailyRevenue[day] =
+            (dailyRevenue[day] ?? 0) + invoice.totalAmount.value;
       }
     }
 
@@ -503,7 +515,7 @@ class BusinessIntelligenceEngine {
     // Simple linear regression implementation
     final n = historicalData.length;
     double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    
+
     for (int i = 0; i < n; i++) {
       sumX += i;
       sumY += historicalData[i].value;
@@ -516,7 +528,7 @@ class BusinessIntelligenceEngine {
 
     final forecast = <DataPoint>[];
     final lastDate = historicalData.last.timestamp;
-    
+
     for (int i = 1; i <= forecastDays; i++) {
       final forecastValue = intercept + slope * (n + i - 1);
       forecast.add(DataPoint(
@@ -541,12 +553,13 @@ class BusinessIntelligenceEngine {
         .skip(math.max(0, historicalData.length - windowSize))
         .map((d) => d.value)
         .toList();
-    
-    final movingAverage = lastValues.reduce((a, b) => a + b) / lastValues.length;
+
+    final movingAverage =
+        lastValues.reduce((a, b) => a + b) / lastValues.length;
 
     final forecast = <DataPoint>[];
     final lastDate = historicalData.last.timestamp;
-    
+
     for (int i = 1; i <= forecastDays; i++) {
       forecast.add(DataPoint(
         timestamp: lastDate.add(Duration(days: i)),
@@ -568,7 +581,7 @@ class BusinessIntelligenceEngine {
     // Simple seasonal decomposition
     final seasonalFactors = <int, double>{}; // day of week -> factor
     final dayOfWeekData = <int, List<double>>{};
-    
+
     for (final point in historicalData) {
       final dayOfWeek = point.timestamp.weekday;
       dayOfWeekData[dayOfWeek] ??= [];
@@ -576,12 +589,13 @@ class BusinessIntelligenceEngine {
     }
 
     // Calculate seasonal factors
-    final overallAverage = historicalData
-        .map((d) => d.value)
-        .reduce((a, b) => a + b) / historicalData.length;
-    
+    final overallAverage =
+        historicalData.map((d) => d.value).reduce((a, b) => a + b) /
+            historicalData.length;
+
     for (final entry in dayOfWeekData.entries) {
-      final dayAverage = entry.value.reduce((a, b) => a + b) / entry.value.length;
+      final dayAverage =
+          entry.value.reduce((a, b) => a + b) / entry.value.length;
       seasonalFactors[entry.key] = dayAverage / overallAverage;
     }
 
@@ -589,12 +603,12 @@ class BusinessIntelligenceEngine {
     final trend = historicalData.last.value;
     final forecast = <DataPoint>[];
     final lastDate = historicalData.last.timestamp;
-    
+
     for (int i = 1; i <= forecastDays; i++) {
       final forecastDate = lastDate.add(Duration(days: i));
       final dayOfWeek = forecastDate.weekday;
       final seasonalFactor = seasonalFactors[dayOfWeek] ?? 1.0;
-      
+
       forecast.add(DataPoint(
         timestamp: forecastDate,
         value: trend * seasonalFactor,
@@ -606,15 +620,15 @@ class BusinessIntelligenceEngine {
 
   List<DataPoint> _combineForecasts(List<List<DataPoint>> forecasts) {
     if (forecasts.isEmpty) return [];
-    
+
     final combined = <DataPoint>[];
     final maxLength = forecasts.map((f) => f.length).reduce(math.max);
-    
+
     for (int i = 0; i < maxLength; i++) {
       double sum = 0;
       int count = 0;
       DateTime? timestamp;
-      
+
       for (final forecast in forecasts) {
         if (i < forecast.length) {
           sum += forecast[i].value;
@@ -622,7 +636,7 @@ class BusinessIntelligenceEngine {
           timestamp ??= forecast[i].timestamp;
         }
       }
-      
+
       if (count > 0 && timestamp != null) {
         combined.add(DataPoint(
           timestamp: timestamp,
@@ -630,7 +644,7 @@ class BusinessIntelligenceEngine {
         ));
       }
     }
-    
+
     return combined;
   }
 
@@ -644,16 +658,16 @@ class BusinessIntelligenceEngine {
     List<DataPoint> forecast,
   ) {
     if (historical.length < 7) return 0.1;
-    
+
     // Calculate based on historical variance
     final values = historical.map((d) => d.value).toList();
     final mean = values.reduce((a, b) => a + b) / values.length;
-    final variance = values
-        .map((v) => math.pow(v - mean, 2))
-        .reduce((a, b) => a + b) / values.length;
-    
+    final variance =
+        values.map((v) => math.pow(v - mean, 2)).reduce((a, b) => a + b) /
+            values.length;
+
     final coefficientOfVariation = math.sqrt(variance) / mean;
-    
+
     // Higher CV = lower confidence
     return math.max(0.1, 1.0 - (coefficientOfVariation / 2));
   }
@@ -665,9 +679,10 @@ class BusinessIntelligenceEngine {
     final totalRevenue = invoices
         .where((inv) => inv.status == InvoiceStatus.paid)
         .fold(0.0, (sum, inv) => sum + inv.totalAmount.value);
-    
-    final dailyAverage = invoices.isEmpty ? 0.0 : totalRevenue / 30; // Assume 30 days
-    
+
+    final dailyAverage =
+        invoices.isEmpty ? 0.0 : totalRevenue / 30; // Assume 30 days
+
     final forecast = <DataPoint>[];
     for (int i = 1; i <= forecastDays; i++) {
       forecast.add(DataPoint(
@@ -685,13 +700,16 @@ class BusinessIntelligenceEngine {
     );
   }
 
-  Map<int, double> _calculateYearOverYearGrowth(List<CRDTInvoiceEnhanced> invoices) {
+  Map<int, double> _calculateYearOverYearGrowth(
+      List<CRDTInvoiceEnhanced> invoices) {
     final yearlyRevenue = <int, double>{};
-    
+
     for (final invoice in invoices) {
-      if (invoice.status.value == InvoiceStatus.paid && invoice.lastPaymentDate.value != null) {
+      if (invoice.status.value == InvoiceStatus.paid &&
+          invoice.lastPaymentDate.value != null) {
         final year = invoice.lastPaymentDate.value!.year;
-        yearlyRevenue[year] = (yearlyRevenue[year] ?? 0) + invoice.totalAmount.value;
+        yearlyRevenue[year] =
+            (yearlyRevenue[year] ?? 0) + invoice.totalAmount.value;
       }
     }
 
@@ -700,7 +718,9 @@ class BusinessIntelligenceEngine {
       if (yearlyRevenue.containsKey(year - 1)) {
         final currentYear = yearlyRevenue[year]!;
         final previousYear = yearlyRevenue[year - 1]!;
-        growth[year] = previousYear == 0 ? 0 : (currentYear - previousYear) / previousYear * 100;
+        growth[year] = previousYear == 0
+            ? 0
+            : (currentYear - previousYear) / previousYear * 100;
       }
     }
 
@@ -709,7 +729,7 @@ class BusinessIntelligenceEngine {
 
   // Additional helper methods would continue here...
   // Due to length constraints, I'm including the main structure and key methods
-  
+
   List<DataPoint> _applyExternalFactors(
     List<DataPoint> forecast,
     List<ExternalFactor> factors,
@@ -731,7 +751,7 @@ class BusinessIntelligenceEngine {
 
   List<DataPoint> _calculateAcquisitionRates(List<Customer> customers) {
     final monthlyAcquisition = <DateTime, int>{};
-    
+
     for (final customer in customers) {
       final month = DateTime(customer.createdAt.year, customer.createdAt.month);
       monthlyAcquisition[month] = (monthlyAcquisition[month] ?? 0) + 1;
@@ -753,24 +773,24 @@ class BusinessIntelligenceEngine {
     // Simple churn calculation based on inactivity
     final monthlyChurn = <DateTime, double>{};
     final now = DateTime.now();
-    
+
     for (int i = 0; i < 12; i++) {
       final month = DateTime(now.year, now.month - i);
       final cutoffDate = month.subtract(const Duration(days: 90));
-      
-      final activeCustomers = customers
-          .where((c) => c.createdAt.isBefore(month))
-          .length;
-      
+
+      final activeCustomers =
+          customers.where((c) => c.createdAt.isBefore(month)).length;
+
       final inactiveCustomers = customers
-          .where((c) => 
+          .where((c) =>
               c.createdAt.isBefore(month) &&
-              !invoices.any((inv) => 
+              !invoices.any((inv) =>
                   inv.customerId.value == c.id &&
                   inv.createdAt.toDateTime().isAfter(cutoffDate)))
           .length;
-      
-      final churnRate = activeCustomers == 0 ? 0.0 : inactiveCustomers / activeCustomers;
+
+      final churnRate =
+          activeCustomers == 0 ? 0.0 : inactiveCustomers / activeCustomers;
       monthlyChurn[month] = churnRate;
     }
 
@@ -785,10 +805,10 @@ class BusinessIntelligenceEngine {
 
   double _calculateAverageGrowthRate(List<DataPoint> data) {
     if (data.length < 2) return 0.0;
-    
+
     double totalGrowth = 0.0;
     int periods = 0;
-    
+
     for (int i = 1; i < data.length; i++) {
       if (data[i - 1].value != 0) {
         final growth = (data[i].value - data[i - 1].value) / data[i - 1].value;
@@ -796,12 +816,12 @@ class BusinessIntelligenceEngine {
         periods++;
       }
     }
-    
+
     return periods == 0 ? 0.0 : totalGrowth / periods;
   }
 
   // Placeholder methods - would be fully implemented in production
-  
+
   Future<List<DataPoint>> _forecastCustomerAcquisition(
     List<DataPoint> acquisitionData,
     int forecastDays,
@@ -870,7 +890,7 @@ class BusinessIntelligenceEngine {
   }
 
   double _calculateDemandForecastConfidence(List<DataPoint> demandHistory) {
-    return 0.7; // Placeholder  
+    return 0.7; // Placeholder
   }
 
   List<InventoryRecommendation> _generateInventoryRecommendations(
@@ -925,14 +945,18 @@ class BusinessIntelligenceEngine {
     List<DataPoint> baseForecast,
   ) async {
     return {
-      'Optimistic': baseForecast.map((d) => DataPoint(
-        timestamp: d.timestamp,
-        value: d.value * 1.2,
-      )).toList(),
-      'Pessimistic': baseForecast.map((d) => DataPoint(
-        timestamp: d.timestamp,
-        value: d.value * 0.8,
-      )).toList(),
+      'Optimistic': baseForecast
+          .map((d) => DataPoint(
+                timestamp: d.timestamp,
+                value: d.value * 1.2,
+              ))
+          .toList(),
+      'Pessimistic': baseForecast
+          .map((d) => DataPoint(
+                timestamp: d.timestamp,
+                value: d.value * 0.8,
+              ))
+          .toList(),
     };
   }
 }
@@ -1099,8 +1123,13 @@ class ExternalFactor {
 
 // Placeholder classes for supporting functionality
 class CustomerInsight {}
+
 class ReorderRecommendation {}
+
 class InventoryRecommendation {}
+
 class PaymentPatterns {}
+
 class LiquidityMetrics {}
+
 class CashFlowRiskAssessment {}

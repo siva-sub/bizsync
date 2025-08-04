@@ -13,7 +13,7 @@ class SyncSettingsDialog extends StatefulWidget {
 
 class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
   final _bandwidthController = TextEditingController(text: '1024');
-  
+
   bool _syncInvoices = true;
   bool _syncCustomers = true;
   bool _syncProducts = true;
@@ -22,10 +22,10 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
   bool _syncSettings = true;
   bool _compressData = true;
   bool _encryptData = true;
-  
+
   DateTime? _syncFromDate;
   DateTime? _syncToDate;
-  
+
   final List<String> _excludedTables = [];
   final TextEditingController _excludeTableController = TextEditingController();
 
@@ -62,9 +62,9 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
                 ),
               ],
             ),
-            
+
             const Divider(),
-            
+
             // Content
             Expanded(
               child: SingleChildScrollView(
@@ -74,27 +74,27 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
                     // Data to Sync section
                     _buildSectionHeader('Data to Sync'),
                     _buildDataSelectionSection(),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Date Range section
                     _buildSectionHeader('Date Range (Optional)'),
                     _buildDateRangeSection(),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Performance Settings section
                     _buildSectionHeader('Performance Settings'),
                     _buildPerformanceSection(),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Security Settings section
                     _buildSectionHeader('Security Settings'),
                     _buildSecuritySection(),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Advanced Settings section
                     _buildSectionHeader('Advanced Settings'),
                     _buildAdvancedSection(),
@@ -102,9 +102,9 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
                 ),
               ),
             ),
-            
+
             const Divider(),
-            
+
             // Action buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -305,7 +305,8 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
           children: [
             CheckboxListTile(
               title: const Text('Encrypt Data'),
-              subtitle: const Text('End-to-end encryption (strongly recommended)'),
+              subtitle:
+                  const Text('End-to-end encryption (strongly recommended)'),
               value: _encryptData,
               onChanged: (value) {
                 setState(() {
@@ -357,7 +358,7 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 12),
-            
+
             // List of excluded tables
             if (_excludedTables.isNotEmpty) ...[
               Wrap(
@@ -377,7 +378,7 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
               ),
               const SizedBox(height: 12),
             ],
-            
+
             // Add excluded table
             Row(
               children: [
@@ -418,11 +419,12 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
   Future<void> _selectFromDate(BuildContext context) async {
     final date = await showDatePicker(
       context: context,
-      initialDate: _syncFromDate ?? DateTime.now().subtract(const Duration(days: 30)),
+      initialDate:
+          _syncFromDate ?? DateTime.now().subtract(const Duration(days: 30)),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
-    
+
     if (date != null) {
       setState(() {
         _syncFromDate = date;
@@ -441,7 +443,7 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
       firstDate: _syncFromDate ?? DateTime(2020),
       lastDate: DateTime.now(),
     );
-    
+
     if (date != null) {
       setState(() {
         _syncToDate = date;
@@ -451,30 +453,35 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
 
   void _validateAndStartSync() {
     // Validate settings
-    if (!_syncInvoices && !_syncCustomers && !_syncProducts && 
-        !_syncPayments && !_syncReports && !_syncSettings) {
+    if (!_syncInvoices &&
+        !_syncCustomers &&
+        !_syncProducts &&
+        !_syncPayments &&
+        !_syncReports &&
+        !_syncSettings) {
       _showValidationError('Please select at least one type of data to sync.');
       return;
     }
-    
+
     final bandwidthText = _bandwidthController.text.trim();
     if (bandwidthText.isEmpty) {
       _showValidationError('Please enter a bandwidth limit.');
       return;
     }
-    
+
     final bandwidth = int.tryParse(bandwidthText);
     if (bandwidth == null || bandwidth <= 0) {
       _showValidationError('Please enter a valid bandwidth limit.');
       return;
     }
-    
-    if (_syncFromDate != null && _syncToDate != null && 
+
+    if (_syncFromDate != null &&
+        _syncToDate != null &&
         _syncFromDate!.isAfter(_syncToDate!)) {
       _showValidationError('From date must be before to date.');
       return;
     }
-    
+
     // Create configuration
     final configuration = SyncConfiguration(
       syncInvoices: _syncInvoices,
@@ -490,7 +497,7 @@ class _SyncSettingsDialogState extends State<SyncSettingsDialog> {
       encryptData: _encryptData,
       excludedTables: List.from(_excludedTables),
     );
-    
+
     Navigator.of(context).pop(configuration);
   }
 

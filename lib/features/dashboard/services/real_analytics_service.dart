@@ -12,7 +12,7 @@ import '../models/dashboard_models.dart';
 /// Real dashboard analytics service that pulls actual data from the database
 class RealDashboardAnalyticsService {
   static const String _analyticsNodeId = 'real-analytics-service';
-  
+
   final CRDTDatabaseService _databaseService;
   final InvoiceService _invoiceService;
   final CustomerRepository _customerRepository = CustomerRepository();
@@ -30,7 +30,7 @@ class RealDashboardAnalyticsService {
   }) async {
     final now = DateTime.now();
     final dateRange = _getDateRange(period, customStartDate, customEndDate);
-    
+
     // Get all data in parallel for better performance
     final results = await Future.wait([
       _calculateRevenueMetrics(dateRange),
@@ -45,16 +45,19 @@ class RealDashboardAnalyticsService {
     final invoiceData = results[3] as Map<String, dynamic>;
 
     // Build KPIs
-    final kpis = _buildKPIs(revenueData, cashFlowData, customerData, invoiceData);
+    final kpis =
+        _buildKPIs(revenueData, cashFlowData, customerData, invoiceData);
 
     // Build revenue analytics
-    final revenueAnalytics = _buildRevenueAnalytics(revenueData, period, dateRange);
+    final revenueAnalytics =
+        _buildRevenueAnalytics(revenueData, period, dateRange);
 
     // Build cash flow data
     final cashFlow = _buildCashFlowData(cashFlowData, period, dateRange);
 
     // Build customer insights
-    final customerInsights = _buildCustomerInsights(customerData, period, dateRange);
+    final customerInsights =
+        _buildCustomerInsights(customerData, period, dateRange);
 
     return DashboardData(
       id: 'dashboard_${DateTime.now().millisecondsSinceEpoch}',
@@ -72,46 +75,47 @@ class RealDashboardAnalyticsService {
   }
 
   /// Calculate revenue metrics from invoice data
-  Future<Map<String, dynamic>> _calculateRevenueMetrics(DateRange dateRange) async {
+  Future<Map<String, dynamic>> _calculateRevenueMetrics(
+      DateRange dateRange) async {
     try {
       // Get all paid invoices in the date range
-      final paidInvoices = await _getInvoicesInRange(
-        dateRange, 
-        statuses: [InvoiceStatus.paid, InvoiceStatus.partiallyPaid]
-      );
+      final paidInvoices = await _getInvoicesInRange(dateRange,
+          statuses: [InvoiceStatus.paid, InvoiceStatus.partiallyPaid]);
 
       // Get previous period for comparison
       final previousRange = _getPreviousDateRange(dateRange);
-      final previousPaidInvoices = await _getInvoicesInRange(
-        previousRange,
-        statuses: [InvoiceStatus.paid, InvoiceStatus.partiallyPaid]
-      );
+      final previousPaidInvoices = await _getInvoicesInRange(previousRange,
+          statuses: [InvoiceStatus.paid, InvoiceStatus.partiallyPaid]);
 
       final totalRevenue = paidInvoices.fold<double>(
-        0.0, 
-        (sum, invoice) => sum + (invoice.totalAmount.value - invoice.remainingBalance)
-      );
+          0.0,
+          (sum, invoice) =>
+              sum + (invoice.totalAmount.value - invoice.remainingBalance));
 
       final previousRevenue = previousPaidInvoices.fold<double>(
-        0.0, 
-        (sum, invoice) => sum + (invoice.totalAmount.value - invoice.remainingBalance)
-      );
+          0.0,
+          (sum, invoice) =>
+              sum + (invoice.totalAmount.value - invoice.remainingBalance));
 
       // Calculate revenue by day
       final revenueByDay = <DataPoint>[];
       final dailyRevenue = <DateTime, double>{};
 
       for (final invoice in paidInvoices) {
-        final paymentDate = invoice.lastPaymentDate.value ?? invoice.issueDate.value;
-        final dateKey = DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
-        dailyRevenue[dateKey] = (dailyRevenue[dateKey] ?? 0.0) + 
-          (invoice.totalAmount.value - invoice.remainingBalance);
+        final paymentDate =
+            invoice.lastPaymentDate.value ?? invoice.issueDate.value;
+        final dateKey =
+            DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
+        dailyRevenue[dateKey] = (dailyRevenue[dateKey] ?? 0.0) +
+            (invoice.totalAmount.value - invoice.remainingBalance);
       }
 
       // Fill in missing days with zero
       var currentDate = dateRange.start;
-      while (currentDate.isBefore(dateRange.end) || currentDate.isAtSameMomentAs(dateRange.end)) {
-        final dateKey = DateTime(currentDate.year, currentDate.month, currentDate.day);
+      while (currentDate.isBefore(dateRange.end) ||
+          currentDate.isAtSameMomentAs(dateRange.end)) {
+        final dateKey =
+            DateTime(currentDate.year, currentDate.month, currentDate.day);
         revenueByDay.add(DataPoint(
           timestamp: dateKey,
           value: dailyRevenue[dateKey] ?? 0.0,
@@ -123,8 +127,8 @@ class RealDashboardAnalyticsService {
       final revenueByCustomer = <String, double>{};
       for (final invoice in paidInvoices) {
         final customerId = invoice.customerId.value ?? 'unknown';
-        revenueByCustomer[customerId] = (revenueByCustomer[customerId] ?? 0.0) + 
-          (invoice.totalAmount.value - invoice.remainingBalance);
+        revenueByCustomer[customerId] = (revenueByCustomer[customerId] ?? 0.0) +
+            (invoice.totalAmount.value - invoice.remainingBalance);
       }
 
       final revenueByCustomerPoints = revenueByCustomer.entries
@@ -141,9 +145,12 @@ class RealDashboardAnalyticsService {
         'previous_revenue': previousRevenue,
         'revenue_by_day': revenueByDay,
         'revenue_by_customer': revenueByCustomerPoints.take(10).toList(),
-        'average_order_value': paidInvoices.isNotEmpty ? totalRevenue / paidInvoices.length : 0.0,
+        'average_order_value':
+            paidInvoices.isNotEmpty ? totalRevenue / paidInvoices.length : 0.0,
         'total_transactions': paidInvoices.length,
-        'growth_rate': previousRevenue > 0 ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 : 0.0,
+        'growth_rate': previousRevenue > 0
+            ? ((totalRevenue - previousRevenue) / previousRevenue) * 100
+            : 0.0,
       };
     } catch (e) {
       // Return default values on error
@@ -160,24 +167,29 @@ class RealDashboardAnalyticsService {
   }
 
   /// Calculate cash flow metrics
-  Future<Map<String, dynamic>> _calculateCashFlowMetrics(DateRange dateRange) async {
+  Future<Map<String, dynamic>> _calculateCashFlowMetrics(
+      DateRange dateRange) async {
     try {
-      // Get all invoices for cash flow calculation  
+      // Get all invoices for cash flow calculation
       final allInvoices = await _getInvoicesInRange(dateRange);
-      
+
       double totalInflow = 0.0;
       double totalOutflow = 0.0; // For now, we don't have expense data
       final dailyCashFlow = <DateTime, double>{};
 
       for (final invoice in allInvoices) {
-        if (invoice.status.value == InvoiceStatus.paid || 
+        if (invoice.status.value == InvoiceStatus.paid ||
             invoice.status.value == InvoiceStatus.partiallyPaid) {
-          final paymentAmount = invoice.totalAmount.value - invoice.remainingBalance;
+          final paymentAmount =
+              invoice.totalAmount.value - invoice.remainingBalance;
           totalInflow += paymentAmount;
 
-          final paymentDate = invoice.lastPaymentDate.value ?? invoice.issueDate.value;
-          final dateKey = DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
-          dailyCashFlow[dateKey] = (dailyCashFlow[dateKey] ?? 0.0) + paymentAmount;
+          final paymentDate =
+              invoice.lastPaymentDate.value ?? invoice.issueDate.value;
+          final dateKey =
+              DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
+          dailyCashFlow[dateKey] =
+              (dailyCashFlow[dateKey] ?? 0.0) + paymentAmount;
         }
       }
 
@@ -186,11 +198,13 @@ class RealDashboardAnalyticsService {
       var currentDate = dateRange.start;
       double runningBalance = 0.0;
 
-      while (currentDate.isBefore(dateRange.end) || currentDate.isAtSameMomentAs(dateRange.end)) {
-        final dateKey = DateTime(currentDate.year, currentDate.month, currentDate.day);
+      while (currentDate.isBefore(dateRange.end) ||
+          currentDate.isAtSameMomentAs(dateRange.end)) {
+        final dateKey =
+            DateTime(currentDate.year, currentDate.month, currentDate.day);
         final dayFlow = dailyCashFlow[dateKey] ?? 0.0;
         runningBalance += dayFlow;
-        
+
         cashFlowPoints.add(DataPoint(
           timestamp: dateKey,
           value: runningBalance,
@@ -219,16 +233,18 @@ class RealDashboardAnalyticsService {
   }
 
   /// Calculate customer metrics
-  Future<Map<String, dynamic>> _calculateCustomerMetrics(DateRange dateRange) async {
+  Future<Map<String, dynamic>> _calculateCustomerMetrics(
+      DateRange dateRange) async {
     try {
       // Get all customers
       final customers = await _customerRepository.getAllCustomers();
-      
+
       // Get customers created in this period
-      final newCustomers = customers.where((c) => 
-        c.createdAt.isAfter(dateRange.start) && 
-        c.createdAt.isBefore(dateRange.end)
-      ).toList();
+      final newCustomers = customers
+          .where((c) =>
+              c.createdAt.isAfter(dateRange.start) &&
+              c.createdAt.isBefore(dateRange.end))
+          .toList();
 
       // Get active customers (those with invoices in period)
       final invoicesInPeriod = await _getInvoicesInRange(dateRange);
@@ -240,22 +256,25 @@ class RealDashboardAnalyticsService {
       // Customer growth over time
       final customerGrowth = <DataPoint>[];
       var currentDate = dateRange.start;
-      var cumulativeCustomers = customers.where((c) => c.createdAt.isBefore(dateRange.start)).length;
+      var cumulativeCustomers =
+          customers.where((c) => c.createdAt.isBefore(dateRange.start)).length;
 
-      while (currentDate.isBefore(dateRange.end) || currentDate.isAtSameMomentAs(dateRange.end)) {
-        final customersOnDay = customers.where((c) => 
-          c.createdAt.year == currentDate.year &&
-          c.createdAt.month == currentDate.month &&
-          c.createdAt.day == currentDate.day
-        ).length;
-        
+      while (currentDate.isBefore(dateRange.end) ||
+          currentDate.isAtSameMomentAs(dateRange.end)) {
+        final customersOnDay = customers
+            .where((c) =>
+                c.createdAt.year == currentDate.year &&
+                c.createdAt.month == currentDate.month &&
+                c.createdAt.day == currentDate.day)
+            .length;
+
         cumulativeCustomers += customersOnDay;
-        
+
         customerGrowth.add(DataPoint(
           timestamp: currentDate,
           value: cumulativeCustomers.toDouble(),
         ));
-        
+
         currentDate = currentDate.add(const Duration(days: 1));
       }
 
@@ -263,14 +282,18 @@ class RealDashboardAnalyticsService {
         'total_customers': customers.length,
         'new_customers': newCustomers.length,
         'active_customers': activeCustomerIds.length,
-        'previous_active_customers': 0, // Would calculate from previous period in real implementation
+        'previous_active_customers':
+            0, // Would calculate from previous period in real implementation
         'customer_growth': customerGrowth,
-        'all_customers': customers.map((c) => {
-          'id': c.id,
-          'name': c.name,
-          'created_at': c.createdAt,
-          'total_spent': 0.0, // Would calculate from invoice data in real implementation
-        }).toList(),
+        'all_customers': customers
+            .map((c) => {
+                  'id': c.id,
+                  'name': c.name,
+                  'created_at': c.createdAt,
+                  'total_spent':
+                      0.0, // Would calculate from invoice data in real implementation
+                })
+            .toList(),
       };
     } catch (e) {
       return {
@@ -285,22 +308,22 @@ class RealDashboardAnalyticsService {
   }
 
   /// Calculate invoice-specific metrics
-  Future<Map<String, dynamic>> _calculateInvoiceMetrics(DateRange dateRange) async {
+  Future<Map<String, dynamic>> _calculateInvoiceMetrics(
+      DateRange dateRange) async {
     try {
       final allInvoices = await _getInvoicesInRange(dateRange);
-      
-      final pendingInvoices = allInvoices.where((i) => 
-        i.status.value == InvoiceStatus.sent || 
-        i.status.value == InvoiceStatus.pending ||
-        i.status.value == InvoiceStatus.approved
-      ).toList();
+
+      final pendingInvoices = allInvoices
+          .where((i) =>
+              i.status.value == InvoiceStatus.sent ||
+              i.status.value == InvoiceStatus.pending ||
+              i.status.value == InvoiceStatus.approved)
+          .toList();
 
       final overdueInvoices = allInvoices.where((i) => i.isOverdue).toList();
-      
+
       final outstandingReceivables = pendingInvoices.fold<double>(
-        0.0, 
-        (sum, invoice) => sum + invoice.remainingBalance
-      );
+          0.0, (sum, invoice) => sum + invoice.remainingBalance);
 
       // Invoice status breakdown
       final statusBreakdown = <String, int>{};
@@ -340,7 +363,7 @@ class RealDashboardAnalyticsService {
         issueDateTo: dateRange.end,
         statuses: statuses,
       );
-      
+
       final result = await _invoiceService.searchInvoices(searchFilters);
       return result.success ? result.data! : [];
     } catch (e) {
@@ -356,7 +379,7 @@ class RealDashboardAnalyticsService {
     Map<String, dynamic> invoiceData,
   ) {
     final now = DateTime.now();
-    
+
     return [
       // Revenue KPI
       KPI(
@@ -388,7 +411,9 @@ class RealDashboardAnalyticsService {
         currentValue: cashFlowData['net_cash_flow'] ?? 0.0,
         unit: 'SGD',
         prefix: '\$',
-        trend: cashFlowData['net_cash_flow'] >= 0 ? TrendDirection.up : TrendDirection.down,
+        trend: cashFlowData['net_cash_flow'] >= 0
+            ? TrendDirection.up
+            : TrendDirection.down,
         percentageChange: 0.0,
         lastUpdated: now,
         historicalData: cashFlowData['daily_cash_flow'] ?? [],
@@ -404,7 +429,9 @@ class RealDashboardAnalyticsService {
         type: KPIType.customers,
         currentValue: (customerData['total_customers'] ?? 0).toDouble(),
         unit: 'customers',
-        trend: customerData['new_customers'] > 0 ? TrendDirection.up : TrendDirection.stable,
+        trend: customerData['new_customers'] > 0
+            ? TrendDirection.up
+            : TrendDirection.stable,
         percentageChange: 0.0,
         lastUpdated: now,
         historicalData: customerData['customer_growth'] ?? [],
@@ -454,7 +481,9 @@ class RealDashboardAnalyticsService {
         type: KPIType.revenue,
         currentValue: (invoiceData['overdue_invoices'] ?? 0).toDouble(),
         unit: 'invoices',
-        trend: invoiceData['overdue_invoices'] > 0 ? TrendDirection.down : TrendDirection.stable,
+        trend: invoiceData['overdue_invoices'] > 0
+            ? TrendDirection.down
+            : TrendDirection.stable,
         percentageChange: 0.0,
         lastUpdated: now,
         historicalData: [],
@@ -502,7 +531,9 @@ class RealDashboardAnalyticsService {
       totalOutflow: cashFlowData['total_outflow'] ?? 0.0,
       netCashFlow: cashFlowData['net_cash_flow'] ?? 0.0,
       dailyCashFlow: cashFlowData['daily_cash_flow'] ?? [],
-      inflowByCategory: {'Invoice Payments': cashFlowData['total_inflow'] ?? 0.0},
+      inflowByCategory: {
+        'Invoice Payments': cashFlowData['total_inflow'] ?? 0.0
+      },
       outflowByCategory: {}, // TODO: Implement when expense data is available
       forecasts: [], // TODO: Implement cash flow forecasting
       generatedAt: DateTime.now(),
@@ -527,25 +558,29 @@ class RealDashboardAnalyticsService {
       retentionRate: _calculateRetentionRate(customerData, dateRange),
       averageLifetimeValue: _calculateAverageLifetimeValue(customerData, {}),
       customerGrowth: customerData['customer_growth'] ?? [],
-      customersBySegment: _segmentCustomers(customerData['all_customers'] ?? []),
-      revenueBySegment: _calculateRevenueBySegment({}, customerData['all_customers'] ?? []),
+      customersBySegment:
+          _segmentCustomers(customerData['all_customers'] ?? []),
+      revenueBySegment:
+          _calculateRevenueBySegment({}, customerData['all_customers'] ?? []),
       behaviorInsights: _generateBehaviorInsights(customerData, {}),
       generatedAt: DateTime.now(),
     );
   }
 
   /// Get recent business activities for activity feed
-  Future<List<Map<String, dynamic>>> getRecentActivities({int limit = 10}) async {
+  Future<List<Map<String, dynamic>>> getRecentActivities(
+      {int limit = 10}) async {
     try {
       final activities = <Map<String, dynamic>>[];
-      
+
       // Get recent invoices
       final recentInvoices = await _getRecentInvoices(limit: 5);
       for (final invoice in recentInvoices) {
         activities.add({
           'type': 'invoice_created',
           'title': 'New Invoice Created',
-          'description': 'Invoice ${invoice.invoiceNumber.value} for ${invoice.customerName.value ?? 'Unknown Customer'}',
+          'description':
+              'Invoice ${invoice.invoiceNumber.value} for ${invoice.customerName.value ?? 'Unknown Customer'}',
           'amount': invoice.totalAmount.value,
           'timestamp': invoice.createdAt.physicalTime,
           'status': invoice.status.value.value,
@@ -562,17 +597,17 @@ class RealDashboardAnalyticsService {
           'title': 'Payment Received',
           'description': 'Payment for Invoice ${invoice.invoiceNumber.value}',
           'amount': invoice.totalAmount.value - invoice.remainingBalance,
-          'timestamp': invoice.lastPaymentDate.value?.millisecondsSinceEpoch ?? 
-                      invoice.updatedAt.physicalTime,
+          'timestamp': invoice.lastPaymentDate.value?.millisecondsSinceEpoch ??
+              invoice.updatedAt.physicalTime,
           'icon': 'payment',
           'color': '#2196F3',
         });
       }
 
       // Sort by timestamp and limit
-      activities.sort((a, b) => (b['timestamp'] as int).compareTo(a['timestamp'] as int));
+      activities.sort(
+          (a, b) => (b['timestamp'] as int).compareTo(a['timestamp'] as int));
       return activities.take(limit).toList();
-      
     } catch (e) {
       return [];
     }
@@ -580,50 +615,34 @@ class RealDashboardAnalyticsService {
 
   /// Helper methods
 
-  DateRange _getDateRange(TimePeriod period, DateTime? customStart, DateTime? customEnd) {
+  DateRange _getDateRange(
+      TimePeriod period, DateTime? customStart, DateTime? customEnd) {
     final now = DateTime.now();
-    
+
     switch (period) {
       case TimePeriod.today:
-        return DateRange(
-          DateTime(now.year, now.month, now.day),
-          DateTime(now.year, now.month, now.day, 23, 59, 59)
-        );
+        return DateRange(DateTime(now.year, now.month, now.day),
+            DateTime(now.year, now.month, now.day, 23, 59, 59));
       case TimePeriod.thisWeek:
         final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
         return DateRange(
-          DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day),
-          now
-        );
+            DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day),
+            now);
       case TimePeriod.thisMonth:
-        return DateRange(
-          DateTime(now.year, now.month, 1),
-          now
-        );
+        return DateRange(DateTime(now.year, now.month, 1), now);
       case TimePeriod.thisYear:
-        return DateRange(
-          DateTime(now.year, 1, 1),
-          now
-        );
+        return DateRange(DateTime(now.year, 1, 1), now);
       case TimePeriod.custom:
-        return DateRange(
-          customStart ?? now.subtract(const Duration(days: 30)),
-          customEnd ?? now
-        );
+        return DateRange(customStart ?? now.subtract(const Duration(days: 30)),
+            customEnd ?? now);
       default:
-        return DateRange(
-          DateTime(now.year, now.month, 1),
-          now
-        );
+        return DateRange(DateTime(now.year, now.month, 1), now);
     }
   }
 
   DateRange _getPreviousDateRange(DateRange current) {
     final duration = current.end.difference(current.start);
-    return DateRange(
-      current.start.subtract(duration),
-      current.start
-    );
+    return DateRange(current.start.subtract(duration), current.start);
   }
 
   TrendDirection _calculateTrend(double current, double previous) {
@@ -636,9 +655,8 @@ class RealDashboardAnalyticsService {
 
   Future<List<CRDTInvoiceEnhanced>> _getRecentInvoices({int limit = 10}) async {
     try {
-      final result = await _invoiceService.searchInvoices(
-        InvoiceSearchFilters(limit: limit, sortBy: 'created_at', sortAscending: false)
-      );
+      final result = await _invoiceService.searchInvoices(InvoiceSearchFilters(
+          limit: limit, sortBy: 'created_at', sortAscending: false));
       return result.success ? result.data! : [];
     } catch (e) {
       return [];
@@ -647,14 +665,12 @@ class RealDashboardAnalyticsService {
 
   Future<List<CRDTInvoiceEnhanced>> _getRecentPayments({int limit = 10}) async {
     try {
-      final result = await _invoiceService.searchInvoices(
-        InvoiceSearchFilters(
-          statuses: [InvoiceStatus.paid, InvoiceStatus.partiallyPaid],
-          limit: limit,
-          sortBy: 'last_payment_date',
-          sortAscending: false,
-        )
-      );
+      final result = await _invoiceService.searchInvoices(InvoiceSearchFilters(
+        statuses: [InvoiceStatus.paid, InvoiceStatus.partiallyPaid],
+        limit: limit,
+        sortBy: 'last_payment_date',
+        sortAscending: false,
+      ));
       return result.success ? result.data! : [];
     } catch (e) {
       return [];
@@ -665,12 +681,20 @@ class RealDashboardAnalyticsService {
     return DashboardConfig(
       id: 'default_config',
       name: 'Default Dashboard',
-      enabledKPIs: ['total_revenue', 'net_cash_flow', 'total_customers', 'outstanding_receivables'],
+      enabledKPIs: [
+        'total_revenue',
+        'net_cash_flow',
+        'total_customers',
+        'outstanding_receivables'
+      ],
       chartSettings: {
         'revenue_chart': {'type': 'line', 'color': '#4CAF50'},
         'cash_flow_chart': {'type': 'area', 'color': '#2196F3'},
         'customer_chart': {'type': 'line', 'color': '#FF9800'},
-        'status_chart': {'type': 'pie', 'colors': ['#4CAF50', '#FF9800', '#F44336', '#9C27B0']},
+        'status_chart': {
+          'type': 'pie',
+          'colors': ['#4CAF50', '#FF9800', '#F44336', '#9C27B0']
+        },
       },
       defaultTimePeriod: TimePeriod.thisMonth,
       autoRefresh: true,
@@ -682,44 +706,51 @@ class RealDashboardAnalyticsService {
 
   /// Advanced analytics helper methods
 
-  int _calculateChurnedCustomers(Map<String, dynamic> customerData, DateRange dateRange) {
+  int _calculateChurnedCustomers(
+      Map<String, dynamic> customerData, DateRange dateRange) {
     try {
       final allCustomers = customerData['all_customers'] as List? ?? [];
-      final currentPeriodCustomers = customerData['active_customers'] as int? ?? 0;
-      final previousPeriodCustomers = customerData['previous_active_customers'] as int? ?? 0;
-      
+      final currentPeriodCustomers =
+          customerData['active_customers'] as int? ?? 0;
+      final previousPeriodCustomers =
+          customerData['previous_active_customers'] as int? ?? 0;
+
       // Simple churn calculation: customers who were active in previous period but not in current
-      return previousPeriodCustomers > currentPeriodCustomers 
-          ? previousPeriodCustomers - currentPeriodCustomers 
+      return previousPeriodCustomers > currentPeriodCustomers
+          ? previousPeriodCustomers - currentPeriodCustomers
           : 0;
     } catch (e) {
       return 0;
     }
   }
 
-  double _calculateChurnRate(Map<String, dynamic> customerData, DateRange dateRange) {
+  double _calculateChurnRate(
+      Map<String, dynamic> customerData, DateRange dateRange) {
     try {
       final churned = _calculateChurnedCustomers(customerData, dateRange);
-      final previousActive = customerData['previous_active_customers'] as int? ?? 0;
-      
+      final previousActive =
+          customerData['previous_active_customers'] as int? ?? 0;
+
       return previousActive > 0 ? (churned / previousActive) * 100 : 0.0;
     } catch (e) {
       return 0.0;
     }
   }
 
-  double _calculateAcquisitionRate(Map<String, dynamic> customerData, DateRange dateRange) {
+  double _calculateAcquisitionRate(
+      Map<String, dynamic> customerData, DateRange dateRange) {
     try {
       final newCustomers = customerData['new_customers'] as int? ?? 0;
       final totalCustomers = customerData['total_customers'] as int? ?? 0;
-      
+
       return totalCustomers > 0 ? (newCustomers / totalCustomers) * 100 : 0.0;
     } catch (e) {
       return 0.0;
     }
   }
 
-  double _calculateRetentionRate(Map<String, dynamic> customerData, DateRange dateRange) {
+  double _calculateRetentionRate(
+      Map<String, dynamic> customerData, DateRange dateRange) {
     try {
       final churnRate = _calculateChurnRate(customerData, dateRange);
       return 100.0 - churnRate;
@@ -728,11 +759,12 @@ class RealDashboardAnalyticsService {
     }
   }
 
-  double _calculateAverageLifetimeValue(Map<String, dynamic> customerData, Map<String, dynamic> revenueData) {
+  double _calculateAverageLifetimeValue(
+      Map<String, dynamic> customerData, Map<String, dynamic> revenueData) {
     try {
       final totalRevenue = revenueData['total_revenue'] as double? ?? 0.0;
       final totalCustomers = customerData['total_customers'] as int? ?? 0;
-      
+
       return totalCustomers > 0 ? totalRevenue / totalCustomers : 0.0;
     } catch (e) {
       return 0.0;
@@ -753,8 +785,9 @@ class RealDashboardAnalyticsService {
         // Simple segmentation logic - in a real app this would be more sophisticated
         final createdAt = customer['created_at'] as DateTime?;
         final totalSpent = customer['total_spent'] as double? ?? 0.0;
-        
-        if (createdAt != null && DateTime.now().difference(createdAt).inDays < 30) {
+
+        if (createdAt != null &&
+            DateTime.now().difference(createdAt).inDays < 30) {
           segments['New'] = (segments['New'] ?? 0.0) + 1.0;
         } else if (totalSpent > 10000) {
           segments['High Value'] = (segments['High Value'] ?? 0.0) + 1.0;
@@ -779,7 +812,8 @@ class RealDashboardAnalyticsService {
     }
   }
 
-  Map<String, double> _calculateRevenueBySegment(Map<String, dynamic> revenueData, List customers) {
+  Map<String, double> _calculateRevenueBySegment(
+      Map<String, dynamic> revenueData, List customers) {
     try {
       final revenueBySegment = <String, double>{
         'High Value': 0.0,
@@ -792,17 +826,23 @@ class RealDashboardAnalyticsService {
       for (final customer in customers) {
         final totalSpent = customer['total_spent'] as double? ?? 0.0;
         final createdAt = customer['created_at'] as DateTime?;
-        
-        if (createdAt != null && DateTime.now().difference(createdAt).inDays < 30) {
-          revenueBySegment['New'] = (revenueBySegment['New'] ?? 0.0) + totalSpent;
+
+        if (createdAt != null &&
+            DateTime.now().difference(createdAt).inDays < 30) {
+          revenueBySegment['New'] =
+              (revenueBySegment['New'] ?? 0.0) + totalSpent;
         } else if (totalSpent > 10000) {
-          revenueBySegment['High Value'] = (revenueBySegment['High Value'] ?? 0.0) + totalSpent;
+          revenueBySegment['High Value'] =
+              (revenueBySegment['High Value'] ?? 0.0) + totalSpent;
         } else if (totalSpent > 1000) {
-          revenueBySegment['Medium Value'] = (revenueBySegment['Medium Value'] ?? 0.0) + totalSpent;
+          revenueBySegment['Medium Value'] =
+              (revenueBySegment['Medium Value'] ?? 0.0) + totalSpent;
         } else if (totalSpent > 0) {
-          revenueBySegment['Low Value'] = (revenueBySegment['Low Value'] ?? 0.0) + totalSpent;
+          revenueBySegment['Low Value'] =
+              (revenueBySegment['Low Value'] ?? 0.0) + totalSpent;
         } else {
-          revenueBySegment['At Risk'] = (revenueBySegment['At Risk'] ?? 0.0) + totalSpent;
+          revenueBySegment['At Risk'] =
+              (revenueBySegment['At Risk'] ?? 0.0) + totalSpent;
         }
       }
 
@@ -818,32 +858,38 @@ class RealDashboardAnalyticsService {
     }
   }
 
-  List<CustomerBehaviorInsight> _generateBehaviorInsights(Map<String, dynamic> customerData, Map<String, dynamic> revenueData) {
+  List<CustomerBehaviorInsight> _generateBehaviorInsights(
+      Map<String, dynamic> customerData, Map<String, dynamic> revenueData) {
     try {
       final insights = <CustomerBehaviorInsight>[];
-      
+
       final totalCustomers = customerData['total_customers'] as int? ?? 0;
       final newCustomers = customerData['new_customers'] as int? ?? 0;
       final activeCustomers = customerData['active_customers'] as int? ?? 0;
       final totalRevenue = revenueData['total_revenue'] as double? ?? 0.0;
-      final averageOrderValue = revenueData['average_order_value'] as double? ?? 0.0;
+      final averageOrderValue =
+          revenueData['average_order_value'] as double? ?? 0.0;
 
       // Growth insights
       if (newCustomers > 0) {
-        final growthRate = totalCustomers > 0 ? (newCustomers / totalCustomers) * 100 : 0.0;
+        final growthRate =
+            totalCustomers > 0 ? (newCustomers / totalCustomers) * 100 : 0.0;
         if (growthRate > 10) {
           insights.add(CustomerBehaviorInsight(
-            insight: 'Strong customer growth rate of ${growthRate.toStringAsFixed(1)}%',
+            insight:
+                'Strong customer growth rate of ${growthRate.toStringAsFixed(1)}%',
             category: 'Growth',
             impact: 0.9,
             recommendation: 'Continue current growth strategies',
           ));
         } else if (growthRate > 0) {
           insights.add(CustomerBehaviorInsight(
-            insight: 'Moderate customer growth rate of ${growthRate.toStringAsFixed(1)}%',
+            insight:
+                'Moderate customer growth rate of ${growthRate.toStringAsFixed(1)}%',
             category: 'Growth',
             impact: 0.6,
-            recommendation: 'Consider implementing growth acceleration strategies',
+            recommendation:
+                'Consider implementing growth acceleration strategies',
           ));
         }
       }
@@ -853,14 +899,16 @@ class RealDashboardAnalyticsService {
         final engagementRate = (activeCustomers / totalCustomers) * 100;
         if (engagementRate > 70) {
           insights.add(CustomerBehaviorInsight(
-            insight: 'High customer engagement rate of ${engagementRate.toStringAsFixed(1)}%',
+            insight:
+                'High customer engagement rate of ${engagementRate.toStringAsFixed(1)}%',
             category: 'Engagement',
             impact: 0.9,
             recommendation: 'Maintain current engagement strategies',
           ));
         } else if (engagementRate < 30) {
           insights.add(CustomerBehaviorInsight(
-            insight: 'Low customer engagement rate of ${engagementRate.toStringAsFixed(1)}%',
+            insight:
+                'Low customer engagement rate of ${engagementRate.toStringAsFixed(1)}%',
             category: 'Engagement',
             impact: 0.8,
             recommendation: 'Consider implementing re-engagement campaigns',
@@ -872,14 +920,16 @@ class RealDashboardAnalyticsService {
       if (averageOrderValue > 0) {
         if (averageOrderValue > 5000) {
           insights.add(CustomerBehaviorInsight(
-            insight: 'High average order value of \$${averageOrderValue.toStringAsFixed(2)} suggests premium customer base',
+            insight:
+                'High average order value of \$${averageOrderValue.toStringAsFixed(2)} suggests premium customer base',
             category: 'Revenue',
             impact: 0.8,
             recommendation: 'Focus on retaining high-value customers',
           ));
         } else if (averageOrderValue < 100) {
           insights.add(CustomerBehaviorInsight(
-            insight: 'Low average order value of \$${averageOrderValue.toStringAsFixed(2)}',
+            insight:
+                'Low average order value of \$${averageOrderValue.toStringAsFixed(2)}',
             category: 'Revenue',
             impact: 0.7,
             recommendation: 'Consider implementing upselling strategies',

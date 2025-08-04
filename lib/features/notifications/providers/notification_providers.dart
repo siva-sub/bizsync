@@ -11,18 +11,19 @@ import '../services/notification_scheduler.dart';
 /// Providers for notification system state management
 
 /// Enhanced notification service provider
-final notificationServiceProvider = Provider<EnhancedNotificationService>((ref) {
+final notificationServiceProvider =
+    Provider<EnhancedNotificationService>((ref) {
   return EnhancedNotificationService();
 });
 
 /// Business notification service provider
-final businessNotificationServiceProvider = 
+final businessNotificationServiceProvider =
     Provider<BusinessNotificationService>((ref) {
   return BusinessNotificationService();
 });
 
 /// Template service provider
-final notificationTemplateServiceProvider = 
+final notificationTemplateServiceProvider =
     Provider<NotificationTemplateService>((ref) {
   return NotificationTemplateService();
 });
@@ -33,29 +34,31 @@ final notificationSchedulerProvider = Provider<NotificationScheduler>((ref) {
 });
 
 /// Notification settings provider
-final notificationSettingsProvider = 
-    StateNotifierProvider<NotificationSettingsNotifier, NotificationSettings?>((ref) {
+final notificationSettingsProvider =
+    StateNotifierProvider<NotificationSettingsNotifier, NotificationSettings?>(
+        (ref) {
   final service = ref.read(notificationServiceProvider);
   return NotificationSettingsNotifier(service);
 });
 
 /// Active notifications provider
-final activeNotificationsProvider = 
-    StateNotifierProvider<ActiveNotificationsNotifier, List<BizSyncNotification>>((ref) {
+final activeNotificationsProvider = StateNotifierProvider<
+    ActiveNotificationsNotifier, List<BizSyncNotification>>((ref) {
   final service = ref.read(notificationServiceProvider);
   return ActiveNotificationsNotifier(service);
 });
 
 /// Notification metrics provider
-final notificationMetricsProvider = 
-    StateNotifierProvider<NotificationMetricsNotifier, List<NotificationMetrics>>((ref) {
+final notificationMetricsProvider = StateNotifierProvider<
+    NotificationMetricsNotifier, List<NotificationMetrics>>((ref) {
   final service = ref.read(notificationServiceProvider);
   return NotificationMetricsNotifier(service);
 });
 
 /// Filtered notifications by category provider
-final notificationsByCategoryProvider = Provider.family<List<BizSyncNotification>, 
-    NotificationCategory>((ref, category) {
+final notificationsByCategoryProvider =
+    Provider.family<List<BizSyncNotification>, NotificationCategory>(
+        (ref, category) {
   final notifications = ref.watch(activeNotificationsProvider);
   return notifications.where((n) => n.category == category).toList();
 });
@@ -67,7 +70,8 @@ final unreadNotificationsCountProvider = Provider<int>((ref) {
 });
 
 /// Notification settings state notifier
-class NotificationSettingsNotifier extends StateNotifier<NotificationSettings?> {
+class NotificationSettingsNotifier
+    extends StateNotifier<NotificationSettings?> {
   final EnhancedNotificationService _service;
 
   NotificationSettingsNotifier(this._service) : super(null) {
@@ -86,7 +90,7 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings?> 
 
   Future<void> updateGlobalEnabled(bool enabled) async {
     if (state == null) return;
-    
+
     final updatedSettings = state!.copyWith(
       globalEnabled: enabled,
       updatedAt: DateTime.now(),
@@ -99,11 +103,12 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings?> 
     CategorySettings settings,
   ) async {
     if (state == null) return;
-    
-    final updatedCategorySettings = Map<NotificationCategory, CategorySettings>
-        .from(state!.categorySettings);
+
+    final updatedCategorySettings =
+        Map<NotificationCategory, CategorySettings>.from(
+            state!.categorySettings);
     updatedCategorySettings[category] = settings;
-    
+
     final updatedSettings = state!.copyWith(
       categorySettings: updatedCategorySettings,
       updatedAt: DateTime.now(),
@@ -111,9 +116,10 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings?> 
     await updateSettings(updatedSettings);
   }
 
-  Future<void> updateDoNotDisturbSettings(DoNotDisturbSettings dndSettings) async {
+  Future<void> updateDoNotDisturbSettings(
+      DoNotDisturbSettings dndSettings) async {
     if (state == null) return;
-    
+
     final updatedSettings = state!.copyWith(
       doNotDisturb: dndSettings,
       updatedAt: DateTime.now(),
@@ -123,7 +129,7 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings?> 
 
   Future<void> updateBatchingSettings(BatchingSettings batchingSettings) async {
     if (state == null) return;
-    
+
     final updatedSettings = state!.copyWith(
       batching: batchingSettings,
       updatedAt: DateTime.now(),
@@ -131,9 +137,10 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings?> 
     await updateSettings(updatedSettings);
   }
 
-  Future<void> updateIntelligentSettings(IntelligentSettings intelligentSettings) async {
+  Future<void> updateIntelligentSettings(
+      IntelligentSettings intelligentSettings) async {
     if (state == null) return;
-    
+
     final updatedSettings = state!.copyWith(
       intelligent: intelligentSettings,
       updatedAt: DateTime.now(),
@@ -143,7 +150,8 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings?> 
 }
 
 /// Active notifications state notifier
-class ActiveNotificationsNotifier extends StateNotifier<List<BizSyncNotification>> {
+class ActiveNotificationsNotifier
+    extends StateNotifier<List<BizSyncNotification>> {
   final EnhancedNotificationService _service;
 
   ActiveNotificationsNotifier(this._service) : super([]) {
@@ -153,7 +161,7 @@ class ActiveNotificationsNotifier extends StateNotifier<List<BizSyncNotification
   Future<void> _initialize() async {
     await _service.initialize();
     _loadNotifications();
-    
+
     // Listen to notification stream
     _service.notificationStream.listen((notification) {
       _updateNotification(notification);
@@ -167,20 +175,20 @@ class ActiveNotificationsNotifier extends StateNotifier<List<BizSyncNotification
   void _updateNotification(BizSyncNotification notification) {
     final notifications = List<BizSyncNotification>.from(state);
     final index = notifications.indexWhere((n) => n.id == notification.id);
-    
+
     if (index != -1) {
       notifications[index] = notification;
     } else {
       notifications.insert(0, notification);
     }
-    
+
     state = notifications;
   }
 
   Future<void> markAsRead(String notificationId) async {
     final notifications = List<BizSyncNotification>.from(state);
     final index = notifications.indexWhere((n) => n.id == notificationId);
-    
+
     if (index != -1) {
       final notification = notifications[index];
       final updatedNotification = notification.copyWith(
@@ -208,7 +216,8 @@ class ActiveNotificationsNotifier extends StateNotifier<List<BizSyncNotification
 }
 
 /// Notification metrics state notifier
-class NotificationMetricsNotifier extends StateNotifier<List<NotificationMetrics>> {
+class NotificationMetricsNotifier
+    extends StateNotifier<List<NotificationMetrics>> {
   final EnhancedNotificationService _service;
 
   NotificationMetricsNotifier(this._service) : super([]) {
@@ -218,14 +227,15 @@ class NotificationMetricsNotifier extends StateNotifier<List<NotificationMetrics
   Future<void> _initialize() async {
     await _service.initialize();
     state = _service.getMetrics();
-    
+
     // Listen to metrics stream
     _service.metricsStream.listen((metric) {
       state = [...state, metric];
     });
   }
 
-  List<NotificationMetrics> getMetricsByCategory(NotificationCategory category) {
+  List<NotificationMetrics> getMetricsByCategory(
+      NotificationCategory category) {
     // This would need category information from the notification
     // For now, return all metrics
     return state;
@@ -233,14 +243,14 @@ class NotificationMetricsNotifier extends StateNotifier<List<NotificationMetrics
 
   double getAverageEngagementScore() {
     if (state.isEmpty) return 0.0;
-    
+
     final scores = state.map((m) => m.engagementScore).toList();
     return scores.reduce((a, b) => a + b) / scores.length;
   }
 
   double getOpenRate() {
     if (state.isEmpty) return 0.0;
-    
+
     final openedCount = state.where((m) => m.wasOpened).length;
     return openedCount / state.length;
   }
@@ -251,7 +261,7 @@ class NotificationMetricsNotifier extends StateNotifier<List<NotificationMetrics
 }
 
 /// Notification templates provider
-final notificationTemplatesProvider = 
+final notificationTemplatesProvider =
     FutureProvider<List<NotificationTemplate>>((ref) async {
   final service = ref.read(notificationTemplateServiceProvider);
   await service.initialize();
@@ -259,21 +269,22 @@ final notificationTemplatesProvider =
 });
 
 /// Templates by category provider
-final templatesByCategoryProvider = 
-    Provider.family<AsyncValue<List<NotificationTemplate>>, NotificationCategory>(
+final templatesByCategoryProvider = Provider.family<
+    AsyncValue<List<NotificationTemplate>>, NotificationCategory>(
   (ref, category) {
     return ref.watch(notificationTemplatesProvider).when(
-      data: (templates) => AsyncValue.data(
-        templates.where((t) => t.category == category).toList(),
-      ),
-      loading: () => const AsyncValue.loading(),
-      error: (error, stack) => AsyncValue.error(error, stack),
-    );
+          data: (templates) => AsyncValue.data(
+            templates.where((t) => t.category == category).toList(),
+          ),
+          loading: () => const AsyncValue.loading(),
+          error: (error, stack) => AsyncValue.error(error, stack),
+        );
   },
 );
 
 /// Popular templates provider
-final popularTemplatesProvider = FutureProvider<List<NotificationTemplate>>((ref) async {
+final popularTemplatesProvider =
+    FutureProvider<List<NotificationTemplate>>((ref) async {
   final service = ref.read(notificationTemplateServiceProvider);
   return await service.getPopularTemplates(limit: 5);
 });
@@ -285,28 +296,30 @@ final scheduledNotificationsCountProvider = FutureProvider<int>((ref) async {
 });
 
 /// Category notification counts provider
-final categoryNotificationCountsProvider = 
+final categoryNotificationCountsProvider =
     Provider<Map<NotificationCategory, int>>((ref) {
   final notifications = ref.watch(activeNotificationsProvider);
   final counts = <NotificationCategory, int>{};
-  
+
   for (final category in NotificationCategory.values) {
-    counts[category] = notifications.where((n) => n.category == category).length;
+    counts[category] =
+        notifications.where((n) => n.category == category).length;
   }
-  
+
   return counts;
 });
 
 /// Priority notification counts provider
-final priorityNotificationCountsProvider = 
+final priorityNotificationCountsProvider =
     Provider<Map<NotificationPriority, int>>((ref) {
   final notifications = ref.watch(activeNotificationsProvider);
   final counts = <NotificationPriority, int>{};
-  
+
   for (final priority in NotificationPriority.values) {
-    counts[priority] = notifications.where((n) => n.priority == priority).length;
+    counts[priority] =
+        notifications.where((n) => n.priority == priority).length;
   }
-  
+
   return counts;
 });
 
@@ -314,14 +327,13 @@ final priorityNotificationCountsProvider =
 final recentNotificationsProvider = Provider<List<BizSyncNotification>>((ref) {
   final notifications = ref.watch(activeNotificationsProvider);
   final yesterday = DateTime.now().subtract(const Duration(days: 1));
-  
-  return notifications
-      .where((n) => n.createdAt.isAfter(yesterday))
-      .toList();
+
+  return notifications.where((n) => n.createdAt.isAfter(yesterday)).toList();
 });
 
 /// Critical notifications provider
-final criticalNotificationsProvider = Provider<List<BizSyncNotification>>((ref) {
+final criticalNotificationsProvider =
+    Provider<List<BizSyncNotification>>((ref) {
   final notifications = ref.watch(activeNotificationsProvider);
   return notifications
       .where((n) => n.priority == NotificationPriority.critical)
@@ -329,8 +341,9 @@ final criticalNotificationsProvider = Provider<List<BizSyncNotification>>((ref) 
 });
 
 /// Notification search provider
-final notificationSearchProvider = 
-    StateNotifierProvider<NotificationSearchNotifier, NotificationSearchState>((ref) {
+final notificationSearchProvider =
+    StateNotifierProvider<NotificationSearchNotifier, NotificationSearchState>(
+        (ref) {
   final notifications = ref.read(activeNotificationsProvider.notifier);
   return NotificationSearchNotifier(notifications);
 });
@@ -369,23 +382,26 @@ class NotificationSearchState {
 }
 
 /// Notification search notifier
-class NotificationSearchNotifier extends StateNotifier<NotificationSearchState> {
+class NotificationSearchNotifier
+    extends StateNotifier<NotificationSearchState> {
   final ActiveNotificationsNotifier _notificationsNotifier;
 
-  NotificationSearchNotifier(this._notificationsNotifier) 
+  NotificationSearchNotifier(this._notificationsNotifier)
       : super(const NotificationSearchState());
 
   void search(String query) {
     state = state.copyWith(query: query, isLoading: true);
-    
+
     final notifications = _notificationsNotifier.state;
     List<BizSyncNotification> results = [];
 
     if (query.isNotEmpty) {
       final lowercaseQuery = query.toLowerCase();
       results = notifications.where((notification) {
-        final titleMatch = notification.title.toLowerCase().contains(lowercaseQuery);
-        final bodyMatch = notification.body.toLowerCase().contains(lowercaseQuery);
+        final titleMatch =
+            notification.title.toLowerCase().contains(lowercaseQuery);
+        final bodyMatch =
+            notification.body.toLowerCase().contains(lowercaseQuery);
         return titleMatch || bodyMatch;
       }).toList();
     } else {
@@ -394,12 +410,16 @@ class NotificationSearchNotifier extends StateNotifier<NotificationSearchState> 
 
     // Apply category filters
     if (state.categoryFilters.isNotEmpty) {
-      results = results.where((n) => state.categoryFilters.contains(n.category)).toList();
+      results = results
+          .where((n) => state.categoryFilters.contains(n.category))
+          .toList();
     }
 
     // Apply priority filters
     if (state.priorityFilters.isNotEmpty) {
-      results = results.where((n) => state.priorityFilters.contains(n.priority)).toList();
+      results = results
+          .where((n) => state.priorityFilters.contains(n.priority))
+          .toList();
     }
 
     state = state.copyWith(results: results, isLoading: false);

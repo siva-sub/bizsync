@@ -21,8 +21,9 @@ class ForecastMetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final numberFormatter = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
-    
+    final numberFormatter =
+        NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+
     return Card(
       elevation: 2,
       child: InkWell(

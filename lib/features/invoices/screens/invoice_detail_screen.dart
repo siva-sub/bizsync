@@ -30,12 +30,12 @@ class InvoiceDetailScreen extends StatefulWidget {
 class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
-  
+
   CRDTInvoiceEnhanced? _invoice;
   List<CRDTInvoiceItem> _lineItems = [];
   List<CRDTInvoicePayment> _payments = [];
   List<CRDTInvoiceWorkflow> _workflow = [];
-  
+
   bool _isLoading = true;
   bool _isRefreshing = false;
 
@@ -59,25 +59,29 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
 
     try {
       // Load invoice details with all related data
-      final invoiceResult = await widget.invoiceService.getInvoiceById(widget.invoiceId);
+      final invoiceResult =
+          await widget.invoiceService.getInvoiceById(widget.invoiceId);
       if (invoiceResult.success && invoiceResult.data != null) {
         _invoice = invoiceResult.data!;
       }
 
       // Load line items
-      final itemsResult = await widget.invoiceService.getInvoiceItems(widget.invoiceId);
+      final itemsResult =
+          await widget.invoiceService.getInvoiceItems(widget.invoiceId);
       if (itemsResult.success && itemsResult.data != null) {
         _lineItems = itemsResult.data!;
       }
 
       // Load payments
-      final paymentsResult = await widget.invoiceService.getInvoicePayments(widget.invoiceId);
+      final paymentsResult =
+          await widget.invoiceService.getInvoicePayments(widget.invoiceId);
       if (paymentsResult.success && paymentsResult.data != null) {
         _payments = paymentsResult.data!;
       }
 
       // Load workflow history
-      final workflowResult = await widget.invoiceService.getInvoiceWorkflow(widget.invoiceId);
+      final workflowResult =
+          await widget.invoiceService.getInvoiceWorkflow(widget.invoiceId);
       if (workflowResult.success && workflowResult.data != null) {
         _workflow = workflowResult.data!;
       }
@@ -204,7 +208,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
                 value: 'cancel',
                 child: ListTile(
                   leading: Icon(Icons.cancel, color: Colors.red),
-                  title: Text('Cancel Invoice', style: TextStyle(color: Colors.red)),
+                  title: Text('Cancel Invoice',
+                      style: TextStyle(color: Colors.red)),
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                 ),
@@ -245,7 +250,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
         backgroundColor = Colors.orange[50]!;
         textColor = Colors.orange[800]!;
         icon = Icons.hourglass_bottom;
-        message = 'Partially paid - ${_invoice!.currency.value} ${_formatAmount(_invoice!.remainingBalance)} remaining';
+        message =
+            'Partially paid - ${_invoice!.currency.value} ${_formatAmount(_invoice!.remainingBalance)} remaining';
         break;
       case InvoiceStatus.paid:
         backgroundColor = Colors.green[50]!;
@@ -335,7 +341,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
           _buildCustomerCard(),
           const SizedBox(height: 16),
           _buildDatesCard(),
-          if (_invoice!.notes.value != null && _invoice!.notes.value!.isNotEmpty) ...[
+          if (_invoice!.notes.value != null &&
+              _invoice!.notes.value!.isNotEmpty) ...[
             const SizedBox(height: 16),
             _buildNotesCard(),
           ],
@@ -354,8 +361,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
             Text(
               'Amount',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -364,15 +371,15 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
                 Text(
                   'Total Amount',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 Text(
                   '${_invoice!.currency.value} ${_formatAmount(_invoice!.totalAmount.value)}',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
                 ),
               ],
             ),
@@ -380,14 +387,18 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
             _buildAmountRow('Subtotal', _invoice!.subtotal.value),
             _buildAmountRow('Tax', _invoice!.taxAmount.value),
             if (_invoice!.discountAmount.value > 0)
-              _buildAmountRow('Discount', -_invoice!.discountAmount.value, color: Colors.red),
+              _buildAmountRow('Discount', -_invoice!.discountAmount.value,
+                  color: Colors.red),
             if (_invoice!.shippingAmount.value > 0)
               _buildAmountRow('Shipping', _invoice!.shippingAmount.value),
             const Divider(),
             if (_invoice!.paymentsReceived.value > 0) ...[
-              _buildAmountRow('Paid', _invoice!.paymentsReceived.value / 100, color: Colors.green),
-              _buildAmountRow('Remaining', _invoice!.remainingBalance, 
-                  color: _invoice!.remainingBalance > 0 ? Colors.orange : Colors.green),
+              _buildAmountRow('Paid', _invoice!.paymentsReceived.value / 100,
+                  color: Colors.green),
+              _buildAmountRow('Remaining', _invoice!.remainingBalance,
+                  color: _invoice!.remainingBalance > 0
+                      ? Colors.orange
+                      : Colors.green),
             ],
           ],
         ),
@@ -424,13 +435,15 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
             Text(
               'Invoice Details',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _buildDetailRow('Invoice Number', _invoice!.invoiceNumber.value),
-            _buildDetailRow('Status', _getStatusDisplayName(_invoice!.status.value)),
-            _buildDetailRow('Payment Terms', _getPaymentTermsDisplayName(_invoice!.paymentTerms.value)),
+            _buildDetailRow(
+                'Status', _getStatusDisplayName(_invoice!.status.value)),
+            _buildDetailRow('Payment Terms',
+                _getPaymentTermsDisplayName(_invoice!.paymentTerms.value)),
             if (_invoice!.poNumber.value != null)
               _buildDetailRow('PO Number', _invoice!.poNumber.value!),
             if (_invoice!.reference.value != null)
@@ -451,18 +464,21 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
             Text(
               'Customer Information',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _buildDetailRow('Name', _invoice!.customerName.value ?? 'Unknown'),
             if (_invoice!.customerEmail.value != null)
               _buildDetailRow('Email', _invoice!.customerEmail.value!),
             if (_invoice!.billingAddress.value != null)
-              _buildDetailRow('Billing Address', _invoice!.billingAddress.value!),
+              _buildDetailRow(
+                  'Billing Address', _invoice!.billingAddress.value!),
             if (_invoice!.shippingAddress.value != null &&
-                _invoice!.shippingAddress.value != _invoice!.billingAddress.value)
-              _buildDetailRow('Shipping Address', _invoice!.shippingAddress.value!),
+                _invoice!.shippingAddress.value !=
+                    _invoice!.billingAddress.value)
+              _buildDetailRow(
+                  'Shipping Address', _invoice!.shippingAddress.value!),
           ],
         ),
       ),
@@ -479,19 +495,24 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
             Text(
               'Important Dates',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
-            _buildDetailRow('Issue Date', _formatDate(_invoice!.issueDate.value)),
+            _buildDetailRow(
+                'Issue Date', _formatDate(_invoice!.issueDate.value)),
             if (_invoice!.calculateDueDate() != null)
-              _buildDetailRow('Due Date', _formatDate(_invoice!.calculateDueDate()!)),
+              _buildDetailRow(
+                  'Due Date', _formatDate(_invoice!.calculateDueDate()!)),
             if (_invoice!.sentDate.value != null)
-              _buildDetailRow('Sent Date', _formatDate(_invoice!.sentDate.value!)),
+              _buildDetailRow(
+                  'Sent Date', _formatDate(_invoice!.sentDate.value!)),
             if (_invoice!.viewedDate.value != null)
-              _buildDetailRow('Viewed Date', _formatDate(_invoice!.viewedDate.value!)),
+              _buildDetailRow(
+                  'Viewed Date', _formatDate(_invoice!.viewedDate.value!)),
             if (_invoice!.lastPaymentDate.value != null)
-              _buildDetailRow('Last Payment', _formatDate(_invoice!.lastPaymentDate.value!)),
+              _buildDetailRow('Last Payment',
+                  _formatDate(_invoice!.lastPaymentDate.value!)),
           ],
         ),
       ),
@@ -508,8 +529,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
             Text(
               'Notes',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 12),
             Text(_invoice!.notes.value!),
@@ -567,13 +588,15 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
                     Expanded(
                       child: Text(
                         item.description.value,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(12),
@@ -589,10 +612,11 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
                 Row(
                   children: [
                     Expanded(
-                      child: _buildItemDetailRow('Quantity', item.quantity.value.toString()),
+                      child: _buildItemDetailRow(
+                          'Quantity', item.quantity.value.toString()),
                     ),
                     Expanded(
-                      child: _buildItemDetailRow('Unit Price', 
+                      child: _buildItemDetailRow('Unit Price',
                           '${_invoice!.currency.value} ${_formatAmount(item.unitPrice.value)}'),
                     ),
                   ],
@@ -601,10 +625,11 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
                 Row(
                   children: [
                     Expanded(
-                      child: _buildItemDetailRow('Tax Rate', '${item.taxRate.value}%'),
+                      child: _buildItemDetailRow(
+                          'Tax Rate', '${item.taxRate.value}%'),
                     ),
                     Expanded(
-                      child: _buildItemDetailRow('Line Total', 
+                      child: _buildItemDetailRow('Line Total',
                           '${_invoice!.currency.value} ${_formatAmount(item.lineTotal.value)}'),
                     ),
                   ],
@@ -655,24 +680,24 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
 
   Widget? _buildFloatingActionButton() {
     final status = _invoice!.status.value;
-    
+
     if (status == InvoiceStatus.draft) {
       return FloatingActionButton.extended(
         onPressed: _sendInvoice,
         icon: const Icon(Icons.send),
         label: const Text('Send Invoice'),
       );
-    } else if (status == InvoiceStatus.sent || 
-               status == InvoiceStatus.viewed || 
-               status == InvoiceStatus.partiallyPaid ||
-               status == InvoiceStatus.overdue) {
+    } else if (status == InvoiceStatus.sent ||
+        status == InvoiceStatus.viewed ||
+        status == InvoiceStatus.partiallyPaid ||
+        status == InvoiceStatus.overdue) {
       return FloatingActionButton.extended(
         onPressed: _recordPayment,
         icon: const Icon(Icons.payment),
         label: const Text('Record Payment'),
       );
     }
-    
+
     return null;
   }
 
@@ -767,13 +792,14 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
                 Text(
                   'Outstanding: ${_invoice!.currency.value} ${_formatAmount(_invoice!.remainingBalance)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: amountController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     labelText: 'Payment Amount',
                     prefixText: '${_invoice!.currency.value} ',
@@ -789,8 +815,10 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
                   ),
                   items: const [
                     DropdownMenuItem(value: 'cash', child: Text('Cash')),
-                    DropdownMenuItem(value: 'bank_transfer', child: Text('Bank Transfer')),
-                    DropdownMenuItem(value: 'credit_card', child: Text('Credit Card')),
+                    DropdownMenuItem(
+                        value: 'bank_transfer', child: Text('Bank Transfer')),
+                    DropdownMenuItem(
+                        value: 'credit_card', child: Text('Credit Card')),
                     DropdownMenuItem(value: 'paynow', child: Text('PayNow')),
                     DropdownMenuItem(value: 'cheque', child: Text('Cheque')),
                   ],
@@ -899,7 +927,7 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              
+
               try {
                 final result = await widget.invoiceService.changeStatus(
                   widget.invoiceId,
@@ -937,7 +965,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow('Amount', '${_invoice!.currency.value} ${_formatAmount(payment.amount.value)}'),
+            _buildDetailRow('Amount',
+                '${_invoice!.currency.value} ${_formatAmount(payment.amount.value)}'),
             _buildDetailRow('Method', payment.paymentMethod.value),
             _buildDetailRow('Date', _formatDate(payment.paymentDate.value)),
             _buildDetailRow('Status', payment.status.value),

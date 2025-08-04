@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 
 class BarcodeCapture {
   final List<Barcode> barcodes;
-  
+
   const BarcodeCapture({required this.barcodes});
 }
 
 class Barcode {
   final String? rawValue;
   final BarcodeType type;
-  
+
   const Barcode({
     this.rawValue,
     this.type = BarcodeType.unknown,
@@ -53,39 +53,39 @@ enum BarcodeFormat {
 
 class MobileScannerController {
   static const Duration _defaultDelay = Duration(milliseconds: 250);
-  
+
   final Duration detectionSpeed;
   final List<BarcodeFormat> formats;
   final bool detectionTimeoutMs;
   final bool returnImage;
-  
+
   MobileScannerController({
     this.detectionSpeed = _defaultDelay,
     this.formats = const [],
     this.detectionTimeoutMs = false,
     this.returnImage = false,
   });
-  
+
   /// Stub method - always throws UnimplementedError
   Future<void> start() {
     throw UnimplementedError('QR scanning is disabled in minimal build');
   }
-  
+
   /// Stub method - always throws UnimplementedError
   Future<void> stop() {
     throw UnimplementedError('QR scanning is disabled in minimal build');
   }
-  
+
   /// Stub method - always throws UnimplementedError
   void dispose() {
     throw UnimplementedError('QR scanning is disabled in minimal build');
   }
-  
+
   /// Stub method - always throws UnimplementedError
   Future<void> toggleTorch() {
     throw UnimplementedError('QR scanning is disabled in minimal build');
   }
-  
+
   /// Stub method - always throws UnimplementedError
   Future<void> switchCamera() {
     throw UnimplementedError('QR scanning is disabled in minimal build');
@@ -97,7 +97,7 @@ class MobileScanner extends StatelessWidget {
   final void Function(BarcodeCapture)? onDetect;
   final Widget? errorBuilder;
   final Widget? placeholderBuilder;
-  
+
   const MobileScanner({
     super.key,
     this.controller,
@@ -105,7 +105,7 @@ class MobileScanner extends StatelessWidget {
     this.errorBuilder,
     this.placeholderBuilder,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(

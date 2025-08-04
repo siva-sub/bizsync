@@ -24,7 +24,8 @@ class InvoiceOperationResult<T> {
     this.context,
   });
 
-  factory InvoiceOperationResult.success(T data, {Map<String, dynamic>? context}) {
+  factory InvoiceOperationResult.success(T data,
+      {Map<String, dynamic>? context}) {
     return InvoiceOperationResult(
       success: true,
       data: data,
@@ -32,7 +33,8 @@ class InvoiceOperationResult<T> {
     );
   }
 
-  factory InvoiceOperationResult.failure(String errorMessage, {Map<String, dynamic>? context}) {
+  factory InvoiceOperationResult.failure(String errorMessage,
+      {Map<String, dynamic>? context}) {
     return InvoiceOperationResult(
       success: false,
       errorMessage: errorMessage,
@@ -153,10 +155,10 @@ class InvoiceService {
       try {
         final invoiceId = UuidGenerator.generateId();
         final timestamp = HLCTimestamp.now(_nodeId);
-        
+
         // Generate invoice number
         final invoiceNumber = await _generateInvoiceNumber();
-        
+
         // Create the invoice
         final invoice = CRDTInvoiceEnhanced(
           id: invoiceId,
@@ -192,19 +194,20 @@ class InvoiceService {
               sortOrder: i,
               skipCalculation: true,
             );
-            
+
             if (!itemResult.success) {
-              throw Exception('Failed to add line item: ${itemResult.errorMessage}');
+              throw Exception(
+                  'Failed to add line item: ${itemResult.errorMessage}');
             }
           }
-          
+
           // Recalculate totals after adding all items
           await _recalculateInvoiceTotals(invoice);
         }
 
         // Save to database
         await _databaseService.upsertEntity('invoices', invoice);
-        
+
         // Create initial workflow entry
         await _createWorkflowEntry(
           invoice.id,
@@ -219,7 +222,6 @@ class InvoiceService {
           invoice,
           context: {'invoice_number': invoiceNumber},
         );
-        
       } catch (e) {
         throw Exception('Failed to create invoice: $e');
       }
@@ -247,16 +249,20 @@ class InvoiceService {
           invoiceData.customerId.setValue(updates['customer_id'], timestamp);
         }
         if (updates.containsKey('customer_name')) {
-          invoiceData.customerName.setValue(updates['customer_name'], timestamp);
+          invoiceData.customerName
+              .setValue(updates['customer_name'], timestamp);
         }
         if (updates.containsKey('customer_email')) {
-          invoiceData.customerEmail.setValue(updates['customer_email'], timestamp);
+          invoiceData.customerEmail
+              .setValue(updates['customer_email'], timestamp);
         }
         if (updates.containsKey('billing_address')) {
-          invoiceData.billingAddress.setValue(updates['billing_address'], timestamp);
+          invoiceData.billingAddress
+              .setValue(updates['billing_address'], timestamp);
         }
         if (updates.containsKey('shipping_address')) {
-          invoiceData.shippingAddress.setValue(updates['shipping_address'], timestamp);
+          invoiceData.shippingAddress
+              .setValue(updates['shipping_address'], timestamp);
         }
         if (updates.containsKey('issue_date')) {
           invoiceData.issueDate.setValue(
@@ -286,20 +292,23 @@ class InvoiceService {
           invoiceData.notes.setValue(updates['notes'], timestamp);
         }
         if (updates.containsKey('terms_and_conditions')) {
-          invoiceData.termsAndConditions.setValue(updates['terms_and_conditions'], timestamp);
+          invoiceData.termsAndConditions
+              .setValue(updates['terms_and_conditions'], timestamp);
         }
         if (updates.containsKey('footer_text')) {
           invoiceData.footerText.setValue(updates['footer_text'], timestamp);
         }
         if (updates.containsKey('custom_fields')) {
-          invoiceData.customFields.setValue(updates['custom_fields'], timestamp);
+          invoiceData.customFields
+              .setValue(updates['custom_fields'], timestamp);
         }
         if (updates.containsKey('currency')) {
           invoiceData.currency.setValue(updates['currency'], timestamp);
           needsRecalculation = true;
         }
         if (updates.containsKey('exchange_rate')) {
-          invoiceData.exchangeRate.setValue(updates['exchange_rate'], timestamp);
+          invoiceData.exchangeRate
+              .setValue(updates['exchange_rate'], timestamp);
           needsRecalculation = true;
         }
 
@@ -329,7 +338,6 @@ class InvoiceService {
         await _databaseService.upsertEntity('invoices', invoiceData);
 
         return InvoiceOperationResult.success(invoiceData);
-        
       } catch (e) {
         throw Exception('Failed to update invoice: $e');
       }
@@ -350,7 +358,7 @@ class InvoiceService {
 
         final invoice = invoiceResult.data!;
         final result = await _addLineItem(invoice, itemData);
-        
+
         if (result.success && result.data != null) {
           // Recalculate invoice totals
           await _recalculateInvoiceTotals(invoice);
@@ -358,7 +366,6 @@ class InvoiceService {
         }
 
         return result;
-        
       } catch (e) {
         throw Exception('Failed to add line item: $e');
       }
@@ -378,7 +385,7 @@ class InvoiceService {
         }
 
         final timestamp = HLCTimestamp.now(_nodeId);
-        
+
         // Apply updates
         item.updateItem(
           newDescription: updates['description'],
@@ -403,7 +410,6 @@ class InvoiceService {
         }
 
         return InvoiceOperationResult.success(item);
-        
       } catch (e) {
         throw Exception('Failed to update line item: $e');
       }
@@ -420,7 +426,7 @@ class InvoiceService {
         }
 
         final invoiceId = item.invoiceId.value;
-        
+
         // Mark item as deleted
         final timestamp = HLCTimestamp.now(_nodeId);
         item.isDeleted = true;
@@ -438,7 +444,6 @@ class InvoiceService {
         }
 
         return InvoiceOperationResult.success(true);
-        
       } catch (e) {
         throw Exception('Failed to remove line item: $e');
       }
@@ -465,7 +470,7 @@ class InvoiceService {
 
         final invoice = invoiceResult.data!;
         final timestamp = HLCTimestamp.now(_nodeId);
-        
+
         // Create payment record
         final paymentId = UuidGenerator.generateId();
         final payment = CRDTInvoicePayment(
@@ -508,7 +513,6 @@ class InvoiceService {
         );
 
         return InvoiceOperationResult.success(payment);
-        
       } catch (e) {
         throw Exception('Failed to record payment: $e');
       }
@@ -531,7 +535,7 @@ class InvoiceService {
         }
 
         final invoice = invoiceResult.data!;
-        
+
         // Use workflow service to handle status transition
         final transitionResult = await _workflowService.transitionStatus(
           invoice,
@@ -559,7 +563,6 @@ class InvoiceService {
         );
 
         return InvoiceOperationResult.success(invoice);
-        
       } catch (e) {
         throw Exception('Failed to change status: $e');
       }
@@ -567,7 +570,8 @@ class InvoiceService {
   }
 
   /// Get invoice by ID
-  Future<InvoiceOperationResult<CRDTInvoiceEnhanced>> getInvoiceById(String invoiceId) async {
+  Future<InvoiceOperationResult<CRDTInvoiceEnhanced>> getInvoiceById(
+      String invoiceId) async {
     try {
       final entity = await _databaseService.getEntity('invoices', invoiceId);
       if (entity == null) {
@@ -578,7 +582,7 @@ class InvoiceService {
       // This would require implementing fromCRDTJson method
       // For now, assume we have the invoice
       final invoice = entity as CRDTInvoiceEnhanced;
-      
+
       return InvoiceOperationResult.success(invoice);
     } catch (e) {
       return InvoiceOperationResult.failure('Failed to get invoice: $e');
@@ -593,7 +597,7 @@ class InvoiceService {
       // This would implement complex query logic based on filters
       // For now, return empty list
       final invoices = <CRDTInvoiceEnhanced>[];
-      
+
       return InvoiceOperationResult.success(invoices);
     } catch (e) {
       return InvoiceOperationResult.failure('Failed to search invoices: $e');
@@ -601,11 +605,12 @@ class InvoiceService {
   }
 
   /// Get invoice line items
-  Future<InvoiceOperationResult<List<CRDTInvoiceItem>>> getInvoiceItems(String invoiceId) async {
+  Future<InvoiceOperationResult<List<CRDTInvoiceItem>>> getInvoiceItems(
+      String invoiceId) async {
     try {
       // Query line items for invoice
       final items = <CRDTInvoiceItem>[];
-      
+
       return InvoiceOperationResult.success(items);
     } catch (e) {
       return InvoiceOperationResult.failure('Failed to get invoice items: $e');
@@ -613,26 +618,30 @@ class InvoiceService {
   }
 
   /// Get invoice payments
-  Future<InvoiceOperationResult<List<CRDTInvoicePayment>>> getInvoicePayments(String invoiceId) async {
+  Future<InvoiceOperationResult<List<CRDTInvoicePayment>>> getInvoicePayments(
+      String invoiceId) async {
     try {
       // Query payments for invoice
       final payments = <CRDTInvoicePayment>[];
-      
+
       return InvoiceOperationResult.success(payments);
     } catch (e) {
-      return InvoiceOperationResult.failure('Failed to get invoice payments: $e');
+      return InvoiceOperationResult.failure(
+          'Failed to get invoice payments: $e');
     }
   }
 
   /// Get invoice workflow history
-  Future<InvoiceOperationResult<List<CRDTInvoiceWorkflow>>> getInvoiceWorkflow(String invoiceId) async {
+  Future<InvoiceOperationResult<List<CRDTInvoiceWorkflow>>> getInvoiceWorkflow(
+      String invoiceId) async {
     try {
       // Query workflow entries for invoice
       final workflow = <CRDTInvoiceWorkflow>[];
-      
+
       return InvoiceOperationResult.success(workflow);
     } catch (e) {
-      return InvoiceOperationResult.failure('Failed to get invoice workflow: $e');
+      return InvoiceOperationResult.failure(
+          'Failed to get invoice workflow: $e');
     }
   }
 
@@ -650,14 +659,15 @@ class InvoiceService {
           try {
             switch (operation.operation) {
               case 'update_status':
-                final status = InvoiceStatus.fromString(operation.parameters!['status']);
+                final status =
+                    InvoiceStatus.fromString(operation.parameters!['status']);
                 final result = await changeStatus(
                   invoiceId,
                   status,
                   reason: operation.parameters?['reason'],
                   triggeredBy: 'batch_operation',
                 );
-                
+
                 if (result.success) {
                   successes.add(invoiceId);
                 } else {
@@ -672,7 +682,7 @@ class InvoiceService {
                   reason: 'Batch send operation',
                   triggeredBy: 'batch_operation',
                 );
-                
+
                 if (result.success) {
                   successes.add(invoiceId);
                 } else {
@@ -687,7 +697,7 @@ class InvoiceService {
                   reason: 'Batch cancel operation',
                   triggeredBy: 'batch_operation',
                 );
-                
+
                 if (result.success) {
                   successes.add(invoiceId);
                 } else {
@@ -697,7 +707,7 @@ class InvoiceService {
 
               case 'delete':
                 final result = await deleteInvoice(invoiceId);
-                
+
                 if (result.success) {
                   successes.add(invoiceId);
                 } else {
@@ -706,7 +716,8 @@ class InvoiceService {
                 break;
 
               default:
-                failures[invoiceId] = 'Unknown operation: ${operation.operation}';
+                failures[invoiceId] =
+                    'Unknown operation: ${operation.operation}';
             }
           } catch (e) {
             failures[invoiceId] = 'Error: $e';
@@ -720,7 +731,6 @@ class InvoiceService {
         results['failure_count'] = failures.length;
 
         return InvoiceOperationResult.success(results);
-        
       } catch (e) {
         throw Exception('Failed to perform batch operation: $e');
       }
@@ -738,7 +748,7 @@ class InvoiceService {
 
         final invoice = invoiceResult.data!;
         final timestamp = HLCTimestamp.now(_nodeId);
-        
+
         // Mark as deleted
         invoice.isDeleted = true;
         invoice.updatedAt = timestamp;
@@ -758,7 +768,6 @@ class InvoiceService {
         );
 
         return InvoiceOperationResult.success(true);
-        
       } catch (e) {
         throw Exception('Failed to delete invoice: $e');
       }
@@ -766,27 +775,30 @@ class InvoiceService {
   }
 
   /// Process automated workflows for all invoices
-  Future<InvoiceOperationResult<Map<String, dynamic>>> processAutomatedWorkflows() async {
+  Future<InvoiceOperationResult<Map<String, dynamic>>>
+      processAutomatedWorkflows() async {
     try {
       // Get all active invoices
       final invoicesResult = await searchInvoices(const InvoiceSearchFilters());
       if (!invoicesResult.success) {
-        return InvoiceOperationResult.failure('Failed to get invoices for automation');
+        return InvoiceOperationResult.failure(
+            'Failed to get invoices for automation');
       }
 
-      final results = await _workflowService.processAutomatedTransitions(invoicesResult.data!);
-      
+      final results = await _workflowService
+          .processAutomatedTransitions(invoicesResult.data!);
+
       final processedCount = results.length;
       final successCount = results.where((r) => r.success).length;
-      
+
       return InvoiceOperationResult.success({
         'processed_count': processedCount,
         'success_count': successCount,
         'results': results.map((r) => r.toJson()).toList(),
       });
-      
     } catch (e) {
-      return InvoiceOperationResult.failure('Failed to process automated workflows: $e');
+      return InvoiceOperationResult.failure(
+          'Failed to process automated workflows: $e');
     }
   }
 
@@ -807,7 +819,7 @@ class InvoiceService {
   }) async {
     final itemId = UuidGenerator.generateId();
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     final item = CRDTInvoiceItem(
       id: itemId,
       nodeId: _nodeId,
@@ -845,12 +857,13 @@ class InvoiceService {
   }
 
   Future<void> _recalculateInvoiceTotals(CRDTInvoiceEnhanced invoice) async {
-    final calculation = await _calculationService.calculateInvoiceTotals(invoice.id);
-    
+    final calculation =
+        await _calculationService.calculateInvoiceTotals(invoice.id);
+
     if (calculation.success && calculation.data != null) {
       final totals = calculation.data!;
       final timestamp = HLCTimestamp.now(_nodeId);
-      
+
       invoice.updateTotals(
         newSubtotal: totals['subtotal'],
         newTaxAmount: totals['tax_amount'],
@@ -877,7 +890,7 @@ class InvoiceService {
   ) async {
     final workflowId = UuidGenerator.generateId();
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     final workflow = CRDTInvoiceWorkflow(
       id: workflowId,
       nodeId: _nodeId,

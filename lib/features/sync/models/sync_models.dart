@@ -46,7 +46,8 @@ class DeviceInfo {
     this.metadata = const {},
   });
 
-  factory DeviceInfo.fromJson(Map<String, dynamic> json) => _$DeviceInfoFromJson(json);
+  factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
+      _$DeviceInfoFromJson(json);
   Map<String, dynamic> toJson() => _$DeviceInfoToJson(this);
 }
 
@@ -92,7 +93,8 @@ class P2PConnection {
     this.connectionMetadata = const {},
   });
 
-  factory P2PConnection.fromJson(Map<String, dynamic> json) => _$P2PConnectionFromJson(json);
+  factory P2PConnection.fromJson(Map<String, dynamic> json) =>
+      _$P2PConnectionFromJson(json);
   Map<String, dynamic> toJson() => _$P2PConnectionToJson(this);
 
   P2PConnection copyWith({
@@ -141,7 +143,8 @@ class SyncSession {
     this.errorMessage,
   });
 
-  factory SyncSession.fromJson(Map<String, dynamic> json) => _$SyncSessionFromJson(json);
+  factory SyncSession.fromJson(Map<String, dynamic> json) =>
+      _$SyncSessionFromJson(json);
   Map<String, dynamic> toJson() => _$SyncSessionToJson(this);
 }
 
@@ -188,7 +191,8 @@ class SyncConfiguration {
     this.customFilters = const {},
   });
 
-  factory SyncConfiguration.fromJson(Map<String, dynamic> json) => _$SyncConfigurationFromJson(json);
+  factory SyncConfiguration.fromJson(Map<String, dynamic> json) =>
+      _$SyncConfigurationFromJson(json);
   Map<String, dynamic> toJson() => _$SyncConfigurationToJson(this);
 }
 
@@ -221,7 +225,8 @@ class SyncProgress {
     this.itemsByType = const {},
   });
 
-  factory SyncProgress.fromJson(Map<String, dynamic> json) => _$SyncProgressFromJson(json);
+  factory SyncProgress.fromJson(Map<String, dynamic> json) =>
+      _$SyncProgressFromJson(json);
   Map<String, dynamic> toJson() => _$SyncProgressToJson(this);
 
   factory SyncProgress.initial() {
@@ -266,7 +271,8 @@ class SyncConflict {
     this.resolutionNote,
   });
 
-  factory SyncConflict.fromJson(Map<String, dynamic> json) => _$SyncConflictFromJson(json);
+  factory SyncConflict.fromJson(Map<String, dynamic> json) =>
+      _$SyncConflictFromJson(json);
   Map<String, dynamic> toJson() => _$SyncConflictToJson(this);
 }
 
@@ -275,7 +281,7 @@ enum ConflictType {
   updateUpdate, // Both sides modified
   updateDelete, // One side modified, other deleted
   deleteUpdate, // One side deleted, other modified
-  duplicate,    // Same item exists with different IDs
+  duplicate, // Same item exists with different IDs
 }
 
 /// Conflict resolution strategies
@@ -309,7 +315,8 @@ class SyncMessage {
     this.signature,
   });
 
-  factory SyncMessage.fromJson(Map<String, dynamic> json) => _$SyncMessageFromJson(json);
+  factory SyncMessage.fromJson(Map<String, dynamic> json) =>
+      _$SyncMessageFromJson(json);
   Map<String, dynamic> toJson() => _$SyncMessageToJson(this);
 }
 
@@ -358,7 +365,8 @@ class DevicePairing {
     this.metadata = const {},
   });
 
-  factory DevicePairing.fromJson(Map<String, dynamic> json) => _$DevicePairingFromJson(json);
+  factory DevicePairing.fromJson(Map<String, dynamic> json) =>
+      _$DevicePairingFromJson(json);
   Map<String, dynamic> toJson() => _$DevicePairingToJson(this);
 }
 
@@ -410,6 +418,7 @@ class SyncStats {
     this.recentErrors = const [],
   });
 
-  factory SyncStats.fromJson(Map<String, dynamic> json) => _$SyncStatsFromJson(json);
+  factory SyncStats.fromJson(Map<String, dynamic> json) =>
+      _$SyncStatsFromJson(json);
   Map<String, dynamic> toJson() => _$SyncStatsToJson(this);
 }

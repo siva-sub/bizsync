@@ -1,7 +1,7 @@
 import '../models/sgqr_models.dart';
 
 /// EMVCo QR Code data object formatter for SGQR/PayNow
-/// 
+///
 /// This utility class handles the formatting of data according to the
 /// EMVCo QR Code Specification for Payment Systems Root Document Version 1.1
 class EMVCoFormatter {
@@ -27,7 +27,7 @@ class EMVCoFormatter {
   static const String _payNowGuidTag = '00';
   static const String _payNowProxyTypeTag = '01';
   static const String _payNowProxyValueTag = '02';
-  static const String _payNowEditableTag = '03'; 
+  static const String _payNowEditableTag = '03';
   static const String _payNowExpiryDateTag = '04';
 
   // PayNow GUID (Singapore's PayNow identifier)
@@ -36,7 +36,7 @@ class EMVCoFormatter {
   /// Format a data object as TLV (Tag-Length-Value)
   static String formatTLV(String tag, String value) {
     if (value.isEmpty) return '';
-    
+
     final String length = value.length.toString().padLeft(2, '0');
     return '$tag$length$value';
   }
@@ -46,7 +46,7 @@ class EMVCoFormatter {
     if (value.isEmpty) {
       throw ArgumentError('Value cannot be empty for tag $tag');
     }
-    
+
     return SGQRDataObject(
       tag: tag,
       length: value.length.toString().padLeft(2, '0'),
@@ -62,9 +62,10 @@ class EMVCoFormatter {
     buffer.write(formatTLV(_payNowGuidTag, _payNowGuid));
 
     // Proxy Type (Tag 01)
-    buffer.write(formatTLV(_payNowProxyTypeTag, payNowData.identifierType.value));
+    buffer
+        .write(formatTLV(_payNowProxyTypeTag, payNowData.identifierType.value));
 
-    // Proxy Value (Tag 02) 
+    // Proxy Value (Tag 02)
     buffer.write(formatTLV(_payNowProxyValueTag, payNowData.identifier));
 
     // Editable amount indicator (Tag 03)
@@ -128,7 +129,7 @@ class EMVCoFormatter {
 
     final String additionalDataValue = buffer.toString();
     if (additionalDataValue.isEmpty) return '';
-    
+
     return formatTLV(_additionalDataFieldTemplateTag, additionalDataValue);
   }
 
@@ -165,20 +166,22 @@ class EMVCoFormatter {
 
       final String tag = tlvString.substring(index, index + 2);
       final String lengthStr = tlvString.substring(index + 2, index + 4);
-      
+
       int length;
       try {
         length = int.parse(lengthStr);
       } catch (e) {
-        throw FormatException('Invalid length value: $lengthStr at position $index');
+        throw FormatException(
+            'Invalid length value: $lengthStr at position $index');
       }
 
       if (index + 4 + length > tlvString.length) {
-        throw FormatException('Data length exceeds string bounds at position $index');
+        throw FormatException(
+            'Data length exceeds string bounds at position $index');
       }
 
       final String value = tlvString.substring(index + 4, index + 4 + length);
-      
+
       objects.add(SGQRDataObject(
         tag: tag,
         length: lengthStr,
@@ -216,16 +219,21 @@ class EMVCoFormatter {
   /// Extract PayNow information from merchant account info
   static PayNowQRData? extractPayNowData(String merchantAccountInfo) {
     final List<SGQRDataObject> subObjects = parseTLV(merchantAccountInfo);
-    
-    final SGQRDataObject? guidObj = findDataObjectByTag(subObjects, _payNowGuidTag);
+
+    final SGQRDataObject? guidObj =
+        findDataObjectByTag(subObjects, _payNowGuidTag);
     if (guidObj?.value != _payNowGuid) {
       return null; // Not a PayNow QR
     }
 
-    final SGQRDataObject? typeObj = findDataObjectByTag(subObjects, _payNowProxyTypeTag);
-    final SGQRDataObject? valueObj = findDataObjectByTag(subObjects, _payNowProxyValueTag);
-    final SGQRDataObject? editableObj = findDataObjectByTag(subObjects, _payNowEditableTag);
-    final SGQRDataObject? expiryObj = findDataObjectByTag(subObjects, _payNowExpiryDateTag);
+    final SGQRDataObject? typeObj =
+        findDataObjectByTag(subObjects, _payNowProxyTypeTag);
+    final SGQRDataObject? valueObj =
+        findDataObjectByTag(subObjects, _payNowProxyValueTag);
+    final SGQRDataObject? editableObj =
+        findDataObjectByTag(subObjects, _payNowEditableTag);
+    final SGQRDataObject? expiryObj =
+        findDataObjectByTag(subObjects, _payNowExpiryDateTag);
 
     if (typeObj == null || valueObj == null) {
       return null;
@@ -248,7 +256,7 @@ class EMVCoFormatter {
 
     final bool editable = editableObj?.value == '1';
     DateTime? expiryDate;
-    
+
     if (expiryObj != null) {
       expiryDate = _parseDate(expiryObj.value);
     }
@@ -271,12 +279,12 @@ class EMVCoFormatter {
   /// Parse date from YYYYMMDD format
   static DateTime? _parseDate(String dateStr) {
     if (dateStr.length != 8) return null;
-    
+
     try {
       final int year = int.parse(dateStr.substring(0, 4));
       final int month = int.parse(dateStr.substring(4, 6));
       final int day = int.parse(dateStr.substring(6, 8));
-      
+
       return DateTime(year, month, day);
     } catch (e) {
       return null;

@@ -26,10 +26,11 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
 
   Future<void> _generateReport() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final reportService = ref.read(reportServiceProvider);
-      _reportData = await reportService.generateSalesReport(_startDate, _endDate);
+      _reportData =
+          await reportService.generateSalesReport(_startDate, _endDate);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -37,7 +38,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -107,22 +108,22 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                     children: [
                       // Report Header
                       _buildReportHeader(),
-                      
+
                       const SizedBox(height: 24),
 
                       // Key Metrics
                       _buildKeyMetrics(),
-                      
+
                       const SizedBox(height: 24),
 
                       // Sales Trend Chart
                       _buildSalesTrendSection(),
-                      
+
                       const SizedBox(height: 24),
 
                       // Category Breakdown
                       _buildCategoryBreakdown(),
-                      
+
                       const SizedBox(height: 24),
 
                       // Top Customers
@@ -147,8 +148,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                 Text(
                   'Sales Performance Report',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -156,14 +157,14 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
             Text(
               'Period: ${_formatDate(_startDate)} - ${_formatDate(_endDate)}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
             Text(
               'Generated: ${_formatDate(DateTime.now())}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[500],
-              ),
+                    color: Colors.grey[500],
+                  ),
             ),
           ],
         ),
@@ -173,15 +174,15 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
 
   Widget _buildKeyMetrics() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Key Metrics',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Row(
@@ -220,7 +221,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
             Expanded(
               child: _MetricCard(
                 title: 'Avg. Transaction',
-                value: '\$${_reportData!.averageTransactionValue.toStringAsFixed(0)}',
+                value:
+                    '\$${_reportData!.averageTransactionValue.toStringAsFixed(0)}',
                 icon: Icons.calculate,
                 color: Colors.purple,
               ),
@@ -233,15 +235,15 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
 
   Widget _buildSalesTrendSection() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Sales Trend',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Card(
@@ -256,7 +258,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                     const Text('Daily Sales Performance'),
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.blue.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -279,7 +282,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.show_chart, size: 48, color: Colors.grey[400]),
+                        Icon(Icons.show_chart,
+                            size: 48, color: Colors.grey[400]),
                         const SizedBox(height: 8),
                         Text(
                           'Chart visualization',
@@ -287,7 +291,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                         ),
                         Text(
                           'Would integrate with fl_chart package',
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 12),
                         ),
                       ],
                     ),
@@ -303,15 +308,15 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
 
   Widget _buildCategoryBreakdown() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Category Breakdown',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Row(
@@ -337,7 +342,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.pie_chart, size: 48, color: Colors.grey[400]),
+                              Icon(Icons.pie_chart,
+                                  size: 48, color: Colors.grey[400]),
                               const SizedBox(height: 8),
                               Text(
                                 'Pie Chart',
@@ -364,34 +370,34 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                       const Text('Top Categories'),
                       const SizedBox(height: 16),
                       ..._reportData!.topCategories.map((category) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                color: category.color,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 12,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    color: category.color,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    category.category,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                                Text(
+                                  '${category.percentage.toInt()}%',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                category.category,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            ),
-                            Text(
-                              '${category.percentage.toInt()}%',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
+                          )),
                     ],
                   ),
                 ),
@@ -405,15 +411,15 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
 
   Widget _buildTopCustomers() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Top Customers',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Card(
@@ -421,7 +427,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
             children: _reportData!.topCustomers.asMap().entries.map((entry) {
               final index = entry.key;
               final customer = entry.value;
-              
+
               return ListTile(
                 leading: CircleAvatar(
                   backgroundColor: _getRankColor(index),
@@ -449,8 +455,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                     Text(
                       'Revenue',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
                   ],
                 ),
@@ -464,10 +470,14 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
 
   Color _getRankColor(int index) {
     switch (index) {
-      case 0: return Colors.amber; // Gold
-      case 1: return Colors.grey; // Silver
-      case 2: return Colors.brown; // Bronze
-      default: return Colors.blue;
+      case 0:
+        return Colors.amber; // Gold
+      case 1:
+        return Colors.grey; // Silver
+      case 2:
+        return Colors.brown; // Bronze
+      default:
+        return Colors.blue;
     }
   }
 
@@ -478,7 +488,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
       lastDate: DateTime.now(),
       initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
     );
-    
+
     if (picked != null) {
       setState(() {
         _startDate = picked.start;
@@ -545,14 +555,14 @@ class _MetricCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             Text(
               title,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
           ],
         ),

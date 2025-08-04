@@ -18,12 +18,12 @@ class TaxRateChange {
   });
 
   Map<String, dynamic> toJson() => {
-    'previousRate': previousRate.toJson(),
-    'newRate': newRate.toJson(),
-    'changeDate': changeDate.toIso8601String(),
-    'reason': reason,
-    'impact': impact,
-  };
+        'previousRate': previousRate.toJson(),
+        'newRate': newRate.toJson(),
+        'changeDate': changeDate.toIso8601String(),
+        'reason': reason,
+        'impact': impact,
+      };
 }
 
 class TaxImpactAnalysis {
@@ -44,13 +44,13 @@ class TaxImpactAnalysis {
   });
 
   Map<String, dynamic> toJson() => {
-    'previousTaxAmount': previousTaxAmount,
-    'newTaxAmount': newTaxAmount,
-    'absoluteChange': absoluteChange,
-    'percentageChange': percentageChange,
-    'effectiveDate': effectiveDate.toIso8601String(),
-    'description': description,
-  };
+        'previousTaxAmount': previousTaxAmount,
+        'newTaxAmount': newTaxAmount,
+        'absoluteChange': absoluteChange,
+        'percentageChange': percentageChange,
+        'effectiveDate': effectiveDate.toIso8601String(),
+        'description': description,
+      };
 }
 
 class HistoricalTaxQuery {
@@ -71,10 +71,15 @@ class HistoricalTaxQuery {
 
 abstract class HistoricalTaxService {
   Future<List<TaxRate>> getHistoricalRates(HistoricalTaxQuery query);
-  Future<TaxRate?> getRateForSpecificDate(TaxType taxType, DateTime date, {CompanyType? companyType});
-  Future<List<TaxRateChange>> getTaxRateChanges(TaxType taxType, DateTime startDate, DateTime endDate);
-  Future<TaxImpactAnalysis> analyzeTaxImpact(TaxType taxType, double amount, DateTime oldDate, DateTime newDate, {CompanyType? companyType});
-  Future<Map<String, dynamic>> generateTaxRateReport(DateTime startDate, DateTime endDate);
+  Future<TaxRate?> getRateForSpecificDate(TaxType taxType, DateTime date,
+      {CompanyType? companyType});
+  Future<List<TaxRateChange>> getTaxRateChanges(
+      TaxType taxType, DateTime startDate, DateTime endDate);
+  Future<TaxImpactAnalysis> analyzeTaxImpact(
+      TaxType taxType, double amount, DateTime oldDate, DateTime newDate,
+      {CompanyType? companyType});
+  Future<Map<String, dynamic>> generateTaxRateReport(
+      DateTime startDate, DateTime endDate);
 }
 
 class HistoricalTaxServiceImpl implements HistoricalTaxService {
@@ -91,8 +96,10 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
     final historicalRates = _historicalRates[query.taxType];
     if (historicalRates == null) return [];
 
-    return historicalRates.getRatesInPeriod(query.startDate, query.endDate)
-        .where((rate) => query.companyType == null || rate.appliesTo(query.companyType!))
+    return historicalRates
+        .getRatesInPeriod(query.startDate, query.endDate)
+        .where((rate) =>
+            query.companyType == null || rate.appliesTo(query.companyType!))
         .toList()
       ..sort((a, b) => a.effectiveFrom.compareTo(b.effectiveFrom));
   }
@@ -125,9 +132,10 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
     for (int i = 1; i < rates.length; i++) {
       final previousRate = rates[i - 1];
       final currentRate = rates[i];
-      
-      final impact = ((currentRate.rate - previousRate.rate) / previousRate.rate) * 100;
-      
+
+      final impact =
+          ((currentRate.rate - previousRate.rate) / previousRate.rate) * 100;
+
       changes.add(TaxRateChange(
         previousRate: previousRate,
         newRate: currentRate,
@@ -148,8 +156,10 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
     DateTime newDate, {
     CompanyType? companyType,
   }) async {
-    final oldRate = await getRateForSpecificDate(taxType, oldDate, companyType: companyType);
-    final newRate = await getRateForSpecificDate(taxType, newDate, companyType: companyType);
+    final oldRate = await getRateForSpecificDate(taxType, oldDate,
+        companyType: companyType);
+    final newRate = await getRateForSpecificDate(taxType, newDate,
+        companyType: companyType);
 
     if (oldRate == null || newRate == null) {
       throw Exception('Tax rate not found for specified dates');
@@ -158,9 +168,8 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
     final previousTaxAmount = amount * oldRate.rate;
     final newTaxAmount = amount * newRate.rate;
     final absoluteChange = newTaxAmount - previousTaxAmount;
-    final percentageChange = previousTaxAmount != 0 
-        ? (absoluteChange / previousTaxAmount) * 100 
-        : 0;
+    final percentageChange =
+        previousTaxAmount != 0 ? (absoluteChange / previousTaxAmount) * 100 : 0;
 
     return TaxImpactAnalysis(
       previousTaxAmount: previousTaxAmount,
@@ -168,7 +177,8 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
       absoluteChange: absoluteChange,
       percentageChange: percentageChange,
       effectiveDate: newRate.effectiveFrom,
-      description: _generateImpactDescription(taxType, oldRate, newRate, absoluteChange),
+      description:
+          _generateImpactDescription(taxType, oldRate, newRate, absoluteChange),
     );
   }
 
@@ -188,11 +198,11 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
     };
 
     int totalChanges = 0;
-    
+
     for (final taxType in TaxType.values) {
       final changes = await getTaxRateChanges(taxType, startDate, endDate);
       totalChanges += changes.length;
-      
+
       report['taxTypes'][taxType.name] = {
         'changes': changes.map((c) => c.toJson()).toList(),
         'changeCount': changes.length,
@@ -219,10 +229,10 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
           return 'Second phase of GST increase as announced in Budget 2022';
         }
         return 'Government policy adjustment';
-      
+
       case TaxType.corporateTax:
         return 'Corporate tax policy revision';
-      
+
       default:
         return 'Tax policy adjustment';
     }
@@ -237,9 +247,9 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
     final direction = absoluteChange >= 0 ? 'increase' : 'decrease';
     final oldPercentage = (oldRate.rate * 100).toStringAsFixed(1);
     final newPercentage = (newRate.rate * 100).toStringAsFixed(1);
-    
+
     return 'Tax rate changed from $oldPercentage% to $newPercentage%, '
-           'resulting in a ${direction} of S\$${absoluteChange.abs().toStringAsFixed(2)}';
+        'resulting in a ${direction} of S\$${absoluteChange.abs().toStringAsFixed(2)}';
   }
 
   Future<Map<String, dynamic>?> _getCurrentRate(TaxType taxType) async {
@@ -250,7 +260,7 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
   String _findMostVolatileTaxType(Map<String, dynamic> taxTypes) {
     String mostVolatile = '';
     int maxChanges = 0;
-    
+
     taxTypes.forEach((taxType, data) {
       final changeCount = data['changeCount'] as int;
       if (changeCount > maxChanges) {
@@ -258,18 +268,20 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
         mostVolatile = taxType;
       }
     });
-    
+
     return mostVolatile;
   }
 
-  List<Map<String, dynamic>> _findSignificantChanges(Map<String, dynamic> taxTypes) {
+  List<Map<String, dynamic>> _findSignificantChanges(
+      Map<String, dynamic> taxTypes) {
     final significantChanges = <Map<String, dynamic>>[];
-    
+
     taxTypes.forEach((taxType, data) {
       final changes = data['changes'] as List;
       for (final change in changes) {
         final impact = (change['impact'] as num).abs();
-        if (impact >= 10) { // Changes of 10% or more
+        if (impact >= 10) {
+          // Changes of 10% or more
           significantChanges.add({
             'taxType': taxType,
             'impact': impact,
@@ -279,7 +291,7 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
         }
       }
     });
-    
+
     return significantChanges;
   }
 
@@ -292,19 +304,23 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
     ));
   }
 
-  Future<double> calculateHistoricalGstImpact(double amount, DateTime transactionDate) async {
-    final currentRate = await getRateForSpecificDate(TaxType.gst, DateTime.now());
-    final historicalRate = await getRateForSpecificDate(TaxType.gst, transactionDate);
-    
+  Future<double> calculateHistoricalGstImpact(
+      double amount, DateTime transactionDate) async {
+    final currentRate =
+        await getRateForSpecificDate(TaxType.gst, DateTime.now());
+    final historicalRate =
+        await getRateForSpecificDate(TaxType.gst, transactionDate);
+
     if (currentRate == null || historicalRate == null) return 0;
-    
+
     final currentTax = amount * currentRate.rate;
     final historicalTax = amount * historicalRate.rate;
-    
+
     return currentTax - historicalTax;
   }
 
-  Future<Map<String, dynamic>> getCorporateTaxEvolution(CompanyType companyType) async {
+  Future<Map<String, dynamic>> getCorporateTaxEvolution(
+      CompanyType companyType) async {
     final rates = await getHistoricalRates(HistoricalTaxQuery(
       taxType: TaxType.corporateTax,
       startDate: DateTime(2000, 1, 1),
@@ -314,19 +330,21 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
 
     return {
       'companyType': companyType.name,
-      'rateHistory': rates.map((r) => {
-        'rate': r.rate,
-        'effectiveFrom': r.effectiveFrom.toIso8601String(),
-        'effectiveTo': r.effectiveTo?.toIso8601String(),
-        'description': r.description,
-      }).toList(),
-      'averageRate': rates.isNotEmpty 
+      'rateHistory': rates
+          .map((r) => {
+                'rate': r.rate,
+                'effectiveFrom': r.effectiveFrom.toIso8601String(),
+                'effectiveTo': r.effectiveTo?.toIso8601String(),
+                'description': r.description,
+              })
+          .toList(),
+      'averageRate': rates.isNotEmpty
           ? rates.map((r) => r.rate).reduce((a, b) => a + b) / rates.length
           : 0,
-      'lowestRate': rates.isNotEmpty 
+      'lowestRate': rates.isNotEmpty
           ? rates.map((r) => r.rate).reduce((a, b) => a < b ? a : b)
           : 0,
-      'highestRate': rates.isNotEmpty 
+      'highestRate': rates.isNotEmpty
           ? rates.map((r) => r.rate).reduce((a, b) => a > b ? a : b)
           : 0,
     };

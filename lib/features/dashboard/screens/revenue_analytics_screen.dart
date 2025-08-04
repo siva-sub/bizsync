@@ -8,7 +8,8 @@ class RevenueAnalyticsScreen extends ConsumerStatefulWidget {
   const RevenueAnalyticsScreen({super.key});
 
   @override
-  ConsumerState<RevenueAnalyticsScreen> createState() => _RevenueAnalyticsScreenState();
+  ConsumerState<RevenueAnalyticsScreen> createState() =>
+      _RevenueAnalyticsScreenState();
 }
 
 class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
@@ -30,7 +31,8 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final revenueAnalytics = ref.watch(revenueAnalyticsProvider(_selectedPeriod));
+    final revenueAnalytics =
+        ref.watch(revenueAnalyticsProvider(_selectedPeriod));
 
     return Scaffold(
       appBar: AppBar(
@@ -54,9 +56,8 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
         ),
       ),
       body: revenueAnalytics.when(
-        data: (data) => data != null 
-            ? _buildContent(data)
-            : _buildNoDataState(),
+        data: (data) =>
+            data != null ? _buildContent(data) : _buildNoDataState(),
         loading: () => _buildLoadingState(),
         error: (error, stack) => _buildErrorState(error),
       ),
@@ -124,9 +125,9 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Revenue trend chart
           InteractiveLineChart(
             data: data.revenueByDay,
@@ -149,19 +150,19 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
           InteractiveLineChart(
             data: [
               ...data.revenueByDay.map((dp) => DataPoint(
-                timestamp: dp.timestamp,
-                value: dp.value,
-                label: 'Total Revenue',
-              )),
+                    timestamp: dp.timestamp,
+                    value: dp.value,
+                    label: 'Total Revenue',
+                  )),
             ],
             title: 'Revenue Trends Comparison',
             subtitle: 'Total vs Recurring Revenue',
             lineColor: Colors.green,
             height: 300,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Growth rate visualization
           Card(
             child: Padding(
@@ -219,9 +220,9 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
             title: 'Revenue by Category',
             height: 350,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Top customers by revenue
           InteractiveBarChart(
             data: data.revenueByCustomer.take(10).toList(),
@@ -229,9 +230,9 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
             barColor: Colors.blue,
             height: 300,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Top products by revenue
           InteractiveBarChart(
             data: data.revenueByProduct.take(10).toList(),
@@ -247,7 +248,7 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
   Widget _buildForecastsTab(RevenueAnalytics data) {
     // Mock forecast data for demonstration
     final forecastData = _generateMockForecastData();
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -263,9 +264,9 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
             lineColor: Colors.green,
             height: 350,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Forecast metrics
           Card(
             child: Padding(
@@ -325,7 +326,8 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
                 const Spacer(),
                 if (changePercent != null)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: changePercent >= 0 ? Colors.green : Colors.red,
                       borderRadius: BorderRadius.circular(12),
@@ -365,7 +367,7 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
   Widget _buildGrowthIndicator(String label, double value, String unit) {
     final isPositive = value >= 0;
     final color = isPositive ? Colors.green : Colors.red;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -533,7 +535,7 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
 
   String _formatValue(double value, String unit) {
     String formatted = '';
-    
+
     if (unit == 'SGD') {
       formatted = '\$';
       if (value >= 1000000) {
@@ -547,14 +549,14 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
       formatted = value.toStringAsFixed(unit == '%' ? 1 : 0);
       if (unit != 'orders') formatted += ' $unit';
     }
-    
+
     return formatted;
   }
 
   List<DataPoint> _generateMockForecastData() {
     final forecast = <DataPoint>[];
     final now = DateTime.now();
-    
+
     for (int i = 1; i <= 30; i++) {
       forecast.add(DataPoint(
         timestamp: now.add(Duration(days: i)),
@@ -562,7 +564,7 @@ class _RevenueAnalyticsScreenState extends ConsumerState<RevenueAnalyticsScreen>
         label: 'Forecast',
       ));
     }
-    
+
     return forecast;
   }
 

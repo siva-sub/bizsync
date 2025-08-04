@@ -10,7 +10,8 @@ class BackupHistoryScreen extends ConsumerStatefulWidget {
   const BackupHistoryScreen({super.key});
 
   @override
-  ConsumerState<BackupHistoryScreen> createState() => _BackupHistoryScreenState();
+  ConsumerState<BackupHistoryScreen> createState() =>
+      _BackupHistoryScreenState();
 }
 
 class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
@@ -49,9 +50,9 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
             ),
             onChanged: (value) => setState(() => _searchQuery = value),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Filters
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -69,12 +70,13 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
                     }
                   },
                 ),
-                
+
                 const SizedBox(width: 8),
-                
+
                 // Status filter
                 ChoiceChip(
-                  label: Text(_filterStatus?.name.toUpperCase() ?? 'All Status'),
+                  label:
+                      Text(_filterStatus?.name.toUpperCase() ?? 'All Status'),
                   selected: _filterStatus != null,
                   onSelected: (selected) {
                     if (selected) {
@@ -84,9 +86,9 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
                     }
                   },
                 ),
-                
+
                 const SizedBox(width: 8),
-                
+
                 // Clear filters
                 if (_filterType != null || _filterStatus != null)
                   ActionChip(
@@ -121,7 +123,9 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            _searchQuery.isNotEmpty || _filterType != null || _filterStatus != null
+            _searchQuery.isNotEmpty ||
+                    _filterType != null ||
+                    _filterStatus != null
                 ? 'Try adjusting your search or filters'
                 : 'Create your first backup to get started',
             style: Theme.of(context).textTheme.bodyMedium,
@@ -279,8 +283,8 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: textColor,
-        ),
+              color: textColor,
+            ),
       ),
     );
   }
@@ -295,8 +299,8 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
       child: Text(
         type.name.toUpperCase(),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: Theme.of(context).colorScheme.onTertiaryContainer,
-        ),
+              color: Theme.of(context).colorScheme.onTertiaryContainer,
+            ),
       ),
     );
   }
@@ -369,41 +373,54 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Title
               Text(
                 'Backup Details',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 24),
-              
+
               // Details
               Expanded(
                 child: ListView(
                   controller: scrollController,
                   children: [
                     _buildDetailItem('File Name', backup.fileName),
-                    _buildDetailItem('Created', _formatDateTime(backup.createdAt)),
-                    _buildDetailItem('Type', backup.metadata.type.name.toUpperCase()),
-                    _buildDetailItem('Scope', _getScopeTitle(backup.metadata.scope)),
+                    _buildDetailItem(
+                        'Created', _formatDateTime(backup.createdAt)),
+                    _buildDetailItem(
+                        'Type', backup.metadata.type.name.toUpperCase()),
+                    _buildDetailItem(
+                        'Scope', _getScopeTitle(backup.metadata.scope)),
                     _buildDetailItem('Size', _formatFileSize(backup.fileSize)),
-                    _buildDetailItem('Compressed Size', _formatFileSize(backup.metadata.compressedSize)),
-                    _buildDetailItem('Records', backup.metadata.totalRecords.toString()),
-                    _buildDetailItem('Compression', backup.metadata.compressionAlgorithm),
-                    _buildDetailItem('Encrypted', backup.isEncrypted ? 'Yes' : 'No'),
-                    _buildDetailItem('Status', backup.status.name.toUpperCase()),
+                    _buildDetailItem('Compressed Size',
+                        _formatFileSize(backup.metadata.compressedSize)),
+                    _buildDetailItem(
+                        'Records', backup.metadata.totalRecords.toString()),
+                    _buildDetailItem(
+                        'Compression', backup.metadata.compressionAlgorithm),
+                    _buildDetailItem(
+                        'Encrypted', backup.isEncrypted ? 'Yes' : 'No'),
+                    _buildDetailItem(
+                        'Status', backup.status.name.toUpperCase()),
                     if (backup.errorMessage != null)
                       _buildDetailItem('Error', backup.errorMessage!),
                     if (backup.metadata.fromDate != null)
-                      _buildDetailItem('From Date', _formatDateTime(backup.metadata.fromDate!)),
+                      _buildDetailItem('From Date',
+                          _formatDateTime(backup.metadata.fromDate!)),
                     if (backup.metadata.toDate != null)
-                      _buildDetailItem('To Date', _formatDateTime(backup.metadata.toDate!)),
+                      _buildDetailItem(
+                          'To Date', _formatDateTime(backup.metadata.toDate!)),
                   ],
                 ),
               ),
@@ -425,8 +442,8 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
             child: Text(
               label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
           Expanded(
@@ -461,15 +478,15 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
             Text(
               backup.fileName,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               'This action cannot be undone.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.error,
-              ),
+                    color: Theme.of(context).colorScheme.error,
+                  ),
             ),
           ],
         ),
@@ -525,12 +542,12 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
             ),
             const SizedBox(height: 16),
             ...BackupType.values.map((type) => ListTile(
-              title: Text(type.name.toUpperCase()),
-              onTap: () {
-                setState(() => _filterType = type);
-                Navigator.of(context).pop();
-              },
-            )),
+                  title: Text(type.name.toUpperCase()),
+                  onTap: () {
+                    setState(() => _filterType = type);
+                    Navigator.of(context).pop();
+                  },
+                )),
           ],
         ),
       ),
@@ -552,12 +569,12 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
             ),
             const SizedBox(height: 16),
             ...BackupStatus.values.map((status) => ListTile(
-              title: Text(status.name.toUpperCase()),
-              onTap: () {
-                setState(() => _filterStatus = status);
-                Navigator.of(context).pop();
-              },
-            )),
+                  title: Text(status.name.toUpperCase()),
+                  onTap: () {
+                    setState(() => _filterStatus = status);
+                    Navigator.of(context).pop();
+                  },
+                )),
           ],
         ),
       ),
@@ -586,7 +603,8 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 }

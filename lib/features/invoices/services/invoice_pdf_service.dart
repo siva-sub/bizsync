@@ -11,7 +11,7 @@ import '../../../core/services/notification_service.dart';
 class InvoicePdfService {
   static InvoicePdfService? _instance;
   static InvoicePdfService get instance => _instance ??= InvoicePdfService._();
-  
+
   InvoicePdfService._();
 
   final NotificationService _notificationService = NotificationService.instance;
@@ -66,7 +66,8 @@ class InvoicePdfService {
       await invoicesDir.create(recursive: true);
     }
 
-    final fileName = 'invoice_${invoice.invoiceNumber}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+    final fileName =
+        'invoice_${invoice.invoiceNumber}_${DateTime.now().millisecondsSinceEpoch}.pdf';
     final file = File('${invoicesDir.path}/$fileName');
     await file.writeAsBytes(pdfBytes);
 
@@ -122,8 +123,10 @@ class InvoicePdfService {
                       ),
                       pw.SizedBox(height: 16),
                       _buildInfoRow('Invoice #:', invoice.invoiceNumber),
-                      _buildInfoRow('Issue Date:', dateFormat.format(invoice.issueDate)),
-                      _buildInfoRow('Due Date:', dateFormat.format(invoice.dueDate)),
+                      _buildInfoRow(
+                          'Issue Date:', dateFormat.format(invoice.issueDate)),
+                      _buildInfoRow(
+                          'Due Date:', dateFormat.format(invoice.dueDate)),
                       _buildInfoRow('Status:', _getStatusText(invoice.status)),
                     ],
                   ),
@@ -244,7 +247,8 @@ class InvoicePdfService {
                       ),
                       pw.SizedBox(height: 4),
                       pw.Text(
-                        companyInfo['tagline'] ?? 'Professional Business Solutions',
+                        companyInfo['tagline'] ??
+                            'Professional Business Solutions',
                         style: pw.TextStyle(
                           fontSize: 12,
                           color: PdfColors.white70,
@@ -286,7 +290,8 @@ class InvoicePdfService {
                     [
                       invoice.customerName,
                       if (invoice.customerEmail != null) invoice.customerEmail!,
-                      if (invoice.customerAddress != null) invoice.customerAddress!,
+                      if (invoice.customerAddress != null)
+                        invoice.customerAddress!,
                     ],
                   ),
                 ),
@@ -379,7 +384,8 @@ class InvoicePdfService {
                   children: [
                     pw.Text('Invoice Number: ${invoice.invoiceNumber}'),
                     pw.SizedBox(height: 4),
-                    pw.Text('Issue Date: ${dateFormat.format(invoice.issueDate)}'),
+                    pw.Text(
+                        'Issue Date: ${dateFormat.format(invoice.issueDate)}'),
                     pw.SizedBox(height: 4),
                     pw.Text('Due Date: ${dateFormat.format(invoice.dueDate)}'),
                   ],
@@ -414,8 +420,10 @@ class InvoicePdfService {
                 pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.end,
                   children: [
-                    _buildSimpleTotalRow('Subtotal:', currencyFormat.format(invoice.subtotal)),
-                    _buildSimpleTotalRow('Tax:', currencyFormat.format(invoice.taxAmount)),
+                    _buildSimpleTotalRow(
+                        'Subtotal:', currencyFormat.format(invoice.subtotal)),
+                    _buildSimpleTotalRow(
+                        'Tax:', currencyFormat.format(invoice.taxAmount)),
                     pw.Divider(thickness: 1),
                     _buildSimpleTotalRow(
                       'Total:',
@@ -499,7 +507,8 @@ class InvoicePdfService {
             // Invoice title
             pw.Center(
               child: pw.Container(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding:
+                    const pw.EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(),
                 ),
@@ -560,8 +569,10 @@ class InvoicePdfService {
                   ),
                   pw.SizedBox(height: 8),
                   pw.Text(invoice.customerName),
-                  if (invoice.customerEmail != null) pw.Text(invoice.customerEmail!),
-                  if (invoice.customerAddress != null) pw.Text(invoice.customerAddress!),
+                  if (invoice.customerEmail != null)
+                    pw.Text(invoice.customerEmail!),
+                  if (invoice.customerAddress != null)
+                    pw.Text(invoice.customerAddress!),
                 ],
               ),
             ),
@@ -615,7 +626,8 @@ class InvoicePdfService {
 
   // Helper methods for building PDF components
 
-  pw.Widget _buildHeader(EnhancedInvoice invoice, Map<String, String> companyInfo) {
+  pw.Widget _buildHeader(
+      EnhancedInvoice invoice, Map<String, String> companyInfo) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
@@ -676,7 +688,8 @@ class InvoicePdfService {
     );
   }
 
-  pw.Widget _buildLineItemsTable(EnhancedInvoice invoice, NumberFormat currencyFormat) {
+  pw.Widget _buildLineItemsTable(
+      EnhancedInvoice invoice, NumberFormat currencyFormat) {
     return pw.Table(
       border: pw.TableBorder.all(color: secondaryColor, width: 0.5),
       columnWidths: {
@@ -691,25 +704,32 @@ class InvoicePdfService {
           decoration: const pw.BoxDecoration(color: accentColor),
           children: [
             _buildTableCell('Description', isHeader: true),
-            _buildTableCell('Qty', isHeader: true, alignment: pw.Alignment.center),
-            _buildTableCell('Unit Price', isHeader: true, alignment: pw.Alignment.centerRight),
-            _buildTableCell('Total', isHeader: true, alignment: pw.Alignment.centerRight),
+            _buildTableCell('Qty',
+                isHeader: true, alignment: pw.Alignment.center),
+            _buildTableCell('Unit Price',
+                isHeader: true, alignment: pw.Alignment.centerRight),
+            _buildTableCell('Total',
+                isHeader: true, alignment: pw.Alignment.centerRight),
           ],
         ),
         // Items
         ...invoice.lineItems.map((item) => pw.TableRow(
-          children: [
-            _buildTableCell(item.description),
-            _buildTableCell(item.quantity.toString(), alignment: pw.Alignment.center),
-            _buildTableCell(currencyFormat.format(item.unitPrice), alignment: pw.Alignment.centerRight),
-            _buildTableCell(currencyFormat.format(item.total), alignment: pw.Alignment.centerRight),
-          ],
-        )),
+              children: [
+                _buildTableCell(item.description),
+                _buildTableCell(item.quantity.toString(),
+                    alignment: pw.Alignment.center),
+                _buildTableCell(currencyFormat.format(item.unitPrice),
+                    alignment: pw.Alignment.centerRight),
+                _buildTableCell(currencyFormat.format(item.total),
+                    alignment: pw.Alignment.centerRight),
+              ],
+            )),
       ],
     );
   }
 
-  pw.Widget _buildTableCell(String text, {bool isHeader = false, pw.Alignment? alignment}) {
+  pw.Widget _buildTableCell(String text,
+      {bool isHeader = false, pw.Alignment? alignment}) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(8),
       child: pw.Text(
@@ -718,14 +738,17 @@ class InvoicePdfService {
           fontWeight: isHeader ? pw.FontWeight.bold : pw.FontWeight.normal,
           fontSize: isHeader ? 12 : 10,
         ),
-        textAlign: alignment == pw.Alignment.center ? pw.TextAlign.center :
-                  alignment == pw.Alignment.centerRight ? pw.TextAlign.right :
-                  pw.TextAlign.left,
+        textAlign: alignment == pw.Alignment.center
+            ? pw.TextAlign.center
+            : alignment == pw.Alignment.centerRight
+                ? pw.TextAlign.right
+                : pw.TextAlign.left,
       ),
     );
   }
 
-  pw.Widget _buildTotalsSection(EnhancedInvoice invoice, NumberFormat currencyFormat) {
+  pw.Widget _buildTotalsSection(
+      EnhancedInvoice invoice, NumberFormat currencyFormat) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.end,
       children: [
@@ -733,9 +756,11 @@ class InvoicePdfService {
           width: 200,
           child: pw.Column(
             children: [
-              _buildTotalRow('Subtotal:', currencyFormat.format(invoice.subtotal)),
+              _buildTotalRow(
+                  'Subtotal:', currencyFormat.format(invoice.subtotal)),
               if (invoice.discountAmount > 0)
-                _buildTotalRow('Discount:', '-${currencyFormat.format(invoice.discountAmount)}'),
+                _buildTotalRow('Discount:',
+                    '-${currencyFormat.format(invoice.discountAmount)}'),
               _buildTotalRow('Tax:', currencyFormat.format(invoice.taxAmount)),
               pw.Divider(thickness: 1),
               _buildTotalRow(
@@ -796,7 +821,8 @@ class InvoicePdfService {
             ),
           ),
           pw.SizedBox(height: 8),
-          pw.Text('Bank Transfer: ${companyInfo['bank_details'] ?? 'DBS Bank: 123-456789-0'}'),
+          pw.Text(
+              'Bank Transfer: ${companyInfo['bank_details'] ?? 'DBS Bank: 123-456789-0'}'),
           pw.Text('PayNow: ${companyInfo['paynow'] ?? '+65 1234 5678'}'),
           pw.Text('SGQR: Scan the QR code for instant payment'),
         ],
@@ -833,7 +859,8 @@ class InvoicePdfService {
     return pw.Container(
       padding: const pw.EdgeInsets.only(top: 16),
       decoration: const pw.BoxDecoration(
-        border: pw.Border(top: pw.BorderSide(color: secondaryColor, width: 0.5)),
+        border:
+            pw.Border(top: pw.BorderSide(color: secondaryColor, width: 0.5)),
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -872,15 +899,16 @@ class InvoicePdfService {
           ),
           pw.SizedBox(height: 8),
           ...content.map((line) => pw.Padding(
-            padding: const pw.EdgeInsets.only(bottom: 2),
-            child: pw.Text(line, style: const pw.TextStyle(fontSize: 11)),
-          )),
+                padding: const pw.EdgeInsets.only(bottom: 2),
+                child: pw.Text(line, style: const pw.TextStyle(fontSize: 11)),
+              )),
         ],
       ),
     );
   }
 
-  pw.Widget _buildModernLineItemsTable(EnhancedInvoice invoice, NumberFormat currencyFormat) {
+  pw.Widget _buildModernLineItemsTable(
+      EnhancedInvoice invoice, NumberFormat currencyFormat) {
     return pw.Container(
       decoration: pw.BoxDecoration(
         borderRadius: pw.BorderRadius.circular(8),
@@ -907,10 +935,20 @@ class InvoicePdfService {
               ),
             ),
             children: [
-              _buildModernTableCell('Description', isHeader: true, textColor: PdfColors.white),
-              _buildModernTableCell('Qty', isHeader: true, textColor: PdfColors.white, alignment: pw.Alignment.center),
-              _buildModernTableCell('Unit Price', isHeader: true, textColor: PdfColors.white, alignment: pw.Alignment.centerRight),
-              _buildModernTableCell('Total', isHeader: true, textColor: PdfColors.white, alignment: pw.Alignment.centerRight),
+              _buildModernTableCell('Description',
+                  isHeader: true, textColor: PdfColors.white),
+              _buildModernTableCell('Qty',
+                  isHeader: true,
+                  textColor: PdfColors.white,
+                  alignment: pw.Alignment.center),
+              _buildModernTableCell('Unit Price',
+                  isHeader: true,
+                  textColor: PdfColors.white,
+                  alignment: pw.Alignment.centerRight),
+              _buildModernTableCell('Total',
+                  isHeader: true,
+                  textColor: PdfColors.white,
+                  alignment: pw.Alignment.centerRight),
             ],
           ),
           // Items
@@ -918,16 +956,21 @@ class InvoicePdfService {
             final index = entry.key;
             final item = entry.value;
             final isEven = index % 2 == 0;
-            
+
             return pw.TableRow(
               decoration: pw.BoxDecoration(
-                color: isEven ? PdfColors.white : const PdfColor.fromInt(0xFFFAFAFA),
+                color: isEven
+                    ? PdfColors.white
+                    : const PdfColor.fromInt(0xFFFAFAFA),
               ),
               children: [
                 _buildModernTableCell(item.description),
-                _buildModernTableCell(item.quantity.toString(), alignment: pw.Alignment.center),
-                _buildModernTableCell(currencyFormat.format(item.unitPrice), alignment: pw.Alignment.centerRight),
-                _buildModernTableCell(currencyFormat.format(item.total), alignment: pw.Alignment.centerRight),
+                _buildModernTableCell(item.quantity.toString(),
+                    alignment: pw.Alignment.center),
+                _buildModernTableCell(currencyFormat.format(item.unitPrice),
+                    alignment: pw.Alignment.centerRight),
+                _buildModernTableCell(currencyFormat.format(item.total),
+                    alignment: pw.Alignment.centerRight),
               ],
             );
           }),
@@ -951,14 +994,17 @@ class InvoicePdfService {
           fontSize: isHeader ? 12 : 10,
           color: textColor,
         ),
-        textAlign: alignment == pw.Alignment.center ? pw.TextAlign.center :
-                  alignment == pw.Alignment.centerRight ? pw.TextAlign.right :
-                  pw.TextAlign.left,
+        textAlign: alignment == pw.Alignment.center
+            ? pw.TextAlign.center
+            : alignment == pw.Alignment.centerRight
+                ? pw.TextAlign.right
+                : pw.TextAlign.left,
       ),
     );
   }
 
-  pw.Widget _buildModernTotals(EnhancedInvoice invoice, NumberFormat currencyFormat) {
+  pw.Widget _buildModernTotals(
+      EnhancedInvoice invoice, NumberFormat currencyFormat) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.end,
       children: [
@@ -974,11 +1020,15 @@ class InvoicePdfService {
           ),
           child: pw.Column(
             children: [
-              _buildModernTotalRow('Subtotal', currencyFormat.format(invoice.subtotal)),
+              _buildModernTotalRow(
+                  'Subtotal', currencyFormat.format(invoice.subtotal)),
               if (invoice.discountAmount > 0)
-                _buildModernTotalRow('Discount', '-${currencyFormat.format(invoice.discountAmount)}'),
-              _buildModernTotalRow('Tax', currencyFormat.format(invoice.taxAmount)),
-              pw.Divider(thickness: 1, color: const PdfColor.fromInt(0xFFE0E0E0)),
+                _buildModernTotalRow('Discount',
+                    '-${currencyFormat.format(invoice.discountAmount)}'),
+              _buildModernTotalRow(
+                  'Tax', currencyFormat.format(invoice.taxAmount)),
+              pw.Divider(
+                  thickness: 1, color: const PdfColor.fromInt(0xFFE0E0E0)),
               _buildModernTotalRow(
                 'TOTAL',
                 currencyFormat.format(invoice.totalAmount),
@@ -991,7 +1041,8 @@ class InvoicePdfService {
     );
   }
 
-  pw.Widget _buildModernTotalRow(String label, String value, {bool isTotal = false}) {
+  pw.Widget _buildModernTotalRow(String label, String value,
+      {bool isTotal = false}) {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 4),
       child: pw.Row(
@@ -1044,7 +1095,8 @@ class InvoicePdfService {
   }
 
   // Simple template helper methods
-  pw.Widget _buildSimpleLineItemsTable(EnhancedInvoice invoice, NumberFormat currencyFormat) {
+  pw.Widget _buildSimpleLineItemsTable(
+      EnhancedInvoice invoice, NumberFormat currencyFormat) {
     return pw.Table(
       border: pw.TableBorder.all(),
       children: [
@@ -1052,47 +1104,52 @@ class InvoicePdfService {
           children: [
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Description', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Description',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Qty', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Qty',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Price', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Price',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Total', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Total',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
           ],
         ),
         ...invoice.lineItems.map((item) => pw.TableRow(
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(item.description),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(item.quantity.toString()),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(currencyFormat.format(item.unitPrice)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(currencyFormat.format(item.total)),
-            ),
-          ],
-        )),
+              children: [
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(item.description),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(item.quantity.toString()),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(currencyFormat.format(item.unitPrice)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(currencyFormat.format(item.total)),
+                ),
+              ],
+            )),
       ],
     );
   }
 
-  pw.Widget _buildSimpleTotalRow(String label, String value, {bool isTotal = false}) {
+  pw.Widget _buildSimpleTotalRow(String label, String value,
+      {bool isTotal = false}) {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(
@@ -1116,56 +1173,63 @@ class InvoicePdfService {
   }
 
   // Classic template helper methods
-  pw.Widget _buildClassicLineItemsTable(EnhancedInvoice invoice, NumberFormat currencyFormat) {
+  pw.Widget _buildClassicLineItemsTable(
+      EnhancedInvoice invoice, NumberFormat currencyFormat) {
     return pw.Table(
       border: pw.TableBorder.all(width: 2),
       children: [
         pw.TableRow(
-          decoration: const pw.BoxDecoration(color: PdfColor.fromInt(0xFFF0F0F0)),
+          decoration:
+              const pw.BoxDecoration(color: PdfColor.fromInt(0xFFF0F0F0)),
           children: [
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('DESCRIPTION', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('DESCRIPTION',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('QTY', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('QTY',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('UNIT PRICE', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('UNIT PRICE',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('TOTAL', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('TOTAL',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
           ],
         ),
         ...invoice.lineItems.map((item) => pw.TableRow(
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(item.description),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(item.quantity.toString()),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(currencyFormat.format(item.unitPrice)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(currencyFormat.format(item.total)),
-            ),
-          ],
-        )),
+              children: [
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(item.description),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(item.quantity.toString()),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(currencyFormat.format(item.unitPrice)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(currencyFormat.format(item.total)),
+                ),
+              ],
+            )),
       ],
     );
   }
 
-  pw.Widget _buildClassicTotals(EnhancedInvoice invoice, NumberFormat currencyFormat) {
+  pw.Widget _buildClassicTotals(
+      EnhancedInvoice invoice, NumberFormat currencyFormat) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.end,
       children: [
@@ -1178,7 +1242,8 @@ class InvoicePdfService {
                 children: [
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('SUBTOTAL:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('SUBTOTAL:',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
@@ -1191,11 +1256,13 @@ class InvoicePdfService {
                   children: [
                     pw.Padding(
                       padding: const pw.EdgeInsets.all(8),
-                      child: pw.Text('DISCOUNT:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      child: pw.Text('DISCOUNT:',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                     ),
                     pw.Padding(
                       padding: const pw.EdgeInsets.all(8),
-                      child: pw.Text('-${currencyFormat.format(invoice.discountAmount)}'),
+                      child: pw.Text(
+                          '-${currencyFormat.format(invoice.discountAmount)}'),
                     ),
                   ],
                 ),
@@ -1203,7 +1270,8 @@ class InvoicePdfService {
                 children: [
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('TAX:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('TAX:',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
@@ -1212,17 +1280,21 @@ class InvoicePdfService {
                 ],
               ),
               pw.TableRow(
-                decoration: const pw.BoxDecoration(color: PdfColor.fromInt(0xFFF0F0F0)),
+                decoration:
+                    const pw.BoxDecoration(color: PdfColor.fromInt(0xFFF0F0F0)),
                 children: [
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('TOTAL:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14)),
+                    child: pw.Text('TOTAL:',
+                        style: pw.TextStyle(
+                            fontWeight: pw.FontWeight.bold, fontSize: 14)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
                     child: pw.Text(
                       currencyFormat.format(invoice.totalAmount),
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14),
+                      style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.bold, fontSize: 14),
                     ),
                   ),
                 ],

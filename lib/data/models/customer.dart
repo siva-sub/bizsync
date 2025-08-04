@@ -10,11 +10,12 @@ class Customer {
   final bool isActive;
   final bool gstRegistered;
   final String? uen; // Unique Entity Number for Singapore businesses
-  final String? gstRegistrationNumber; // GST registration number (e.g., 200012345M)
+  final String?
+      gstRegistrationNumber; // GST registration number (e.g., 200012345M)
   final String? countryCode; // For determining export/import status
   final String? billingAddress;
   final String? shippingAddress;
-  
+
   const Customer({
     required this.id,
     required this.name,
@@ -32,7 +33,7 @@ class Customer {
     this.billingAddress,
     this.shippingAddress,
   });
-  
+
   factory Customer.fromJson(Map<String, dynamic> json) {
     return Customer(
       id: json['id'] as String,
@@ -52,7 +53,7 @@ class Customer {
       shippingAddress: json['shipping_address'] as String?,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -72,7 +73,7 @@ class Customer {
       'shipping_address': shippingAddress,
     };
   }
-  
+
   factory Customer.fromDatabase(Map<String, dynamic> map) {
     return Customer(
       id: map['id'] as String,
@@ -92,7 +93,7 @@ class Customer {
       shippingAddress: map['shipping_address'] as String?,
     );
   }
-  
+
   Map<String, dynamic> toDatabase() {
     return {
       'id': id,
@@ -112,7 +113,7 @@ class Customer {
       'shipping_address': shippingAddress,
     };
   }
-  
+
   Customer copyWith({
     String? id,
     String? name,
@@ -142,13 +143,14 @@ class Customer {
       isActive: isActive ?? this.isActive,
       gstRegistered: gstRegistered ?? this.gstRegistered,
       uen: uen ?? this.uen,
-      gstRegistrationNumber: gstRegistrationNumber ?? this.gstRegistrationNumber,
+      gstRegistrationNumber:
+          gstRegistrationNumber ?? this.gstRegistrationNumber,
       countryCode: countryCode ?? this.countryCode,
       billingAddress: billingAddress ?? this.billingAddress,
       shippingAddress: shippingAddress ?? this.shippingAddress,
     );
   }
-  
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -167,7 +169,7 @@ class Customer {
       email.hashCode ^
       phone.hashCode ^
       address.hashCode;
-  
+
   @override
   String toString() {
     return 'Customer(id: $id, name: $name, email: $email, phone: $phone, address: $address)';

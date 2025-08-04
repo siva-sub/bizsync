@@ -75,19 +75,19 @@ class GstRegisterData {
   /// Check if GST registration is active (no end date or end date in future)
   bool get isActiveRegistration {
     if (!isGstRegistered) return false;
-    
+
     if (registeredTo == null || registeredTo!.isEmpty) return true;
-    
+
     try {
       // Parse the date (format appears to be DD/MM/YYYY from example)
       final parts = registeredTo!.split('/');
       if (parts.length != 3) return false;
-      
+
       final day = int.parse(parts[0]);
       final month = int.parse(parts[1]);
       final year = int.parse(parts[2]);
       final endDate = DateTime(year, month, day);
-      
+
       return endDate.isAfter(DateTime.now());
     } catch (e) {
       return false;
@@ -144,7 +144,7 @@ enum GstRegistrationStatus {
 
   static GstRegistrationStatus fromString(String? status) {
     if (status == null) return unknown;
-    
+
     switch (status.toLowerCase()) {
       case 'registered':
         return registered;

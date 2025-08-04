@@ -78,19 +78,19 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
           // Current backup progress
           if (backupService.isBackupInProgress)
             _buildBackupProgressCard(context, backupService.currentBackup!),
-          
+
           const SizedBox(height: 16),
-          
+
           // Quick backup options
           _buildQuickBackupSection(context, backupService),
-          
+
           const SizedBox(height: 24),
-          
+
           // Advanced backup options
           _buildAdvancedBackupSection(context),
-          
+
           const SizedBox(height: 24),
-          
+
           // Recent backups
           _buildRecentBackupsSection(context, backupService),
         ],
@@ -107,20 +107,20 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
           // Current restore progress
           if (restoreService.isRestoreInProgress)
             _buildRestoreProgressCard(context, restoreService.currentRestore!),
-          
+
           const SizedBox(height: 16),
-          
+
           // Restore from file
           _buildRestoreFromFileSection(context, restoreService),
-          
+
           const SizedBox(height: 24),
-          
+
           // Pending conflicts
           if (restoreService.hasPendingConflicts)
             _buildPendingConflictsSection(context, restoreService),
-          
+
           const SizedBox(height: 24),
-          
+
           // Restore options
           _buildRestoreOptionsSection(context),
         ],
@@ -128,7 +128,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     );
   }
 
-  Widget _buildBackupProgressCard(BuildContext context, BackupProgress progress) {
+  Widget _buildBackupProgressCard(
+      BuildContext context, BackupProgress progress) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -144,7 +145,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
                 ),
                 if (progress.status != BackupStatus.completed)
                   TextButton(
-                    onPressed: () => ref.read(backupServiceProvider).cancelBackup(),
+                    onPressed: () =>
+                        ref.read(backupServiceProvider).cancelBackup(),
                     child: const Text('Cancel'),
                   ),
               ],
@@ -169,7 +171,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     );
   }
 
-  Widget _buildRestoreProgressCard(BuildContext context, RestoreProgress progress) {
+  Widget _buildRestoreProgressCard(
+      BuildContext context, RestoreProgress progress) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -185,7 +188,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
                 ),
                 if (progress.status != RestoreStatus.completed)
                   TextButton(
-                    onPressed: () => ref.read(restoreServiceProvider).cancelRestore(),
+                    onPressed: () =>
+                        ref.read(restoreServiceProvider).cancelRestore(),
                     child: const Text('Cancel'),
                   ),
               ],
@@ -210,7 +214,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     );
   }
 
-  Widget _buildQuickBackupSection(BuildContext context, BackupService backupService) {
+  Widget _buildQuickBackupSection(
+      BuildContext context, BackupService backupService) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -226,8 +231,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: backupService.isBackupInProgress 
-                        ? null 
+                    onPressed: backupService.isBackupInProgress
+                        ? null
                         : () => _createQuickBackup(context, BackupType.full),
                     icon: const Icon(Icons.backup),
                     label: const Text('Full Backup'),
@@ -236,9 +241,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: backupService.isBackupInProgress 
-                        ? null 
-                        : () => _createQuickBackup(context, BackupType.incremental),
+                    onPressed: backupService.isBackupInProgress
+                        ? null
+                        : () =>
+                            _createQuickBackup(context, BackupType.incremental),
                     icon: const Icon(Icons.update),
                     label: const Text('Incremental'),
                   ),
@@ -271,7 +277,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
             ListTile(
               leading: const Icon(Icons.tune),
               title: const Text('Custom Backup'),
-              subtitle: const Text('Configure backup options, location, and encryption'),
+              subtitle: const Text(
+                  'Configure backup options, location, and encryption'),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () => _navigateToBackupWizard(context),
             ),
@@ -289,9 +296,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     );
   }
 
-  Widget _buildRecentBackupsSection(BuildContext context, BackupService backupService) {
+  Widget _buildRecentBackupsSection(
+      BuildContext context, BackupService backupService) {
     final recentBackups = backupService.backupHistory.take(3).toList();
-    
+
     if (recentBackups.isEmpty) {
       return Card(
         child: Padding(
@@ -340,14 +348,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
               ],
             ),
             const SizedBox(height: 12),
-            ...recentBackups.map((backup) => _buildBackupListItem(context, backup)),
+            ...recentBackups
+                .map((backup) => _buildBackupListItem(context, backup)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRestoreFromFileSection(BuildContext context, RestoreService restoreService) {
+  Widget _buildRestoreFromFileSection(
+      BuildContext context, RestoreService restoreService) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -360,8 +370,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: restoreService.isRestoreInProgress 
-                  ? null 
+              onPressed: restoreService.isRestoreInProgress
+                  ? null
                   : () => _selectBackupFileToRestore(context),
               icon: const Icon(Icons.file_open),
               label: const Text('Select Backup File'),
@@ -377,7 +387,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     );
   }
 
-  Widget _buildPendingConflictsSection(BuildContext context, RestoreService restoreService) {
+  Widget _buildPendingConflictsSection(
+      BuildContext context, RestoreService restoreService) {
     return Card(
       color: Theme.of(context).colorScheme.errorContainer,
       child: Padding(
@@ -395,8 +406,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
                 Text(
                   'Conflicts Detected',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                      ),
                 ),
               ],
             ),
@@ -404,8 +415,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
             Text(
               '${restoreService.pendingConflicts.length} conflicts need resolution before restore can continue.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                  ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -433,7 +444,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
             ListTile(
               leading: const Icon(Icons.restore_page),
               title: const Text('Advanced Restore'),
-              subtitle: const Text('Configure restore options and conflict resolution'),
+              subtitle: const Text(
+                  'Configure restore options and conflict resolution'),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () => _navigateToRestoreWizard(context),
             ),
@@ -489,7 +501,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 
@@ -502,10 +515,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
       final directory = await FilePicker.platform.getDirectoryPath(
         dialogTitle: 'Select backup location',
       );
-      
+
       if (directory != null) {
         final backupService = ref.read(backupServiceProvider);
-        
+
         if (type == BackupType.full) {
           await backupService.createFullBackup(
             outputPath: directory,
@@ -515,10 +528,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
           );
         } else {
           // For incremental backup, use last backup date
-          final lastBackup = backupService.backupHistory.isNotEmpty 
+          final lastBackup = backupService.backupHistory.isNotEmpty
               ? backupService.backupHistory.first.createdAt
               : DateTime.now().subtract(const Duration(days: 7));
-          
+
           await backupService.createIncrementalBackup(
             outputPath: directory,
             fromDate: lastBackup,
@@ -527,7 +540,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
             },
           );
         }
-        
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Backup created successfully')),
@@ -550,10 +563,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
         allowedExtensions: ['bdb'],
         dialogTitle: 'Select backup file to restore',
       );
-      
+
       if (result != null && result.files.single.path != null) {
         final backupPath = result.files.single.path!;
-        
+
         if (context.mounted) {
           _navigateToRestoreWizard(context, backupPath: backupPath);
         }
@@ -567,7 +580,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     }
   }
 
-  void _handleBackupAction(BuildContext context, BackupHistoryEntry backup, String action) {
+  void _handleBackupAction(
+      BuildContext context, BackupHistoryEntry backup, String action) {
     switch (action) {
       case 'restore':
         _navigateToRestoreWizard(context, backupPath: backup.filePath);
@@ -575,7 +589,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
       case 'share':
         // Implement share functionality
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Share functionality not implemented yet')),
+          const SnackBar(
+              content: Text('Share functionality not implemented yet')),
         );
         break;
       case 'delete':
@@ -584,7 +599,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     }
   }
 
-  void _showDeleteBackupDialog(BuildContext context, BackupHistoryEntry backup) {
+  void _showDeleteBackupDialog(
+      BuildContext context, BackupHistoryEntry backup) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -637,14 +653,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
   void _navigateToScheduledBackups(BuildContext context) {
     // Implement scheduled backups screen
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Scheduled backups screen not implemented yet')),
+      const SnackBar(
+          content: Text('Scheduled backups screen not implemented yet')),
     );
   }
 
   void _navigateToConflictResolution(BuildContext context) {
     // Implement conflict resolution screen
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Conflict resolution screen not implemented yet')),
+      const SnackBar(
+          content: Text('Conflict resolution screen not implemented yet')),
     );
   }
 }

@@ -65,16 +65,16 @@ class WithholdingTaxResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'grossAmount': grossAmount,
-    'withholdingTaxRate': withholdingTaxRate,
-    'withholdingTaxAmount': withholdingTaxAmount,
-    'netAmount': netAmount,
-    'taxBasis': taxBasis,
-    'legislation': legislation,
-    'treatyApplied': treatyApplied,
-    'treatyReference': treatyReference,
-    'breakdown': breakdown,
-  };
+        'grossAmount': grossAmount,
+        'withholdingTaxRate': withholdingTaxRate,
+        'withholdingTaxAmount': withholdingTaxAmount,
+        'netAmount': netAmount,
+        'taxBasis': taxBasis,
+        'legislation': legislation,
+        'treatyApplied': treatyApplied,
+        'treatyReference': treatyReference,
+        'breakdown': breakdown,
+      };
 }
 
 class WithholdingTaxCalculator {
@@ -91,7 +91,7 @@ class WithholdingTaxCalculator {
   }) {
     // Determine applicable rate
     final rateInfo = _determineWithholdingTaxRate(context, paymentDate);
-    
+
     final withholdingTaxAmount = amount * rateInfo['rate'];
     final netAmount = amount - withholdingTaxAmount;
 
@@ -119,7 +119,7 @@ class WithholdingTaxCalculator {
         context.incomeType,
         paymentDate,
       );
-      
+
       if (treatyRate != null) {
         return {
           'rate': treatyRate,
@@ -133,7 +133,7 @@ class WithholdingTaxCalculator {
 
     // Fallback to domestic rates
     final domesticRate = _getDomesticWithholdingTaxRate(context);
-    
+
     return {
       'rate': domesticRate['rate'],
       'basis': domesticRate['basis'],
@@ -143,7 +143,8 @@ class WithholdingTaxCalculator {
     };
   }
 
-  double? _getTreatyRate(String countryCode, WithholdingTaxType incomeType, DateTime date) {
+  double? _getTreatyRate(
+      String countryCode, WithholdingTaxType incomeType, DateTime date) {
     final treaty = _treatyRates[countryCode];
     if (treaty == null || !treaty.isEffectiveOn(date)) return null;
 
@@ -167,7 +168,8 @@ class WithholdingTaxCalculator {
     }
   }
 
-  Map<String, dynamic> _getDomesticWithholdingTaxRate(WithholdingTaxContext context) {
+  Map<String, dynamic> _getDomesticWithholdingTaxRate(
+      WithholdingTaxContext context) {
     switch (context.incomeType) {
       case WithholdingTaxType.dividends:
         // Singapore one-tier system - no withholding tax on dividends
@@ -193,7 +195,8 @@ class WithholdingTaxCalculator {
         if (context.recipientType == RecipientType.nonResident) {
           return {
             'rate': 0.10,
-            'basis': 'Standard withholding tax rate for royalties to non-residents',
+            'basis':
+                'Standard withholding tax rate for royalties to non-residents',
           };
         } else {
           return {
@@ -208,7 +211,8 @@ class WithholdingTaxCalculator {
         if (context.recipientType == RecipientType.nonResident) {
           return {
             'rate': 0.17,
-            'basis': 'Standard corporate tax rate applied to non-resident services',
+            'basis':
+                'Standard corporate tax rate applied to non-resident services',
           };
         } else {
           return {
@@ -249,7 +253,8 @@ class WithholdingTaxCalculator {
       'recipientCountry': context.recipientCountry,
       'applicableRate': rateInfo['rate'],
       'taxBasis': rateInfo['basis'],
-      'treatyBenefits': rateInfo['treatyApplied'] ? 'Applied' : 'Not Applicable',
+      'treatyBenefits':
+          rateInfo['treatyApplied'] ? 'Applied' : 'Not Applicable',
       'calculation': {
         'grossAmount': amount,
         'taxRate': rateInfo['rate'],
@@ -261,9 +266,15 @@ class WithholdingTaxCalculator {
 
   // Certificate of Residence verification
   bool verifyCertificateOfResidence(Map<String, dynamic> certificate) {
-    final requiredFields = ['recipientName', 'recipientAddress', 'countryOfResidence', 
-                           'taxIdentificationNumber', 'issueDate', 'validity'];
-    
+    final requiredFields = [
+      'recipientName',
+      'recipientAddress',
+      'countryOfResidence',
+      'taxIdentificationNumber',
+      'issueDate',
+      'validity'
+    ];
+
     for (final field in requiredFields) {
       if (!certificate.containsKey(field) || certificate[field] == null) {
         return false;
@@ -274,7 +285,7 @@ class WithholdingTaxCalculator {
     final issueDate = DateTime.parse(certificate['issueDate']);
     final validityPeriod = certificate['validity'] as int? ?? 12; // months
     final expiryDate = issueDate.add(Duration(days: validityPeriod * 30));
-    
+
     return DateTime.now().isBefore(expiryDate);
   }
 

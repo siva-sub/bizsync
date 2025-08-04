@@ -99,7 +99,7 @@ class RecurringInvoiceTemplate {
   /// Calculate the next generation date based on pattern
   DateTime calculateNextGenerationDate() {
     final baseDate = nextGenerationDate ?? startDate;
-    
+
     switch (pattern) {
       case RecurringPattern.weekly:
         return baseDate.add(Duration(days: 7 * interval));
@@ -108,9 +108,11 @@ class RecurringInvoiceTemplate {
       case RecurringPattern.monthly:
         return DateTime(baseDate.year, baseDate.month + interval, baseDate.day);
       case RecurringPattern.quarterly:
-        return DateTime(baseDate.year, baseDate.month + (3 * interval), baseDate.day);
+        return DateTime(
+            baseDate.year, baseDate.month + (3 * interval), baseDate.day);
       case RecurringPattern.halfYearly:
-        return DateTime(baseDate.year, baseDate.month + (6 * interval), baseDate.day);
+        return DateTime(
+            baseDate.year, baseDate.month + (6 * interval), baseDate.day);
       case RecurringPattern.yearly:
         return DateTime(baseDate.year + interval, baseDate.month, baseDate.day);
       case RecurringPattern.custom:
@@ -121,19 +123,20 @@ class RecurringInvoiceTemplate {
   /// Check if this template should generate a new invoice
   bool shouldGenerateInvoice() {
     if (!isActive) return false;
-    
+
     final now = DateTime.now();
     final nextDate = nextGenerationDate ?? startDate;
-    
+
     // Check if it's time to generate
     if (now.isBefore(nextDate)) return false;
-    
+
     // Check if we've reached the end date
     if (endDate != null && now.isAfter(endDate!)) return false;
-    
+
     // Check if we've reached max occurrences
-    if (maxOccurrences != null && generatedCount >= maxOccurrences!) return false;
-    
+    if (maxOccurrences != null && generatedCount >= maxOccurrences!)
+      return false;
+
     return true;
   }
 
@@ -173,8 +176,10 @@ class RecurringInvoiceGenerationResult {
     required this.generatedAt,
   });
 
-  factory RecurringInvoiceGenerationResult.fromJson(Map<String, dynamic> json) =>
+  factory RecurringInvoiceGenerationResult.fromJson(
+          Map<String, dynamic> json) =>
       _$RecurringInvoiceGenerationResultFromJson(json);
 
-  Map<String, dynamic> toJson() => _$RecurringInvoiceGenerationResultToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$RecurringInvoiceGenerationResultToJson(this);
 }

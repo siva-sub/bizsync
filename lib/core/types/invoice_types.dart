@@ -7,8 +7,14 @@ import '../../features/invoices/models/invoice_models.dart' as crdt;
 
 // Re-export enhanced invoice types and CRDT types FIRST
 export '../../features/invoices/models/enhanced_invoice_model.dart';
-export '../../features/invoices/models/invoice_models.dart' 
-    show PaymentTerm, LineItemType, TaxCalculationMethod, CRDTInvoiceItem, CRDTInvoiceWorkflow, CRDTInvoicePayment;
+export '../../features/invoices/models/invoice_models.dart'
+    show
+        PaymentTerm,
+        LineItemType,
+        TaxCalculationMethod,
+        CRDTInvoiceItem,
+        CRDTInvoiceWorkflow,
+        CRDTInvoicePayment;
 
 // Type aliases for backward compatibility
 typedef CRDTInvoice = enhanced.CRDTInvoiceEnhanced;

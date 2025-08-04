@@ -8,18 +8,18 @@ import '../models/index.dart';
 class AttendanceService {
   final NotificationService _notificationService;
   final String _nodeId = UuidGenerator.generateId();
-  
+
   // In-memory storage for demo
   final Map<String, CRDTAttendanceRecord> _attendanceRecords = {};
-  
+
   // Standard work schedule
   static const Duration standardWorkDay = Duration(hours: 8);
   static const Duration lunchBreak = Duration(hours: 1);
   static const int standardWorkStartHour = 9; // 9 AM
   static const int standardWorkEndHour = 18; // 6 PM
-  
+
   AttendanceService(this._notificationService);
-  
+
   /// Clock in employee
   Future<CRDTAttendanceRecord> clockIn({
     required String employeeId,
@@ -32,15 +32,15 @@ class AttendanceService {
   }) async {
     final now = clockInTime ?? DateTime.now();
     final date = DateTime(now.year, now.month, now.day);
-    
+
     // Check if already clocked in for today
     final existingRecord = getAttendanceRecord(employeeId, date);
     if (existingRecord != null && existingRecord.clockInTime.value != null) {
       throw Exception('Employee already clocked in for today');
     }
-    
+
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     CRDTAttendanceRecord record;
     if (existingRecord != null) {
       // Update existing record
@@ -59,7 +59,7 @@ class AttendanceService {
       );
       _attendanceRecords[record.id] = record;
     }
-    
+
     record.clockIn(
       time: now,
       location: location,
@@ -68,14 +68,16 @@ class AttendanceService {
       device: deviceId,
       timestamp: timestamp,
     );
-    
+
     // Check if late
-    final standardStartTime = DateTime(date.year, date.month, date.day, standardWorkStartHour);
-    final isLate = now.isAfter(standardStartTime.add(const Duration(minutes: 15))); // 15 min grace period
-    
+    final standardStartTime =
+        DateTime(date.year, date.month, date.day, standardWorkStartHour);
+    final isLate = now.isAfter(standardStartTime
+        .add(const Duration(minutes: 15))); // 15 min grace period
+
     if (isLate) {
       record.isLate.setValue(true, timestamp);
-      
+
       // Send late notification
       await _notificationService.sendNotification(
         title: 'Late Clock-in',
@@ -88,10 +90,10 @@ class AttendanceService {
         },
       );
     }
-    
+
     return record;
   }
-  
+
   /// Clock out employee
   Future<CRDTAttendanceRecord> clockOut({
     required String employeeId,
@@ -103,22 +105,23 @@ class AttendanceService {
   }) async {
     final now = clockOutTime ?? DateTime.now();
     final date = DateTime(now.year, now.month, now.day);
-    
+
     final record = getAttendanceRecord(employeeId, date);
     if (record == null) {
-      throw Exception('No attendance record found for today. Please clock in first.');
+      throw Exception(
+          'No attendance record found for today. Please clock in first.');
     }
-    
+
     if (record.clockInTime.value == null) {
       throw Exception('Employee has not clocked in yet');
     }
-    
+
     if (record.clockOutTime.value != null) {
       throw Exception('Employee already clocked out for today');
     }
-    
+
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     record.clockOut(
       time: now,
       location: location,
@@ -126,14 +129,16 @@ class AttendanceService {
       longitude: longitude,
       timestamp: timestamp,
     );
-    
+
     // Check if early departure
-    final standardEndTime = DateTime(date.year, date.month, date.day, standardWorkEndHour);
-    final isEarlyDeparture = now.isBefore(standardEndTime.subtract(const Duration(minutes: 15)));
-    
+    final standardEndTime =
+        DateTime(date.year, date.month, date.day, standardWorkEndHour);
+    final isEarlyDeparture =
+        now.isBefore(standardEndTime.subtract(const Duration(minutes: 15)));
+
     if (isEarlyDeparture) {
       record.isEarlyDeparture.setValue(true, timestamp);
-      
+
       // Send notification
       await _notificationService.sendNotification(
         title: 'Early Departure',
@@ -146,7 +151,7 @@ class AttendanceService {
         },
       );
     }
-    
+
     // Calculate overtime
     final hoursWorked = record.totalHoursWorked;
     if (hoursWorked > 8.0) {
@@ -163,52 +168,53 @@ class AttendanceService {
         timestamp: timestamp,
       );
     }
-    
+
     return record;
   }
-  
+
   /// Start break
   Future<void> startBreak(String employeeId, {DateTime? breakTime}) async {
     final now = breakTime ?? DateTime.now();
     final date = DateTime(now.year, now.month, now.day);
-    
+
     final record = getAttendanceRecord(employeeId, date);
     if (record == null) {
       throw Exception('No attendance record found for today');
     }
-    
+
     if (record.clockInTime.value == null) {
       throw Exception('Employee has not clocked in yet');
     }
-    
-    if (record.breakStartTime.value != null && record.breakEndTime.value == null) {
+
+    if (record.breakStartTime.value != null &&
+        record.breakEndTime.value == null) {
       throw Exception('Break already started');
     }
-    
+
     record.startBreak(now, HLCTimestamp.now(_nodeId));
   }
-  
+
   /// End break
   Future<void> endBreak(String employeeId, {DateTime? breakTime}) async {
     final now = breakTime ?? DateTime.now();
     final date = DateTime(now.year, now.month, now.day);
-    
+
     final record = getAttendanceRecord(employeeId, date);
     if (record == null) {
       throw Exception('No attendance record found for today');
     }
-    
+
     if (record.breakStartTime.value == null) {
       throw Exception('Break not started');
     }
-    
+
     if (record.breakEndTime.value != null) {
       throw Exception('Break already ended');
     }
-    
+
     record.endBreak(now, HLCTimestamp.now(_nodeId));
   }
-  
+
   /// Mark employee as absent
   Future<CRDTAttendanceRecord> markAbsent({
     required String employeeId,
@@ -218,14 +224,14 @@ class AttendanceService {
     Map<String, dynamic>? metadata,
   }) async {
     final attendanceDate = DateTime(date.year, date.month, date.day);
-    
+
     final existingRecord = getAttendanceRecord(employeeId, attendanceDate);
     if (existingRecord != null && existingRecord.status.value != 'absent') {
       throw Exception('Attendance record already exists for this date');
     }
-    
+
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     final record = CRDTAttendanceRecord(
       id: UuidGenerator.generateId(),
       nodeId: _nodeId,
@@ -239,9 +245,9 @@ class AttendanceService {
       attendanceComments: reason,
       attendanceMetadata: metadata,
     );
-    
+
     _attendanceRecords[record.id] = record;
-    
+
     // Send notification
     await _notificationService.sendNotification(
       title: 'Employee Absent',
@@ -253,10 +259,10 @@ class AttendanceService {
         'reason': reason,
       },
     );
-    
+
     return record;
   }
-  
+
   /// Mark employee on leave
   Future<CRDTAttendanceRecord> markOnLeave({
     required String employeeId,
@@ -267,7 +273,7 @@ class AttendanceService {
   }) async {
     final attendanceDate = DateTime(date.year, date.month, date.day);
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     final record = CRDTAttendanceRecord(
       id: UuidGenerator.generateId(),
       nodeId: _nodeId,
@@ -284,23 +290,23 @@ class AttendanceService {
         ...?metadata,
       },
     );
-    
+
     _attendanceRecords[record.id] = record;
     return record;
   }
-  
+
   /// Get attendance record for a specific date
   CRDTAttendanceRecord? getAttendanceRecord(String employeeId, DateTime date) {
     final targetDate = DateTime(date.year, date.month, date.day);
-    
+
     return _attendanceRecords.values
-        .where((record) => 
+        .where((record) =>
             record.employeeId.value == employeeId &&
             !record.isDeleted &&
             _isSameDate(record.date.value, targetDate))
         .firstOrNull;
   }
-  
+
   /// Get attendance records for an employee within a date range
   List<CRDTAttendanceRecord> getAttendanceRecords({
     required String employeeId,
@@ -318,21 +324,21 @@ class AttendanceService {
     }).toList()
       ..sort((a, b) => a.date.value.compareTo(b.date.value));
   }
-  
+
   /// Get team attendance for a specific date
   Map<String, CRDTAttendanceRecord?> getTeamAttendance({
     required List<String> employeeIds,
     required DateTime date,
   }) {
     final result = <String, CRDTAttendanceRecord?>{};
-    
+
     for (final employeeId in employeeIds) {
       result[employeeId] = getAttendanceRecord(employeeId, date);
     }
-    
+
     return result;
   }
-  
+
   /// Get attendance summary for an employee
   Map<String, dynamic> getAttendanceSummary({
     required String employeeId,
@@ -344,7 +350,7 @@ class AttendanceService {
       startDate: startDate,
       endDate: endDate,
     );
-    
+
     int presentDays = 0;
     int absentDays = 0;
     int leaveDays = 0;
@@ -353,7 +359,7 @@ class AttendanceService {
     int overtimeDays = 0;
     double totalHours = 0.0;
     double overtimeHours = 0.0;
-    
+
     for (final record in records) {
       switch (record.status.value) {
         case 'present':
@@ -372,10 +378,11 @@ class AttendanceService {
           break;
       }
     }
-    
+
     final workingDays = EmployeeUtils.calculateWorkingDays(startDate, endDate);
-    final attendanceRate = workingDays > 0 ? (presentDays / workingDays) * 100 : 0.0;
-    
+    final attendanceRate =
+        workingDays > 0 ? (presentDays / workingDays) * 100 : 0.0;
+
     return {
       'period': {
         'start_date': startDate.toIso8601String(),
@@ -391,17 +398,20 @@ class AttendanceService {
       'punctuality': {
         'late_days': lateDays,
         'early_departure_days': earlyDepartureDays,
-        'punctuality_rate': presentDays > 0 ? ((presentDays - lateDays) / presentDays) * 100 : 0.0,
+        'punctuality_rate': presentDays > 0
+            ? ((presentDays - lateDays) / presentDays) * 100
+            : 0.0,
       },
       'working_hours': {
         'total_hours': totalHours.round(),
         'overtime_hours': overtimeHours.round(),
         'overtime_days': overtimeDays,
-        'average_hours_per_day': presentDays > 0 ? totalHours / presentDays : 0.0,
+        'average_hours_per_day':
+            presentDays > 0 ? totalHours / presentDays : 0.0,
       },
     };
   }
-  
+
   /// Get team attendance summary
   Map<String, dynamic> getTeamAttendanceSummary({
     required List<String> employeeIds,
@@ -418,20 +428,20 @@ class AttendanceService {
       'average_attendance_rate': 0.0,
       'employee_summaries': <String, Map<String, dynamic>>{},
     };
-    
+
     double totalAttendanceRate = 0.0;
     final today = DateTime.now();
-    
+
     for (final employeeId in employeeIds) {
       final summary = getAttendanceSummary(
         employeeId: employeeId,
         startDate: startDate,
         endDate: endDate,
       );
-      
+
       teamSummary['employee_summaries'][employeeId] = summary;
       totalAttendanceRate += summary['attendance']['attendance_rate'];
-      
+
       // Today's attendance
       final todayRecord = getAttendanceRecord(employeeId, today);
       if (todayRecord != null) {
@@ -450,13 +460,13 @@ class AttendanceService {
         }
       }
     }
-    
-    teamSummary['average_attendance_rate'] = 
+
+    teamSummary['average_attendance_rate'] =
         employeeIds.isNotEmpty ? totalAttendanceRate / employeeIds.length : 0.0;
-    
+
     return teamSummary;
   }
-  
+
   /// Approve attendance record
   Future<void> approveAttendance({
     required String attendanceRecordId,
@@ -467,13 +477,13 @@ class AttendanceService {
     if (record == null) {
       throw Exception('Attendance record not found');
     }
-    
+
     record.approve(
       approverId: approverId,
       approverComments: comments,
       timestamp: HLCTimestamp.now(_nodeId),
     );
-    
+
     await _notificationService.sendNotification(
       title: 'Attendance Approved',
       message: 'Attendance record has been approved',
@@ -485,7 +495,7 @@ class AttendanceService {
       },
     );
   }
-  
+
   /// Generate attendance report
   Map<String, dynamic> generateAttendanceReport({
     required List<String> employeeIds,
@@ -508,32 +518,31 @@ class AttendanceService {
       ),
       'detailed_records': <String, List<Map<String, dynamic>>>{},
     };
-    
+
     for (final employeeId in employeeIds) {
       final records = getAttendanceRecords(
         employeeId: employeeId,
         startDate: startDate,
         endDate: endDate,
       );
-      
-      report['detailed_records'][employeeId] = records
-          .map((record) => record.toJson())
-          .toList();
+
+      report['detailed_records'][employeeId] =
+          records.map((record) => record.toJson()).toList();
     }
-    
+
     return report;
   }
-  
+
   // ============================================================================
   // PRIVATE HELPER METHODS
   // ============================================================================
-  
+
   bool _isSameDate(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
-           date1.month == date2.month &&
-           date1.day == date2.day;
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
-  
+
   String _formatTime(DateTime time) {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }

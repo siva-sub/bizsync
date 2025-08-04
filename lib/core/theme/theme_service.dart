@@ -45,8 +45,8 @@ class ThemePreferences {
     return ThemePreferences(
       mode: AppThemeMode.values[json['mode'] ?? 0],
       useSystemAccentColor: json['useSystemAccentColor'] ?? false,
-      customPrimaryColor: json['customPrimaryColor'] != null 
-          ? Color(json['customPrimaryColor']) 
+      customPrimaryColor: json['customPrimaryColor'] != null
+          ? Color(json['customPrimaryColor'])
           : null,
     );
   }
@@ -55,8 +55,9 @@ class ThemePreferences {
 // Theme service for managing app themes
 class ThemeService extends ChangeNotifier {
   static const String _prefsKey = 'theme_preferences';
-  
-  ThemePreferences _preferences = const ThemePreferences(mode: AppThemeMode.system);
+
+  ThemePreferences _preferences =
+      const ThemePreferences(mode: AppThemeMode.system);
   SharedPreferences? _prefs;
 
   ThemePreferences get preferences => _preferences;
@@ -78,14 +79,13 @@ class ThemeService extends ChangeNotifier {
 
   Future<void> _loadPreferences() async {
     if (_prefs == null) return;
-    
+
     final prefsJson = _prefs!.getString(_prefsKey);
     if (prefsJson != null) {
       try {
         final Map<String, dynamic> data = Map<String, dynamic>.from(
-          // Simple JSON decode - using basic parsing since we don't have dart:convert
-          _parseJson(prefsJson)
-        );
+            // Simple JSON decode - using basic parsing since we don't have dart:convert
+            _parseJson(prefsJson));
         _preferences = ThemePreferences.fromJson(data);
         notifyListeners();
       } catch (e) {
@@ -101,7 +101,8 @@ class ThemeService extends ChangeNotifier {
   }
 
   Future<void> updateSystemAccentColor(bool useSystemAccentColor) async {
-    _preferences = _preferences.copyWith(useSystemAccentColor: useSystemAccentColor);
+    _preferences =
+        _preferences.copyWith(useSystemAccentColor: useSystemAccentColor);
     await _savePreferences();
     notifyListeners();
   }
@@ -114,7 +115,7 @@ class ThemeService extends ChangeNotifier {
 
   Future<void> _savePreferences() async {
     if (_prefs == null) return;
-    
+
     try {
       final prefsJson = _stringifyJson(_preferences.toJson());
       await _prefs!.setString(_prefsKey, prefsJson);
@@ -128,17 +129,17 @@ class ThemeService extends ChangeNotifier {
     // This is a simplified parser - in production you'd use dart:convert
     // For now, we'll use a basic approach
     final Map<String, dynamic> result = {};
-    
+
     // Remove brackets and split by comma
     final content = jsonString.replaceAll(RegExp(r'[{}"]'), '');
     final pairs = content.split(',');
-    
+
     for (final pair in pairs) {
       final keyValue = pair.split(':');
       if (keyValue.length == 2) {
         final key = keyValue[0].trim();
         final value = keyValue[1].trim();
-        
+
         // Try to parse different types
         if (value == 'true') {
           result[key] = true;
@@ -153,13 +154,13 @@ class ThemeService extends ChangeNotifier {
         }
       }
     }
-    
+
     return result;
   }
 
   String _stringifyJson(Map<String, dynamic> data) {
     final List<String> pairs = [];
-    
+
     data.forEach((key, value) {
       String valueStr;
       if (value == null) {
@@ -173,14 +174,15 @@ class ThemeService extends ChangeNotifier {
       }
       pairs.add('"$key":$valueStr');
     });
-    
+
     return '{${pairs.join(',')}}';
   }
 
   // Create light theme with customizations
   ThemeData createLightTheme() {
-    final primaryColor = _preferences.customPrimaryColor ?? const Color(0xFF1565C0);
-    
+    final primaryColor =
+        _preferences.customPrimaryColor ?? const Color(0xFF1565C0);
+
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primaryColor,
       brightness: Brightness.light,
@@ -190,7 +192,7 @@ class ThemeService extends ChangeNotifier {
       colorScheme: colorScheme,
       useMaterial3: true,
       fontFamily: 'Roboto',
-      
+
       // App Bar Theme
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,
@@ -205,7 +207,7 @@ class ThemeService extends ChangeNotifier {
         ),
         toolbarHeight: 64,
       ),
-      
+
       // Card Theme
       cardTheme: CardThemeData(
         elevation: 2,
@@ -215,7 +217,7 @@ class ThemeService extends ChangeNotifier {
         ),
         color: colorScheme.surface,
       ),
-      
+
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -229,7 +231,7 @@ class ThemeService extends ChangeNotifier {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
-      
+
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
@@ -248,11 +250,12 @@ class ThemeService extends ChangeNotifier {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: colorScheme.error),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         filled: true,
         fillColor: colorScheme.surface,
       ),
-      
+
       // Floating Action Button Theme
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primary,
@@ -262,19 +265,20 @@ class ThemeService extends ChangeNotifier {
           borderRadius: BorderRadius.circular(16),
         ),
       ),
-      
+
       // Navigation Bar Theme
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colorScheme.surface,
         indicatorColor: colorScheme.primaryContainer,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return TextStyle(color: colorScheme.primary, fontWeight: FontWeight.w600);
+            return TextStyle(
+                color: colorScheme.primary, fontWeight: FontWeight.w600);
           }
           return TextStyle(color: colorScheme.onSurface);
         }),
       ),
-      
+
       // List Tile Theme
       listTileTheme: ListTileThemeData(
         shape: RoundedRectangleBorder(
@@ -287,8 +291,9 @@ class ThemeService extends ChangeNotifier {
 
   // Create dark theme with customizations
   ThemeData createDarkTheme() {
-    final primaryColor = _preferences.customPrimaryColor ?? const Color(0xFF42A5F5);
-    
+    final primaryColor =
+        _preferences.customPrimaryColor ?? const Color(0xFF42A5F5);
+
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primaryColor,
       brightness: Brightness.dark,
@@ -298,7 +303,7 @@ class ThemeService extends ChangeNotifier {
       colorScheme: colorScheme,
       useMaterial3: true,
       fontFamily: 'Roboto',
-      
+
       // App Bar Theme
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,
@@ -313,7 +318,7 @@ class ThemeService extends ChangeNotifier {
         ),
         toolbarHeight: 64,
       ),
-      
+
       // Card Theme
       cardTheme: CardThemeData(
         elevation: 2,
@@ -323,7 +328,7 @@ class ThemeService extends ChangeNotifier {
         ),
         color: colorScheme.surface,
       ),
-      
+
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -337,7 +342,7 @@ class ThemeService extends ChangeNotifier {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
-      
+
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
@@ -352,11 +357,12 @@ class ThemeService extends ChangeNotifier {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         filled: true,
         fillColor: colorScheme.surface,
       ),
-      
+
       // Floating Action Button Theme
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primary,
@@ -366,19 +372,20 @@ class ThemeService extends ChangeNotifier {
           borderRadius: BorderRadius.circular(16),
         ),
       ),
-      
+
       // Navigation Bar Theme
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colorScheme.surface,
         indicatorColor: colorScheme.primaryContainer,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return TextStyle(color: colorScheme.primary, fontWeight: FontWeight.w600);
+            return TextStyle(
+                color: colorScheme.primary, fontWeight: FontWeight.w600);
           }
           return TextStyle(color: colorScheme.onSurface);
         }),
       ),
-      
+
       // List Tile Theme
       listTileTheme: ListTileThemeData(
         shape: RoundedRectangleBorder(
@@ -397,7 +404,8 @@ final themeServiceProvider = Provider<ThemeService>((ref) {
   return service;
 });
 
-final themePreferencesProvider = StateNotifierProvider<ThemeNotifier, ThemePreferences>((ref) {
+final themePreferencesProvider =
+    StateNotifierProvider<ThemeNotifier, ThemePreferences>((ref) {
   final service = ref.watch(themeServiceProvider);
   return ThemeNotifier(service);
 });

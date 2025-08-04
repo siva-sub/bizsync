@@ -8,7 +8,8 @@ class HomeDashboardScreen extends ConsumerStatefulWidget {
   const HomeDashboardScreen({super.key});
 
   @override
-  ConsumerState<HomeDashboardScreen> createState() => _HomeDashboardScreenState();
+  ConsumerState<HomeDashboardScreen> createState() =>
+      _HomeDashboardScreenState();
 }
 
 class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
@@ -36,13 +37,13 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
 
   Future<void> _loadDashboardData() async {
     if (!mounted) return;
-    
+
     setState(() {
       _isLoading = true;
     });
-    
+
     _refreshController.forward();
-    
+
     try {
       // Load real dashboard data
       await _loadRealDashboardData();
@@ -50,13 +51,13 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
     } catch (e) {
       debugPrint('Error loading dashboard data: $e');
     }
-    
+
     if (mounted) {
       setState(() {
         _isLoading = false;
       });
     }
-    
+
     _refreshController.reset();
   }
 
@@ -70,7 +71,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
       'employees': {'total': 0, 'active': 0},
       'payments': {'total': 0.0, 'pending': 0.0},
     };
-    
+
     _recentActivity = [];
   }
 
@@ -85,7 +86,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
             SliverToBoxAdapter(
               child: _buildWelcomeSection(context),
             ),
-            
+
             // Quick Metrics Section
             SliverPadding(
               padding: const EdgeInsets.all(16),
@@ -93,7 +94,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
                 child: _buildQuickMetrics(context),
               ),
             ),
-            
+
             // Quick Actions Section
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -101,7 +102,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
                 child: _buildQuickActions(context),
               ),
             ),
-            
+
             // Recent Activity Section
             SliverPadding(
               padding: const EdgeInsets.all(16),
@@ -109,7 +110,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
                 child: _buildRecentActivity(context),
               ),
             ),
-            
+
             // Module Shortcuts Section
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -117,7 +118,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
                 child: _buildModuleShortcuts(context),
               ),
             ),
-            
+
             // System Status Section
             SliverPadding(
               padding: const EdgeInsets.all(16),
@@ -151,16 +152,17 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
           Text(
             'Welcome to BizSync',
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             _getGreetingMessage(),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
-            ),
+                  color:
+                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                ),
           ),
           const SizedBox(height: 24),
           _buildWelcomeActions(context),
@@ -208,8 +210,8 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
         Text(
           'Today\'s Overview',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         AnimationLimiter(
@@ -231,10 +233,10 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
                 _MetricCard(
                   key: const ValueKey('revenue_card'),
                   title: 'Revenue',
-                  value: _dashboardMetrics.isNotEmpty 
+                  value: _dashboardMetrics.isNotEmpty
                       ? '\$${(_dashboardMetrics['revenue']?['total'] ?? 0).toStringAsFixed(0)}'
                       : '\$0',
-                  change: _dashboardMetrics.isNotEmpty 
+                  change: _dashboardMetrics.isNotEmpty
                       ? (_dashboardMetrics['revenue']?['change'] ?? '+0%')
                       : '+0%',
                   changeColor: Colors.green,
@@ -245,10 +247,10 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
                 _MetricCard(
                   key: const ValueKey('invoices_card'),
                   title: 'Invoices',
-                  value: _dashboardMetrics.isNotEmpty 
+                  value: _dashboardMetrics.isNotEmpty
                       ? '${_dashboardMetrics['invoices']?['total'] ?? 0}'
                       : '0',
-                  change: _dashboardMetrics.isNotEmpty 
+                  change: _dashboardMetrics.isNotEmpty
                       ? '+${_dashboardMetrics['invoices']?['pending'] ?? 0} pending'
                       : '+0',
                   changeColor: Colors.orange,
@@ -259,10 +261,10 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
                 _MetricCard(
                   key: const ValueKey('customers_card'),
                   title: 'Customers',
-                  value: _dashboardMetrics.isNotEmpty 
+                  value: _dashboardMetrics.isNotEmpty
                       ? '${_dashboardMetrics['customers']?['total'] ?? 0}'
                       : '0',
-                  change: _dashboardMetrics.isNotEmpty 
+                  change: _dashboardMetrics.isNotEmpty
                       ? '${_dashboardMetrics['customers']?['active'] ?? 0} active'
                       : '0 active',
                   changeColor: Colors.green,
@@ -273,10 +275,10 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
                 _MetricCard(
                   key: const ValueKey('payments_card'),
                   title: 'Payments',
-                  value: _dashboardMetrics.isNotEmpty 
+                  value: _dashboardMetrics.isNotEmpty
                       ? '\$${(_dashboardMetrics['payments']?['total'] ?? 0).toStringAsFixed(0)}'
                       : '\$0',
-                  change: _dashboardMetrics.isNotEmpty 
+                  change: _dashboardMetrics.isNotEmpty
                       ? '\$${(_dashboardMetrics['payments']?['pending'] ?? 0).toStringAsFixed(0)} pending'
                       : '\$0 pending',
                   changeColor: Colors.blue,
@@ -300,8 +302,8 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
         Text(
           'Quick Actions',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -353,8 +355,8 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
             Text(
               'Recent Activity',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             TextButton(
               onPressed: () => context.go('/notifications'),
@@ -368,12 +370,15 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: _recentActivity.isNotEmpty
-                ? _recentActivity.map((activity) => _ActivityTile(
-                    icon: _getIconData(activity['icon'] as String),
-                    title: activity['title'] as String,
-                    subtitle: activity['subtitle'] as String,
-                    color: _getColorFromString(activity['color'] as String),
-                  )).toList()
+                ? _recentActivity
+                    .map((activity) => _ActivityTile(
+                          icon: _getIconData(activity['icon'] as String),
+                          title: activity['title'] as String,
+                          subtitle: activity['subtitle'] as String,
+                          color:
+                              _getColorFromString(activity['color'] as String),
+                        ))
+                    .toList()
                 : [
                     const _ActivityTile(
                       icon: Icons.info,
@@ -396,8 +401,8 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
         Text(
           'Modules',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -452,8 +457,8 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
         Text(
           'System Status',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Card(
@@ -513,27 +518,43 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
 
   IconData _getIconData(String iconName) {
     switch (iconName) {
-      case 'receipt_long': return Icons.receipt_long;
-      case 'payment': return Icons.payment;
-      case 'person_add': return Icons.person_add;
-      case 'badge': return Icons.badge;
-      case 'account_balance': return Icons.account_balance;
-      case 'settings': return Icons.settings;
-      case 'sync': return Icons.sync;
-      case 'notifications': return Icons.notifications;
-      default: return Icons.info;
+      case 'receipt_long':
+        return Icons.receipt_long;
+      case 'payment':
+        return Icons.payment;
+      case 'person_add':
+        return Icons.person_add;
+      case 'badge':
+        return Icons.badge;
+      case 'account_balance':
+        return Icons.account_balance;
+      case 'settings':
+        return Icons.settings;
+      case 'sync':
+        return Icons.sync;
+      case 'notifications':
+        return Icons.notifications;
+      default:
+        return Icons.info;
     }
   }
 
   Color _getColorFromString(String colorName) {
     switch (colorName) {
-      case 'green': return Colors.green;
-      case 'blue': return Colors.blue;
-      case 'red': return Colors.red;
-      case 'orange': return Colors.orange;
-      case 'purple': return Colors.purple;
-      case 'grey': return Colors.grey;
-      default: return Colors.blue;
+      case 'green':
+        return Colors.green;
+      case 'blue':
+        return Colors.blue;
+      case 'red':
+        return Colors.red;
+      case 'orange':
+        return Colors.orange;
+      case 'purple':
+        return Colors.purple;
+      case 'grey':
+        return Colors.grey;
+      default:
+        return Colors.blue;
     }
   }
 }
@@ -587,15 +608,15 @@ class _MetricCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
           ),
@@ -642,14 +663,14 @@ class _ActionCard extends StatelessWidget {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
                   ],
                 ),
@@ -719,8 +740,8 @@ class _ModuleCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                      fontWeight: FontWeight.w500,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -756,15 +777,15 @@ class _StatusRow extends StatelessWidget {
           child: Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ),
         Text(
           status,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
-          ),
+                color: Colors.grey[600],
+              ),
         ),
       ],
     );

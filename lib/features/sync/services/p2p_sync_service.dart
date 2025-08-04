@@ -20,20 +20,23 @@ class P2PSyncService {
   static const Duration _sessionTimeout = Duration(minutes: 30);
   static const Duration _discoveryTimeout = Duration(seconds: 60);
   static const String _keyDeviceInfo = 'device_info';
-  
+
   final EncryptionService _encryptionService;
   final DeviceAuthenticationService _authService;
   final CRDTSyncEngine _syncEngine;
-  
+
   final Map<TransportType, P2PTransport> _transports = {};
-  final StreamController<DeviceInfo> _discoveryController = StreamController<DeviceInfo>.broadcast();
-  final StreamController<P2PConnection> _connectionController = StreamController<P2PConnection>.broadcast();
-  final StreamController<SyncSession> _sessionController = StreamController<SyncSession>.broadcast();
-  
+  final StreamController<DeviceInfo> _discoveryController =
+      StreamController<DeviceInfo>.broadcast();
+  final StreamController<P2PConnection> _connectionController =
+      StreamController<P2PConnection>.broadcast();
+  final StreamController<SyncSession> _sessionController =
+      StreamController<SyncSession>.broadcast();
+
   final Map<String, SyncSession> _activeSessions = {};
   final Map<String, Timer> _sessionTimers = {};
   final Map<String, StreamSubscription> _connectionSubscriptions = {};
-  
+
   DeviceInfo? _localDeviceInfo;
   bool _isInitialized = false;
   bool _isDiscovering = false;
@@ -51,16 +54,16 @@ class P2PSyncService {
     // Initialize core services
     await _authService.initialize();
     await _syncEngine.initialize(_authService.deviceId);
-    
+
     // Load device info
     await _loadDeviceInfo();
-    
+
     // Register and initialize transports
     await _initializeTransports();
-    
+
     // Set up message handling
     _setupMessageHandling();
-    
+
     _isInitialized = true;
     debugPrint('P2P sync service initialized');
   }
@@ -69,33 +72,33 @@ class P2PSyncService {
   Future<void> dispose() async {
     await stopDiscovery();
     await stopAdvertising();
-    
+
     // Cancel all session timers
     for (final timer in _sessionTimers.values) {
       timer.cancel();
     }
     _sessionTimers.clear();
-    
+
     // Cancel connection subscriptions
     for (final subscription in _connectionSubscriptions.values) {
       await subscription.cancel();
     }
     _connectionSubscriptions.clear();
-    
+
     // Dispose transports
     for (final transport in _transports.values) {
       await transport.dispose();
     }
     _transports.clear();
-    
+
     // Dispose core services
     await _syncEngine.dispose();
     await _authService.dispose();
-    
+
     await _discoveryController.close();
     await _connectionController.close();
     await _sessionController.close();
-    
+
     _isInitialized = false;
     debugPrint('P2P sync service disposed');
   }
@@ -107,7 +110,8 @@ class P2PSyncService {
   Stream<DeviceInfo> get discoveredDevices => _discoveryController.stream;
 
   /// Stream of connection state changes
-  Stream<P2PConnection> get connectionStateChanges => _connectionController.stream;
+  Stream<P2PConnection> get connectionStateChanges =>
+      _connectionController.stream;
 
   /// Stream of sync session updates
   Stream<SyncSession> get syncSessionUpdates => _sessionController.stream;
@@ -118,13 +122,13 @@ class P2PSyncService {
   /// Get available transport types
   Future<List<TransportType>> getAvailableTransports() async {
     final available = <TransportType>[];
-    
+
     for (final entry in _transports.entries) {
       if (await entry.value.isAvailable()) {
         available.add(entry.key);
       }
     }
-    
+
     return available;
   }
 
@@ -134,13 +138,13 @@ class P2PSyncService {
     Duration? timeout,
   }) async {
     if (_isDiscovering) return;
-    
+
     _isDiscovering = true;
     final useTransports = transportTypes ?? _transports.keys.toList();
     final discoveryTimeout = timeout ?? _discoveryTimeout;
-    
+
     debugPrint('Starting device discovery with transports: $useTransports');
-    
+
     // Start discovery on each transport
     for (final transportType in useTransports) {
       final transport = _transports[transportType];
@@ -148,7 +152,7 @@ class P2PSyncService {
         _startTransportDiscovery(transport, discoveryTimeout);
       }
     }
-    
+
     // Auto-stop discovery after timeout
     Timer(discoveryTimeout, () {
       if (_isDiscovering) {
@@ -160,9 +164,9 @@ class P2PSyncService {
   /// Stop device discovery
   Future<void> stopDiscovery() async {
     if (!_isDiscovering) return;
-    
+
     _isDiscovering = false;
-    
+
     // Stop discovery on all transports
     for (final transport in _transports.values) {
       try {
@@ -171,7 +175,7 @@ class P2PSyncService {
         debugPrint('Error stopping discovery on transport: $e');
       }
     }
-    
+
     debugPrint('Stopped device discovery');
   }
 
@@ -181,12 +185,12 @@ class P2PSyncService {
     Map<String, dynamic>? metadata,
   }) async {
     if (_isAdvertising) return;
-    
+
     _isAdvertising = true;
     final useTransports = transportTypes ?? _transports.keys.toList();
-    
+
     debugPrint('Starting device advertising with transports: $useTransports');
-    
+
     // Start advertising on each transport
     for (final transportType in useTransports) {
       final transport = _transports[transportType];
@@ -206,9 +210,9 @@ class P2PSyncService {
   /// Stop advertising this device
   Future<void> stopAdvertising() async {
     if (!_isAdvertising) return;
-    
+
     _isAdvertising = false;
-    
+
     // Stop advertising on all transports
     for (final transport in _transports.values) {
       try {
@@ -217,41 +221,39 @@ class P2PSyncService {
         debugPrint('Error stopping advertising on transport: $e');
       }
     }
-    
+
     debugPrint('Stopped device advertising');
   }
 
   /// Connect to a discovered device
-  Future<P2PConnection> connectToDevice(
-    DeviceInfo device,
-    {TransportType? preferredTransport}
-  ) async {
+  Future<P2PConnection> connectToDevice(DeviceInfo device,
+      {TransportType? preferredTransport}) async {
     // Check if device is paired
     if (!await _authService.isDevicePaired(device.deviceId)) {
       throw Exception('Device not paired: ${device.deviceName}');
     }
-    
+
     // Select transport
-    final transportType = preferredTransport ?? 
+    final transportType = preferredTransport ??
         device.supportedTransports.map(_parseTransportType).first;
-    
+
     final transport = _transports[transportType];
     if (transport == null) {
       throw Exception('Transport not available: $transportType');
     }
-    
+
     try {
       // Establish connection
       final connection = await transport.connect(device);
-      
+
       // Set up connection monitoring
       _setupConnectionMonitoring(connection);
-      
+
       _connectionController.add(connection);
-      
-      debugPrint('Connected to device: ${device.deviceName} via $transportType');
+
+      debugPrint(
+          'Connected to device: ${device.deviceName} via $transportType');
       return connection;
-      
     } catch (e) {
       debugPrint('Failed to connect to device: $e');
       rethrow;
@@ -265,7 +267,7 @@ class P2PSyncService {
       final connection = connections
           .where((conn) => conn.remoteDevice.deviceId == deviceId)
           .firstOrNull;
-      
+
       if (connection != null) {
         await transport.disconnect(connection.connectionId);
         break;
@@ -281,29 +283,30 @@ class P2PSyncService {
     // Verify all devices are connected
     final connections = _getActiveConnections();
     for (final deviceId in deviceIds) {
-      final isConnected = connections.any((conn) => 
+      final isConnected = connections.any((conn) =>
           conn.remoteDevice.deviceId == deviceId &&
-          conn.state == ConnectionState.connected
-      );
-      
+          conn.state == ConnectionState.connected);
+
       if (!isConnected) {
         throw Exception('Device not connected: $deviceId');
       }
     }
-    
+
     // Start sync session in engine
-    final session = await _syncEngine.startSyncSession(deviceIds, configuration);
-    
+    final session =
+        await _syncEngine.startSyncSession(deviceIds, configuration);
+
     // Track session
     _activeSessions[session.sessionId] = session;
     _setSessionTimeout(session.sessionId);
-    
+
     // Notify participants
     await _notifySessionParticipants(session);
-    
+
     _sessionController.add(session);
-    
-    debugPrint('Started sync session: ${session.sessionId} with ${deviceIds.length} devices');
+
+    debugPrint(
+        'Started sync session: ${session.sessionId} with ${deviceIds.length} devices');
     return session;
   }
 
@@ -311,11 +314,11 @@ class P2PSyncService {
   Future<void> cancelSyncSession(String sessionId) async {
     final session = _activeSessions[sessionId];
     if (session == null) return;
-    
+
     // Cancel session timer
     _sessionTimers[sessionId]?.cancel();
     _sessionTimers.remove(sessionId);
-    
+
     // Update session state
     final cancelledSession = SyncSession(
       sessionId: session.sessionId,
@@ -327,13 +330,13 @@ class P2PSyncService {
       progress: session.progress,
       conflicts: session.conflicts,
     );
-    
+
     _activeSessions[sessionId] = cancelledSession;
     _sessionController.add(cancelledSession);
-    
+
     // Notify participants
     await _notifySessionCancellation(cancelledSession);
-    
+
     debugPrint('Cancelled sync session: $sessionId');
   }
 
@@ -381,17 +384,18 @@ class P2PSyncService {
   Future<void> _loadDeviceInfo() async {
     final prefs = await SharedPreferences.getInstance();
     final deviceInfoJson = prefs.getString(_keyDeviceInfo);
-    
+
     if (deviceInfoJson != null) {
       try {
-        final deviceInfoMap = jsonDecode(deviceInfoJson) as Map<String, dynamic>;
+        final deviceInfoMap =
+            jsonDecode(deviceInfoJson) as Map<String, dynamic>;
         _localDeviceInfo = DeviceInfo.fromJson(deviceInfoMap);
         return;
       } catch (e) {
         debugPrint('Error loading device info: $e');
       }
     }
-    
+
     // Create new device info
     await _createDeviceInfo();
   }
@@ -402,7 +406,7 @@ class P2PSyncService {
     String deviceName = 'BizSync Device';
     String deviceType = 'unknown';
     String platform = 'unknown';
-    
+
     try {
       if (defaultTargetPlatform == TargetPlatform.android) {
         final androidInfo = await deviceInfoPlugin.androidInfo;
@@ -418,7 +422,7 @@ class P2PSyncService {
     } catch (e) {
       debugPrint('Error getting device info: $e');
     }
-    
+
     _localDeviceInfo = DeviceInfo(
       deviceId: _authService.deviceId,
       deviceName: deviceName,
@@ -429,7 +433,7 @@ class P2PSyncService {
       isOnline: true,
       supportedTransports: ['bluetooth', 'wifiDirect', 'mdns'],
     );
-    
+
     // Save device info
     final prefs = await SharedPreferences.getInstance();
     final deviceInfoJson = jsonEncode(_localDeviceInfo!.toJson());
@@ -443,20 +447,20 @@ class P2PSyncService {
       TransportType.bluetooth,
       () => BluetoothTransport(),
     );
-    
+
     P2PTransportFactory.registerTransport(
       TransportType.wifiDirect,
       () => WiFiDirectTransport(),
     );
-    
+
     P2PTransportFactory.registerTransport(
       TransportType.mdns,
       () => MDNSTransport(),
     );
-    
+
     // Initialize available transports
     final availableTypes = await P2PTransportFactory.getAvailableTransports();
-    
+
     for (final transportType in availableTypes) {
       final transport = P2PTransportFactory.createTransport(transportType);
       if (transport != null) {
@@ -474,7 +478,7 @@ class P2PSyncService {
       transport.receiveData().listen((packet) {
         _handleIncomingData(packet);
       });
-      
+
       // Listen to connection state changes
       transport.connectionStateChanges().listen((connection) {
         _connectionController.add(connection);
@@ -499,7 +503,7 @@ class P2PSyncService {
     try {
       // Parse sync message
       final message = _parseSyncMessage(packet.data);
-      
+
       switch (message.type) {
         case SyncMessageType.syncRequest:
           await _handleSyncRequest(message, packet.senderId);
@@ -513,7 +517,6 @@ class P2PSyncService {
         default:
           debugPrint('Unhandled sync message type: ${message.type}');
       }
-      
     } catch (e) {
       debugPrint('Error handling incoming data: $e');
     }
@@ -527,13 +530,15 @@ class P2PSyncService {
   }
 
   /// Handle sync request message
-  Future<void> _handleSyncRequest(SyncMessage message, String fromDeviceId) async {
+  Future<void> _handleSyncRequest(
+      SyncMessage message, String fromDeviceId) async {
     // Implementation would handle incoming sync requests
     debugPrint('Received sync request from: $fromDeviceId');
   }
 
   /// Handle data chunk message
-  Future<void> _handleDataChunk(SyncMessage message, String fromDeviceId) async {
+  Future<void> _handleDataChunk(
+      SyncMessage message, String fromDeviceId) async {
     // Implementation would handle incoming data chunks
     debugPrint('Received data chunk from: $fromDeviceId');
   }
@@ -547,11 +552,11 @@ class P2PSyncService {
   /// Get all active connections across all transports
   List<P2PConnection> _getActiveConnections() {
     final connections = <P2PConnection>[];
-    
+
     for (final transport in _transports.values) {
       connections.addAll(transport.getActiveConnections());
     }
-    
+
     return connections;
   }
 
@@ -564,7 +569,7 @@ class P2PSyncService {
   /// Set session timeout
   void _setSessionTimeout(String sessionId) {
     _sessionTimers[sessionId]?.cancel();
-    
+
     _sessionTimers[sessionId] = Timer(_sessionTimeout, () {
       final session = _activeSessions[sessionId];
       if (session?.state == SyncSessionState.active) {
@@ -576,7 +581,8 @@ class P2PSyncService {
   /// Notify session participants
   Future<void> _notifySessionParticipants(SyncSession session) async {
     // Implementation would send session start notifications
-    debugPrint('Notifying session participants: ${session.participantDeviceIds}');
+    debugPrint(
+        'Notifying session participants: ${session.participantDeviceIds}');
   }
 
   /// Notify session cancellation

@@ -8,7 +8,8 @@ class EmployeeReportsScreen extends ConsumerStatefulWidget {
   const EmployeeReportsScreen({super.key});
 
   @override
-  ConsumerState<EmployeeReportsScreen> createState() => _EmployeeReportsScreenState();
+  ConsumerState<EmployeeReportsScreen> createState() =>
+      _EmployeeReportsScreenState();
 }
 
 class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
@@ -29,7 +30,7 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Employee Reports'),
@@ -85,18 +86,24 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
                     Wrap(
                       spacing: 8,
                       children: [
-                        _buildReportTypeChip('attendance', 'Attendance', Icons.schedule),
-                        _buildReportTypeChip('payroll', 'Payroll', Icons.payments),
-                        _buildReportTypeChip('leave', 'Leave Management', Icons.calendar_today),
-                        _buildReportTypeChip('performance', 'Performance', Icons.trending_up),
-                        _buildReportTypeChip('overtime', 'Overtime', Icons.access_time),
+                        _buildReportTypeChip(
+                            'attendance', 'Attendance', Icons.schedule),
+                        _buildReportTypeChip(
+                            'payroll', 'Payroll', Icons.payments),
+                        _buildReportTypeChip(
+                            'leave', 'Leave Management', Icons.calendar_today),
+                        _buildReportTypeChip(
+                            'performance', 'Performance', Icons.trending_up),
+                        _buildReportTypeChip(
+                            'overtime', 'Overtime', Icons.access_time),
                       ],
                     ),
                     if (_selectedDateRange != null) ...[
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          Icon(Icons.date_range, size: 16, color: Colors.grey[600]),
+                          Icon(Icons.date_range,
+                              size: 16, color: Colors.grey[600]),
                           const SizedBox(width: 8),
                           Text(
                             'Period: ${DateFormat('MMM dd, yyyy').format(_selectedDateRange!.start)} - ${DateFormat('MMM dd, yyyy').format(_selectedDateRange!.end)}',
@@ -112,7 +119,7 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
               ),
             ),
           ),
-          
+
           // Report Content
           Expanded(
             child: Padding(
@@ -127,7 +134,7 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
 
   Widget _buildReportTypeChip(String value, String label, IconData icon) {
     final isSelected = _selectedReportType == value;
-    
+
     return FilterChip(
       selected: isSelected,
       onSelected: (selected) {
@@ -173,15 +180,21 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
           // Summary Cards
           Row(
             children: [
-              Expanded(child: _buildSummaryCard('Total Present Days', '22', Icons.check_circle, Colors.green)),
+              Expanded(
+                  child: _buildSummaryCard('Total Present Days', '22',
+                      Icons.check_circle, Colors.green)),
               const SizedBox(width: 16),
-              Expanded(child: _buildSummaryCard('Absent Days', '3', Icons.cancel, Colors.red)),
+              Expanded(
+                  child: _buildSummaryCard(
+                      'Absent Days', '3', Icons.cancel, Colors.red)),
               const SizedBox(width: 16),
-              Expanded(child: _buildSummaryCard('Late Arrivals', '5', Icons.schedule, Colors.orange)),
+              Expanded(
+                  child: _buildSummaryCard(
+                      'Late Arrivals', '5', Icons.schedule, Colors.orange)),
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // Attendance Chart
           Card(
             child: Padding(
@@ -192,8 +205,8 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
                   Text(
                     'Daily Attendance Overview',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
@@ -205,7 +218,7 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Employee List
           Card(
             child: Padding(
@@ -216,8 +229,8 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
                   Text(
                     'Employee Attendance Details',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   _buildMockEmployeeAttendanceList(),
@@ -238,15 +251,21 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
           // Summary Cards
           Row(
             children: [
-              Expanded(child: _buildSummaryCard('Total Payroll', '\$45,600', Icons.payments, Colors.blue)),
+              Expanded(
+                  child: _buildSummaryCard('Total Payroll', '\$45,600',
+                      Icons.payments, Colors.blue)),
               const SizedBox(width: 16),
-              Expanded(child: _buildSummaryCard('Total CPF', '\$8,208', Icons.account_balance, Colors.green)),
+              Expanded(
+                  child: _buildSummaryCard('Total CPF', '\$8,208',
+                      Icons.account_balance, Colors.green)),
               const SizedBox(width: 16),
-              Expanded(child: _buildSummaryCard('Net Pay', '\$37,392', Icons.account_balance_wallet, Colors.purple)),
+              Expanded(
+                  child: _buildSummaryCard('Net Pay', '\$37,392',
+                      Icons.account_balance_wallet, Colors.purple)),
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // Payroll Chart
           Card(
             child: Padding(
@@ -257,8 +276,8 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
                   Text(
                     'Payroll Breakdown',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
@@ -270,7 +289,7 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Payroll Details
           Card(
             child: Padding(
@@ -281,8 +300,8 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
                   Text(
                     'Employee Payroll Details',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   _buildMockPayrollList(),
@@ -310,8 +329,8 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
           Text(
             'Coming soon - detailed leave analytics and reports',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
         ],
       ),
@@ -333,8 +352,8 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
           Text(
             'Coming soon - employee performance analytics',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
         ],
       ),
@@ -356,15 +375,16 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
           Text(
             'Coming soon - overtime tracking and analysis',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
+  Widget _buildSummaryCard(
+      String title, String value, IconData icon, Color color) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -378,9 +398,9 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
                 Text(
                   value,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -415,17 +435,25 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
               },
             ),
           ),
-          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
         barGroups: [
-          BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: 12, color: Colors.green)]),
-          BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: 11, color: Colors.green)]),
-          BarChartGroupData(x: 2, barRods: [BarChartRodData(toY: 13, color: Colors.green)]),
-          BarChartGroupData(x: 3, barRods: [BarChartRodData(toY: 10, color: Colors.orange)]),
-          BarChartGroupData(x: 4, barRods: [BarChartRodData(toY: 14, color: Colors.green)]),
+          BarChartGroupData(
+              x: 0, barRods: [BarChartRodData(toY: 12, color: Colors.green)]),
+          BarChartGroupData(
+              x: 1, barRods: [BarChartRodData(toY: 11, color: Colors.green)]),
+          BarChartGroupData(
+              x: 2, barRods: [BarChartRodData(toY: 13, color: Colors.green)]),
+          BarChartGroupData(
+              x: 3, barRods: [BarChartRodData(toY: 10, color: Colors.orange)]),
+          BarChartGroupData(
+              x: 4, barRods: [BarChartRodData(toY: 14, color: Colors.green)]),
         ],
       ),
     );
@@ -440,14 +468,16 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
             value: 37392,
             title: 'Net Pay\n\$37,392',
             radius: 80,
-            titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+            titleStyle: const TextStyle(
+                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           PieChartSectionData(
             color: Colors.green,
             value: 8208,
             title: 'CPF\n\$8,208',
             radius: 80,
-            titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+            titleStyle: const TextStyle(
+                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ],
         centerSpaceRadius: 0,
@@ -464,14 +494,19 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
     ];
 
     return Column(
-      children: employees.map((emp) => ListTile(
-        title: Text(emp['name'] as String),
-        subtitle: Text('Present: ${emp['present']}, Absent: ${emp['absent']}, Late: ${emp['late']}'),
-        trailing: CircleAvatar(
-          backgroundColor: (emp['absent'] as int) <= 1 ? Colors.green : Colors.orange,
-          child: Text('${emp['present']}'),
-        ),
-      )).toList(),
+      children: employees
+          .map((emp) => ListTile(
+                title: Text(emp['name'] as String),
+                subtitle: Text(
+                    'Present: ${emp['present']}, Absent: ${emp['absent']}, Late: ${emp['late']}'),
+                trailing: CircleAvatar(
+                  backgroundColor: (emp['absent'] as int) <= 1
+                      ? Colors.green
+                      : Colors.orange,
+                  child: Text('${emp['present']}'),
+                ),
+              ))
+          .toList(),
     );
   }
 
@@ -484,14 +519,18 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
     ];
 
     return Column(
-      children: payroll.map((emp) => ListTile(
-        title: Text(emp['name'] as String),
-        subtitle: Text('Gross: \$${emp['gross']}, CPF: \$${emp['cpf']}'),
-        trailing: Text(
-          '\$${emp['net']}',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-      )).toList(),
+      children: payroll
+          .map((emp) => ListTile(
+                title: Text(emp['name'] as String),
+                subtitle:
+                    Text('Gross: \$${emp['gross']}, CPF: \$${emp['cpf']}'),
+                trailing: Text(
+                  '\$${emp['net']}',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ))
+          .toList(),
     );
   }
 
@@ -502,7 +541,7 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
       lastDate: DateTime.now(),
       initialDateRange: _selectedDateRange,
     );
-    
+
     if (picked != null && picked != _selectedDateRange) {
       setState(() {
         _selectedDateRange = picked;
@@ -513,7 +552,8 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
   void _exportReport(String format) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Exporting ${_selectedReportType} report as ${format.toUpperCase()}...'),
+        content: Text(
+            'Exporting ${_selectedReportType} report as ${format.toUpperCase()}...'),
         duration: const Duration(seconds: 2),
       ),
     );

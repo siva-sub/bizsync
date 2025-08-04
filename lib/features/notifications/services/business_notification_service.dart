@@ -11,14 +11,14 @@ import 'notification_scheduler.dart';
 
 /// Business-specific notification service for invoices, payments, tax, etc.
 class BusinessNotificationService {
-  static final BusinessNotificationService _instance = 
+  static final BusinessNotificationService _instance =
       BusinessNotificationService._internal();
   factory BusinessNotificationService() => _instance;
   BusinessNotificationService._internal();
 
-  final EnhancedNotificationService _notificationService = 
+  final EnhancedNotificationService _notificationService =
       EnhancedNotificationService();
-  final NotificationTemplateService _templateService = 
+  final NotificationTemplateService _templateService =
       NotificationTemplateService();
   final NotificationScheduler _scheduler = NotificationScheduler();
 
@@ -202,11 +202,11 @@ class BusinessNotificationService {
     try {
       // This would integrate with your invoice repository
       // For now, we'll simulate checking
-      
+
       final prefs = await SharedPreferences.getInstance();
       final lastCheck = prefs.getString('last_invoice_check');
       final now = DateTime.now();
-      
+
       // Skip if checked recently (within last hour)
       if (lastCheck != null) {
         final lastCheckTime = DateTime.parse(lastCheck);
@@ -267,7 +267,8 @@ class BusinessNotificationService {
 
     await _notificationService.showNotification(
       title: 'Payment Failed',
-      body: 'Payment of ${_formatCurrency(amount, currency!)} from $customerName failed: $failureReason',
+      body:
+          'Payment of ${_formatCurrency(amount, currency!)} from $customerName failed: $failureReason',
       type: BusinessNotificationType.paymentFailed,
       category: NotificationCategory.payment,
       priority: NotificationPriority.critical,
@@ -296,18 +297,18 @@ class BusinessNotificationService {
     try {
       // This would integrate with your payment service
       // Check for failed payments, pending payments, etc.
-      
+
       final prefs = await SharedPreferences.getInstance();
       final lastCheck = prefs.getString('last_payment_check');
       final now = DateTime.now();
-      
+
       if (lastCheck != null) {
         final lastCheckTime = DateTime.parse(lastCheck);
         if (now.difference(lastCheckTime).inHours < 1) return;
       }
 
       // Query payment database for alerts
-      
+
       await prefs.setString('last_payment_check', now.toIso8601String());
     } catch (e) {
       print('Error checking payment alerts: $e');
@@ -333,7 +334,7 @@ class BusinessNotificationService {
         'taxType': taxType,
         'deadlineDate': _formatDate(deadlineDate),
         'daysUntilDeadline': daysUntilDeadline.toString(),
-        'estimatedAmount': estimatedAmount != null 
+        'estimatedAmount': estimatedAmount != null
             ? _formatCurrency(estimatedAmount, currency!)
             : 'TBD',
       },
@@ -354,10 +355,10 @@ class BusinessNotificationService {
 
     // Reminders at 30, 14, 7, and 1 day intervals
     final reminderIntervals = [30, 14, 7, 1];
-    
+
     for (final days in reminderIntervals) {
       final reminderDate = deadlineDate.subtract(Duration(days: days));
-      
+
       if (reminderDate.isAfter(DateTime.now())) {
         await _notificationService.scheduleNotification(
           title: 'Tax Deadline Approaching',
@@ -365,7 +366,9 @@ class BusinessNotificationService {
           scheduledFor: reminderDate,
           type: BusinessNotificationType.taxDeadline,
           category: NotificationCategory.tax,
-          priority: days <= 7 ? NotificationPriority.high : NotificationPriority.medium,
+          priority: days <= 7
+              ? NotificationPriority.high
+              : NotificationPriority.medium,
           payload: {
             'taxType': taxType,
             'daysUntilDeadline': days.toString(),
@@ -380,7 +383,7 @@ class BusinessNotificationService {
     try {
       // This would integrate with your tax service
       final now = DateTime.now();
-      
+
       // Define common tax deadlines (this would come from your tax service)
       final taxDeadlines = [
         {
@@ -400,7 +403,7 @@ class BusinessNotificationService {
       for (final deadline in taxDeadlines) {
         final deadlineDate = deadline['deadline'] as DateTime;
         final daysUntilDeadline = deadlineDate.difference(now).inDays;
-        
+
         if ([30, 14, 7, 1].contains(daysUntilDeadline)) {
           await sendTaxDeadlineReminder(
             taxType: deadline['type'] as String,
@@ -418,13 +421,18 @@ class BusinessNotificationService {
     final currentQuarter = ((now.month - 1) ~/ 3) + 1;
     final nextQuarter = currentQuarter == 4 ? 1 : currentQuarter + 1;
     final year = nextQuarter == 1 ? now.year + 1 : now.year;
-    
+
     switch (nextQuarter) {
-      case 1: return DateTime(year, 3, 31);
-      case 2: return DateTime(year, 6, 30);
-      case 3: return DateTime(year, 9, 30);
-      case 4: return DateTime(year, 12, 31);
-      default: return DateTime(year, 12, 31);
+      case 1:
+        return DateTime(year, 3, 31);
+      case 2:
+        return DateTime(year, 6, 30);
+      case 3:
+        return DateTime(year, 9, 30);
+      case 4:
+        return DateTime(year, 12, 31);
+      default:
+        return DateTime(year, 12, 31);
     }
   }
 
@@ -447,7 +455,8 @@ class BusinessNotificationService {
         'itemCount': itemCount.toString(),
         'backupSize': backupSize,
         'backupLocation': backupLocation,
-        'nextBackup': nextBackup != null ? _formatDate(nextBackup) : 'Not scheduled',
+        'nextBackup':
+            nextBackup != null ? _formatDate(nextBackup) : 'Not scheduled',
       },
       additionalPayload: {
         'actionType': 'view_backup_details',
@@ -468,7 +477,7 @@ class BusinessNotificationService {
       variables: {
         'failedTime': _formatDateTime(failedTime),
         'errorMessage': errorMessage,
-        'lastSuccessfulBackup': lastSuccessfulBackup != null 
+        'lastSuccessfulBackup': lastSuccessfulBackup != null
             ? _formatDateTime(lastSuccessfulBackup)
             : 'Never',
       },
@@ -485,16 +494,17 @@ class BusinessNotificationService {
       final prefs = await SharedPreferences.getInstance();
       final lastBackupString = prefs.getString('last_backup_date');
       final now = DateTime.now();
-      
+
       if (lastBackupString != null) {
         final lastBackup = DateTime.parse(lastBackupString);
         final daysSinceBackup = now.difference(lastBackup).inDays;
-        
+
         // Remind if backup is overdue (7+ days)
         if (daysSinceBackup >= 7) {
           await _notificationService.showNotification(
             title: 'Backup Overdue',
-            body: 'Last backup was $daysSinceBackup days ago. Consider backing up your data.',
+            body:
+                'Last backup was $daysSinceBackup days ago. Consider backing up your data.',
             type: BusinessNotificationType.backupReminder,
             category: NotificationCategory.backup,
             priority: NotificationPriority.medium,
@@ -511,7 +521,8 @@ class BusinessNotificationService {
         // No backup found - urgent reminder
         await _notificationService.showNotification(
           title: 'No Backup Found',
-          body: 'No backup history found. Secure your business data with a backup.',
+          body:
+              'No backup history found. Secure your business data with a backup.',
           type: BusinessNotificationType.backupReminder,
           category: NotificationCategory.backup,
           priority: NotificationPriority.high,
@@ -569,15 +580,15 @@ class BusinessNotificationService {
     await _notificationService.showNotification(
       title: 'Cash Flow Alert',
       body: 'Current balance: ${_formatCurrency(currentBalance, currency!)}. '
-            'Projected to reach zero in $daysToZero days.',
+          'Projected to reach zero in $daysToZero days.',
       type: BusinessNotificationType.cashFlowAlert,
       category: NotificationCategory.insight,
       priority: NotificationPriority.critical,
       bigText: 'Cash Flow Analysis:\n'
-               'Current Balance: ${_formatCurrency(currentBalance, currency)}\n'
-               'Projected Balance: ${_formatCurrency(projectedBalance, currency)}\n'
-               'Days to Zero: $daysToZero\n\n'
-               'Consider reviewing your upcoming expenses and receivables.',
+          'Current Balance: ${_formatCurrency(currentBalance, currency)}\n'
+          'Projected Balance: ${_formatCurrency(projectedBalance, currency)}\n'
+          'Days to Zero: $daysToZero\n\n'
+          'Consider reviewing your upcoming expenses and receivables.',
       style: NotificationStyle.bigText,
       actions: [
         const NotificationAction(
@@ -594,15 +605,14 @@ class BusinessNotificationService {
     try {
       // This would integrate with your analytics service
       final now = DateTime.now();
-      
+
       // Example: Daily sales summary
       final prefs = await SharedPreferences.getInstance();
       final lastSalesReport = prefs.getString('last_sales_report_date');
       final today = DateTime(now.year, now.month, now.day);
-      
-      if (lastSalesReport == null || 
+
+      if (lastSalesReport == null ||
           DateTime.parse(lastSalesReport).isBefore(today)) {
-        
         // Generate daily sales insight
         await _notificationService.showNotification(
           title: 'Daily Sales Summary',
@@ -618,8 +628,9 @@ class BusinessNotificationService {
             ),
           ],
         );
-        
-        await prefs.setString('last_sales_report_date', today.toIso8601String());
+
+        await prefs.setString(
+            'last_sales_report_date', today.toIso8601String());
       }
     } catch (e) {
       print('Error generating business insights: $e');

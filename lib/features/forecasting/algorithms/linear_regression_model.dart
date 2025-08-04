@@ -40,7 +40,7 @@ class LinearRegressionModel implements ForecastingModel {
 
   void _calculateLinearRegression(List<double> x, List<double> y) {
     final n = x.length;
-    
+
     // Calculate means
     final meanX = x.reduce((a, b) => a + b) / n;
     final meanY = y.reduce((a, b) => a + b) / n;
@@ -87,14 +87,19 @@ class LinearRegressionModel implements ForecastingModel {
     for (int i = 1; i <= periods; i++) {
       final futureDate = lastDate.add(Duration(days: i));
       final daysSinceStart = lastDaysSinceStart + i;
-      
+
       final predicted = _slope * daysSinceStart + _intercept;
-      
+
       // Calculate confidence interval (95% by default)
       final tValue = 1.96; // For 95% confidence
-      final margin = tValue * standardError * math.sqrt(1 + 1/_n + 
-        (daysSinceStart - _getMeanX()) * (daysSinceStart - _getMeanX()) / _getSumXSquared());
-      
+      final margin = tValue *
+          standardError *
+          math.sqrt(1 +
+              1 / _n +
+              (daysSinceStart - _getMeanX()) *
+                  (daysSinceStart - _getMeanX()) /
+                  _getSumXSquared());
+
       results.add(ForecastResult(
         date: futureDate,
         predictedValue: predicted,
@@ -132,34 +137,35 @@ class LinearRegressionModel implements ForecastingModel {
 
   double _getMeanX() {
     if (_trainingData.isEmpty) return 0.0;
-    
+
     final firstDate = _trainingData.first.date;
     double sum = 0.0;
-    
+
     for (final point in _trainingData) {
       sum += point.date.difference(firstDate).inDays.toDouble();
     }
-    
+
     return sum / _trainingData.length;
   }
 
   double _getSumXSquared() {
     if (_trainingData.isEmpty) return 0.0;
-    
+
     final firstDate = _trainingData.first.date;
     final meanX = _getMeanX();
     double sum = 0.0;
-    
+
     for (final point in _trainingData) {
       final x = point.date.difference(firstDate).inDays.toDouble();
       sum += (x - meanX) * (x - meanX);
     }
-    
+
     return sum;
   }
 
   @override
-  Future<ForecastAccuracy> calculateAccuracy(List<TimeSeriesPoint> testData) async {
+  Future<ForecastAccuracy> calculateAccuracy(
+      List<TimeSeriesPoint> testData) async {
     if (_trainingData.isEmpty) {
       throw StateError('Model must be trained before calculating accuracy');
     }
@@ -181,11 +187,11 @@ class LinearRegressionModel implements ForecastingModel {
       final x = point.date.difference(firstDate).inDays.toDouble();
       final predicted = _slope * x + _intercept;
       final actual = point.value;
-      
+
       if (actual != 0) {
         final absoluteError = (actual - predicted).abs();
         final percentageError = (absoluteError / actual.abs()) * 100;
-        
+
         sumAbsoluteError += absoluteError;
         sumAbsolutePercentageError += percentageError;
         sumSquaredError += (actual - predicted) * (actual - predicted);

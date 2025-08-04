@@ -22,9 +22,8 @@ class TaxComplianceScreen extends ConsumerWidget {
         ],
       ),
       body: taxComplianceStatus.when(
-        data: (data) => data != null 
-            ? _buildContent(context, data)
-            : _buildNoDataState(),
+        data: (data) =>
+            data != null ? _buildContent(context, data) : _buildNoDataState(),
         loading: () => _buildLoadingState(),
         error: (error, stack) => _buildErrorState(context, error, ref),
       ),
@@ -46,26 +45,25 @@ class TaxComplianceScreen extends ConsumerWidget {
             color: _getComplianceColor(data.complianceScore),
             height: 250,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Tax overview cards
           _buildTaxOverviewCards(context, data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Upcoming obligations
           if (data.upcomingObligations.isNotEmpty)
             _buildUpcomingObligations(context, data.upcomingObligations),
-          
+
           const SizedBox(height: 24),
-          
+
           // Tax alerts
-          if (data.alerts.isNotEmpty)
-            _buildTaxAlerts(context, data.alerts),
-          
+          if (data.alerts.isNotEmpty) _buildTaxAlerts(context, data.alerts),
+
           const SizedBox(height: 24),
-          
+
           // Tax breakdown chart
           if (data.taxLiabilities.isNotEmpty)
             InteractivePieChart(
@@ -84,7 +82,8 @@ class TaxComplianceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTaxOverviewCards(BuildContext context, TaxComplianceStatus data) {
+  Widget _buildTaxOverviewCards(
+      BuildContext context, TaxComplianceStatus data) {
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -166,7 +165,8 @@ class TaxComplianceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildUpcomingObligations(BuildContext context, List<TaxObligation> obligations) {
+  Widget _buildUpcomingObligations(
+      BuildContext context, List<TaxObligation> obligations) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -191,10 +191,12 @@ class TaxComplianceScreen extends ConsumerWidget {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: _getObligationColor(obligation.daysUntilDue).withOpacity(0.1),
+                      color: _getObligationColor(obligation.daysUntilDue)
+                          .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: _getObligationColor(obligation.daysUntilDue).withOpacity(0.3),
+                        color: _getObligationColor(obligation.daysUntilDue)
+                            .withOpacity(0.3),
                       ),
                     ),
                     child: Row(
@@ -210,7 +212,10 @@ class TaxComplianceScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 obligation.type,
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
@@ -220,7 +225,10 @@ class TaxComplianceScreen extends ConsumerWidget {
                               ),
                               Text(
                                 'Due: ${_formatDate(obligation.dueDate)} (${obligation.daysUntilDue} days)',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
                                       color: Colors.grey[600],
                                     ),
                               ),
@@ -229,10 +237,12 @@ class TaxComplianceScreen extends ConsumerWidget {
                         ),
                         Text(
                           '\$${obligation.estimatedAmount.toStringAsFixed(0)}',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: _getObligationColor(obligation.daysUntilDue),
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: _getObligationColor(
+                                        obligation.daysUntilDue),
+                                  ),
                         ),
                       ],
                     ),
@@ -269,53 +279,63 @@ class TaxComplianceScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 16),
-            ...alerts.where((alert) => !alert.isRead).take(3).map((alert) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: _getAlertSeverityColor(alert.severity).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: _getAlertSeverityColor(alert.severity).withOpacity(0.3),
+            ...alerts
+                .where((alert) => !alert.isRead)
+                .take(3)
+                .map((alert) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: _getAlertSeverityColor(alert.severity)
+                              .withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _getAlertSeverityColor(alert.severity)
+                                .withOpacity(0.3),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              _getAlertIcon(alert.severity),
+                              color: _getAlertSeverityColor(alert.severity),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    alert.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                  Text(
+                                    alert.message,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Chip(
+                              label: Text(
+                                alert.severity.toUpperCase(),
+                                style: const TextStyle(fontSize: 10),
+                              ),
+                              backgroundColor:
+                                  _getAlertSeverityColor(alert.severity),
+                              labelStyle: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _getAlertIcon(alert.severity),
-                          color: _getAlertSeverityColor(alert.severity),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                alert.title,
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              Text(
-                                alert.message,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Chip(
-                          label: Text(
-                            alert.severity.toUpperCase(),
-                            style: const TextStyle(fontSize: 10),
-                          ),
-                          backgroundColor: _getAlertSeverityColor(alert.severity),
-                          labelStyle: const TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                )),
+                    )),
           ],
         ),
       ),
@@ -434,7 +454,8 @@ class TaxComplianceScreen extends ConsumerWidget {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _showAllObligations(BuildContext context, List<TaxObligation> obligations) {
+  void _showAllObligations(
+      BuildContext context, List<TaxObligation> obligations) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

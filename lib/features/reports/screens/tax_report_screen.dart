@@ -25,7 +25,7 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
 
   Future<void> _generateReport() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final reportService = ref.read(reportServiceProvider);
       _reportData = await reportService.generateTaxReport(_startDate, _endDate);
@@ -36,7 +36,7 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -106,27 +106,27 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                     children: [
                       // Report Header
                       _buildReportHeader(),
-                      
+
                       const SizedBox(height: 24),
 
                       // GST Summary
                       _buildGstSummary(),
-                      
+
                       const SizedBox(height: 24),
 
                       // Monthly GST Trend
                       _buildMonthlyGstTrend(),
-                      
+
                       const SizedBox(height: 24),
 
                       // GST by Rate Breakdown
                       _buildGstByRateBreakdown(),
-                      
+
                       const SizedBox(height: 24),
 
                       // Corporate Tax Estimate
                       _buildCorporateTaxEstimate(),
-                      
+
                       const SizedBox(height: 24),
 
                       // Compliance Status
@@ -151,8 +151,8 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                 Text(
                   'Tax Compliance Report',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -160,14 +160,14 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
             Text(
               'Period: ${_formatDate(_startDate)} - ${_formatDate(_endDate)}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
             Text(
               'Generated: ${_formatDate(DateTime.now())}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[500],
-              ),
+                    color: Colors.grey[500],
+                  ),
             ),
             const SizedBox(height: 12),
             Container(
@@ -193,15 +193,15 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
 
   Widget _buildGstSummary() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'GST Summary',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Row(
@@ -231,14 +231,20 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
         ),
         const SizedBox(height: 16),
         Card(
-          color: _reportData!.netGstPayable > 0 ? Colors.red.withOpacity(0.1) : Colors.green.withOpacity(0.1),
+          color: _reportData!.netGstPayable > 0
+              ? Colors.red.withOpacity(0.1)
+              : Colors.green.withOpacity(0.1),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Icon(
-                  _reportData!.netGstPayable > 0 ? Icons.payment : Icons.account_balance_wallet,
-                  color: _reportData!.netGstPayable > 0 ? Colors.red : Colors.green,
+                  _reportData!.netGstPayable > 0
+                      ? Icons.payment
+                      : Icons.account_balance_wallet,
+                  color: _reportData!.netGstPayable > 0
+                      ? Colors.red
+                      : Colors.green,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -246,16 +252,18 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _reportData!.netGstPayable > 0 ? 'Net GST Payable' : 'Net GST Refundable',
+                        _reportData!.netGstPayable > 0
+                            ? 'Net GST Payable'
+                            : 'Net GST Refundable',
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       Text(
-                        _reportData!.netGstPayable > 0 
+                        _reportData!.netGstPayable > 0
                             ? 'Amount due to IRAS'
                             : 'Amount refundable from IRAS',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                              color: Colors.grey[600],
+                            ),
                       ),
                     ],
                   ),
@@ -263,9 +271,11 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                 Text(
                   '\$${_reportData!.netGstPayable.abs().toStringAsFixed(2)}',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: _reportData!.netGstPayable > 0 ? Colors.red : Colors.green,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: _reportData!.netGstPayable > 0
+                            ? Colors.red
+                            : Colors.green,
+                      ),
                 ),
               ],
             ),
@@ -277,15 +287,15 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
 
   Widget _buildMonthlyGstTrend() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Monthly GST Trend',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Card(
@@ -311,7 +321,8 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.bar_chart, size: 48, color: Colors.grey[400]),
+                        Icon(Icons.bar_chart,
+                            size: 48, color: Colors.grey[400]),
                         const SizedBox(height: 8),
                         Text(
                           'Monthly GST Chart',
@@ -319,7 +330,8 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                         ),
                         Text(
                           'Would integrate with fl_chart package',
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 12),
                         ),
                       ],
                     ),
@@ -335,15 +347,15 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
 
   Widget _buildGstByRateBreakdown() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'GST by Rate Breakdown',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Card(
@@ -360,54 +372,64 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                 ),
                 const SizedBox(height: 16),
                 ..._reportData!.gstByRate.map((gstRate) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: gstRate.rate == '9%' ? Colors.green.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Text(
-                            gstRate.rate,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: gstRate.rate == '9%' ? Colors.green : Colors.grey,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: gstRate.rate == '9%'
+                                  ? Colors.green.withOpacity(0.1)
+                                  : Colors.grey.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              gstRate.rate == '9%' ? 'Standard Rate' : 'Zero-Rated/Exempt',
-                              style: const TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            Text(
-                              '${gstRate.percentage.toInt()}% of total GST',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
+                            child: Center(
+                              child: Text(
+                                gstRate.rate,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: gstRate.rate == '9%'
+                                      ? Colors.green
+                                      : Colors.grey,
+                                ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  gstRate.rate == '9%'
+                                      ? 'Standard Rate'
+                                      : 'Zero-Rated/Exempt',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  '${gstRate.percentage.toInt()}% of total GST',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: Colors.grey[600],
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            '\$${gstRate.amount.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        '\$${gstRate.amount.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
+                    )),
               ],
             ),
           ),
@@ -418,15 +440,15 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
 
   Widget _buildCorporateTaxEstimate() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Corporate Tax Estimate',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Card(
@@ -457,22 +479,27 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                           children: [
                             Text(
                               'Estimated Tax Liability',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             const SizedBox(height: 4),
                             const Text('Based on current profit margins'),
-                            const Text('Rate: 17% (first \$300K), 25% (above \$300K)'),
+                            const Text(
+                                'Rate: 17% (first \$300K), 25% (above \$300K)'),
                           ],
                         ),
                       ),
                       Text(
                         '\$${_reportData!.corporateTaxEstimate.toStringAsFixed(2)}',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange,
+                                ),
                       ),
                     ],
                   ),
@@ -481,9 +508,9 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                 Text(
                   'Note: This is an estimate. Consult your tax advisor for accurate calculations.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                    fontStyle: FontStyle.italic,
-                  ),
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
                 ),
               ],
             ),
@@ -500,8 +527,8 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
         Text(
           'Compliance Status',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Card(
@@ -565,7 +592,7 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
       lastDate: DateTime.now(),
       initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
     );
-    
+
     if (picked != null) {
       setState(() {
         _startDate = picked.start;
@@ -630,9 +657,12 @@ class _TaxMetricCard extends StatelessWidget {
                 Icon(icon, color: color),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: isPositive ? Colors.green.withOpacity(0.1) : Colors.blue.withOpacity(0.1),
+                    color: isPositive
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -650,8 +680,8 @@ class _TaxMetricCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             Text(
               title,
@@ -660,8 +690,8 @@ class _TaxMetricCard extends StatelessWidget {
             Text(
               subtitle,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
           ],
         ),
@@ -705,8 +735,8 @@ class _ComplianceItem extends StatelessWidget {
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
               ],
             ),
@@ -714,7 +744,9 @@ class _ComplianceItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: isCompliant ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+              color: isCompliant
+                  ? Colors.green.withOpacity(0.1)
+                  : Colors.orange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(

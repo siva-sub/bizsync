@@ -60,7 +60,7 @@ class TaxRate {
     // TODO: Implement proper JSON deserialization when build_runner generates the code
     throw UnimplementedError('JSON serialization not yet implemented');
   }
-  
+
   Map<String, dynamic> toJson() {
     // TODO: Implement proper JSON serialization when build_runner generates the code
     throw UnimplementedError('JSON serialization not yet implemented');
@@ -86,7 +86,8 @@ class TaxRate {
       effectiveFrom: effectiveFrom ?? this.effectiveFrom,
       effectiveTo: effectiveTo ?? this.effectiveTo,
       description: description ?? this.description,
-      applicableCompanyTypes: applicableCompanyTypes ?? this.applicableCompanyTypes,
+      applicableCompanyTypes:
+          applicableCompanyTypes ?? this.applicableCompanyTypes,
       conditions: conditions ?? this.conditions,
       isActive: isActive ?? this.isActive,
       legislation: legislation ?? this.legislation,
@@ -95,14 +96,15 @@ class TaxRate {
   }
 
   bool isEffectiveOn(DateTime date) {
-    final isAfterStart = date.isAfter(effectiveFrom) || date.isAtSameMomentAs(effectiveFrom);
+    final isAfterStart =
+        date.isAfter(effectiveFrom) || date.isAtSameMomentAs(effectiveFrom);
     final isBeforeEnd = effectiveTo == null || date.isBefore(effectiveTo!);
     return isAfterStart && isBeforeEnd && isActive;
   }
 
   bool appliesTo(CompanyType companyType) {
-    return applicableCompanyTypes == null || 
-           applicableCompanyTypes!.contains(companyType);
+    return applicableCompanyTypes == null ||
+        applicableCompanyTypes!.contains(companyType);
   }
 }
 
@@ -122,7 +124,7 @@ class HistoricalTaxRates {
     // TODO: Implement proper JSON deserialization when build_runner generates the code
     throw UnimplementedError('JSON serialization not yet implemented');
   }
-  
+
   Map<String, dynamic> toJson() {
     // TODO: Implement proper JSON serialization when build_runner generates the code
     throw UnimplementedError('JSON serialization not yet implemented');
@@ -137,9 +139,9 @@ class HistoricalTaxRates {
 
   List<TaxRate> getRatesInPeriod(DateTime startDate, DateTime endDate) {
     return rates.where((rate) {
-      return (rate.effectiveFrom.isBefore(endDate) || 
+      return (rate.effectiveFrom.isBefore(endDate) ||
               rate.effectiveFrom.isAtSameMomentAs(endDate)) &&
-             (rate.effectiveTo == null || 
+          (rate.effectiveTo == null ||
               rate.effectiveTo!.isAfter(startDate) ||
               rate.effectiveTo!.isAtSameMomentAs(startDate));
     }).toList();
@@ -211,7 +213,7 @@ class SingaporeTaxRates {
       ],
       legislation: 'Income Tax Act',
     ),
-    
+
     // Startup exemption scheme
     TaxRate(
       id: 'startup_exemption_2024',
@@ -227,7 +229,7 @@ class SingaporeTaxRates {
       },
       legislation: 'Income Tax Act Section 43A',
     ),
-    
+
     TaxRate(
       id: 'startup_partial_2024',
       taxType: TaxType.corporateTax,
@@ -273,7 +275,6 @@ class SingaporeTaxRates {
       },
       legislation: 'Income Tax Act',
     ),
-    
     TaxRate(
       id: 'wht_interest_2024',
       taxType: TaxType.withholdingTax,
@@ -286,7 +287,6 @@ class SingaporeTaxRates {
       },
       legislation: 'Income Tax Act Section 45',
     ),
-    
     TaxRate(
       id: 'wht_royalties_2024',
       taxType: TaxType.withholdingTax,
@@ -314,7 +314,6 @@ class SingaporeTaxRates {
       },
       legislation: 'Stamp Duties Act',
     ),
-    
     TaxRate(
       id: 'stamp_duty_shares_2024',
       taxType: TaxType.stampDuty,

@@ -18,40 +18,44 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late AnimationController _scaleController;
-  
+
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
-  
+
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  
+
   final List<WelcomePage> _pages = [
     const WelcomePage(
       title: 'Welcome to BizSync',
       subtitle: 'Your Complete Business Management Solution',
-      description: 'Streamline invoicing, manage customers, track finances, and grow your business with our offline-first platform.',
+      description:
+          'Streamline invoicing, manage customers, track finances, and grow your business with our offline-first platform.',
       icon: Icons.business_center,
       color: Color(0xFF1565C0),
     ),
     const WelcomePage(
       title: 'Offline-First Design',
       subtitle: 'Work Anywhere, Anytime',
-      description: 'All your data is stored locally and synced when you\'re online. Never lose access to your business information.',
+      description:
+          'All your data is stored locally and synced when you\'re online. Never lose access to your business information.',
       icon: Icons.offline_bolt,
       color: Color(0xFF7B1FA2),
     ),
     const WelcomePage(
       title: 'Singapore Ready',
       subtitle: 'Built for Local Businesses',
-      description: 'GST calculations, IRAS compliance, PayNow QR codes, and Singapore-specific features built right in.',
+      description:
+          'GST calculations, IRAS compliance, PayNow QR codes, and Singapore-specific features built right in.',
       icon: Icons.location_city,
       color: Color(0xFF388E3C),
     ),
     const WelcomePage(
       title: 'Secure & Private',
       subtitle: 'Your Data, Your Control',
-      description: 'End-to-end encryption, local storage, and P2P sync ensure your business data remains private and secure.',
+      description:
+          'End-to-end encryption, local storage, and P2P sync ensure your business data remains private and secure.',
       icon: Icons.security,
       color: Color(0xFFD32F2F),
     ),
@@ -69,12 +73,12 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -111,13 +115,13 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
         _fadeController.forward();
       }
     });
-    
+
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) {
         _slideController.forward();
       }
     });
-    
+
     Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted) {
         _scaleController.forward();
@@ -165,7 +169,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
                 ],
               ),
             ),
-            
+
             // Page content
             Expanded(
               child: PageView.builder(
@@ -204,7 +208,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
                 },
               ),
             ),
-            
+
             // Navigation buttons
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -273,7 +277,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
     _fadeController.reset();
     _slideController.reset();
     _scaleController.reset();
-    
+
     Future.delayed(const Duration(milliseconds: 50), () {
       if (mounted) {
         _fadeController.forward();
@@ -286,7 +290,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
   void _continueToSetup() async {
     final notifier = ref.read(onboardingStateProvider.notifier);
     await notifier.completeStep(OnboardingStep.welcome);
-    
+
     if (mounted) {
       context.go('/onboarding/company-setup');
     }
@@ -297,7 +301,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
     if (shouldSkip == true) {
       final notifier = ref.read(onboardingStateProvider.notifier);
       await notifier.skipOnboarding();
-      
+
       if (mounted) {
         context.go('/');
       }
@@ -360,7 +364,7 @@ class _WelcomePageWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Spacer(),
-          
+
           // Icon
           Container(
             width: 120,
@@ -382,43 +386,46 @@ class _WelcomePageWidget extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          
+
           const SizedBox(height: 40),
-          
+
           // Title
           Text(
             page.title,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Subtitle
           Text(
             page.subtitle,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: page.color,
-              fontWeight: FontWeight.w600,
-            ),
+                  color: page.color,
+                  fontWeight: FontWeight.w600,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Description
           Text(
             page.description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-              height: 1.6,
-            ),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.7),
+                  height: 1.6,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const Spacer(),
         ],
       ),

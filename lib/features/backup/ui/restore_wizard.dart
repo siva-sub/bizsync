@@ -8,7 +8,7 @@ import '../services/restore_service.dart';
 /// Wizard for restoring backups with advanced options
 class RestoreWizard extends ConsumerStatefulWidget {
   final String? initialBackupPath;
-  
+
   const RestoreWizard({
     super.key,
     this.initialBackupPath,
@@ -21,16 +21,17 @@ class RestoreWizard extends ConsumerStatefulWidget {
 class _RestoreWizardState extends ConsumerState<RestoreWizard> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
-  
+
   // Configuration state
   String? _backupFilePath;
   String? _password;
   bool _createPreRestoreBackup = true;
-  ConflictResolutionStrategy _defaultConflictStrategy = ConflictResolutionStrategy.prompt;
+  ConflictResolutionStrategy _defaultConflictStrategy =
+      ConflictResolutionStrategy.prompt;
   BackupValidationResult? _validationResult;
-  
+
   final _passwordController = TextEditingController();
-  
+
   @override
   void initState() {
     super.initState();
@@ -63,7 +64,7 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
         children: [
           // Progress indicator
           _buildProgressIndicator(),
-          
+
           // Wizard pages
           Expanded(
             child: PageView(
@@ -77,7 +78,7 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
               ],
             ),
           ),
-          
+
           // Navigation buttons
           _buildNavigationButtons(),
         ],
@@ -91,7 +92,7 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
       child: Row(
         children: List.generate(4, (index) {
           final isActive = index <= _currentStep;
-          
+
           return Expanded(
             child: Container(
               height: 4,
@@ -123,7 +124,6 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -135,7 +135,6 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-                  
                   InkWell(
                     onTap: _selectBackupFile,
                     child: Container(
@@ -152,7 +151,7 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              _backupFilePath != null 
+                              _backupFilePath != null
                                   ? _backupFilePath!.split('/').last
                                   : 'Select .bdb backup file',
                               style: Theme.of(context).textTheme.bodyMedium,
@@ -163,9 +162,7 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                       ),
                     ),
                   ),
-                  
                   const SizedBox(height: 16),
-                  
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -176,15 +173,20 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                       children: [
                         Icon(
                           Icons.info,
-                          color: Theme.of(context).colorScheme.onSecondaryContainer,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             'Select a .bdb backup file created by BizSync. The file will be validated before restoration.',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSecondaryContainer,
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondaryContainer,
+                                    ),
                           ),
                         ),
                       ],
@@ -210,14 +212,14 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
+
           if (_validationResult == null)
             _buildValidationInProgress()
           else if (_validationResult!.isValid)
             _buildValidationSuccess()
           else
             _buildValidationError(),
-          
+
           // Password input if backup is encrypted
           if (_validationResult?.manifest?.encryption?.isEncrypted == true)
             _buildPasswordInput(),
@@ -243,7 +245,7 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
 
   Widget _buildValidationSuccess() {
     final manifest = _validationResult!.manifest!;
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -264,15 +266,14 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
               ],
             ),
             const SizedBox(height: 16),
-            
             _buildInfoRow('Created', _formatDateTime(manifest.createdAt)),
             _buildInfoRow('Device', manifest.deviceName),
             _buildInfoRow('App Version', manifest.appVersion),
             _buildInfoRow('Type', manifest.metadata.type.name.toUpperCase()),
             _buildInfoRow('Records', manifest.metadata.totalRecords.toString()),
             _buildInfoRow('Size', _formatFileSize(manifest.metadata.totalSize)),
-            _buildInfoRow('Encrypted', manifest.encryption?.isEncrypted == true ? 'Yes' : 'No'),
-            
+            _buildInfoRow('Encrypted',
+                manifest.encryption?.isEncrypted == true ? 'Yes' : 'No'),
             if (_validationResult!.warnings.isNotEmpty) ...[
               const SizedBox(height: 16),
               Container(
@@ -298,8 +299,8 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    ..._validationResult!.warnings.map((warning) => 
-                      Padding(
+                    ..._validationResult!.warnings.map(
+                      (warning) => Padding(
                         padding: const EdgeInsets.only(left: 28, bottom: 4),
                         child: Text(
                           '• $warning',
@@ -335,27 +336,24 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                 Text(
                   'Validation Failed',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                      ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            
-            ..._validationResult!.errors.map((error) => 
-              Padding(
+            ..._validationResult!.errors.map(
+              (error) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   '• $error',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                      ),
                 ),
               ),
             ),
-            
             const SizedBox(height: 16),
-            
             ElevatedButton(
               onPressed: () => setState(() {
                 _validationResult = null;
@@ -414,7 +412,6 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -426,20 +423,19 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-                  
                   SwitchListTile(
                     title: const Text('Create Backup Before Restore'),
-                    subtitle: const Text('Recommended: Create a backup of current data before restoring'),
+                    subtitle: const Text(
+                        'Recommended: Create a backup of current data before restoring'),
                     value: _createPreRestoreBackup,
-                    onChanged: (value) => setState(() => _createPreRestoreBackup = value),
+                    onChanged: (value) =>
+                        setState(() => _createPreRestoreBackup = value),
                   ),
                 ],
               ),
             ),
           ),
-          
           const SizedBox(height: 16),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -456,14 +452,14 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
-                  
-                  ...ConflictResolutionStrategy.values.map((strategy) => 
-                    RadioListTile<ConflictResolutionStrategy>(
+                  ...ConflictResolutionStrategy.values.map(
+                    (strategy) => RadioListTile<ConflictResolutionStrategy>(
                       title: Text(_getStrategyTitle(strategy)),
                       subtitle: Text(_getStrategyDescription(strategy)),
                       value: strategy,
                       groupValue: _defaultConflictStrategy,
-                      onChanged: (value) => setState(() => _defaultConflictStrategy = value!),
+                      onChanged: (value) =>
+                          setState(() => _defaultConflictStrategy = value!),
                     ),
                   ),
                 ],
@@ -486,7 +482,6 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -498,23 +493,31 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-                  
                   if (_backupFilePath != null)
                     _buildSummaryItem('File', _backupFilePath!.split('/').last),
                   if (_validationResult?.manifest != null) ...[
-                    _buildSummaryItem('Created', _formatDateTime(_validationResult!.manifest!.createdAt)),
-                    _buildSummaryItem('Type', _validationResult!.manifest!.metadata.type.name.toUpperCase()),
-                    _buildSummaryItem('Records', _validationResult!.manifest!.metadata.totalRecords.toString()),
+                    _buildSummaryItem(
+                        'Created',
+                        _formatDateTime(
+                            _validationResult!.manifest!.createdAt)),
+                    _buildSummaryItem(
+                        'Type',
+                        _validationResult!.manifest!.metadata.type.name
+                            .toUpperCase()),
+                    _buildSummaryItem(
+                        'Records',
+                        _validationResult!.manifest!.metadata.totalRecords
+                            .toString()),
                   ],
-                  _buildSummaryItem('Pre-restore Backup', _createPreRestoreBackup ? 'Yes' : 'No'),
-                  _buildSummaryItem('Conflict Resolution', _getStrategyTitle(_defaultConflictStrategy)),
+                  _buildSummaryItem('Pre-restore Backup',
+                      _createPreRestoreBackup ? 'Yes' : 'No'),
+                  _buildSummaryItem('Conflict Resolution',
+                      _getStrategyTitle(_defaultConflictStrategy)),
                 ],
               ),
             ),
           ),
-          
           const SizedBox(height: 16),
-          
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -532,9 +535,9 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
                   child: Text(
                     'CAUTION: This will replace your current data with the backup data. Make sure you have a backup of your current data if needed.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                      fontWeight: FontWeight.w500,
-                    ),
+                          color: Theme.of(context).colorScheme.onErrorContainer,
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                 ),
               ],
@@ -556,8 +559,8 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
             child: Text(
               label,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
           Expanded(
@@ -582,8 +585,8 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
             child: Text(
               label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
           Expanded(
@@ -627,7 +630,7 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
         return _backupFilePath != null;
       case 1:
         return _validationResult?.isValid == true &&
-               (_validationResult?.manifest?.encryption?.isEncrypted != true ||
+            (_validationResult?.manifest?.encryption?.isEncrypted != true ||
                 (_password != null && _password!.isNotEmpty));
       case 2:
         return true;
@@ -670,7 +673,7 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
         allowedExtensions: ['bdb'],
         dialogTitle: 'Select backup file to restore',
       );
-      
+
       if (result != null && result.files.single.path != null) {
         setState(() {
           _backupFilePath = result.files.single.path!;
@@ -688,14 +691,14 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
 
   Future<void> _validateBackup() async {
     if (_backupFilePath == null) return;
-    
+
     try {
       final restoreService = ref.read(restoreServiceProvider);
       final result = await restoreService.validateBackup(
         backupFilePath: _backupFilePath!,
         password: _password,
       );
-      
+
       setState(() {
         _validationResult = result;
       });
@@ -714,14 +717,14 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
   Future<void> _startRestore() async {
     try {
       final restoreService = ref.read(restoreServiceProvider);
-      
+
       await restoreService.restoreFromBackup(
         backupFilePath: _backupFilePath!,
         password: _password,
         defaultStrategy: _defaultConflictStrategy,
         createBackupBeforeRestore: _createPreRestoreBackup,
       );
-      
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -770,7 +773,8 @@ class _RestoreWizardState extends ConsumerState<RestoreWizard> {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 }

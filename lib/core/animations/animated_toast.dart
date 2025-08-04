@@ -5,9 +5,12 @@ import '../stubs/custom_snackbar_stub.dart';
 export '../stubs/custom_snackbar_stub.dart';
 
 // Stub functions to replace missing top_snackbar_flutter functionality
-void showTopSnackBar(OverlayState overlayState, Widget snackBar, {Duration? displayDuration}) {
+void showTopSnackBar(OverlayState overlayState, Widget snackBar,
+    {Duration? displayDuration}) {
   ScaffoldMessenger.of(overlayState.context).showSnackBar(
-    SnackBar(content: snackBar, duration: displayDuration ?? const Duration(seconds: 3)),
+    SnackBar(
+        content: snackBar,
+        duration: displayDuration ?? const Duration(seconds: 3)),
   );
 }
 
@@ -24,7 +27,7 @@ class AnimatedToast {
     );
   }
 
-  /// Show error toast  
+  /// Show error toast
   static void showError(BuildContext context, String message) {
     CustomSnackBar.show(
       context,

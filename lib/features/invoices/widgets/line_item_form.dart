@@ -39,18 +39,18 @@ class _LineItemFormState extends State<LineItemForm> {
   LineItemType _itemType = LineItemType.product;
   TaxCalculationMethod _taxMethod = TaxCalculationMethod.exclusive;
   GstTaxCategory _gstCategory = GstTaxCategory.standard;
-  
+
   bool _companyGstRegistered = true;
   bool _customerGstRegistered = false;
 
   @override
   void initState() {
     super.initState();
-    
+
     final data = widget.item?.toJson() ?? widget.lineItem ?? {};
-    
+
     _loadGstRegistrationStatus();
-    
+
     _descriptionController = TextEditingController(
       text: data['description'] ?? '',
     );
@@ -64,7 +64,8 @@ class _LineItemFormState extends State<LineItemForm> {
       text: (data['discount'] ?? 0.0).toString(),
     );
     _taxRateController = TextEditingController(
-      text: (data['tax_rate'] ?? 9.0).toString(), // Updated to current 9% GST rate
+      text: (data['tax_rate'] ?? 9.0)
+          .toString(), // Updated to current 9% GST rate
     );
 
     if (data['item_type'] != null) {
@@ -75,9 +76,8 @@ class _LineItemFormState extends State<LineItemForm> {
     }
     if (data['gst_category'] != null) {
       try {
-        _gstCategory = GstTaxCategory.values.firstWhere(
-          (category) => category.name == data['gst_category']
-        );
+        _gstCategory = GstTaxCategory.values
+            .firstWhere((category) => category.name == data['gst_category']);
       } catch (e) {
         _gstCategory = GstTaxCategory.standard;
       }
@@ -99,12 +99,14 @@ class _LineItemFormState extends State<LineItemForm> {
     _taxRateController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadGstRegistrationStatus() async {
     try {
-      final companyRegistered = await TaxSettingsService().getCompanyGstRegistrationStatus();
-      final customerRegistered = await TaxSettingsService().getCustomerGstRegistrationStatus(null);
-      
+      final companyRegistered =
+          await TaxSettingsService().getCompanyGstRegistrationStatus();
+      final customerRegistered =
+          await TaxSettingsService().getCustomerGstRegistrationStatus(null);
+
       if (mounted) {
         setState(() {
           _companyGstRegistered = companyRegistered;
@@ -125,10 +127,11 @@ class _LineItemFormState extends State<LineItemForm> {
   void _onChanged() {
     final data = widget.item?.toJson() ?? widget.lineItem ?? {};
     final updatedItem = Map<String, dynamic>.from(data);
-    
+
     updatedItem['description'] = _descriptionController.text;
     updatedItem['quantity'] = double.tryParse(_quantityController.text) ?? 1.0;
-    updatedItem['unit_price'] = double.tryParse(_unitPriceController.text) ?? 0.0;
+    updatedItem['unit_price'] =
+        double.tryParse(_unitPriceController.text) ?? 0.0;
     updatedItem['discount'] = double.tryParse(_discountController.text) ?? 0.0;
     updatedItem['tax_rate'] = double.tryParse(_taxRateController.text) ?? 0.0;
     updatedItem['item_type'] = _itemType.value;
@@ -142,7 +145,7 @@ class _LineItemFormState extends State<LineItemForm> {
     final taxRate = updatedItem['tax_rate'] as double;
 
     double subtotal = quantity * unitPrice;
-    
+
     // Apply discount
     if (discount > 0) {
       if (discount <= 1.0) {
@@ -158,20 +161,18 @@ class _LineItemFormState extends State<LineItemForm> {
     GstCalculationResult gstResult;
     if (_taxMethod == TaxCalculationMethod.exclusive) {
       gstResult = SingaporeGstService.calculateGst(
-        amount: subtotal,
-        calculationDate: DateTime.now(),
-        taxCategory: _gstCategory,
-        isGstRegistered: _companyGstRegistered,
-        customerIsGstRegistered: _customerGstRegistered
-      );
+          amount: subtotal,
+          calculationDate: DateTime.now(),
+          taxCategory: _gstCategory,
+          isGstRegistered: _companyGstRegistered,
+          customerIsGstRegistered: _customerGstRegistered);
     } else {
       gstResult = SingaporeGstService.calculateGstInclusive(
-        totalAmount: subtotal,
-        calculationDate: DateTime.now(),
-        taxCategory: _gstCategory,
-        isGstRegistered: _companyGstRegistered,
-        customerIsGstRegistered: _customerGstRegistered
-      );
+          totalAmount: subtotal,
+          calculationDate: DateTime.now(),
+          taxCategory: _gstCategory,
+          isGstRegistered: _companyGstRegistered,
+          customerIsGstRegistered: _customerGstRegistered);
     }
 
     updatedItem['line_total'] = gstResult.totalAmount;
@@ -420,15 +421,15 @@ class _LineItemFormState extends State<LineItemForm> {
                 Text(
                   'Category Info',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _gstCategory.description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[700],
-                  ),
+                        color: Colors.grey[700],
+                      ),
                 ),
               ],
             ),
@@ -479,15 +480,15 @@ class _LineItemFormState extends State<LineItemForm> {
                 Text(
                   'Tax Method Info',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _getTaxMethodDescription(_taxMethod),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
               ],
             ),
@@ -504,7 +505,7 @@ class _LineItemFormState extends State<LineItemForm> {
 
     double subtotal = quantity * unitPrice;
     double discountAmount = 0.0;
-    
+
     if (discount > 0) {
       if (discount <= 1.0) {
         discountAmount = subtotal * discount;
@@ -512,27 +513,25 @@ class _LineItemFormState extends State<LineItemForm> {
         discountAmount = discount;
       }
     }
-    
+
     final afterDiscount = subtotal - discountAmount;
-    
+
     // Calculate GST using Singapore GST service
     GstCalculationResult gstResult;
     if (_taxMethod == TaxCalculationMethod.exclusive) {
       gstResult = SingaporeGstService.calculateGst(
-        amount: afterDiscount,
-        calculationDate: DateTime.now(),
-        taxCategory: _gstCategory,
-        isGstRegistered: _companyGstRegistered,
-        customerIsGstRegistered: _customerGstRegistered
-      );
+          amount: afterDiscount,
+          calculationDate: DateTime.now(),
+          taxCategory: _gstCategory,
+          isGstRegistered: _companyGstRegistered,
+          customerIsGstRegistered: _customerGstRegistered);
     } else {
       gstResult = SingaporeGstService.calculateGstInclusive(
-        totalAmount: afterDiscount,
-        calculationDate: DateTime.now(),
-        taxCategory: _gstCategory,
-        isGstRegistered: _companyGstRegistered,
-        customerIsGstRegistered: _customerGstRegistered
-      );
+          totalAmount: afterDiscount,
+          calculationDate: DateTime.now(),
+          taxCategory: _gstCategory,
+          isGstRegistered: _companyGstRegistered,
+          customerIsGstRegistered: _customerGstRegistered);
     }
 
     final total = gstResult.totalAmount;
@@ -551,16 +550,18 @@ class _LineItemFormState extends State<LineItemForm> {
           if (discountAmount > 0)
             _buildTotalRow('Discount', -discountAmount, color: Colors.red),
           if (gstAmount > 0)
-            _buildTotalRow('GST (${(gstResult.gstRate * 100).toStringAsFixed(1)}%)', gstAmount),
+            _buildTotalRow(
+                'GST (${(gstResult.gstRate * 100).toStringAsFixed(1)}%)',
+                gstAmount),
           if (gstResult.reasoning.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2),
               child: Text(
                 gstResult.reasoning,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,
-                ),
+                      color: Colors.grey[600],
+                      fontStyle: FontStyle.italic,
+                    ),
               ),
             ),
           const Divider(),
@@ -570,7 +571,8 @@ class _LineItemFormState extends State<LineItemForm> {
     );
   }
 
-  Widget _buildTotalRow(String label, double amount, {bool isTotal = false, Color? color}) {
+  Widget _buildTotalRow(String label, double amount,
+      {bool isTotal = false, Color? color}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -579,16 +581,16 @@ class _LineItemFormState extends State<LineItemForm> {
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: color,
-            ),
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                  color: color,
+                ),
           ),
           Text(
             '\$ ${amount.toStringAsFixed(2)}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: isTotal ? Theme.of(context).primaryColor : color,
-            ),
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                  color: isTotal ? Theme.of(context).primaryColor : color,
+                ),
           ),
         ],
       ),

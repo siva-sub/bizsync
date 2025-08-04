@@ -33,8 +33,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
               child: Text(
                 'Animation Showcase',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
             const SizedBox(height: 24),
@@ -51,7 +51,7 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
             _buildNumberCounterSection(),
             const SizedBox(height: 24),
 
-            // Progress Bar Section  
+            // Progress Bar Section
             _buildProgressBarSection(),
             const SizedBox(height: 24),
 
@@ -94,8 +94,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
           Text(
             'Animated Cards',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           Row(
@@ -112,7 +112,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
                         Icon(Icons.trending_up, size: 32, color: Colors.green),
                         SizedBox(height: 8),
                         Text('Revenue'),
-                        Text('\$45,230', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('\$45,230',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -131,7 +132,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
                         Icon(Icons.people, size: 32, color: Colors.blue),
                         SizedBox(height: 8),
                         Text('Customers'),
-                        Text('1,234', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('1,234',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -154,8 +156,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
           Text(
             'Animated Buttons',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           Wrap(
@@ -163,16 +165,19 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
             runSpacing: 12,
             children: [
               AnimatedButton(
-                onPressed: () => context.showSuccessToast('Primary button pressed!'),
+                onPressed: () =>
+                    context.showSuccessToast('Primary button pressed!'),
                 child: const Text('Primary Button'),
               ),
               AnimatedButton(
-                onPressed: () => context.showWarningToast('Warning button pressed!'),
+                onPressed: () =>
+                    context.showWarningToast('Warning button pressed!'),
                 backgroundColor: Colors.orange,
                 child: const Text('Warning Button'),
               ),
               AnimatedButton(
-                onPressed: () => context.showErrorToast('Danger button pressed!'),
+                onPressed: () =>
+                    context.showErrorToast('Danger button pressed!'),
                 backgroundColor: Colors.red,
                 child: const Text('Danger Button'),
               ),
@@ -193,8 +198,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
           Text(
             'Animated Number Counter',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           AnimatedCard(
@@ -207,10 +212,13 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
                     children: [
                       AnimatedNumberCounter(
                         value: _counter * 1000,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const Text('Total Sales'),
                     ],
@@ -219,10 +227,13 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
                     children: [
                       AnimatedNumberCounter(
                         value: _counter * 50,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
                         prefix: '\$',
                       ),
                       const Text('Revenue'),
@@ -247,8 +258,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
           Text(
             'Animated Progress Bar',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           AnimatedCard(
@@ -283,8 +294,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
           Text(
             'Staggered List Animation',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           AnimationLimiter(
@@ -308,7 +319,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
                         title: Text('List Item ${index + 1}'),
                         subtitle: Text('This is a staggered animation demo'),
                         trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () => context.showInfoToast('List item ${index + 1} tapped!'),
+                        onTap: () => context
+                            .showInfoToast('List item ${index + 1} tapped!'),
                       ),
                     ),
                   ),
@@ -334,8 +346,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
               Text(
                 'Shimmer Loading States',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               Switch(
                 value: _showShimmer,
@@ -362,7 +374,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('John Doe', style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text('John Doe',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                           Text('Customer since 2023'),
                         ],
                       ),
@@ -387,8 +400,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
           Text(
             'Toast Notifications',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           Wrap(
@@ -396,22 +409,26 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
             runSpacing: 12,
             children: [
               AnimatedButton(
-                onPressed: () => context.showSuccessToast('Success! Operation completed.'),
+                onPressed: () =>
+                    context.showSuccessToast('Success! Operation completed.'),
                 backgroundColor: Colors.green,
                 child: const Text('Success Toast'),
               ),
               AnimatedButton(
-                onPressed: () => context.showErrorToast('Error! Something went wrong.'),
+                onPressed: () =>
+                    context.showErrorToast('Error! Something went wrong.'),
                 backgroundColor: Colors.red,
                 child: const Text('Error Toast'),
               ),
               AnimatedButton(
-                onPressed: () => context.showWarningToast('Warning! Please check your input.'),
+                onPressed: () => context
+                    .showWarningToast('Warning! Please check your input.'),
                 backgroundColor: Colors.orange,
                 child: const Text('Warning Toast'),
               ),
               AnimatedButton(
-                onPressed: () => context.showInfoToast('Info: Here is some useful information.'),
+                onPressed: () => context
+                    .showInfoToast('Info: Here is some useful information.'),
                 backgroundColor: Colors.blue,
                 child: const Text('Info Toast'),
               ),
@@ -432,8 +449,8 @@ class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
           Text(
             'Loading Overlay',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           AnimatedButton(

@@ -16,7 +16,7 @@ class InvoiceStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusInfo = _getStatusInfo(status);
-    
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isCompact ? 6 : 8,

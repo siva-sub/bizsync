@@ -18,29 +18,30 @@ import '../utils/backup_format.dart';
 /// Comprehensive backup service for BizSync
 class BackupService extends ChangeNotifier {
   final CRDTDatabaseService _databaseService = CRDTDatabaseService();
-  
+
   BackupConfig _config = const BackupConfig();
   final List<BackupHistoryEntry> _backupHistory = [];
   BackupProgress? _currentBackup;
-  
+
   BackupService();
-  
+
   // Getters
   BackupConfig get config => _config;
-  List<BackupHistoryEntry> get backupHistory => List.unmodifiable(_backupHistory);
+  List<BackupHistoryEntry> get backupHistory =>
+      List.unmodifiable(_backupHistory);
   BackupProgress? get currentBackup => _currentBackup;
   bool get isBackupInProgress => _currentBackup != null;
-  
+
   /// Initialize the backup service
   Future<void> initialize() async {
     await _loadConfig();
     await _loadBackupHistory();
-    
+
     if (_config.autoBackupEnabled) {
       await _scheduleAutoBackup();
     }
   }
-  
+
   /// Create a full backup
   Future<String> createFullBackup({
     required String outputPath,
@@ -58,7 +59,7 @@ class BackupService extends ChangeNotifier {
       onProgress: onProgress,
     );
   }
-  
+
   /// Create an incremental backup
   Future<String> createIncrementalBackup({
     required String outputPath,
@@ -78,7 +79,7 @@ class BackupService extends ChangeNotifier {
       onProgress: onProgress,
     );
   }
-  
+
   /// Create a backup with custom options
   Future<String> _createBackup({
     required BackupType type,
@@ -93,7 +94,7 @@ class BackupService extends ChangeNotifier {
     if (isBackupInProgress) {
       throw BackupException('Another backup is already in progress');
     }
-    
+
     final backupId = const Uuid().v4();
     _currentBackup = BackupProgress(
       id: backupId,
@@ -105,26 +106,26 @@ class BackupService extends ChangeNotifier {
       progressPercentage: 0.0,
       startedAt: DateTime.now(),
     );
-    
+
     notifyListeners();
     onProgress?.call(_currentBackup!);
-    
+
     try {
       // Step 1: Gather metadata
       await _updateProgress('Gathering system information...', onProgress);
       final deviceInfo = await _getDeviceInfo();
-      
+
       // Step 2: Export database
       await _updateProgress('Exporting database...', onProgress);
       final tableData = await _exportDatabase(scope, fromDate, toDate);
-      
+
       // Step 3: Collect attachments
       Map<String, Uint8List> attachments = {};
       if (includeAttachments) {
         await _updateProgress('Collecting attachments...', onProgress);
         attachments = await _collectAttachments();
       }
-      
+
       // Step 4: Generate manifest
       await _updateProgress('Generating manifest...', onProgress);
       final manifest = await _generateManifest(
@@ -137,7 +138,7 @@ class BackupService extends ChangeNotifier {
         toDate: toDate,
         password: password,
       );
-      
+
       // Step 5: Create backup file
       await _updateProgress('Creating backup file...', onProgress);
       final backupFilePath = await BackupFormatHandler.createBackupFile(
@@ -147,12 +148,12 @@ class BackupService extends ChangeNotifier {
         attachments: attachments,
         password: password,
       );
-      
+
       // Step 6: Update history
       await _updateProgress('Finalizing...', onProgress);
       final backupFile = File(backupFilePath);
       final fileSize = await backupFile.length();
-      
+
       final historyEntry = BackupHistoryEntry(
         id: backupId,
         fileName: path.basename(backupFilePath),
@@ -163,9 +164,9 @@ class BackupService extends ChangeNotifier {
         status: BackupStatus.completed,
         isEncrypted: password != null && password.isNotEmpty,
       );
-      
+
       await _addToHistory(historyEntry);
-      
+
       _currentBackup = _currentBackup!.copyWith(
         status: BackupStatus.completed,
         completedSteps: _currentBackup!.totalSteps,
@@ -173,12 +174,12 @@ class BackupService extends ChangeNotifier {
         currentOperation: 'Backup completed successfully',
         completedAt: DateTime.now(),
       );
-      
+
       onProgress?.call(_currentBackup!);
-      
+
       // Cleanup old backups if needed
       await _cleanupOldBackups();
-      
+
       return backupFilePath;
     } catch (e) {
       _currentBackup = _currentBackup!.copyWith(
@@ -187,7 +188,7 @@ class BackupService extends ChangeNotifier {
         completedAt: DateTime.now(),
         errorMessage: e.toString(),
       );
-      
+
       onProgress?.call(_currentBackup!);
       rethrow;
     } finally {
@@ -198,7 +199,7 @@ class BackupService extends ChangeNotifier {
       });
     }
   }
-  
+
   /// Export database tables based on scope
   Future<Map<String, List<Map<String, dynamic>>>> _exportDatabase(
     BackupScope scope,
@@ -207,55 +208,55 @@ class BackupService extends ChangeNotifier {
   ) async {
     final db = await _databaseService.database;
     final tableData = <String, List<Map<String, dynamic>>>{};
-    
+
     final tablesToExport = _getTablesForScope(scope);
-    
+
     for (final tableName in tablesToExport) {
       String query = 'SELECT * FROM $tableName';
       final args = <dynamic>[];
-      
+
       // Add date filtering if provided
       if (fromDate != null || toDate != null) {
         final conditions = <String>[];
-        
+
         if (fromDate != null) {
           conditions.add('updated_at >= ?');
           args.add(fromDate.millisecondsSinceEpoch);
         }
-        
+
         if (toDate != null) {
           conditions.add('updated_at <= ?');
           args.add(toDate.millisecondsSinceEpoch);
         }
-        
+
         if (conditions.isNotEmpty) {
           query += ' WHERE ${conditions.join(' AND ')}';
         }
       }
-      
+
       query += ' ORDER BY created_at ASC';
-      
+
       final results = await db.rawQuery(query, args);
       tableData[tableName] = results;
     }
-    
+
     return tableData;
   }
-  
+
   /// Collect file attachments
   Future<Map<String, Uint8List>> _collectAttachments() async {
     final attachments = <String, Uint8List>{};
-    
+
     // This would be extended to collect actual file attachments
     // For now, we'll just return an empty map
     // In a real implementation, you would:
     // 1. Query for records that reference files
     // 2. Collect the actual files from storage
     // 3. Add them to the attachments map
-    
+
     return attachments;
   }
-  
+
   /// Generate backup manifest
   Future<BackupManifest> _generateManifest({
     required BackupType type,
@@ -268,25 +269,26 @@ class BackupService extends ChangeNotifier {
     String? password,
   }) async {
     final db = await _databaseService.database;
-    
+
     // Generate table information
     final tables = <BackupTable>[];
     for (final entry in tableData.entries) {
       final tableName = entry.key;
       final data = entry.value;
-      
+
       // Get table schema
       final schemaResult = await db.rawQuery(
         "SELECT sql FROM sqlite_master WHERE type='table' AND name=?",
         [tableName],
       );
-      final schema = schemaResult.isNotEmpty ? schemaResult.first['sql'] as String : '';
-      
+      final schema =
+          schemaResult.isNotEmpty ? schemaResult.first['sql'] as String : '';
+
       // Calculate size and checksum
       final jsonData = jsonEncode(data);
       final size = utf8.encode(jsonData).length;
       final checksum = sha256.convert(utf8.encode(jsonData)).toString();
-      
+
       tables.add(BackupTable(
         name: tableName,
         schema: schema,
@@ -296,13 +298,13 @@ class BackupService extends ChangeNotifier {
         lastModified: DateTime.now(),
       ));
     }
-    
+
     // Generate attachment information
     final attachmentFiles = <BackupFile>[];
     for (final entry in attachments.entries) {
       final fileName = entry.key;
       final data = entry.value;
-      
+
       attachmentFiles.add(BackupFile(
         path: 'attachments/$fileName',
         name: fileName,
@@ -312,11 +314,11 @@ class BackupService extends ChangeNotifier {
         lastModified: DateTime.now(),
       ));
     }
-    
+
     // Calculate total size
     final totalSize = tables.fold(0, (sum, table) => sum + table.size) +
         attachmentFiles.fold(0, (sum, file) => sum + file.size);
-    
+
     final metadata = BackupMetadata(
       type: type,
       scope: scope,
@@ -331,19 +333,19 @@ class BackupService extends ChangeNotifier {
         'database_version': AppConstants.databaseVersion.toString(),
       },
     );
-    
+
     // Generate integrity information
     final tableChecksums = <String, String>{};
     final fileChecksums = <String, String>{};
-    
+
     for (final table in tables) {
       tableChecksums[table.name] = table.checksum;
     }
-    
+
     for (final file in attachmentFiles) {
       fileChecksums[file.name] = file.checksum;
     }
-    
+
     final integrity = BackupIntegrity(
       manifestChecksum: '', // Will be calculated later
       dataChecksum: '', // Will be calculated later
@@ -351,7 +353,7 @@ class BackupService extends ChangeNotifier {
       tableChecksums: tableChecksums,
       fileChecksums: fileChecksums,
     );
-    
+
     // Generate encryption information if password provided
     BackupEncryption? encryption;
     if (password != null && password.isNotEmpty) {
@@ -363,7 +365,7 @@ class BackupService extends ChangeNotifier {
         iv: '', // Will be generated during encryption
       );
     }
-    
+
     return BackupManifest(
       version: '1.0',
       appVersion: AppConstants.appVersion,
@@ -377,12 +379,12 @@ class BackupService extends ChangeNotifier {
       encryption: encryption,
     );
   }
-  
+
   /// Get device information
   Future<Map<String, String>> _getDeviceInfo() async {
     final deviceInfo = DeviceInfoPlugin();
     final info = <String, String>{};
-    
+
     try {
       if (Platform.isAndroid) {
         final androidInfo = await deviceInfo.androidInfo;
@@ -404,21 +406,32 @@ class BackupService extends ChangeNotifier {
       info['deviceName'] = 'Unknown Device';
       info['platform'] = Platform.operatingSystem;
     }
-    
+
     return info;
   }
-  
+
   /// Get tables to export based on scope
   List<String> _getTablesForScope(BackupScope scope) {
     switch (scope) {
       case BackupScope.all:
         return [
-          'customers', 'products', 'categories', 'sales_transactions', 'sales_items',
-          'user_settings', 'business_profile', 'sync_log', 'device_registry',
+          'customers',
+          'products',
+          'categories',
+          'sales_transactions',
+          'sales_items',
+          'user_settings',
+          'business_profile',
+          'sync_log',
+          'device_registry',
         ];
       case BackupScope.businessData:
         return [
-          'customers', 'products', 'categories', 'sales_transactions', 'sales_items',
+          'customers',
+          'products',
+          'categories',
+          'sales_transactions',
+          'sales_items',
         ];
       case BackupScope.userSettings:
         return ['user_settings', 'business_profile'];
@@ -426,28 +439,41 @@ class BackupService extends ChangeNotifier {
         return ['sync_log', 'device_registry'];
       case BackupScope.custom:
         return _config.excludedTables.isEmpty
-            ? ['customers', 'products', 'categories', 'sales_transactions', 'sales_items']
-            : ['customers', 'products', 'categories', 'sales_transactions', 'sales_items']
+            ? [
+                'customers',
+                'products',
+                'categories',
+                'sales_transactions',
+                'sales_items'
+              ]
+            : [
+                'customers',
+                'products',
+                'categories',
+                'sales_transactions',
+                'sales_items'
+              ]
                 .where((table) => !_config.excludedTables.contains(table))
                 .toList();
     }
   }
-  
+
   /// Calculate total steps for progress tracking
   int _calculateTotalSteps(BackupScope scope, bool includeAttachments) {
-    int steps = 6; // Base steps: prepare, export, manifest, create, finalize, cleanup
-    
+    int steps =
+        6; // Base steps: prepare, export, manifest, create, finalize, cleanup
+
     if (includeAttachments) {
       steps += 1; // Additional step for collecting attachments
     }
-    
+
     // Add steps based on scope complexity
     final tableCount = _getTablesForScope(scope).length;
     steps += (tableCount / 3).ceil(); // Group tables for progress updates
-    
+
     return steps;
   }
-  
+
   /// Update backup progress
   Future<void> _updateProgress(
     String operation,
@@ -457,17 +483,19 @@ class BackupService extends ChangeNotifier {
       _currentBackup = _currentBackup!.copyWith(
         completedSteps: _currentBackup!.completedSteps + 1,
         currentOperation: operation,
-        progressPercentage: (_currentBackup!.completedSteps + 1) / _currentBackup!.totalSteps * 100,
+        progressPercentage: (_currentBackup!.completedSteps + 1) /
+            _currentBackup!.totalSteps *
+            100,
       );
-      
+
       notifyListeners();
       onProgress?.call(_currentBackup!);
     }
-    
+
     // Add small delay for UI responsiveness
     await Future.delayed(const Duration(milliseconds: 100));
   }
-  
+
   /// Get MIME type for file
   String _getMimeType(String fileName) {
     final extension = path.extension(fileName).toLowerCase();
@@ -487,42 +515,42 @@ class BackupService extends ChangeNotifier {
         return 'application/octet-stream';
     }
   }
-  
+
   /// Add entry to backup history
   Future<void> _addToHistory(BackupHistoryEntry entry) async {
     _backupHistory.insert(0, entry); // Add to beginning
     await _saveBackupHistory();
     notifyListeners();
   }
-  
+
   /// Load backup configuration
   Future<void> _loadConfig() async {
     // In a real implementation, load from shared preferences or database
     // For now, use default config
   }
-  
+
   /// Load backup history
   Future<void> _loadBackupHistory() async {
     // In a real implementation, load from database or file
     // For now, start with empty history
   }
-  
+
   /// Save backup history
   Future<void> _saveBackupHistory() async {
     // In a real implementation, save to database or file
   }
-  
+
   /// Schedule automatic backup
   Future<void> _scheduleAutoBackup() async {
     // In a real implementation, use WorkManager or similar
     // to schedule periodic backups
   }
-  
+
   /// Cleanup old backups based on configuration
   Future<void> _cleanupOldBackups() async {
     if (_backupHistory.length > _config.maxBackupHistory) {
       final toRemove = _backupHistory.skip(_config.maxBackupHistory).toList();
-      
+
       for (final entry in toRemove) {
         try {
           final file = File(entry.filePath);
@@ -534,25 +562,26 @@ class BackupService extends ChangeNotifier {
           debugPrint('Failed to delete old backup: ${entry.fileName}');
         }
       }
-      
-      _backupHistory.removeRange(_config.maxBackupHistory, _backupHistory.length);
+
+      _backupHistory.removeRange(
+          _config.maxBackupHistory, _backupHistory.length);
       await _saveBackupHistory();
     }
   }
-  
+
   /// Update backup configuration
   Future<void> updateConfig(BackupConfig config) async {
     _config = config;
     // Save config to persistent storage
     notifyListeners();
   }
-  
+
   /// Delete a backup from history and file system
   Future<void> deleteBackup(String backupId) async {
     final index = _backupHistory.indexWhere((entry) => entry.id == backupId);
     if (index >= 0) {
       final entry = _backupHistory[index];
-      
+
       try {
         final file = File(entry.filePath);
         if (await file.exists()) {
@@ -562,13 +591,13 @@ class BackupService extends ChangeNotifier {
         // Log error but continue with removal from history
         debugPrint('Failed to delete backup file: ${entry.fileName}');
       }
-      
+
       _backupHistory.removeAt(index);
       await _saveBackupHistory();
       notifyListeners();
     }
   }
-  
+
   /// Cancel current backup
   Future<void> cancelBackup() async {
     if (_currentBackup != null) {
@@ -577,9 +606,9 @@ class BackupService extends ChangeNotifier {
         currentOperation: 'Backup cancelled by user',
         completedAt: DateTime.now(),
       );
-      
+
       notifyListeners();
-      
+
       // Clear after delay
       Future.delayed(const Duration(seconds: 3), () {
         _currentBackup = null;
@@ -596,7 +625,8 @@ class BackupService extends ChangeNotifier {
     }
 
     try {
-      debugPrint('Scheduling automatic backups every ${_config.autoBackupInterval.inHours} hours');
+      debugPrint(
+          'Scheduling automatic backups every ${_config.autoBackupInterval.inHours} hours');
       await _scheduleAutoBackup();
     } catch (e) {
       debugPrint('Failed to schedule automatic backups: $e');

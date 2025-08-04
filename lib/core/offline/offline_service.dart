@@ -138,13 +138,14 @@ class OfflineService extends ChangeNotifier {
 
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
-  
+
   ConnectionStatus _connectionStatus = ConnectionStatus.offline;
-  final Queue<PendingSyncOperation> _pendingOperations = Queue<PendingSyncOperation>();
+  final Queue<PendingSyncOperation> _pendingOperations =
+      Queue<PendingSyncOperation>();
   final List<SyncConflict> _conflicts = [];
   SharedPreferences? _prefs;
   Timer? _syncTimer;
-  
+
   // Sync statistics
   int _completedOperations = 0;
   int _failedOperations = 0;
@@ -152,7 +153,8 @@ class OfflineService extends ChangeNotifier {
 
   // Getters
   ConnectionStatus get connectionStatus => _connectionStatus;
-  List<PendingSyncOperation> get pendingOperations => _pendingOperations.toList();
+  List<PendingSyncOperation> get pendingOperations =>
+      _pendingOperations.toList();
   List<SyncConflict> get conflicts => List.unmodifiable(_conflicts);
   bool get isOnline => _connectionStatus == ConnectionStatus.online;
   bool get isOffline => _connectionStatus == ConnectionStatus.offline;
@@ -160,12 +162,12 @@ class OfflineService extends ChangeNotifier {
   bool get hasConflicts => _conflicts.isNotEmpty;
 
   SyncStats get syncStats => SyncStats(
-    pendingOperations: _pendingOperations.length,
-    completedOperations: _completedOperations,
-    failedOperations: _failedOperations,
-    conflictedOperations: _conflicts.length,
-    lastSyncTime: _lastSyncTime,
-  );
+        pendingOperations: _pendingOperations.length,
+        completedOperations: _completedOperations,
+        failedOperations: _failedOperations,
+        conflictedOperations: _conflicts.length,
+        lastSyncTime: _lastSyncTime,
+      );
 
   Future<void> initialize() async {
     _prefs = await SharedPreferences.getInstance();
@@ -191,24 +193,23 @@ class OfflineService extends ChangeNotifier {
   }
 
   void _updateConnectionStatus(List<ConnectivityResult> results) {
-    final hasConnection = results.any((result) => 
-        result != ConnectivityResult.none);
-    
-    final newStatus = hasConnection 
-        ? ConnectionStatus.online 
-        : ConnectionStatus.offline;
+    final hasConnection =
+        results.any((result) => result != ConnectivityResult.none);
+
+    final newStatus =
+        hasConnection ? ConnectionStatus.online : ConnectionStatus.offline;
 
     if (_connectionStatus != newStatus) {
       final wasOffline = _connectionStatus == ConnectionStatus.offline;
       _connectionStatus = newStatus;
-      
+
       debugPrint('Connection status changed to: ${_connectionStatus.name}');
-      
+
       // Trigger sync when coming back online
       if (wasOffline && newStatus == ConnectionStatus.online) {
         _triggerSync();
       }
-      
+
       notifyListeners();
     }
   }
@@ -226,7 +227,7 @@ class OfflineService extends ChangeNotifier {
     if (_prefs == null) return;
 
     final pendingOpsJson = _prefs!.getStringList(_pendingOpsKey) ?? [];
-    
+
     for (final opJson in pendingOpsJson) {
       try {
         final data = _parseJson(opJson);
@@ -236,17 +237,16 @@ class OfflineService extends ChangeNotifier {
         debugPrint('Error loading pending operation: $e');
       }
     }
-    
+
     debugPrint('Loaded ${_pendingOperations.length} pending sync operations');
   }
 
   Future<void> _savePendingOperations() async {
     if (_prefs == null) return;
 
-    final pendingOpsJson = _pendingOperations
-        .map((op) => _stringifyJson(op.toJson()))
-        .toList();
-    
+    final pendingOpsJson =
+        _pendingOperations.map((op) => _stringifyJson(op.toJson())).toList();
+
     await _prefs!.setStringList(_pendingOpsKey, pendingOpsJson);
   }
 
@@ -255,7 +255,7 @@ class OfflineService extends ChangeNotifier {
 
     _completedOperations = _prefs!.getInt('${_syncStatsKey}_completed') ?? 0;
     _failedOperations = _prefs!.getInt('${_syncStatsKey}_failed') ?? 0;
-    
+
     final lastSyncTimestamp = _prefs!.getInt(_lastSyncKey);
     if (lastSyncTimestamp != null) {
       _lastSyncTime = DateTime.fromMillisecondsSinceEpoch(lastSyncTimestamp);
@@ -267,7 +267,7 @@ class OfflineService extends ChangeNotifier {
 
     await _prefs!.setInt('${_syncStatsKey}_completed', _completedOperations);
     await _prefs!.setInt('${_syncStatsKey}_failed', _failedOperations);
-    
+
     if (_lastSyncTime != null) {
       await _prefs!.setInt(_lastSyncKey, _lastSyncTime!.millisecondsSinceEpoch);
     }
@@ -291,14 +291,15 @@ class OfflineService extends ChangeNotifier {
 
     _pendingOperations.add(operation);
     await _savePendingOperations();
-    
-    debugPrint('Queued ${operationType.name} operation for ${entityType.name}: $entityId');
-    
+
+    debugPrint(
+        'Queued ${operationType.name} operation for ${entityType.name}: $entityId');
+
     // Try to sync immediately if online
     if (isOnline) {
       _triggerSync();
     }
-    
+
     notifyListeners();
   }
 
@@ -306,26 +307,29 @@ class OfflineService extends ChangeNotifier {
   Future<void> _triggerSync() async {
     if (isOffline || !hasPendingOperations) return;
 
-    debugPrint('Starting sync process with ${_pendingOperations.length} pending operations');
-    
-    final operationsToProcess = List<PendingSyncOperation>.from(_pendingOperations);
+    debugPrint(
+        'Starting sync process with ${_pendingOperations.length} pending operations');
+
+    final operationsToProcess =
+        List<PendingSyncOperation>.from(_pendingOperations);
     final processedOperations = <PendingSyncOperation>[];
-    
+
     for (final operation in operationsToProcess) {
       try {
         final success = await _processSyncOperation(operation);
-        
+
         if (success) {
           _pendingOperations.remove(operation);
           processedOperations.add(operation);
           _completedOperations++;
-          debugPrint('Successfully synced ${operation.operationType.name} for ${operation.entityType.name}: ${operation.entityId}');
+          debugPrint(
+              'Successfully synced ${operation.operationType.name} for ${operation.entityType.name}: ${operation.entityId}');
         } else {
           // Increment retry count
           final updatedOperation = operation.copyWith(
             retryCount: operation.retryCount + 1,
           );
-          
+
           if (updatedOperation.retryCount >= _maxRetryCount) {
             // Remove operation after max retries
             _pendingOperations.remove(operation);
@@ -347,8 +351,9 @@ class OfflineService extends ChangeNotifier {
       _lastSyncTime = DateTime.now();
       await _savePendingOperations();
       await _saveSyncStats();
-      
-      debugPrint('Sync completed. Processed: ${processedOperations.length}, Remaining: ${_pendingOperations.length}');
+
+      debugPrint(
+          'Sync completed. Processed: ${processedOperations.length}, Remaining: ${_pendingOperations.length}');
       notifyListeners();
     }
   }
@@ -357,13 +362,13 @@ class OfflineService extends ChangeNotifier {
   Future<bool> _processSyncOperation(PendingSyncOperation operation) async {
     // This is where you would implement the actual sync logic
     // For now, we'll simulate the sync process
-    
+
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     // Simulate success/failure (90% success rate)
     final success = DateTime.now().millisecond % 10 != 0;
-    
+
     if (success) {
       // Here you would make the actual API call to sync the data
       switch (operation.operationType) {
@@ -378,7 +383,7 @@ class OfflineService extends ChangeNotifier {
           break;
       }
     }
-    
+
     return success;
   }
 
@@ -388,7 +393,7 @@ class OfflineService extends ChangeNotifier {
       debugPrint('Cannot sync while offline');
       return;
     }
-    
+
     await _triggerSync();
   }
 
@@ -400,9 +405,10 @@ class OfflineService extends ChangeNotifier {
   }
 
   // Resolve sync conflict
-  Future<void> resolveConflict(SyncConflict conflict, Map<String, dynamic> resolvedData) async {
+  Future<void> resolveConflict(
+      SyncConflict conflict, Map<String, dynamic> resolvedData) async {
     _conflicts.remove(conflict);
-    
+
     // Queue the resolved data for sync
     await queueOperation(
       entityType: conflict.entityType,
@@ -410,7 +416,7 @@ class OfflineService extends ChangeNotifier {
       entityId: conflict.entityId,
       data: resolvedData,
     );
-    
+
     notifyListeners();
   }
 
@@ -421,16 +427,16 @@ class OfflineService extends ChangeNotifier {
   // Simple JSON parsing methods
   Map<String, dynamic> _parseJson(String jsonString) {
     final Map<String, dynamic> result = {};
-    
+
     final content = jsonString.replaceAll(RegExp(r'[{}"]'), '');
     final pairs = content.split(',');
-    
+
     for (final pair in pairs) {
       final keyValue = pair.split(':');
       if (keyValue.length == 2) {
         final key = keyValue[0].trim();
         final value = keyValue[1].trim();
-        
+
         if (value == 'true') {
           result[key] = true;
         } else if (value == 'false') {
@@ -444,13 +450,13 @@ class OfflineService extends ChangeNotifier {
         }
       }
     }
-    
+
     return result;
   }
 
   String _stringifyJson(Map<String, dynamic> data) {
     final List<String> pairs = [];
-    
+
     data.forEach((key, value) {
       String valueStr;
       if (value == null) {
@@ -466,7 +472,7 @@ class OfflineService extends ChangeNotifier {
       }
       pairs.add('"$key":$valueStr');
     });
-    
+
     return '{${pairs.join(',')}}';
   }
 
@@ -495,7 +501,8 @@ final syncStatsProvider = StateProvider<SyncStats>((ref) {
   return service.syncStats;
 });
 
-final pendingOperationsProvider = StateProvider<List<PendingSyncOperation>>((ref) {
+final pendingOperationsProvider =
+    StateProvider<List<PendingSyncOperation>>((ref) {
   final service = ref.watch(offlineServiceProvider);
   return service.pendingOperations;
 });
@@ -506,7 +513,8 @@ final syncConflictsProvider = StateProvider<List<SyncConflict>>((ref) {
 });
 
 // Offline service notifier
-final offlineServiceNotifierProvider = StateNotifierProvider<OfflineServiceNotifier, OfflineService>((ref) {
+final offlineServiceNotifierProvider =
+    StateNotifierProvider<OfflineServiceNotifier, OfflineService>((ref) {
   final service = ref.watch(offlineServiceProvider);
   return OfflineServiceNotifier(service);
 });
@@ -543,7 +551,8 @@ class OfflineServiceNotifier extends StateNotifier<OfflineService> {
     await state.clearPendingOperations();
   }
 
-  Future<void> resolveConflict(SyncConflict conflict, Map<String, dynamic> resolvedData) async {
+  Future<void> resolveConflict(
+      SyncConflict conflict, Map<String, dynamic> resolvedData) async {
     await state.resolveConflict(conflict, resolvedData);
   }
 

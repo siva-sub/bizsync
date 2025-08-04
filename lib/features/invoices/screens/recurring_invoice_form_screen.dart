@@ -16,12 +16,15 @@ class RecurringInvoiceFormScreen extends StatefulWidget {
   });
 
   @override
-  State<RecurringInvoiceFormScreen> createState() => _RecurringInvoiceFormScreenState();
+  State<RecurringInvoiceFormScreen> createState() =>
+      _RecurringInvoiceFormScreenState();
 }
 
-class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen> {
+class _RecurringInvoiceFormScreenState
+    extends State<RecurringInvoiceFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final RecurringInvoiceService _recurringService = RecurringInvoiceService.instance;
+  final RecurringInvoiceService _recurringService =
+      RecurringInvoiceService.instance;
   final DemoDataService _demoService = DemoDataService();
 
   // Form controllers
@@ -69,7 +72,7 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
       if (!_demoService.isInitialized) {
         await _demoService.initializeDemoData();
       }
-      
+
       setState(() {
         _customers = [
           {'id': '1', 'name': 'Acme Corp'},
@@ -90,7 +93,7 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
 
   void _populateFormFromTemplate() {
     final template = widget.template!;
-    
+
     _templateNameController.text = template.templateName;
     _selectedCustomerId = template.customerId;
     _selectedCustomerName = template.customerName;
@@ -102,7 +105,7 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
     if (_hasMaxOccurrences) {
       _maxOccurrencesController.text = template.maxOccurrences.toString();
     }
-    
+
     _lineItems = List.from(template.invoiceTemplate.lineItems);
     _calculateTotals();
   }
@@ -171,14 +174,14 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
           interval: int.parse(_intervalController.text),
           startDate: _startDate,
           endDate: _endDate,
-          maxOccurrences: _hasMaxOccurrences 
+          maxOccurrences: _hasMaxOccurrences
               ? int.tryParse(_maxOccurrencesController.text)
               : null,
           invoiceTemplate: invoiceTemplate,
         );
 
         await _recurringService.updateTemplate(updatedTemplate);
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Template updated successfully')),
@@ -195,7 +198,7 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
           interval: int.parse(_intervalController.text),
           startDate: _startDate,
           endDate: _endDate,
-          maxOccurrences: _hasMaxOccurrences 
+          maxOccurrences: _hasMaxOccurrences
               ? int.tryParse(_maxOccurrencesController.text)
               : null,
           invoiceTemplate: invoiceTemplate,
@@ -203,7 +206,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Recurring template created successfully')),
+            const SnackBar(
+                content: Text('Recurring template created successfully')),
           );
           Navigator.of(context).pop(true);
         }
@@ -226,7 +230,9 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.template != null ? 'Edit Recurring Template' : 'Create Recurring Template'),
+        title: Text(widget.template != null
+            ? 'Edit Recurring Template'
+            : 'Create Recurring Template'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           TextButton(
@@ -269,8 +275,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
             Text(
               'Basic Information',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -303,8 +309,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
               onChanged: (value) {
                 setState(() {
                   _selectedCustomerId = value;
-                  _selectedCustomerName = _customers
-                      .firstWhere((c) => c['id'] == value)['name'];
+                  _selectedCustomerName =
+                      _customers.firstWhere((c) => c['id'] == value)['name'];
                 });
               },
               validator: (value) {
@@ -330,8 +336,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
             Text(
               'Recurrence Settings',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -388,7 +394,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
                         context: context,
                         initialDate: _startDate,
                         firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                        lastDate:
+                            DateTime.now().add(const Duration(days: 365 * 5)),
                       );
                       if (date != null) {
                         setState(() => _startDate = date);
@@ -409,9 +416,11 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
                     onTap: () async {
                       final date = await showDatePicker(
                         context: context,
-                        initialDate: _endDate ?? _startDate.add(const Duration(days: 365)),
+                        initialDate: _endDate ??
+                            _startDate.add(const Duration(days: 365)),
                         firstDate: _startDate,
-                        lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+                        lastDate:
+                            DateTime.now().add(const Duration(days: 365 * 10)),
                       );
                       if (date != null) {
                         setState(() => _endDate = date);
@@ -425,7 +434,7 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
                         border: OutlineInputBorder(),
                       ),
                       child: Text(
-                        _endDate != null 
+                        _endDate != null
                             ? DateFormat('dd/MM/yyyy').format(_endDate!)
                             : 'No end date',
                       ),
@@ -461,13 +470,15 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: _hasMaxOccurrences ? (value) {
-                        final intValue = int.tryParse(value ?? '');
-                        if (intValue == null || intValue < 1) {
-                          return 'Invalid';
-                        }
-                        return null;
-                      } : null,
+                      validator: _hasMaxOccurrences
+                          ? (value) {
+                              final intValue = int.tryParse(value ?? '');
+                              if (intValue == null || intValue < 1) {
+                                return 'Invalid';
+                              }
+                              return null;
+                            }
+                          : null,
                     ),
                   ),
                 ],
@@ -492,8 +503,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
                 Text(
                   'Invoice Items',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 TextButton.icon(
                   onPressed: _addLineItem,
@@ -599,8 +610,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
             Text(
               'Invoice Total',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -628,7 +639,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
                 ),
                 Text(
                   '\$${_total.toStringAsFixed(2)}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ],
             ),
@@ -658,7 +670,8 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
     _calculateTotals();
   }
 
-  void _updateLineItem(int index, {
+  void _updateLineItem(
+    int index, {
     String? description,
     double? quantity,
     double? unitPrice,
@@ -666,14 +679,14 @@ class _RecurringInvoiceFormScreenState extends State<RecurringInvoiceFormScreen>
     final item = _lineItems[index];
     final newQuantity = quantity ?? item.quantity;
     final newUnitPrice = unitPrice ?? item.unitPrice;
-    
+
     _lineItems[index] = item.copyWith(
       description: description ?? item.description,
       quantity: newQuantity,
       unitPrice: newUnitPrice,
       lineTotal: newQuantity * newUnitPrice,
     );
-    
+
     _calculateTotals();
   }
 

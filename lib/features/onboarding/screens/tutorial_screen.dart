@@ -18,15 +18,16 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   final PageController _pageController = PageController();
   int _currentPage = 0;
   bool _isCompleting = false;
-  
+
   final List<TutorialPage> _pages = [
     const TutorialPage(
       title: 'Create Professional Invoices',
-      description: 'Generate GST-compliant invoices with your company branding. Track payment status and send reminders automatically.',
+      description:
+          'Generate GST-compliant invoices with your company branding. Track payment status and send reminders automatically.',
       imagePath: 'assets/tutorial/invoices.png', // We'll use icons for now
       icon: Icons.receipt_long,
       color: Color(0xFF1565C0),
@@ -38,7 +39,8 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
     ),
     const TutorialPage(
       title: 'Manage Customers & Contacts',
-      description: 'Keep all your customer information organized. Track purchase history and manage relationships effectively.',
+      description:
+          'Keep all your customer information organized. Track purchase history and manage relationships effectively.',
       imagePath: 'assets/tutorial/customers.png',
       icon: Icons.people,
       color: Color(0xFF7B1FA2),
@@ -50,7 +52,8 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
     ),
     const TutorialPage(
       title: 'Singapore Tax Compliance',
-      description: 'Automatic GST calculations, IRAS-compliant reports, and built-in tax calendar to never miss deadlines.',
+      description:
+          'Automatic GST calculations, IRAS-compliant reports, and built-in tax calendar to never miss deadlines.',
       imagePath: 'assets/tutorial/tax.png',
       icon: Icons.account_balance,
       color: Color(0xFF388E3C),
@@ -62,7 +65,8 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
     ),
     const TutorialPage(
       title: 'PayNow QR Payments',
-      description: 'Generate instant PayNow QR codes for fast payments. Accept payments on-the-go without card terminals.',
+      description:
+          'Generate instant PayNow QR codes for fast payments. Accept payments on-the-go without card terminals.',
       imagePath: 'assets/tutorial/payments.png',
       icon: Icons.qr_code,
       color: Color(0xFFD32F2F),
@@ -74,7 +78,8 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
     ),
     const TutorialPage(
       title: 'Offline-First & Sync',
-      description: 'Work anywhere, even without internet. Your data syncs automatically when you\'re back online.',
+      description:
+          'Work anywhere, even without internet. Your data syncs automatically when you\'re back online.',
       imagePath: 'assets/tutorial/sync.png',
       icon: Icons.sync,
       color: Color(0xFFFF6F00),
@@ -97,12 +102,12 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -110,7 +115,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
       parent: _fadeController,
       curve: Curves.easeOut,
     ));
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -118,7 +123,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
       parent: _slideController,
       curve: Curves.easeOutCubic,
     ));
-    
+
     _fadeController.forward();
     Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) {
@@ -154,7 +159,8 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
                         onPressed: _currentPage > 0 ? _previousPage : null,
                         icon: const Icon(Icons.arrow_back),
                         style: IconButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surface,
                         ),
                       ),
                       Expanded(
@@ -170,7 +176,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
                     ],
                   ),
                 ),
-                
+
                 // Tutorial content
                 Expanded(
                   child: PageView.builder(
@@ -189,7 +195,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen>
                     },
                   ),
                 ),
-                
+
                 // Navigation buttons
                 _buildNavigationButtons(),
               ],
@@ -373,7 +379,7 @@ class _TutorialPageWidget extends StatelessWidget {
       child: Column(
         children: [
           const Spacer(),
-          
+
           // Feature illustration
           Container(
             width: 200,
@@ -388,33 +394,36 @@ class _TutorialPageWidget extends StatelessWidget {
               color: page.color,
             ),
           ),
-          
+
           const SizedBox(height: 40),
-          
+
           // Title
           Text(
             page.title,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: page.color,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: page.color,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Description
           Text(
             page.description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-              height: 1.6,
-            ),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.7),
+                  height: 1.6,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Tips
           Card(
             child: Padding(
@@ -425,35 +434,35 @@ class _TutorialPageWidget extends StatelessWidget {
                   Text(
                     'Quick Tips:',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 12),
                   ...page.tips.map((tip) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.check_circle_outline,
-                          size: 16,
-                          color: page.color,
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline,
+                              size: 16,
+                              color: page.color,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                tip,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            tip,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
+                      )),
                 ],
               ),
             ),
           ),
-          
+
           const Spacer(),
         ],
       ),
@@ -482,7 +491,7 @@ class _CompletionDialogState extends State<_CompletionDialog>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -556,9 +565,9 @@ class _CompletionDialogState extends State<_CompletionDialog>
                 Text(
                   'Setup Complete!',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 const Text(

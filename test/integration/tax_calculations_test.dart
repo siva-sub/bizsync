@@ -45,7 +45,8 @@ void main() {
         expect(result.totalAmount, equals(1090.0));
       });
 
-      test('should calculate GST on different amounts with precision', () async {
+      test('should calculate GST on different amounts with precision',
+          () async {
         final testAmounts = [
           {'amount': 0.01, 'expectedGst': 0.0009},
           {'amount': 1.00, 'expectedGst': 0.09},
@@ -67,7 +68,7 @@ void main() {
           );
 
           expect(result.gstAmount, closeTo(expectedGst, 0.0001),
-            reason: 'GST calculation incorrect for amount $amount');
+              reason: 'GST calculation incorrect for amount $amount');
         }
       });
     });
@@ -157,7 +158,8 @@ void main() {
         expect(result.reasoning, contains('not GST registered'));
       });
 
-      test('should apply GST regardless of customer registration status', () async {
+      test('should apply GST regardless of customer registration status',
+          () async {
         // B2B (both registered)
         final b2bResult = SingaporeGstService.calculateGst(
           amount: 1000.0,
@@ -215,7 +217,7 @@ void main() {
           );
 
           expect(result.isGstApplicable, isFalse,
-            reason: 'Export to $country should be zero-rated');
+              reason: 'Export to $country should be zero-rated');
           expect(result.reasoning, contains('export'));
         }
       });
@@ -261,7 +263,7 @@ void main() {
 
         for (final category in exemptCategories) {
           expect(SingaporeGstExemptions.isCategoryExempt(category), isTrue,
-            reason: '$category should be exempt');
+              reason: '$category should be exempt');
         }
 
         final taxableCategories = [
@@ -273,7 +275,7 @@ void main() {
 
         for (final category in taxableCategories) {
           expect(SingaporeGstExemptions.isCategoryExempt(category), isFalse,
-            reason: '$category should be taxable');
+              reason: '$category should be taxable');
         }
       });
     });
@@ -362,8 +364,9 @@ void main() {
           );
 
           expect(validation.isValid, isFalse,
-            reason: '$gstNumber should be invalid');
-          expect(validation.errors, contains('Invalid GST registration number format'));
+              reason: '$gstNumber should be invalid');
+          expect(validation.errors,
+              contains('Invalid GST registration number format'));
         }
       });
 
@@ -380,7 +383,8 @@ void main() {
         );
 
         expect(validation.isValid, isFalse);
-        expect(validation.errors, contains('Amount calculation inconsistency detected'));
+        expect(validation.errors,
+            contains('Amount calculation inconsistency detected'));
       });
 
       test('should warn about high-value transactions without GST', () async {
@@ -397,12 +401,14 @@ void main() {
 
         expect(validation.isValid, isTrue); // Still valid
         expect(validation.warnings, isNotEmpty);
-        expect(validation.warnings.first, contains('High-value transaction without GST'));
+        expect(validation.warnings.first,
+            contains('High-value transaction without GST'));
       });
     });
 
     group('Multi-tier Tax Scenarios', () {
-      test('should handle mixed tax categories in single transaction', () async {
+      test('should handle mixed tax categories in single transaction',
+          () async {
         final lineItems = [
           {
             'description': 'Standard Rated Item',
@@ -439,7 +445,7 @@ void main() {
 
         // Only standard item should have GST: 1000 * 9% = 90
         expect(totalGst, equals(90.0));
-        
+
         // Total: 1090 (standard) + 500 (zero-rated) + 200 (exempt) = 1790
         expect(totalAmount, equals(1790.0));
       });
@@ -468,7 +474,7 @@ void main() {
         // Service GST: 200 * 9% = 18
         // Total GST: 99 + 18 = 117
         expect(totalGst, equals(117.0));
-        
+
         // Grand total: 1199 (import) + 218 (service) = 1417
         expect(grandTotal, equals(1417.0));
       });
@@ -517,7 +523,7 @@ void main() {
 
       test('should handle future dates with current rate', () async {
         final futureDate = DateTime.now().add(Duration(days: 365));
-        
+
         final result = SingaporeGstService.calculateGst(
           amount: 1000.0,
           calculationDate: futureDate,
@@ -534,7 +540,7 @@ void main() {
     group('Comprehensive Tax Scenarios', () {
       test('should run all predefined tax scenarios', () async {
         final scenarios = TestFactories.createTaxScenarios();
-        
+
         for (final scenario in scenarios) {
           final result = SingaporeGstService.calculateGst(
             amount: scenario['amount'],
@@ -561,11 +567,12 @@ void main() {
         }
       });
 
-      test('should maintain calculation consistency across multiple runs', () async {
+      test('should maintain calculation consistency across multiple runs',
+          () async {
         // Run the same calculation multiple times to ensure consistency
         final amount = 1234.56;
         final calculationDate = DateTime.now();
-        
+
         final results = <GstCalculationResult>[];
         for (int i = 0; i < 10; i++) {
           final result = SingaporeGstService.calculateGst(

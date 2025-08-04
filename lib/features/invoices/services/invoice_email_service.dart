@@ -12,8 +12,9 @@ import '../../../core/services/notification_service.dart';
 /// Service for sending invoice-related emails
 class InvoiceEmailService {
   static InvoiceEmailService? _instance;
-  static InvoiceEmailService get instance => _instance ??= InvoiceEmailService._();
-  
+  static InvoiceEmailService get instance =>
+      _instance ??= InvoiceEmailService._();
+
   InvoiceEmailService._();
 
   final CRDTDatabaseService _databaseService = CRDTDatabaseService();
@@ -136,21 +137,23 @@ class InvoiceEmailService {
 
   /// Get the default email configuration
   Future<EmailConfiguration?> getDefaultEmailConfiguration() async {
-    const sql = 'SELECT * FROM $_configurationsTable WHERE is_default = 1 LIMIT 1';
+    const sql =
+        'SELECT * FROM $_configurationsTable WHERE is_default = 1 LIMIT 1';
     final db = await _databaseService.database;
     final results = await db.rawQuery(sql);
-    
+
     if (results.isEmpty) return null;
-    
+
     return _configurationFromRow(results.first);
   }
 
   /// Get all email configurations
   Future<List<EmailConfiguration>> getAllEmailConfigurations() async {
-    const sql = 'SELECT * FROM $_configurationsTable ORDER BY is_default DESC, created_at DESC';
+    const sql =
+        'SELECT * FROM $_configurationsTable ORDER BY is_default DESC, created_at DESC';
     final db = await _databaseService.database;
     final results = await db.rawQuery(sql);
-    
+
     return results.map((row) => _configurationFromRow(row)).toList();
   }
 
@@ -189,12 +192,13 @@ class InvoiceEmailService {
 
   /// Get email template by type
   Future<InvoiceEmailTemplate?> getEmailTemplate(EmailTemplateType type) async {
-    const sql = 'SELECT * FROM $_templatesTable WHERE type = ? AND is_default = 1 LIMIT 1';
+    const sql =
+        'SELECT * FROM $_templatesTable WHERE type = ? AND is_default = 1 LIMIT 1';
     final db = await _databaseService.database;
     final results = await db.rawQuery(sql, [type.name]);
-    
+
     if (results.isEmpty) return null;
-    
+
     return _templateFromRow(results.first);
   }
 
@@ -211,7 +215,8 @@ class InvoiceEmailService {
       final config = await getDefaultEmailConfiguration();
       if (config == null) {
         return EmailSendResult.failure(
-          error: 'No email configuration found. Please set up email settings first.',
+          error:
+              'No email configuration found. Please set up email settings first.',
         );
       }
 
@@ -229,7 +234,8 @@ class InvoiceEmailService {
       // Process template with variables
       final processedSubject = _processTemplate(template.subject, variables);
       final processedHtmlBody = _processTemplate(template.htmlBody, variables);
-      final processedPlainBody = _processTemplate(template.plainTextBody, variables);
+      final processedPlainBody =
+          _processTemplate(template.plainTextBody, variables);
 
       // Create SMTP server configuration
       final smtpServer = SmtpServer(
@@ -264,7 +270,7 @@ class InvoiceEmailService {
 
       // Send email
       final sendReport = await send(message, smtpServer);
-      
+
       // Log the email
       await _logEmail(
         invoiceId: invoice.id,
@@ -294,7 +300,6 @@ class InvoiceEmailService {
           'subject': processedSubject,
         },
       );
-
     } catch (e) {
       // Log the error
       await _logEmail(
@@ -337,7 +342,7 @@ class InvoiceEmailService {
     EmailTemplateType templateType = EmailTemplateType.invoiceSent,
   }) async {
     final results = <EmailSendResult>[];
-    
+
     for (final invoice in invoices) {
       final recipientEmail = recipientEmails[invoice.id];
       if (recipientEmail != null && recipientEmail.isNotEmpty) {
@@ -347,12 +352,12 @@ class InvoiceEmailService {
           templateType: templateType,
         );
         results.add(result);
-        
+
         // Small delay between emails to avoid overwhelming the SMTP server
         await Future.delayed(const Duration(milliseconds: 500));
       }
     }
-    
+
     return results;
   }
 
@@ -389,11 +394,11 @@ class InvoiceEmailService {
   /// Process template string with variables
   String _processTemplate(String template, Map<String, String> variables) {
     String processed = template;
-    
+
     for (final entry in variables.entries) {
       processed = processed.replaceAll('{{${entry.key}}}', entry.value);
     }
-    
+
     return processed;
   }
 
@@ -436,7 +441,7 @@ class InvoiceEmailService {
       WHERE invoice_id = ? 
       ORDER BY sent_at DESC
     ''';
-    
+
     final db = await _databaseService.database;
     return await db.rawQuery(sql, [invoiceId]);
   }
@@ -460,7 +465,8 @@ class InvoiceEmailService {
         ..from = Address(config.fromEmail, config.fromName)
         ..recipients.add(testRecipientEmail)
         ..subject = 'BizSync Email Configuration Test'
-        ..text = 'This is a test email to verify your email configuration is working correctly.'
+        ..text =
+            'This is a test email to verify your email configuration is working correctly.'
         ..html = '''
           <html>
           <body>
@@ -482,7 +488,6 @@ class InvoiceEmailService {
           'provider': config.providerName,
         },
       );
-
     } catch (e) {
       return EmailSendResult.failure(
         error: 'Email configuration test failed: $e',
@@ -510,7 +515,7 @@ class InvoiceEmailService {
         );
       }
     }
-    
+
     // Auto-send reminder when invoice becomes overdue
     if (newStatus == InvoiceStatus.overdue) {
       if (invoice.customerEmail != null && invoice.customerEmail!.isNotEmpty) {

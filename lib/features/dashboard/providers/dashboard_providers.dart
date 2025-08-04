@@ -23,11 +23,13 @@ final analyticsServiceProvider = Provider<AnalyticsService>((ref) {
   return AnalyticsService();
 });
 
-final anomalyDetectionServiceProvider = Provider<AnomalyDetectionService>((ref) {
+final anomalyDetectionServiceProvider =
+    Provider<AnomalyDetectionService>((ref) {
   return AnomalyDetectionService();
 });
 
-final businessIntelligenceEngineProvider = Provider<BusinessIntelligenceEngine>((ref) {
+final businessIntelligenceEngineProvider =
+    Provider<BusinessIntelligenceEngine>((ref) {
   return BusinessIntelligenceEngine();
 });
 
@@ -63,21 +65,26 @@ final dashboardInvoiceServiceProvider = Provider<InvoiceService>((ref) {
 });
 
 // Real analytics service provider
-final realAnalyticsServiceProvider = Provider<RealDashboardAnalyticsService>((ref) {
+final realAnalyticsServiceProvider =
+    Provider<RealDashboardAnalyticsService>((ref) {
   final databaseService = ref.watch(crdtDatabaseServiceProvider);
   final invoiceService = ref.watch(dashboardInvoiceServiceProvider);
   return RealDashboardAnalyticsService(databaseService, invoiceService);
 });
 
 // Real dashboard data provider
-final realDashboardDataProvider = StateNotifierProvider<RealDashboardDataNotifier, AsyncValue<DashboardData>>((ref) {
+final realDashboardDataProvider =
+    StateNotifierProvider<RealDashboardDataNotifier, AsyncValue<DashboardData>>(
+        (ref) {
   return RealDashboardDataNotifier(
     analyticsService: ref.watch(realAnalyticsServiceProvider),
   );
 });
 
 // Dashboard data provider (keeping old for compatibility)
-final dashboardDataProvider = StateNotifierProvider<DashboardDataNotifier, AsyncValue<DashboardData>>((ref) {
+final dashboardDataProvider =
+    StateNotifierProvider<DashboardDataNotifier, AsyncValue<DashboardData>>(
+        (ref) {
   return DashboardDataNotifier(
     analyticsService: ref.watch(analyticsServiceProvider),
     invoiceRepository: ref.watch(invoiceRepositoryProvider),
@@ -87,21 +94,22 @@ final dashboardDataProvider = StateNotifierProvider<DashboardDataNotifier, Async
 });
 
 // Real anomalies provider
-final realAnomaliesProvider = FutureProvider<List<BusinessAnomaly>>((ref) async {
+final realAnomaliesProvider =
+    FutureProvider<List<BusinessAnomaly>>((ref) async {
   final anomalyService = ref.watch(anomalyDetectionServiceProvider);
-  
+
   try {
     // Get data from real repositories
     final invoiceRepo = ref.watch(invoiceRepositoryProvider);
     final customerRepo = ref.watch(realCustomerRepositoryProvider);
     final productRepo = ref.watch(realProductRepositoryProvider);
-    
+
     final invoices = await invoiceRepo.getInvoices(limit: 1000);
     final customers = await customerRepo.getAllCustomers();
     final products = await productRepo.getProducts();
-    
+
     // The invoices are already CRDTInvoiceEnhanced models
-    
+
     // Detect anomalies
     return await anomalyService.detectAllAnomalies(
       invoices: invoices,
@@ -120,21 +128,22 @@ final anomaliesProvider = FutureProvider<List<BusinessAnomaly>>((ref) async {
 });
 
 // Real business forecast provider
-final realBusinessForecastProvider = FutureProvider<BusinessForecast?>((ref) async {
+final realBusinessForecastProvider =
+    FutureProvider<BusinessForecast?>((ref) async {
   final intelligenceEngine = ref.watch(businessIntelligenceEngineProvider);
-  
+
   try {
     // Get data from real repositories
     final invoiceRepo = ref.watch(invoiceRepositoryProvider);
     final customerRepo = ref.watch(realCustomerRepositoryProvider);
     final productRepo = ref.watch(realProductRepositoryProvider);
-    
+
     final invoices = await invoiceRepo.getInvoices(limit: 1000);
     final customers = await customerRepo.getAllCustomers();
     final products = await productRepo.getProducts();
-    
+
     // The invoices are already CRDTInvoiceEnhanced models
-    
+
     // Generate forecast
     return await intelligenceEngine.generateBusinessForecast(
       historicalInvoices: invoices,
@@ -152,12 +161,13 @@ final businessForecastProvider = FutureProvider<BusinessForecast?>((ref) async {
 });
 
 // Revenue analytics provider
-final revenueAnalyticsProvider = FutureProvider.family<RevenueAnalytics?, TimePeriod>((ref, period) async {
+final revenueAnalyticsProvider =
+    FutureProvider.family<RevenueAnalytics?, TimePeriod>((ref, period) async {
   final analyticsService = ref.watch(analyticsServiceProvider);
-  
+
   try {
     final invoices = await ref.watch(invoiceRepositoryProvider).getInvoices();
-    
+
     return await analyticsService.calculateRevenueAnalytics(
       invoices: invoices,
       period: period,
@@ -168,12 +178,13 @@ final revenueAnalyticsProvider = FutureProvider.family<RevenueAnalytics?, TimePe
 });
 
 // Cash flow data provider
-final cashFlowDataProvider = FutureProvider.family<CashFlowData?, TimePeriod>((ref, period) async {
+final cashFlowDataProvider =
+    FutureProvider.family<CashFlowData?, TimePeriod>((ref, period) async {
   final analyticsService = ref.watch(analyticsServiceProvider);
-  
+
   try {
     final invoices = await ref.watch(invoiceRepositoryProvider).getInvoices();
-    
+
     return await analyticsService.calculateCashFlowData(
       invoices: invoices,
       expenses: [], // Real expenses data integration pending - expense module not yet available
@@ -185,13 +196,15 @@ final cashFlowDataProvider = FutureProvider.family<CashFlowData?, TimePeriod>((r
 });
 
 // Customer insights provider
-final customerInsightsProvider = FutureProvider.family<CustomerInsights?, TimePeriod>((ref, period) async {
+final customerInsightsProvider =
+    FutureProvider.family<CustomerInsights?, TimePeriod>((ref, period) async {
   final analyticsService = ref.watch(analyticsServiceProvider);
-  
+
   try {
-    final customers = await ref.watch(customerRepositoryProvider).getAllCustomers();
+    final customers =
+        await ref.watch(customerRepositoryProvider).getAllCustomers();
     final invoices = await ref.watch(invoiceRepositoryProvider).getInvoices();
-    
+
     return await analyticsService.calculateCustomerInsights(
       customers: customers,
       invoices: invoices,
@@ -203,12 +216,13 @@ final customerInsightsProvider = FutureProvider.family<CustomerInsights?, TimePe
 });
 
 // Inventory overview provider
-final inventoryOverviewProvider = FutureProvider<InventoryOverview?>((ref) async {
+final inventoryOverviewProvider =
+    FutureProvider<InventoryOverview?>((ref) async {
   final analyticsService = ref.watch(analyticsServiceProvider);
-  
+
   try {
     final products = await ref.watch(productRepositoryProvider).getProducts();
-    
+
     return await analyticsService.calculateInventoryOverview(
       products: products,
     );
@@ -218,7 +232,8 @@ final inventoryOverviewProvider = FutureProvider<InventoryOverview?>((ref) async
 });
 
 // Tax compliance status provider
-final taxComplianceStatusProvider = FutureProvider<TaxComplianceStatus?>((ref) async {
+final taxComplianceStatusProvider =
+    FutureProvider<TaxComplianceStatus?>((ref) async {
   // Tax compliance status implementation pending - tax module not yet available
   return TaxComplianceStatus(
     id: 'demo_tax_compliance',
@@ -233,14 +248,16 @@ final taxComplianceStatusProvider = FutureProvider<TaxComplianceStatus?>((ref) a
 });
 
 // KPIs provider
-final kpisProvider = FutureProvider.family<List<KPI>, TimePeriod>((ref, period) async {
+final kpisProvider =
+    FutureProvider.family<List<KPI>, TimePeriod>((ref, period) async {
   final analyticsService = ref.watch(analyticsServiceProvider);
-  
+
   try {
     final invoices = await ref.watch(invoiceRepositoryProvider).getInvoices();
-    final customers = await ref.watch(customerRepositoryProvider).getAllCustomers();
+    final customers =
+        await ref.watch(customerRepositoryProvider).getAllCustomers();
     final products = await ref.watch(productRepositoryProvider).getProducts();
-    
+
     return await analyticsService.generateKPIs(
       invoices: invoices,
       customers: customers,
@@ -253,7 +270,8 @@ final kpisProvider = FutureProvider.family<List<KPI>, TimePeriod>((ref, period) 
 });
 
 // Dashboard configuration provider
-final dashboardConfigProvider = StateNotifierProvider<DashboardConfigNotifier, DashboardConfig>((ref) {
+final dashboardConfigProvider =
+    StateNotifierProvider<DashboardConfigNotifier, DashboardConfig>((ref) {
   return DashboardConfigNotifier();
 });
 
@@ -290,7 +308,7 @@ class DashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>> {
   /// Load dashboard data for the specified time period
   Future<void> loadDashboardData(TimePeriod period) async {
     state = const AsyncValue.loading();
-    
+
     try {
       // Load data from repositories
       final invoices = await _invoiceRepository.getInvoices();
@@ -306,7 +324,8 @@ class DashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>> {
       );
 
       // Generate revenue analytics
-      final revenueAnalytics = await _analyticsService.calculateRevenueAnalytics(
+      final revenueAnalytics =
+          await _analyticsService.calculateRevenueAnalytics(
         invoices: invoices,
         period: period,
       );
@@ -319,14 +338,16 @@ class DashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>> {
       );
 
       // Generate customer insights
-      final customerInsights = await _analyticsService.calculateCustomerInsights(
+      final customerInsights =
+          await _analyticsService.calculateCustomerInsights(
         customers: customers,
         invoices: invoices,
         period: period,
       );
 
       // Generate inventory overview
-      final inventoryOverview = await _analyticsService.calculateInventoryOverview(
+      final inventoryOverview =
+          await _analyticsService.calculateInventoryOverview(
         products: products,
       );
 
@@ -351,7 +372,8 @@ class DashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>> {
         cashFlowData: cashFlowData,
         customerInsights: customerInsights,
         inventoryOverview: inventoryOverview,
-        taxComplianceStatus: null, // Tax compliance integration pending - tax module not yet available
+        taxComplianceStatus:
+            null, // Tax compliance integration pending - tax module not yet available
         anomalies: [], // Will be loaded separately
         currentPeriod: period,
         lastUpdated: DateTime.now(),
@@ -457,7 +479,7 @@ class DashboardConfigNotifier extends StateNotifier<DashboardConfig> {
   /// Enable/disable specific KPI
   void toggleKPI(String kpiId) {
     final enabledKPIs = List<String>.from(state.enabledKPIs);
-    
+
     if (enabledKPIs.contains(kpiId)) {
       enabledKPIs.remove(kpiId);
     } else {
@@ -503,33 +525,36 @@ class ExportService {
     try {
       // Generate PDF using pdf package
       final pdf = pw.Document();
-      
+
       // Add dashboard data to PDF
       pdf.addPage(pw.Page(
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('Dashboard Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+              pw.Text('Dashboard Report',
+                  style: pw.TextStyle(
+                      fontSize: 24, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 20),
               pw.Text('Generated on: ${DateTime.now().toString()}'),
               pw.SizedBox(height: 20),
               // Add KPIs
               ...data.kpis.map((kpi) => pw.Container(
-                margin: const pw.EdgeInsets.only(bottom: 10),
-                child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text(kpi.title),
-                    pw.Text('${kpi.prefix ?? ''}${kpi.currentValue.toStringAsFixed(2)} ${kpi.unit ?? ''}'),
-                  ],
-                ),
-              )),
+                    margin: const pw.EdgeInsets.only(bottom: 10),
+                    child: pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text(kpi.title),
+                        pw.Text(
+                            '${kpi.prefix ?? ''}${kpi.currentValue.toStringAsFixed(2)} ${kpi.unit ?? ''}'),
+                      ],
+                    ),
+                  )),
             ],
           );
         },
       ));
-      
+
       final file = File(filePath);
       await file.writeAsBytes(await pdf.save());
     } catch (e) {
@@ -543,27 +568,36 @@ class ExportService {
       // Create Excel workbook
       final excel = Excel.createExcel();
       final sheet = excel['Dashboard'];
-      
+
       // Add headers
-      sheet.cell(CellIndex.indexByString('A1')).value = TextCellValue('Dashboard Report');
-      sheet.cell(CellIndex.indexByString('A2')).value = TextCellValue('Generated: ${DateTime.now()}');
-      
+      sheet.cell(CellIndex.indexByString('A1')).value =
+          TextCellValue('Dashboard Report');
+      sheet.cell(CellIndex.indexByString('A2')).value =
+          TextCellValue('Generated: ${DateTime.now()}');
+
       // Add KPI data
       int row = 4;
       sheet.cell(CellIndex.indexByString('A$row')).value = TextCellValue('KPI');
-      sheet.cell(CellIndex.indexByString('B$row')).value = TextCellValue('Current Value');
-      sheet.cell(CellIndex.indexByString('C$row')).value = TextCellValue('Unit');
-      sheet.cell(CellIndex.indexByString('D$row')).value = TextCellValue('Change %');
+      sheet.cell(CellIndex.indexByString('B$row')).value =
+          TextCellValue('Current Value');
+      sheet.cell(CellIndex.indexByString('C$row')).value =
+          TextCellValue('Unit');
+      sheet.cell(CellIndex.indexByString('D$row')).value =
+          TextCellValue('Change %');
       row++;
-      
+
       for (final kpi in data.kpis) {
-        sheet.cell(CellIndex.indexByString('A$row')).value = TextCellValue(kpi.title);
-        sheet.cell(CellIndex.indexByString('B$row')).value = DoubleCellValue(kpi.currentValue);
-        sheet.cell(CellIndex.indexByString('C$row')).value = TextCellValue(kpi.unit ?? '');
-        sheet.cell(CellIndex.indexByString('D$row')).value = DoubleCellValue(kpi.percentageChange);
+        sheet.cell(CellIndex.indexByString('A$row')).value =
+            TextCellValue(kpi.title);
+        sheet.cell(CellIndex.indexByString('B$row')).value =
+            DoubleCellValue(kpi.currentValue);
+        sheet.cell(CellIndex.indexByString('C$row')).value =
+            TextCellValue(kpi.unit ?? '');
+        sheet.cell(CellIndex.indexByString('D$row')).value =
+            DoubleCellValue(kpi.percentageChange);
         row++;
       }
-      
+
       // Save file
       final fileBytes = excel.save();
       final file = File(filePath);
@@ -577,10 +611,10 @@ class ExportService {
   Future<void> exportChartToCSV(List<DataPoint> data, String filePath) async {
     try {
       final csvData = <List<dynamic>>[];
-      
+
       // Add headers
       csvData.add(['Timestamp', 'Value', 'Label']);
-      
+
       // Add data points
       for (final point in data) {
         csvData.add([
@@ -589,11 +623,11 @@ class ExportService {
           point.label ?? '',
         ]);
       }
-      
+
       // Convert to CSV string
       const encoder = ListToCsvConverter();
       final csvString = encoder.convert(csvData);
-      
+
       // Save file
       final file = File(filePath);
       await file.writeAsString(csvString);
@@ -603,9 +637,9 @@ class ExportService {
   }
 }
 
-
 // Real recent activities provider
-final realRecentActivitiesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final realRecentActivitiesProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   try {
     final analyticsService = ref.watch(realAnalyticsServiceProvider);
     return await analyticsService.getRecentActivities();
@@ -617,7 +651,9 @@ final realRecentActivitiesProvider = FutureProvider<List<Map<String, dynamic>>>(
         'title': 'New Invoice Created',
         'description': 'Invoice INV-${DateTime.now().year}-001 for ACME Corp',
         'amount': 2500.00,
-        'timestamp': DateTime.now().subtract(const Duration(hours: 2)).millisecondsSinceEpoch,
+        'timestamp': DateTime.now()
+            .subtract(const Duration(hours: 2))
+            .millisecondsSinceEpoch,
         'icon': 'receipt',
         'color': '#4CAF50',
       },
@@ -626,7 +662,9 @@ final realRecentActivitiesProvider = FutureProvider<List<Map<String, dynamic>>>(
         'title': 'Payment Received',
         'description': 'Payment for Invoice INV-2024-156',
         'amount': 1200.00,
-        'timestamp': DateTime.now().subtract(const Duration(hours: 4)).millisecondsSinceEpoch,
+        'timestamp': DateTime.now()
+            .subtract(const Duration(hours: 4))
+            .millisecondsSinceEpoch,
         'icon': 'payment',
         'color': '#2196F3',
       },
@@ -634,7 +672,9 @@ final realRecentActivitiesProvider = FutureProvider<List<Map<String, dynamic>>>(
         'type': 'customer_added',
         'title': 'New Customer Added',
         'description': 'TechStart Solutions added to customers',
-        'timestamp': DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch,
+        'timestamp': DateTime.now()
+            .subtract(const Duration(days: 1))
+            .millisecondsSinceEpoch,
         'icon': 'people',
         'color': '#FF9800',
       },
@@ -643,30 +683,34 @@ final realRecentActivitiesProvider = FutureProvider<List<Map<String, dynamic>>>(
 });
 
 // Recent activities provider (keeping old for compatibility)
-final recentActivitiesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final recentActivitiesProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   return ref.watch(realRecentActivitiesProvider.future);
 });
 
-
 // Simple mock dashboard data provider for development
-final mockDashboardDataProvider = StateNotifierProvider<MockDashboardDataNotifier, AsyncValue<DashboardData>>((ref) {
+final mockDashboardDataProvider =
+    StateNotifierProvider<MockDashboardDataNotifier, AsyncValue<DashboardData>>(
+        (ref) {
   return MockDashboardDataNotifier();
 });
 
-class MockDashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>> {
+class MockDashboardDataNotifier
+    extends StateNotifier<AsyncValue<DashboardData>> {
   MockDashboardDataNotifier() : super(const AsyncValue.loading()) {
     _loadMockData();
   }
 
   Future<void> refreshData(TimePeriod period) async {
     state = const AsyncValue.loading();
-    await Future.delayed(const Duration(milliseconds: 500)); // Simulate network delay
+    await Future.delayed(
+        const Duration(milliseconds: 500)); // Simulate network delay
     _loadMockData(period: period);
   }
 
   void _loadMockData({TimePeriod period = TimePeriod.thisMonth}) {
     final now = DateTime.now();
-    
+
     // Create mock revenue data
     final revenueByDay = <DataPoint>[];
     for (int i = 0; i < 30; i++) {
@@ -908,12 +952,20 @@ class MockDashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>>
       config: DashboardConfig(
         id: 'default_config',
         name: 'Default Dashboard',
-        enabledKPIs: ['total_revenue', 'net_cash_flow', 'total_customers', 'outstanding_receivables'],
+        enabledKPIs: [
+          'total_revenue',
+          'net_cash_flow',
+          'total_customers',
+          'outstanding_receivables'
+        ],
         chartSettings: {
           'revenue_chart': {'type': 'line', 'color': '#4CAF50'},
           'cash_flow_chart': {'type': 'area', 'color': '#2196F3'},
           'customer_chart': {'type': 'line', 'color': '#FF9800'},
-          'status_chart': {'type': 'pie', 'colors': ['#4CAF50', '#FF9800', '#F44336', '#9C27B0']},
+          'status_chart': {
+            'type': 'pie',
+            'colors': ['#4CAF50', '#FF9800', '#F44336', '#9C27B0']
+          },
         },
         defaultTimePeriod: TimePeriod.thisMonth,
         autoRefresh: true,
@@ -930,7 +982,8 @@ class MockDashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>>
 // Mock repository implementations for dashboard functionality
 
 /// Real dashboard data notifier using actual database services
-class RealDashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>> {
+class RealDashboardDataNotifier
+    extends StateNotifier<AsyncValue<DashboardData>> {
   final RealDashboardAnalyticsService _analyticsService;
 
   RealDashboardDataNotifier({
@@ -941,12 +994,12 @@ class RealDashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>>
   /// Load dashboard data for the specified time period
   Future<void> loadDashboardData(TimePeriod period) async {
     state = const AsyncValue.loading();
-    
+
     try {
       final dashboardData = await _analyticsService.getDashboardData(
         period: period,
       );
-      
+
       state = AsyncValue.data(dashboardData);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
@@ -1001,4 +1054,3 @@ class RealDashboardDataNotifier extends StateNotifier<AsyncValue<DashboardData>>
     }
   }
 }
-

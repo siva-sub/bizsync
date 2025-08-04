@@ -30,32 +30,32 @@ class SearchResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'subtitle': subtitle,
-    'type': type,
-    'category': category,
-    'data': data,
-    'lastModified': lastModified?.toIso8601String(),
-    'relevanceScore': relevanceScore,
-    'iconPath': iconPath,
-    'tags': tags,
-  };
+        'id': id,
+        'title': title,
+        'subtitle': subtitle,
+        'type': type,
+        'category': category,
+        'data': data,
+        'lastModified': lastModified?.toIso8601String(),
+        'relevanceScore': relevanceScore,
+        'iconPath': iconPath,
+        'tags': tags,
+      };
 
   factory SearchResult.fromJson(Map<String, dynamic> json) => SearchResult(
-    id: json['id'],
-    title: json['title'],
-    subtitle: json['subtitle'],
-    type: json['type'],
-    category: json['category'],
-    data: json['data'] ?? {},
-    lastModified: json['lastModified'] != null 
-        ? DateTime.parse(json['lastModified']) 
-        : null,
-    relevanceScore: json['relevanceScore']?.toDouble() ?? 0.0,
-    iconPath: json['iconPath'],
-    tags: List<String>.from(json['tags'] ?? []),
-  );
+        id: json['id'],
+        title: json['title'],
+        subtitle: json['subtitle'],
+        type: json['type'],
+        category: json['category'],
+        data: json['data'] ?? {},
+        lastModified: json['lastModified'] != null
+            ? DateTime.parse(json['lastModified'])
+            : null,
+        relevanceScore: json['relevanceScore']?.toDouble() ?? 0.0,
+        iconPath: json['iconPath'],
+        tags: List<String>.from(json['tags'] ?? []),
+      );
 }
 
 /// Search Filter
@@ -110,24 +110,24 @@ class SearchQuery {
   });
 
   Map<String, dynamic> toJson() => {
-    'query': query,
-    'categories': categories,
-    'filters': filters,
-    'sortBy': sortBy,
-    'sortAscending': sortAscending,
-    'limit': limit,
-    'offset': offset,
-  };
+        'query': query,
+        'categories': categories,
+        'filters': filters,
+        'sortBy': sortBy,
+        'sortAscending': sortAscending,
+        'limit': limit,
+        'offset': offset,
+      };
 
   factory SearchQuery.fromJson(Map<String, dynamic> json) => SearchQuery(
-    query: json['query'],
-    categories: List<String>.from(json['categories'] ?? []),
-    filters: json['filters'] ?? {},
-    sortBy: json['sortBy'],
-    sortAscending: json['sortAscending'] ?? true,
-    limit: json['limit'] ?? 50,
-    offset: json['offset'] ?? 0,
-  );
+        query: json['query'],
+        categories: List<String>.from(json['categories'] ?? []),
+        filters: json['filters'] ?? {},
+        sortBy: json['sortBy'],
+        sortAscending: json['sortAscending'] ?? true,
+        limit: json['limit'] ?? 50,
+        offset: json['offset'] ?? 0,
+      );
 }
 
 /// Saved Search
@@ -151,24 +151,24 @@ class SavedSearch {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'description': description,
-    'query': query.toJson(),
-    'created': created.toIso8601String(),
-    'lastUsed': lastUsed.toIso8601String(),
-    'useCount': useCount,
-  };
+        'id': id,
+        'name': name,
+        'description': description,
+        'query': query.toJson(),
+        'created': created.toIso8601String(),
+        'lastUsed': lastUsed.toIso8601String(),
+        'useCount': useCount,
+      };
 
   factory SavedSearch.fromJson(Map<String, dynamic> json) => SavedSearch(
-    id: json['id'],
-    name: json['name'],
-    description: json['description'],
-    query: SearchQuery.fromJson(json['query']),
-    created: DateTime.parse(json['created']),
-    lastUsed: DateTime.parse(json['lastUsed']),
-    useCount: json['useCount'] ?? 0,
-  );
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        query: SearchQuery.fromJson(json['query']),
+        created: DateTime.parse(json['created']),
+        lastUsed: DateTime.parse(json['lastUsed']),
+        useCount: json['useCount'] ?? 0,
+      );
 }
 
 /// Search History Entry
@@ -186,22 +186,23 @@ class SearchHistoryEntry {
   });
 
   Map<String, dynamic> toJson() => {
-    'query': query,
-    'timestamp': timestamp.toIso8601String(),
-    'categories': categories,
-    'resultCount': resultCount,
-  };
+        'query': query,
+        'timestamp': timestamp.toIso8601String(),
+        'categories': categories,
+        'resultCount': resultCount,
+      };
 
-  factory SearchHistoryEntry.fromJson(Map<String, dynamic> json) => SearchHistoryEntry(
-    query: json['query'],
-    timestamp: DateTime.parse(json['timestamp']),
-    categories: List<String>.from(json['categories'] ?? []),
-    resultCount: json['resultCount'] ?? 0,
-  );
+  factory SearchHistoryEntry.fromJson(Map<String, dynamic> json) =>
+      SearchHistoryEntry(
+        query: json['query'],
+        timestamp: DateTime.parse(json['timestamp']),
+        categories: List<String>.from(json['categories'] ?? []),
+        resultCount: json['resultCount'] ?? 0,
+      );
 }
 
 /// Advanced Search Service for Linux Desktop
-/// 
+///
 /// Provides comprehensive search functionality:
 /// - Global search with filters
 /// - Search history tracking
@@ -209,7 +210,8 @@ class SearchHistoryEntry {
 /// - Real-time search suggestions
 /// - Full-text search across all data
 class AdvancedSearchService extends ChangeNotifier {
-  static final AdvancedSearchService _instance = AdvancedSearchService._internal();
+  static final AdvancedSearchService _instance =
+      AdvancedSearchService._internal();
   factory AdvancedSearchService() => _instance;
   AdvancedSearchService._internal();
 
@@ -298,10 +300,10 @@ class AdvancedSearchService extends ChangeNotifier {
     try {
       // Load search history
       await _loadSearchHistory();
-      
+
       // Load saved searches
       await _loadSavedSearches();
-      
+
       _isInitialized = true;
       debugPrint('✅ Advanced search service initialized successfully');
     } catch (e) {
@@ -327,9 +329,8 @@ class AdvancedSearchService extends ChangeNotifier {
       final results = <SearchResult>[];
 
       // Search each category if specified, or all categories
-      final categoriesToSearch = query.categories.isNotEmpty 
-          ? query.categories 
-          : _availableCategories;
+      final categoriesToSearch =
+          query.categories.isNotEmpty ? query.categories : _availableCategories;
 
       for (final category in categoriesToSearch) {
         final categoryResults = await _searchCategory(category, query);
@@ -364,7 +365,8 @@ class AdvancedSearchService extends ChangeNotifier {
   }
 
   /// Search within a specific category
-  Future<List<SearchResult>> _searchCategory(String category, SearchQuery query) async {
+  Future<List<SearchResult>> _searchCategory(
+      String category, SearchQuery query) async {
     switch (category) {
       case 'invoices':
         return await _searchInvoices(query);
@@ -409,7 +411,7 @@ class AdvancedSearchService extends ChangeNotifier {
     ];
 
     final results = <SearchResult>[];
-    
+
     for (final invoice in mockInvoices) {
       if (_matchesQuery(query.query, [
         invoice['number'],
@@ -457,7 +459,7 @@ class AdvancedSearchService extends ChangeNotifier {
     ];
 
     final results = <SearchResult>[];
-    
+
     for (final customer in mockCustomers) {
       if (_matchesQuery(query.query, [
         customer['name'],
@@ -508,7 +510,7 @@ class AdvancedSearchService extends ChangeNotifier {
     ];
 
     final results = <SearchResult>[];
-    
+
     for (final product in mockProducts) {
       if (_matchesQuery(query.query, [
         product['name'],
@@ -523,7 +525,8 @@ class AdvancedSearchService extends ChangeNotifier {
         results.add(SearchResult(
           id: product['id'].toString(),
           title: product['name'].toString(),
-          subtitle: '${product['sku']} - \$${product['price']} (${product['stock']} in stock)',
+          subtitle:
+              '${product['sku']} - \$${product['price']} (${product['stock']} in stock)',
           type: 'product',
           category: 'products',
           data: product,
@@ -560,7 +563,7 @@ class AdvancedSearchService extends ChangeNotifier {
   bool _matchesQuery(String query, List<dynamic> fields) {
     final searchTerms = query.toLowerCase().split(' ');
     final fieldsText = fields.join(' ').toLowerCase();
-    
+
     return searchTerms.every((term) => fieldsText.contains(term));
   }
 
@@ -568,10 +571,10 @@ class AdvancedSearchService extends ChangeNotifier {
   double _calculateRelevanceScore(String query, List<String> fields) {
     double score = 0.0;
     final searchTerms = query.toLowerCase().split(' ');
-    
+
     for (final field in fields) {
       final fieldText = field.toLowerCase();
-      
+
       // Exact match gets highest score
       if (fieldText == query.toLowerCase()) {
         score += 100.0;
@@ -593,7 +596,7 @@ class AdvancedSearchService extends ChangeNotifier {
         }
       }
     }
-    
+
     return score;
   }
 
@@ -609,7 +612,7 @@ class AdvancedSearchService extends ChangeNotifier {
       final oldestKey = _searchCache.keys.first;
       _searchCache.remove(oldestKey);
     }
-    
+
     _searchCache[key] = results;
   }
 
@@ -618,23 +621,23 @@ class AdvancedSearchService extends ChangeNotifier {
     if (query.length < 2) return [];
 
     final suggestions = <String>[];
-    
+
     // Add suggestions from search history
     for (final entry in _searchHistory) {
-      if (entry.query.toLowerCase().contains(query.toLowerCase()) && 
+      if (entry.query.toLowerCase().contains(query.toLowerCase()) &&
           !suggestions.contains(entry.query)) {
         suggestions.add(entry.query);
       }
     }
-    
+
     // Add suggestions from saved searches
     for (final saved in _savedSearches) {
-      if (saved.name.toLowerCase().contains(query.toLowerCase()) && 
+      if (saved.name.toLowerCase().contains(query.toLowerCase()) &&
           !suggestions.contains(saved.name)) {
         suggestions.add(saved.name);
       }
     }
-    
+
     // Limit suggestions
     return suggestions.take(10).toList();
   }
@@ -653,7 +656,7 @@ class AdvancedSearchService extends ChangeNotifier {
       created: DateTime.now(),
       lastUsed: DateTime.now(),
     );
-    
+
     _savedSearches.add(savedSearch);
     await _saveSavedSearches();
     notifyListeners();
@@ -673,7 +676,7 @@ class AdvancedSearchService extends ChangeNotifier {
         lastUsed: DateTime.now(),
         useCount: savedSearch.useCount + 1,
       );
-      
+
       await _saveSavedSearches();
       notifyListeners();
     }
@@ -690,15 +693,15 @@ class AdvancedSearchService extends ChangeNotifier {
   Future<void> _addToSearchHistory(SearchHistoryEntry entry) async {
     // Remove existing entry with same query
     _searchHistory.removeWhere((e) => e.query == entry.query);
-    
+
     // Add new entry at the beginning
     _searchHistory.insert(0, entry);
-    
+
     // Limit history size
     if (_searchHistory.length > _maxHistoryEntries) {
       _searchHistory.removeRange(_maxHistoryEntries, _searchHistory.length);
     }
-    
+
     await _saveSearchHistory();
   }
 
@@ -731,11 +734,11 @@ class AdvancedSearchService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final historyString = prefs.getString('search_history');
-      
+
       if (historyString != null) {
         final historyList = jsonDecode(historyString) as List;
         _searchHistory.clear();
-        
+
         for (final entryJson in historyList) {
           try {
             final entry = SearchHistoryEntry.fromJson(entryJson);
@@ -744,7 +747,7 @@ class AdvancedSearchService extends ChangeNotifier {
             debugPrint('Failed to load search history entry: $e');
           }
         }
-        
+
         debugPrint('Loaded ${_searchHistory.length} search history entries');
       }
     } catch (e) {
@@ -768,11 +771,11 @@ class AdvancedSearchService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedString = prefs.getString('saved_searches');
-      
+
       if (savedString != null) {
         final savedList = jsonDecode(savedString) as List;
         _savedSearches.clear();
-        
+
         for (final savedJson in savedList) {
           try {
             final saved = SavedSearch.fromJson(savedJson);
@@ -781,7 +784,7 @@ class AdvancedSearchService extends ChangeNotifier {
             debugPrint('Failed to load saved search: $e');
           }
         }
-        
+
         debugPrint('Loaded ${_savedSearches.length} saved searches');
       }
     } catch (e) {
@@ -790,7 +793,8 @@ class AdvancedSearchService extends ChangeNotifier {
   }
 
   /// Get available categories
-  List<String> get availableCategories => List.unmodifiable(_availableCategories);
+  List<String> get availableCategories =>
+      List.unmodifiable(_availableCategories);
 
   /// Get available filters for category
   List<SearchFilter> getFiltersForCategory(String category) {
@@ -798,7 +802,8 @@ class AdvancedSearchService extends ChangeNotifier {
   }
 
   /// Get search history
-  List<SearchHistoryEntry> get searchHistory => List.unmodifiable(_searchHistory);
+  List<SearchHistoryEntry> get searchHistory =>
+      List.unmodifiable(_searchHistory);
 
   /// Get saved searches
   List<SavedSearch> get savedSearches => List.unmodifiable(_savedSearches);
@@ -810,11 +815,11 @@ class AdvancedSearchService extends ChangeNotifier {
   Future<void> dispose() async {
     await _saveSearchHistory();
     await _saveSavedSearches();
-    
+
     _searchHistory.clear();
     _savedSearches.clear();
     _searchCache.clear();
-    
+
     _isInitialized = false;
     debugPrint('Advanced search service disposed');
   }

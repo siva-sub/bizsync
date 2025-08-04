@@ -10,7 +10,7 @@ class SGQRPaymentDialog extends StatefulWidget {
   final String? merchantUEN;
   final String? merchantMobile;
   final String? customMessage;
-  
+
   const SGQRPaymentDialog({
     super.key,
     required this.invoice,
@@ -18,7 +18,7 @@ class SGQRPaymentDialog extends StatefulWidget {
     this.merchantMobile,
     this.customMessage,
   });
-  
+
   @override
   State<SGQRPaymentDialog> createState() => _SGQRPaymentDialogState();
 }
@@ -28,38 +28,39 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
   bool _isLoading = true;
   String? _error;
   bool _canGenerateQR = false;
-  
+
   @override
   void initState() {
     super.initState();
     _generateQRCode();
   }
-  
+
   Future<void> _generateQRCode() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
-    
+
     try {
       // Check if we can generate QR for this invoice
       _canGenerateQR = InvoiceSGQRService.canGenerateSGQR(widget.invoice);
-      
+
       if (!_canGenerateQR) {
         setState(() {
-          _error = 'Cannot generate PayNow QR for this invoice. Only SGD invoices with outstanding balance are supported.';
+          _error =
+              'Cannot generate PayNow QR for this invoice. Only SGD invoices with outstanding balance are supported.';
           _isLoading = false;
         });
         return;
       }
-      
+
       final qrString = await InvoiceSGQRService.generateInvoiceSGQR(
         invoice: widget.invoice,
         customMessage: widget.customMessage,
         merchantUEN: widget.merchantUEN ?? '202012345A', // Default demo UEN
         merchantMobile: widget.merchantMobile,
       );
-      
+
       setState(() {
         _qrString = qrString;
         _isLoading = false;
@@ -71,7 +72,7 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
       });
     }
   }
-  
+
   void _copyQRString() {
     if (_qrString != null) {
       Clipboard.setData(ClipboardData(text: _qrString!));
@@ -83,7 +84,7 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
       );
     }
   }
-  
+
   void _shareQRCode() {
     // TODO: Implement sharing functionality
     // For now, just show a message
@@ -94,11 +95,11 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
       ),
     );
   }
-  
+
   /// Helper methods to extract invoice data
   String _getInvoiceNumber(dynamic invoice) {
     if (invoice == null) return 'INV-0000';
-    
+
     try {
       // Try different property names for invoice number
       if (invoice['invoice_number'] != null) {
@@ -119,13 +120,13 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
     } catch (e) {
       // Ignore errors and try next approach
     }
-    
+
     return 'INV-0000';
   }
-  
+
   double _getInvoiceAmount(dynamic invoice) {
     if (invoice == null) return 0.0;
-    
+
     try {
       // Try different property names for amount
       if (invoice['remaining_balance_cents'] != null) {
@@ -146,13 +147,13 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
     } catch (e) {
       // Ignore errors and try next approach
     }
-    
+
     return 0.0;
   }
-  
+
   String _getInvoiceCurrency(dynamic invoice) {
     if (invoice == null) return 'SGD';
-    
+
     try {
       // Try different property names for currency
       if (invoice.currency != null) {
@@ -167,16 +168,16 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
     } catch (e) {
       // Ignore errors and use default
     }
-    
+
     return 'SGD'; // Default to SGD
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final invoiceNumber = _getInvoiceNumber(widget.invoice);
     final amount = _getInvoiceAmount(widget.invoice);
     final currency = _getInvoiceCurrency(widget.invoice);
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -199,15 +200,16 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
                     children: [
                       Text(
                         'PayNow Payment',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       Text(
                         'Invoice: $invoiceNumber',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                              color: Colors.grey[600],
+                            ),
                       ),
                     ],
                   ),
@@ -219,7 +221,7 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
               ],
             ),
             const SizedBox(height: 24),
-            
+
             // Amount display
             Container(
               padding: const EdgeInsets.all(16),
@@ -236,22 +238,22 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
                   Text(
                     '$currency ${amount.toStringAsFixed(2)}',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade700,
-                    ),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade700,
+                        ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // QR Code or loading/error state
             SizedBox(
               height: 280,
               child: _buildQRContent(),
             ),
             const SizedBox(height: 24),
-            
+
             // Instructions
             Container(
               padding: const EdgeInsets.all(16),
@@ -265,13 +267,14 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.grey.shade600, size: 20),
+                      Icon(Icons.info_outline,
+                          color: Colors.grey.shade600, size: 20),
                       const SizedBox(width: 8),
                       Text(
                         'Payment Instructions',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ],
                   ),
@@ -287,7 +290,7 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Action buttons
             if (_qrString != null) ...[
               Row(
@@ -324,7 +327,7 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
       ),
     );
   }
-  
+
   Widget _buildQRContent() {
     if (_isLoading) {
       return const Center(
@@ -338,7 +341,7 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
         ),
       );
     }
-    
+
     if (_error != null) {
       return Center(
         child: Column(
@@ -362,7 +365,7 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
         ),
       );
     }
-    
+
     if (_qrString != null) {
       return Center(
         child: Container(
@@ -383,7 +386,7 @@ class _SGQRPaymentDialogState extends State<SGQRPaymentDialog> {
         ),
       );
     }
-    
+
     return const Center(
       child: Text('No QR code generated'),
     );

@@ -5,14 +5,14 @@ class LoadingWidget extends StatelessWidget {
   final String? message;
   final double? size;
   final Color? color;
-  
+
   const LoadingWidget({
     super.key,
     this.message,
     this.size,
     this.color,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -31,8 +31,8 @@ class LoadingWidget extends StatelessWidget {
           Text(
             message!,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: color ?? Theme.of(context).textTheme.bodyMedium?.color,
-            ),
+                  color: color ?? Theme.of(context).textTheme.bodyMedium?.color,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -46,7 +46,7 @@ class LoadingOverlay extends StatelessWidget {
   final bool isLoading;
   final String? loadingMessage;
   final Color? overlayColor;
-  
+
   const LoadingOverlay({
     super.key,
     required this.child,
@@ -54,7 +54,7 @@ class LoadingOverlay extends StatelessWidget {
     this.loadingMessage,
     this.overlayColor,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Stack(

@@ -8,10 +8,12 @@ class ReportsDashboardScreen extends ConsumerStatefulWidget {
   const ReportsDashboardScreen({super.key});
 
   @override
-  ConsumerState<ReportsDashboardScreen> createState() => _ReportsDashboardScreenState();
+  ConsumerState<ReportsDashboardScreen> createState() =>
+      _ReportsDashboardScreenState();
 }
 
-class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen> {
+class _ReportsDashboardScreenState
+    extends ConsumerState<ReportsDashboardScreen> {
   List<ReportData>? _recentReports;
   bool _isLoading = true;
 
@@ -23,7 +25,7 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
 
   Future<void> _loadRecentReports() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final reportService = ref.read(reportServiceProvider);
       _recentReports = await reportService.getRecentReports();
@@ -34,7 +36,7 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -52,8 +54,8 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
                 Text(
                   'Reports & Analytics',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const Spacer(),
                 FilledButton.icon(
@@ -63,17 +65,17 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 24),
 
             // Quick Stats Cards
             _buildQuickStatsSection(),
-            
+
             const SizedBox(height: 24),
 
             // Report Type Cards
             _buildReportTypesSection(),
-            
+
             const SizedBox(height: 24),
 
             // Recent Reports
@@ -91,8 +93,8 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
         Text(
           'Quick Overview',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Row(
@@ -142,8 +144,8 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
         Text(
           'Generate Reports',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -211,8 +213,8 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
             Text(
               'Recent Reports',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const Spacer(),
             TextButton(
@@ -239,15 +241,15 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
                   Text(
                     'No reports generated yet',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                          color: Colors.grey[600],
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Generate your first report to see insights',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[500],
-                    ),
+                          color: Colors.grey[500],
+                        ),
                   ),
                 ],
               ),
@@ -256,55 +258,59 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
         else
           Card(
             child: Column(
-              children: _recentReports!.map((report) => ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: _getReportTypeColor(report.type).withOpacity(0.1),
-                  child: Icon(
-                    _getReportTypeIcon(report.type),
-                    color: _getReportTypeColor(report.type),
-                  ),
-                ),
-                title: Text(report.title),
-                subtitle: Text(
-                  'Generated ${_formatRelativeDate(report.generatedAt)} • ${_getReportPeriodText(report.period)}',
-                ),
-                trailing: PopupMenuButton(
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'view',
-                      child: Row(
-                        children: [
-                          Icon(Icons.visibility),
-                          SizedBox(width: 8),
-                          Text('View Report'),
-                        ],
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'download',
-                      child: Row(
-                        children: [
-                          Icon(Icons.download),
-                          SizedBox(width: 8),
-                          Text('Download PDF'),
-                        ],
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'share',
-                      child: Row(
-                        children: [
-                          Icon(Icons.share),
-                          SizedBox(width: 8),
-                          Text('Share'),
-                        ],
-                      ),
-                    ),
-                  ],
-                  onSelected: (value) => _handleReportAction(value, report),
-                ),
-                onTap: () => _viewReport(report),
-              )).toList(),
+              children: _recentReports!
+                  .map((report) => ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor:
+                              _getReportTypeColor(report.type).withOpacity(0.1),
+                          child: Icon(
+                            _getReportTypeIcon(report.type),
+                            color: _getReportTypeColor(report.type),
+                          ),
+                        ),
+                        title: Text(report.title),
+                        subtitle: Text(
+                          'Generated ${_formatRelativeDate(report.generatedAt)} • ${_getReportPeriodText(report.period)}',
+                        ),
+                        trailing: PopupMenuButton(
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'view',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.visibility),
+                                  SizedBox(width: 8),
+                                  Text('View Report'),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'download',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.download),
+                                  SizedBox(width: 8),
+                                  Text('Download PDF'),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'share',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.share),
+                                  SizedBox(width: 8),
+                                  Text('Share'),
+                                ],
+                              ),
+                            ),
+                          ],
+                          onSelected: (value) =>
+                              _handleReportAction(value, report),
+                        ),
+                        onTap: () => _viewReport(report),
+                      ))
+                  .toList(),
             ),
           ),
       ],
@@ -373,41 +379,59 @@ class _ReportsDashboardScreenState extends ConsumerState<ReportsDashboardScreen>
 
   Color _getReportTypeColor(ReportType type) {
     switch (type) {
-      case ReportType.sales: return Colors.blue;
-      case ReportType.tax: return Colors.green;
-      case ReportType.financial: return Colors.purple;
-      case ReportType.customer: return Colors.teal;
-      case ReportType.inventory: return Colors.orange;
-      case ReportType.profit: return Colors.red;
+      case ReportType.sales:
+        return Colors.blue;
+      case ReportType.tax:
+        return Colors.green;
+      case ReportType.financial:
+        return Colors.purple;
+      case ReportType.customer:
+        return Colors.teal;
+      case ReportType.inventory:
+        return Colors.orange;
+      case ReportType.profit:
+        return Colors.red;
     }
   }
 
   IconData _getReportTypeIcon(ReportType type) {
     switch (type) {
-      case ReportType.sales: return Icons.show_chart;
-      case ReportType.tax: return Icons.receipt_long;
-      case ReportType.financial: return Icons.account_balance;
-      case ReportType.customer: return Icons.people;
-      case ReportType.inventory: return Icons.inventory;
-      case ReportType.profit: return Icons.analytics;
+      case ReportType.sales:
+        return Icons.show_chart;
+      case ReportType.tax:
+        return Icons.receipt_long;
+      case ReportType.financial:
+        return Icons.account_balance;
+      case ReportType.customer:
+        return Icons.people;
+      case ReportType.inventory:
+        return Icons.inventory;
+      case ReportType.profit:
+        return Icons.analytics;
     }
   }
 
   String _getReportPeriodText(ReportPeriod period) {
     switch (period) {
-      case ReportPeriod.today: return 'Today';
-      case ReportPeriod.thisWeek: return 'This Week';
-      case ReportPeriod.thisMonth: return 'This Month';
-      case ReportPeriod.thisQuarter: return 'This Quarter';
-      case ReportPeriod.thisYear: return 'This Year';
-      case ReportPeriod.custom: return 'Custom Period';
+      case ReportPeriod.today:
+        return 'Today';
+      case ReportPeriod.thisWeek:
+        return 'This Week';
+      case ReportPeriod.thisMonth:
+        return 'This Month';
+      case ReportPeriod.thisQuarter:
+        return 'This Quarter';
+      case ReportPeriod.thisYear:
+        return 'This Year';
+      case ReportPeriod.custom:
+        return 'Custom Period';
     }
   }
 
   String _formatRelativeDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inMinutes < 60) {
       return '${difference.inMinutes}m ago';
     } else if (difference.inHours < 24) {
@@ -482,7 +506,8 @@ class _StatCard extends StatelessWidget {
                 Icon(icon, color: color),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -502,20 +527,20 @@ class _StatCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             Text(
               title,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
             Text(
               subtitle,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[500],
-              ),
+                    color: Colors.grey[500],
+                  ),
             ),
           ],
         ),
@@ -555,15 +580,15 @@ class _ReportTypeCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),

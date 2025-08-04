@@ -33,7 +33,8 @@ final conflictResolverProvider = Provider<ConflictResolver>((ref) {
 });
 
 // Service providers
-final invoiceCalculationServiceProvider = Provider<InvoiceCalculationService>((ref) {
+final invoiceCalculationServiceProvider =
+    Provider<InvoiceCalculationService>((ref) {
   return InvoiceCalculationService();
 });
 
@@ -45,7 +46,7 @@ final invoiceRepositoryProvider = Provider<InvoiceRepository>((ref) {
   final databaseService = ref.watch(databaseServiceProvider);
   final conflictResolver = ref.watch(conflictResolverProvider);
   final nodeId = ref.watch(nodeIdProvider);
-  
+
   return InvoiceRepository(databaseService, conflictResolver, nodeId);
 });
 
@@ -55,7 +56,7 @@ final invoiceServiceProvider = Provider<InvoiceService>((ref) {
   final workflowService = ref.watch(invoiceWorkflowServiceProvider);
   final calculationService = ref.watch(invoiceCalculationServiceProvider);
   final nodeId = ref.watch(nodeIdProvider);
-  
+
   return InvoiceService(
     databaseService,
     transactionManager,
@@ -118,7 +119,8 @@ class InvoiceListNotifier extends StateNotifier<InvoiceListState> {
   final InvoiceService _invoiceService;
   final InvoiceRepository _repository;
 
-  InvoiceListNotifier(this._invoiceService, this._repository) : super(const InvoiceListState()) {
+  InvoiceListNotifier(this._invoiceService, this._repository)
+      : super(const InvoiceListState()) {
     loadInvoices();
   }
 
@@ -131,7 +133,7 @@ class InvoiceListNotifier extends StateNotifier<InvoiceListState> {
 
     try {
       state = state.copyWith(isLoading: true, error: null);
-      
+
       final filters = InvoiceSearchFilters(
         searchText: state.searchQuery.isEmpty ? null : state.searchQuery,
         statuses: state.statusFilters.isEmpty ? null : state.statusFilters,
@@ -145,13 +147,12 @@ class InvoiceListNotifier extends StateNotifier<InvoiceListState> {
       );
 
       final result = await _invoiceService.searchInvoices(filters);
-      
+
       if (result.success && result.data != null) {
         final newInvoices = result.data!;
-        final updatedInvoices = refresh 
-            ? newInvoices 
-            : [...state.invoices, ...newInvoices];
-        
+        final updatedInvoices =
+            refresh ? newInvoices : [...state.invoices, ...newInvoices];
+
         state = state.copyWith(
           invoices: updatedInvoices,
           isLoading: false,
@@ -201,7 +202,8 @@ class InvoiceListNotifier extends StateNotifier<InvoiceListState> {
       final result = await _invoiceService.deleteInvoice(invoiceId);
       if (result.success) {
         // Remove from local state
-        final updatedInvoices = state.invoices.where((i) => i.id != invoiceId).toList();
+        final updatedInvoices =
+            state.invoices.where((i) => i.id != invoiceId).toList();
         state = state.copyWith(invoices: updatedInvoices);
       }
     } catch (e) {
@@ -209,7 +211,8 @@ class InvoiceListNotifier extends StateNotifier<InvoiceListState> {
     }
   }
 
-  Future<void> changeInvoiceStatus(String invoiceId, InvoiceStatus newStatus) async {
+  Future<void> changeInvoiceStatus(
+      String invoiceId, InvoiceStatus newStatus) async {
     try {
       final result = await _invoiceService.changeStatus(invoiceId, newStatus);
       if (result.success && result.data != null) {
@@ -225,7 +228,8 @@ class InvoiceListNotifier extends StateNotifier<InvoiceListState> {
   }
 }
 
-final invoiceListProvider = StateNotifierProvider<InvoiceListNotifier, InvoiceListState>((ref) {
+final invoiceListProvider =
+    StateNotifierProvider<InvoiceListNotifier, InvoiceListState>((ref) {
   final invoiceService = ref.watch(invoiceServiceProvider);
   final repository = ref.watch(invoiceRepositoryProvider);
   return InvoiceListNotifier(invoiceService, repository);
@@ -280,11 +284,12 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
   final InvoiceService _invoiceService;
   final InvoiceRepository _repository;
 
-  InvoiceFormNotifier(this._invoiceService, this._repository) : super(const InvoiceFormState());
+  InvoiceFormNotifier(this._invoiceService, this._repository)
+      : super(const InvoiceFormState());
 
   Future<void> loadInvoice(String invoiceId) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final result = await _invoiceService.getInvoiceById(invoiceId);
       if (result.success && result.data != null) {
@@ -323,7 +328,7 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
     final now = DateTime.now();
     final nodeId = 'bizsync_${now.millisecondsSinceEpoch}';
     final timestamp = HLCTimestamp.now(nodeId);
-    
+
     final newInvoice = CRDTInvoiceEnhanced(
       id: UuidGenerator.generateId(),
       nodeId: nodeId,
@@ -344,11 +349,12 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
 
   Future<void> saveInvoice(Map<String, dynamic> invoiceData) async {
     state = state.copyWith(isSaving: true, error: null);
-    
+
     try {
       if (state.isEditing && state.invoice != null) {
         // Update existing invoice
-        final result = await _invoiceService.updateInvoice(state.invoice!.id, invoiceData);
+        final result =
+            await _invoiceService.updateInvoice(state.invoice!.id, invoiceData);
         if (result.success && result.data != null) {
           state = state.copyWith(
             invoice: result.data,
@@ -369,11 +375,13 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
           customerEmail: invoiceData['customer_email'],
           billingAddress: invoiceData['billing_address'],
           shippingAddress: invoiceData['shipping_address'],
-          issueDate: DateTime.fromMillisecondsSinceEpoch(invoiceData['issue_date']),
-          dueDate: invoiceData['due_date'] != null 
+          issueDate:
+              DateTime.fromMillisecondsSinceEpoch(invoiceData['issue_date']),
+          dueDate: invoiceData['due_date'] != null
               ? DateTime.fromMillisecondsSinceEpoch(invoiceData['due_date'])
               : null,
-          paymentTerms: PaymentTerm.fromString(invoiceData['payment_terms'] ?? 'net_30'),
+          paymentTerms:
+              PaymentTerm.fromString(invoiceData['payment_terms'] ?? 'net_30'),
           poNumber: invoiceData['po_number'],
           reference: invoiceData['reference'],
           notes: invoiceData['notes'],
@@ -383,7 +391,7 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
           currency: invoiceData['currency'] ?? 'SGD',
           exchangeRate: invoiceData['exchange_rate']?.toDouble() ?? 1.0,
         );
-        
+
         if (result.success && result.data != null) {
           state = state.copyWith(
             invoice: result.data,
@@ -408,24 +416,27 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
 
   Future<void> addLineItem(Map<String, dynamic> itemData) async {
     if (state.invoice == null) return;
-    
+
     try {
-      final result = await _invoiceService.addLineItem(state.invoice!.id, itemData);
+      final result =
+          await _invoiceService.addLineItem(state.invoice!.id, itemData);
       if (result.success && result.data != null) {
         final updatedItems = [...state.lineItems, result.data!];
         state = state.copyWith(lineItems: updatedItems);
-        
+
         // Reload invoice to get updated totals
         await loadInvoice(state.invoice!.id);
       } else {
-        state = state.copyWith(error: result.errorMessage ?? 'Failed to add line item');
+        state = state.copyWith(
+            error: result.errorMessage ?? 'Failed to add line item');
       }
     } catch (e) {
       state = state.copyWith(error: 'Failed to add line item: $e');
     }
   }
 
-  Future<void> updateLineItem(String itemId, Map<String, dynamic> itemData) async {
+  Future<void> updateLineItem(
+      String itemId, Map<String, dynamic> itemData) async {
     try {
       final result = await _invoiceService.updateLineItem(itemId, itemData);
       if (result.success && result.data != null) {
@@ -433,13 +444,14 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
           return item.id == itemId ? result.data! : item;
         }).toList();
         state = state.copyWith(lineItems: updatedItems);
-        
+
         // Reload invoice to get updated totals
         if (state.invoice != null) {
           await loadInvoice(state.invoice!.id);
         }
       } else {
-        state = state.copyWith(error: result.errorMessage ?? 'Failed to update line item');
+        state = state.copyWith(
+            error: result.errorMessage ?? 'Failed to update line item');
       }
     } catch (e) {
       state = state.copyWith(error: 'Failed to update line item: $e');
@@ -450,15 +462,17 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
     try {
       final result = await _invoiceService.removeLineItem(itemId);
       if (result.success) {
-        final updatedItems = state.lineItems.where((item) => item.id != itemId).toList();
+        final updatedItems =
+            state.lineItems.where((item) => item.id != itemId).toList();
         state = state.copyWith(lineItems: updatedItems);
-        
+
         // Reload invoice to get updated totals
         if (state.invoice != null) {
           await loadInvoice(state.invoice!.id);
         }
       } else {
-        state = state.copyWith(error: result.errorMessage ?? 'Failed to remove line item');
+        state = state.copyWith(
+            error: result.errorMessage ?? 'Failed to remove line item');
       }
     } catch (e) {
       state = state.copyWith(error: 'Failed to remove line item: $e');
@@ -470,41 +484,48 @@ class InvoiceFormNotifier extends StateNotifier<InvoiceFormState> {
   }
 }
 
-final invoiceFormProvider = StateNotifierProvider.family<InvoiceFormNotifier, InvoiceFormState, String?>((ref, invoiceId) {
+final invoiceFormProvider = StateNotifierProvider.family<InvoiceFormNotifier,
+    InvoiceFormState, String?>((ref, invoiceId) {
   final invoiceService = ref.watch(invoiceServiceProvider);
   final repository = ref.watch(invoiceRepositoryProvider);
   final notifier = InvoiceFormNotifier(invoiceService, repository);
-  
+
   if (invoiceId != null) {
     notifier.loadInvoice(invoiceId);
   } else {
     notifier.createNewInvoice();
   }
-  
+
   notifier.loadCustomers();
   return notifier;
 });
 
 // Invoice detail provider
-final invoiceDetailProvider = FutureProvider.family<Map<String, dynamic>, String>((ref, invoiceId) async {
+final invoiceDetailProvider =
+    FutureProvider.family<Map<String, dynamic>, String>((ref, invoiceId) async {
   final repository = ref.watch(invoiceRepositoryProvider);
   return await repository.getInvoiceWithRelatedData(invoiceId);
 });
 
 // Invoice statistics provider
-final invoiceStatisticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+final invoiceStatisticsProvider =
+    FutureProvider<Map<String, dynamic>>((ref) async {
   final repository = ref.watch(invoiceRepositoryProvider);
   return await repository.getInvoiceStatistics();
 });
 
 // Invoice workflow provider
-final invoiceWorkflowProvider = FutureProvider.family<List<CRDTInvoiceWorkflow>, String>((ref, invoiceId) async {
+final invoiceWorkflowProvider =
+    FutureProvider.family<List<CRDTInvoiceWorkflow>, String>(
+        (ref, invoiceId) async {
   final repository = ref.watch(invoiceRepositoryProvider);
   return await repository.getInvoiceWorkflow(invoiceId);
 });
 
 // Invoice payments provider
-final invoicePaymentsProvider = FutureProvider.family<List<CRDTInvoicePayment>, String>((ref, invoiceId) async {
+final invoicePaymentsProvider =
+    FutureProvider.family<List<CRDTInvoicePayment>, String>(
+        (ref, invoiceId) async {
   final repository = ref.watch(invoiceRepositoryProvider);
   return await repository.getInvoicePayments(invoiceId);
 });
@@ -521,7 +542,8 @@ final customersProvider = FutureProvider<List<Customer>>((ref) async {
 });
 
 // SGQR generation provider
-final sgqrProvider = FutureProvider.family<String?, Map<String, dynamic>>((ref, params) async {
+final sgqrProvider =
+    FutureProvider.family<String?, Map<String, dynamic>>((ref, params) async {
   // This would generate SGQR code for invoice payment
   // Implementation would use the existing SGQR service
   return null;

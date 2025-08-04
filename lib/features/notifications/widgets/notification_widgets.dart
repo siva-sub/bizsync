@@ -23,15 +23,17 @@ class NotificationCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final formatted = NotificationUtils.formatNotificationForDisplay(notification);
-    
+    final formatted =
+        NotificationUtils.formatNotificationForDisplay(notification);
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       elevation: notification.isRead ? 1 : 3,
       child: InkWell(
         onTap: () {
           if (!notification.isRead) {
-            ref.read(activeNotificationsProvider.notifier)
+            ref
+                .read(activeNotificationsProvider.notifier)
                 .markAsRead(notification.id);
           }
           onTap?.call();
@@ -49,7 +51,8 @@ class NotificationCard extends ConsumerWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Color(int.parse('0xFF${formatted.priorityColor.substring(1)}')),
+                      color: Color(int.parse(
+                          '0xFF${formatted.priorityColor.substring(1)}')),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Icon(
@@ -59,7 +62,7 @@ class NotificationCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  
+
                   // Content
                   Expanded(
                     child: Column(
@@ -73,8 +76,8 @@ class NotificationCard extends ConsumerWidget {
                               child: Text(
                                 notification.title,
                                 style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: notification.isRead 
-                                      ? FontWeight.normal 
+                                  fontWeight: notification.isRead
+                                      ? FontWeight.normal
                                       : FontWeight.bold,
                                 ),
                               ),
@@ -88,22 +91,24 @@ class NotificationCard extends ConsumerWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        
+
                         // Body
                         Text(
                           notification.body,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: notification.isRead 
+                            color: notification.isRead
                                 ? theme.colorScheme.onSurfaceVariant
                                 : theme.colorScheme.onSurface,
                           ),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        
+
                         // Priority indicator
-                        if (notification.priority == NotificationPriority.critical ||
-                            notification.priority == NotificationPriority.high) ...[
+                        if (notification.priority ==
+                                NotificationPriority.critical ||
+                            notification.priority ==
+                                NotificationPriority.high) ...[
                           const SizedBox(height: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -111,30 +116,34 @@ class NotificationCard extends ConsumerWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Color(int.parse('0xFF${formatted.priorityColor.substring(1)}'))
+                              color: Color(int.parse(
+                                      '0xFF${formatted.priorityColor.substring(1)}'))
                                   .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               notification.priority.name.toUpperCase(),
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: Color(int.parse('0xFF${formatted.priorityColor.substring(1)}')),
+                                color: Color(int.parse(
+                                    '0xFF${formatted.priorityColor.substring(1)}')),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ],
-                        
+
                         // Actions
                         if (showActions && notification.hasActions) ...[
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              for (final action in notification.actions!.take(2))
+                              for (final action
+                                  in notification.actions!.take(2))
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8),
                                   child: OutlinedButton(
-                                    onPressed: () => _handleAction(context, ref, action),
+                                    onPressed: () =>
+                                        _handleAction(context, ref, action),
                                     style: OutlinedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12,
@@ -153,7 +162,7 @@ class NotificationCard extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Dismiss button
                   if (onDismiss != null)
                     IconButton(
@@ -167,13 +176,13 @@ class NotificationCard extends ConsumerWidget {
                     ),
                 ],
               ),
-              
+
               // Progress indicator
               if (notification.hasProgress) ...[
                 const SizedBox(height: 12),
                 LinearProgressIndicator(
-                  value: notification.indeterminate 
-                      ? null 
+                  value: notification.indeterminate
+                      ? null
                       : (notification.progress! / notification.maxProgress!),
                   backgroundColor: theme.colorScheme.surfaceContainerHighest,
                 ),
@@ -206,7 +215,8 @@ class NotificationCard extends ConsumerWidget {
     }
   }
 
-  void _handleAction(BuildContext context, WidgetRef ref, NotificationAction action) {
+  void _handleAction(
+      BuildContext context, WidgetRef ref, NotificationAction action) {
     // Handle notification actions
     switch (action.type) {
       case NotificationActionType.view:
@@ -239,7 +249,8 @@ class NotificationCard extends ConsumerWidget {
     // Implementation would reschedule the notification
   }
 
-  void _handleCustomAction(BuildContext context, WidgetRef ref, NotificationAction action) {
+  void _handleCustomAction(
+      BuildContext context, WidgetRef ref, NotificationAction action) {
     // Handle custom actions based on action ID
     switch (action.id) {
       case 'mark_complete':
@@ -288,8 +299,8 @@ class NotificationList extends ConsumerWidget {
             Text(
               emptyMessage ?? 'No notifications',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
           ],
         ),
@@ -313,9 +324,10 @@ class NotificationList extends ConsumerWidget {
             ),
           ),
           onDismissed: (direction) {
-            ref.read(activeNotificationsProvider.notifier)
+            ref
+                .read(activeNotificationsProvider.notifier)
                 .dismissNotification(notification.id);
-            
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text('Notification dismissed'),
@@ -331,7 +343,8 @@ class NotificationList extends ConsumerWidget {
           child: NotificationCard(
             notification: notification,
             onTap: () => _handleNotificationTap(context, ref, notification),
-            onDismiss: () => ref.read(activeNotificationsProvider.notifier)
+            onDismiss: () => ref
+                .read(activeNotificationsProvider.notifier)
                 .dismissNotification(notification.id),
           ),
         );
@@ -373,8 +386,10 @@ class NotificationFilterChip extends StatelessWidget {
       label: Text(label),
       selected: selected,
       onSelected: (_) => onTap(),
-      selectedColor: selectedColor ?? Theme.of(context).colorScheme.primaryContainer,
-      checkmarkColor: selected ? Theme.of(context).colorScheme.onPrimaryContainer : null,
+      selectedColor:
+          selectedColor ?? Theme.of(context).colorScheme.primaryContainer,
+      checkmarkColor:
+          selected ? Theme.of(context).colorScheme.onPrimaryContainer : null,
     );
   }
 }
@@ -402,7 +417,7 @@ class NotificationStatistics extends ConsumerWidget {
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
+
             // Unread count
             Row(
               children: [
@@ -415,7 +430,7 @@ class NotificationStatistics extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Category breakdown
             Text(
               'By Category',
@@ -439,9 +454,9 @@ class NotificationStatistics extends ConsumerWidget {
                 ),
               );
             }).toList(),
-            
+
             const SizedBox(height: 12),
-            
+
             // Priority breakdown
             Text(
               'By Priority',
@@ -518,7 +533,7 @@ class NotificationQuickActions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
@@ -544,7 +559,8 @@ class NotificationQuickActions extends ConsumerWidget {
             _QuickActionButton(
               icon: Icons.settings,
               label: 'Settings',
-              onTap: () => Navigator.of(context).pushNamed('/notifications/settings'),
+              onTap: () =>
+                  Navigator.of(context).pushNamed('/notifications/settings'),
             ),
           ],
         ),
@@ -555,7 +571,7 @@ class NotificationQuickActions extends ConsumerWidget {
   void _markAllAsRead(WidgetRef ref) {
     final notifications = ref.read(activeNotificationsProvider);
     final notifier = ref.read(activeNotificationsProvider.notifier);
-    
+
     for (final notification in notifications) {
       if (!notification.isRead) {
         notifier.markAsRead(notification.id);
@@ -568,7 +584,8 @@ class NotificationQuickActions extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear All Notifications'),
-        content: const Text('Are you sure you want to clear all notifications? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to clear all notifications? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -651,7 +668,7 @@ class NotificationFilterSheet extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
-          
+
           // Category filters
           Text(
             'Categories',
@@ -675,9 +692,9 @@ class NotificationFilterSheet extends ConsumerWidget {
               );
             }).toList(),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Priority filters
           Text(
             'Priorities',
@@ -701,9 +718,9 @@ class NotificationFilterSheet extends ConsumerWidget {
               );
             }).toList(),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Action buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -721,7 +738,7 @@ class NotificationFilterSheet extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
         ],
       ),

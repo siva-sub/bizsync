@@ -14,10 +14,12 @@ class EnhancedMobileDashboard extends ConsumerStatefulWidget {
   const EnhancedMobileDashboard({super.key});
 
   @override
-  ConsumerState<EnhancedMobileDashboard> createState() => _EnhancedMobileDashboardState();
+  ConsumerState<EnhancedMobileDashboard> createState() =>
+      _EnhancedMobileDashboardState();
 }
 
-class _EnhancedMobileDashboardState extends ConsumerState<EnhancedMobileDashboard>
+class _EnhancedMobileDashboardState
+    extends ConsumerState<EnhancedMobileDashboard>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isAuthenticating = false;
@@ -39,15 +41,15 @@ class _EnhancedMobileDashboardState extends ConsumerState<EnhancedMobileDashboar
 
   Future<void> _checkBiometricAuthentication() async {
     final biometricService = ref.read(biometricAuthServiceProvider);
-    
-    if (biometricService.config.enabled && 
+
+    if (biometricService.config.enabled &&
         biometricService.config.requireForAppLaunch) {
       setState(() {
         _isAuthenticating = true;
       });
 
       final result = await biometricService.authenticateForAppLaunch();
-      
+
       if (!result) {
         // Authentication failed - could show error or exit app
         if (mounted) {
@@ -150,7 +152,7 @@ class _EnhancedMobileDashboardState extends ConsumerState<EnhancedMobileDashboar
         final connectionStatus = ref.watch(connectionStatusProvider);
         final syncStats = ref.watch(syncStatsProvider);
 
-        if (connectionStatus == ConnectionStatus.online && 
+        if (connectionStatus == ConnectionStatus.online &&
             syncStats.pendingOperations == 0) {
           return const SizedBox.shrink();
         }
@@ -162,10 +164,10 @@ class _EnhancedMobileDashboardState extends ConsumerState<EnhancedMobileDashboar
               label: Text('${syncStats.pendingOperations}'),
               isLabelVisible: syncStats.pendingOperations > 0,
               child: Icon(
-                connectionStatus == ConnectionStatus.online 
+                connectionStatus == ConnectionStatus.online
                     ? Icons.sync_problem
                     : Icons.cloud_off,
-                color: connectionStatus == ConnectionStatus.online 
+                color: connectionStatus == ConnectionStatus.online
                     ? Colors.orange
                     : Colors.red,
               ),
@@ -198,16 +200,16 @@ class _EnhancedMobileDashboardState extends ConsumerState<EnhancedMobileDashboar
                 Row(
                   children: [
                     Icon(
-                      connectionStatus == ConnectionStatus.online 
+                      connectionStatus == ConnectionStatus.online
                           ? Icons.cloud_done
                           : Icons.cloud_off,
-                      color: connectionStatus == ConnectionStatus.online 
+                      color: connectionStatus == ConnectionStatus.online
                           ? Colors.green
                           : Colors.red,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      connectionStatus == ConnectionStatus.online 
+                      connectionStatus == ConnectionStatus.online
                           ? 'Online'
                           : 'Offline',
                     ),
@@ -218,7 +220,8 @@ class _EnhancedMobileDashboardState extends ConsumerState<EnhancedMobileDashboar
                 Text('Completed operations: ${syncStats.completedOperations}'),
                 Text('Failed operations: ${syncStats.failedOperations}'),
                 if (syncStats.lastSyncTime != null)
-                  Text('Last sync: ${_formatDateTime(syncStats.lastSyncTime!)}'),
+                  Text(
+                      'Last sync: ${_formatDateTime(syncStats.lastSyncTime!)}'),
               ],
             ),
             actions: [
@@ -244,7 +247,7 @@ class _EnhancedMobileDashboardState extends ConsumerState<EnhancedMobileDashboar
 
   void _handleQuickAction(QuickActionType actionType) {
     final hapticService = ref.read(hapticServiceProvider);
-    
+
     switch (actionType) {
       case QuickActionType.createInvoice:
         hapticService.buttonTap();
@@ -286,7 +289,7 @@ class _EnhancedMobileDashboardState extends ConsumerState<EnhancedMobileDashboar
   String _formatDateTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {
@@ -316,7 +319,6 @@ class _OverviewTab extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const ConnectionStatusIndicator(),
-            
             SmoothAnimationWrapper(
               child: _buildMetricCard(
                 'Total Revenue',
@@ -325,9 +327,7 @@ class _OverviewTab extends ConsumerWidget {
                 Colors.green,
               ),
             ),
-            
             const SizedBox(height: 16),
-            
             SmoothAnimationWrapper(
               duration: const Duration(milliseconds: 400),
               child: Row(
@@ -352,16 +352,12 @@ class _OverviewTab extends ConsumerWidget {
                 ],
               ),
             ),
-            
             const SizedBox(height: 24),
-            
             const Text(
               'Quick Actions',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            
             const SizedBox(height: 16),
-            
             SmoothAnimationWrapper(
               duration: const Duration(milliseconds: 600),
               child: Wrap(
@@ -404,7 +400,8 @@ class _OverviewTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildMetricCard(String title, String value, IconData icon, Color color) {
+  Widget _buildMetricCard(
+      String title, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -490,22 +487,24 @@ class _InvoicesTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Mock invoice data
-    final mockInvoices = List.generate(20, (index) => InvoiceModel(
-      id: 'inv_$index',
-      invoiceNumber: 'INV-${1000 + index}',
-      customerName: 'Customer ${index + 1}',
-      total: 100.0 + (index * 25.5),
-      paidAmount: index % 3 == 0 ? 100.0 + (index * 25.5) : 0.0,
-      status: index % 4 == 0 
-          ? InvoiceStatus.paid 
-          : index % 4 == 1 
-              ? InvoiceStatus.sent 
-              : index % 4 == 2 
-                  ? InvoiceStatus.viewed 
-                  : InvoiceStatus.overdue,
-      issueDate: DateTime.now().subtract(Duration(days: index)),
-      dueDate: DateTime.now().add(Duration(days: 30 - index)),
-    ));
+    final mockInvoices = List.generate(
+        20,
+        (index) => InvoiceModel(
+              id: 'inv_$index',
+              invoiceNumber: 'INV-${1000 + index}',
+              customerName: 'Customer ${index + 1}',
+              total: 100.0 + (index * 25.5),
+              paidAmount: index % 3 == 0 ? 100.0 + (index * 25.5) : 0.0,
+              status: index % 4 == 0
+                  ? InvoiceStatus.paid
+                  : index % 4 == 1
+                      ? InvoiceStatus.sent
+                      : index % 4 == 2
+                          ? InvoiceStatus.viewed
+                          : InvoiceStatus.overdue,
+              issueDate: DateTime.now().subtract(Duration(days: index)),
+              dueDate: DateTime.now().add(Duration(days: 30 - index)),
+            ));
 
     return Column(
       children: [

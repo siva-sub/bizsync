@@ -8,51 +8,51 @@ import '../../../core/database/crdt_models.dart';
 
 /// Leave type enumeration (Singapore-specific)
 enum LeaveType {
-  annual,         // Annual leave
-  sick,           // Sick leave
-  maternity,      // Maternity leave (16 weeks)
-  paternity,      // Paternity leave (2 weeks)
-  adoption,       // Adoption leave
-  infantCare,     // Infant care leave
-  childCare,      // Childcare leave (6 days per year)
-  compassionate,  // Compassionate leave
+  annual, // Annual leave
+  sick, // Sick leave
+  maternity, // Maternity leave (16 weeks)
+  paternity, // Paternity leave (2 weeks)
+  adoption, // Adoption leave
+  infantCare, // Infant care leave
+  childCare, // Childcare leave (6 days per year)
+  compassionate, // Compassionate leave
   hospitalisation, // Hospitalisation leave
-  unpaid,         // Unpaid leave
-  study,          // Study leave
-  emergency,      // Emergency leave
-  other           // Other types
+  unpaid, // Unpaid leave
+  study, // Study leave
+  emergency, // Emergency leave
+  other // Other types
 }
 
 /// Leave status enumeration
 enum LeaveStatus {
-  draft,      // Draft application
-  submitted,  // Submitted for approval
-  approved,   // Approved by manager
-  rejected,   // Rejected by manager
-  cancelled,  // Cancelled by employee
-  taken       // Leave taken
+  draft, // Draft application
+  submitted, // Submitted for approval
+  approved, // Approved by manager
+  rejected, // Rejected by manager
+  cancelled, // Cancelled by employee
+  taken // Leave taken
 }
 
 /// CRDT-enabled Leave Request model
 class CRDTLeaveRequest implements CRDTModel {
   @override
   final String id;
-  
+
   @override
   final String nodeId;
-  
+
   @override
   final HLCTimestamp createdAt;
-  
+
   @override
   HLCTimestamp updatedAt;
-  
+
   @override
   CRDTVectorClock version;
-  
+
   @override
   bool isDeleted;
-  
+
   // Basic leave information
   late LWWRegister<String> employeeId;
   late LWWRegister<String> leaveRequestNumber;
@@ -61,8 +61,9 @@ class CRDTLeaveRequest implements CRDTModel {
   late LWWRegister<DateTime> endDate;
   late LWWRegister<double> daysRequested;
   late LWWRegister<double> hoursRequested;
-  late LWWRegister<String> status; // draft, submitted, approved, rejected, cancelled, taken
-  
+  late LWWRegister<String>
+      status; // draft, submitted, approved, rejected, cancelled, taken
+
   // Approval workflow
   late LWWRegister<String?> managerId;
   late LWWRegister<String?> hrId;
@@ -70,36 +71,36 @@ class CRDTLeaveRequest implements CRDTModel {
   late LWWRegister<DateTime?> hrApprovalDate;
   late LWWRegister<String?> managerComments;
   late LWWRegister<String?> hrComments;
-  
+
   // Leave details
   late LWWRegister<String?> reason;
   late LWWRegister<String?> description;
   late LWWRegister<bool> isHalfDay;
   late LWWRegister<String?> halfDayPeriod; // morning, afternoon
   late LWWRegister<bool> isEmergency;
-  
+
   // Medical certificate (for sick leave)
   late LWWRegister<String?> medicalCertificateNumber;
   late LWWRegister<String?> doctorName;
   late LWWRegister<String?> clinicName;
   late LWWRegister<DateTime?> mcStartDate;
   late LWWRegister<DateTime?> mcEndDate;
-  
+
   // Contact information during leave
   late LWWRegister<String?> contactNumber;
   late LWWRegister<String?> contactAddress;
   late LWWRegister<String?> emergencyContact;
-  
+
   // Handover information
   late LWWRegister<String?> handoverTo;
   late LWWRegister<String?> handoverNotes;
-  
+
   // Attachments as OR-Set
   late ORSet<String> attachmentIds;
-  
+
   // Additional information
   late LWWRegister<Map<String, dynamic>?> metadata;
-  
+
   CRDTLeaveRequest({
     required this.id,
     required this.nodeId,
@@ -146,7 +147,7 @@ class CRDTLeaveRequest implements CRDTModel {
     daysRequested = LWWRegister(days, createdAt);
     hoursRequested = LWWRegister(hours, createdAt);
     status = LWWRegister(requestStatus, createdAt);
-    
+
     // Initialize approval workflow
     managerId = LWWRegister(manager, createdAt);
     hrId = LWWRegister(hr, createdAt);
@@ -154,64 +155,63 @@ class CRDTLeaveRequest implements CRDTModel {
     hrApprovalDate = LWWRegister(hrApproval, createdAt);
     managerComments = LWWRegister(managerComment, createdAt);
     hrComments = LWWRegister(hrComment, createdAt);
-    
+
     // Initialize leave details
     reason = LWWRegister(leaveReason, createdAt);
     description = LWWRegister(leaveDescription, createdAt);
     isHalfDay = LWWRegister(halfDay, createdAt);
     halfDayPeriod = LWWRegister(halfDayTime, createdAt);
     isEmergency = LWWRegister(emergency, createdAt);
-    
+
     // Initialize medical certificate
     medicalCertificateNumber = LWWRegister(mcNumber, createdAt);
     doctorName = LWWRegister(doctor, createdAt);
     clinicName = LWWRegister(clinic, createdAt);
     mcStartDate = LWWRegister(mcStart, createdAt);
     mcEndDate = LWWRegister(end, createdAt);
-    
+
     // Initialize contact information
     contactNumber = LWWRegister(contact, createdAt);
     contactAddress = LWWRegister(contactAddr, createdAt);
     emergencyContact = LWWRegister(emergencyContactInfo, createdAt);
-    
+
     // Initialize handover information
     handoverTo = LWWRegister(handover, createdAt);
     handoverNotes = LWWRegister(handoverNote, createdAt);
-    
+
     // Initialize attachments
     attachmentIds = ORSet(nodeId);
-    
+
     // Initialize additional information
     metadata = LWWRegister(leaveMetadata, createdAt);
   }
-  
+
   /// Check if leave is pending approval
   bool get isPendingApproval => status.value == 'submitted';
-  
+
   /// Check if leave is approved
   bool get isApproved => status.value == 'approved';
-  
+
   /// Check if leave requires medical certificate
-  bool get requiresMedicalCertificate => 
-      leaveType.value == 'sick' || 
-      leaveType.value == 'hospitalisation';
-  
+  bool get requiresMedicalCertificate =>
+      leaveType.value == 'sick' || leaveType.value == 'hospitalisation';
+
   /// Get leave duration in working days
   double get leaveDuration => isHalfDay.value ? 0.5 : daysRequested.value;
-  
+
   /// Update leave status
   void updateStatus(String newStatus, HLCTimestamp timestamp) {
     status.setValue(newStatus, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Submit for approval
   void submitForApproval(String managerId, HLCTimestamp timestamp) {
     status.setValue('submitted', timestamp);
     this.managerId.setValue(managerId, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Approve by manager
   void approveByManager({
     required String approverId,
@@ -226,7 +226,7 @@ class CRDTLeaveRequest implements CRDTModel {
     }
     _updateTimestamp(timestamp);
   }
-  
+
   /// Reject by manager
   void rejectByManager({
     required String approverId,
@@ -241,7 +241,7 @@ class CRDTLeaveRequest implements CRDTModel {
     }
     _updateTimestamp(timestamp);
   }
-  
+
   /// Approve by HR
   void approveByHR({
     required String hrApproverId,
@@ -255,7 +255,7 @@ class CRDTLeaveRequest implements CRDTModel {
     }
     _updateTimestamp(timestamp);
   }
-  
+
   /// Update medical certificate information
   void updateMedicalCertificate({
     String? mcNumber,
@@ -265,14 +265,15 @@ class CRDTLeaveRequest implements CRDTModel {
     DateTime? mcEnd,
     required HLCTimestamp timestamp,
   }) {
-    if (mcNumber != null) medicalCertificateNumber.setValue(mcNumber, timestamp);
+    if (mcNumber != null)
+      medicalCertificateNumber.setValue(mcNumber, timestamp);
     if (doctor != null) doctorName.setValue(doctor, timestamp);
     if (clinic != null) clinicName.setValue(clinic, timestamp);
     if (mcStart != null) mcStartDate.setValue(mcStart, timestamp);
     if (mcEnd != null) mcEndDate.setValue(mcEnd, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Update contact information
   void updateContactInfo({
     String? contact,
@@ -285,7 +286,7 @@ class CRDTLeaveRequest implements CRDTModel {
     if (emergency != null) emergencyContact.setValue(emergency, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Update handover information
   void updateHandover({
     String? handoverToId,
@@ -296,30 +297,30 @@ class CRDTLeaveRequest implements CRDTModel {
     if (notes != null) handoverNotes.setValue(notes, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Add attachment
   void addAttachment(String attachmentId) {
     attachmentIds.add(attachmentId);
   }
-  
+
   /// Remove attachment
   void removeAttachment(String attachmentId) {
     attachmentIds.remove(attachmentId);
   }
-  
+
   void _updateTimestamp(HLCTimestamp timestamp) {
     if (timestamp.happensAfter(updatedAt)) {
       updatedAt = timestamp;
       version = version.tick();
     }
   }
-  
+
   @override
   void mergeWith(CRDTModel other) {
     if (other is! CRDTLeaveRequest || other.id != id) {
       throw ArgumentError('Cannot merge with different leave request');
     }
-    
+
     // Merge all CRDT fields
     employeeId.mergeWith(other.employeeId);
     leaveRequestNumber.mergeWith(other.leaveRequestNumber);
@@ -329,46 +330,46 @@ class CRDTLeaveRequest implements CRDTModel {
     daysRequested.mergeWith(other.daysRequested);
     hoursRequested.mergeWith(other.hoursRequested);
     status.mergeWith(other.status);
-    
+
     managerId.mergeWith(other.managerId);
     hrId.mergeWith(other.hrId);
     managerApprovalDate.mergeWith(other.managerApprovalDate);
     hrApprovalDate.mergeWith(other.hrApprovalDate);
     managerComments.mergeWith(other.managerComments);
     hrComments.mergeWith(other.hrComments);
-    
+
     reason.mergeWith(other.reason);
     description.mergeWith(other.description);
     isHalfDay.mergeWith(other.isHalfDay);
     halfDayPeriod.mergeWith(other.halfDayPeriod);
     isEmergency.mergeWith(other.isEmergency);
-    
+
     medicalCertificateNumber.mergeWith(other.medicalCertificateNumber);
     doctorName.mergeWith(other.doctorName);
     clinicName.mergeWith(other.clinicName);
     mcStartDate.mergeWith(other.mcStartDate);
     mcEndDate.mergeWith(other.mcEndDate);
-    
+
     contactNumber.mergeWith(other.contactNumber);
     contactAddress.mergeWith(other.contactAddress);
     emergencyContact.mergeWith(other.emergencyContact);
-    
+
     handoverTo.mergeWith(other.handoverTo);
     handoverNotes.mergeWith(other.handoverNotes);
-    
+
     attachmentIds.mergeWith(other.attachmentIds);
     metadata.mergeWith(other.metadata);
-    
+
     // Update version and timestamp
     version = version.update(other.version);
     if (other.updatedAt.happensAfter(updatedAt)) {
       updatedAt = other.updatedAt;
     }
-    
+
     // Handle deletion
     isDeleted = isDeleted || other.isDeleted;
   }
-  
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -387,7 +388,8 @@ class CRDTLeaveRequest implements CRDTModel {
       'requires_medical_certificate': requiresMedicalCertificate,
       'manager_id': managerId.value,
       'hr_id': hrId.value,
-      'manager_approval_date': managerApprovalDate.value?.millisecondsSinceEpoch,
+      'manager_approval_date':
+          managerApprovalDate.value?.millisecondsSinceEpoch,
       'hr_approval_date': hrApprovalDate.value?.millisecondsSinceEpoch,
       'manager_comments': managerComments.value,
       'hr_comments': hrComments.value,
@@ -413,7 +415,7 @@ class CRDTLeaveRequest implements CRDTModel {
       'updated_at': updatedAt.physicalTime,
     };
   }
-  
+
   @override
   Map<String, dynamic> toCRDTJson() {
     return {
@@ -462,22 +464,22 @@ class CRDTLeaveRequest implements CRDTModel {
 class CRDTAttendanceRecord implements CRDTModel {
   @override
   final String id;
-  
+
   @override
   final String nodeId;
-  
+
   @override
   final HLCTimestamp createdAt;
-  
+
   @override
   HLCTimestamp updatedAt;
-  
+
   @override
   CRDTVectorClock version;
-  
+
   @override
   bool isDeleted;
-  
+
   // Basic attendance information
   late LWWRegister<String> employeeId;
   late LWWRegister<DateTime> date;
@@ -485,20 +487,20 @@ class CRDTAttendanceRecord implements CRDTModel {
   late LWWRegister<DateTime?> clockOutTime;
   late LWWRegister<DateTime?> breakStartTime;
   late LWWRegister<DateTime?> breakEndTime;
-  
+
   // Attendance status
   late LWWRegister<String> status; // present, absent, late, half_day, on_leave
   late LWWRegister<bool> isLate;
   late LWWRegister<bool> isEarlyDeparture;
   late LWWRegister<bool> isOvertime;
-  
+
   // Working hours
   late LWWRegister<double> scheduledHours;
   late LWWRegister<double> actualHours;
   late LWWRegister<double> regularHours;
   late LWWRegister<double> overtimeHours;
   late LWWRegister<double> breakHours;
-  
+
   // Location tracking
   late LWWRegister<String?> clockInLocation;
   late LWWRegister<String?> clockOutLocation;
@@ -506,7 +508,7 @@ class CRDTAttendanceRecord implements CRDTModel {
   late LWWRegister<double?> clockInLongitude;
   late LWWRegister<double?> clockOutLatitude;
   late LWWRegister<double?> clockOutLongitude;
-  
+
   // Approval and comments
   late LWWRegister<String?> managerId;
   late LWWRegister<bool> requiresApproval;
@@ -514,12 +516,12 @@ class CRDTAttendanceRecord implements CRDTModel {
   late LWWRegister<DateTime?> approvalDate;
   late LWWRegister<String?> comments;
   late LWWRegister<String?> managerComments;
-  
+
   // Additional information
   late LWWRegister<String?> workFromHome;
   late LWWRegister<String?> deviceId;
   late LWWRegister<Map<String, dynamic>?> metadata;
-  
+
   CRDTAttendanceRecord({
     required this.id,
     required this.nodeId,
@@ -565,20 +567,20 @@ class CRDTAttendanceRecord implements CRDTModel {
     clockOutTime = LWWRegister(clockOut, createdAt);
     breakStartTime = LWWRegister(breakStart, createdAt);
     breakEndTime = LWWRegister(breakEnd, createdAt);
-    
+
     // Initialize status
     status = LWWRegister(attendanceStatus, createdAt);
     isLate = LWWRegister(late, createdAt);
     isEarlyDeparture = LWWRegister(earlyDeparture, createdAt);
     isOvertime = LWWRegister(overtime, createdAt);
-    
+
     // Initialize working hours
     scheduledHours = LWWRegister(scheduled, createdAt);
     actualHours = LWWRegister(actual, createdAt);
     regularHours = LWWRegister(regular, createdAt);
     overtimeHours = LWWRegister(overtimeHrs, createdAt);
     breakHours = LWWRegister(breakHrs, createdAt);
-    
+
     // Initialize location
     clockInLocation = LWWRegister(clockInLoc, createdAt);
     clockOutLocation = LWWRegister(clockOutLoc, createdAt);
@@ -586,7 +588,7 @@ class CRDTAttendanceRecord implements CRDTModel {
     clockInLongitude = LWWRegister(clockInLng, createdAt);
     clockOutLatitude = LWWRegister(clockOutLat, createdAt);
     clockOutLongitude = LWWRegister(clockOutLng, createdAt);
-    
+
     // Initialize approval
     managerId = LWWRegister(manager, createdAt);
     requiresApproval = LWWRegister(approval, createdAt);
@@ -594,38 +596,39 @@ class CRDTAttendanceRecord implements CRDTModel {
     approvalDate = LWWRegister(approvedDate, createdAt);
     comments = LWWRegister(attendanceComments, createdAt);
     managerComments = LWWRegister(managerComment, createdAt);
-    
+
     // Initialize additional information
     workFromHome = LWWRegister(wfh, createdAt);
     deviceId = LWWRegister(device, createdAt);
     metadata = LWWRegister(attendanceMetadata, createdAt);
   }
-  
+
   /// Check if employee is present
   bool get isPresent => status.value == 'present';
-  
+
   /// Check if employee is absent
   bool get isAbsent => status.value == 'absent';
-  
+
   /// Check if employee is on leave
   bool get isOnLeave => status.value == 'on_leave';
-  
+
   /// Calculate total hours worked
   double get totalHoursWorked {
     if (clockInTime.value == null || clockOutTime.value == null) return 0.0;
-    
+
     final duration = clockOutTime.value!.difference(clockInTime.value!);
     double hours = duration.inMinutes / 60.0;
-    
+
     // Subtract break time
     if (breakStartTime.value != null && breakEndTime.value != null) {
-      final breakDuration = breakEndTime.value!.difference(breakStartTime.value!);
+      final breakDuration =
+          breakEndTime.value!.difference(breakStartTime.value!);
       hours -= breakDuration.inMinutes / 60.0;
     }
-    
+
     return hours;
   }
-  
+
   /// Clock in
   void clockIn({
     required DateTime time,
@@ -643,7 +646,7 @@ class CRDTAttendanceRecord implements CRDTModel {
     if (device != null) deviceId.setValue(device, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Clock out
   void clockOut({
     required DateTime time,
@@ -656,22 +659,22 @@ class CRDTAttendanceRecord implements CRDTModel {
     if (location != null) clockOutLocation.setValue(location, timestamp);
     if (latitude != null) clockOutLatitude.setValue(latitude, timestamp);
     if (longitude != null) clockOutLongitude.setValue(longitude, timestamp);
-    
+
     // Calculate actual hours
     actualHours.setValue(totalHoursWorked, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Start break
   void startBreak(DateTime time, HLCTimestamp timestamp) {
     breakStartTime.setValue(time, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// End break
   void endBreak(DateTime time, HLCTimestamp timestamp) {
     breakEndTime.setValue(time, timestamp);
-    
+
     // Calculate break hours
     if (breakStartTime.value != null) {
       final duration = time.difference(breakStartTime.value!);
@@ -679,7 +682,7 @@ class CRDTAttendanceRecord implements CRDTModel {
     }
     _updateTimestamp(timestamp);
   }
-  
+
   /// Update working hours
   void updateWorkingHours({
     double? scheduled,
@@ -694,7 +697,7 @@ class CRDTAttendanceRecord implements CRDTModel {
     if (overtime != null) overtimeHours.setValue(overtime, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Approve attendance
   void approve({
     required String approverId,
@@ -709,20 +712,20 @@ class CRDTAttendanceRecord implements CRDTModel {
     }
     _updateTimestamp(timestamp);
   }
-  
+
   void _updateTimestamp(HLCTimestamp timestamp) {
     if (timestamp.happensAfter(updatedAt)) {
       updatedAt = timestamp;
       version = version.tick();
     }
   }
-  
+
   @override
   void mergeWith(CRDTModel other) {
     if (other is! CRDTAttendanceRecord || other.id != id) {
       throw ArgumentError('Cannot merge with different attendance record');
     }
-    
+
     // Merge all CRDT fields
     employeeId.mergeWith(other.employeeId);
     date.mergeWith(other.date);
@@ -730,46 +733,46 @@ class CRDTAttendanceRecord implements CRDTModel {
     clockOutTime.mergeWith(other.clockOutTime);
     breakStartTime.mergeWith(other.breakStartTime);
     breakEndTime.mergeWith(other.breakEndTime);
-    
+
     status.mergeWith(other.status);
     isLate.mergeWith(other.isLate);
     isEarlyDeparture.mergeWith(other.isEarlyDeparture);
     isOvertime.mergeWith(other.isOvertime);
-    
+
     scheduledHours.mergeWith(other.scheduledHours);
     actualHours.mergeWith(other.actualHours);
     regularHours.mergeWith(other.regularHours);
     overtimeHours.mergeWith(other.overtimeHours);
     breakHours.mergeWith(other.breakHours);
-    
+
     clockInLocation.mergeWith(other.clockInLocation);
     clockOutLocation.mergeWith(other.clockOutLocation);
     clockInLatitude.mergeWith(other.clockInLatitude);
     clockInLongitude.mergeWith(other.clockInLongitude);
     clockOutLatitude.mergeWith(other.clockOutLatitude);
     clockOutLongitude.mergeWith(other.clockOutLongitude);
-    
+
     managerId.mergeWith(other.managerId);
     requiresApproval.mergeWith(other.requiresApproval);
     isApproved.mergeWith(other.isApproved);
     approvalDate.mergeWith(other.approvalDate);
     comments.mergeWith(other.comments);
     managerComments.mergeWith(other.managerComments);
-    
+
     workFromHome.mergeWith(other.workFromHome);
     deviceId.mergeWith(other.deviceId);
     metadata.mergeWith(other.metadata);
-    
+
     // Update version and timestamp
     version = version.update(other.version);
     if (other.updatedAt.happensAfter(updatedAt)) {
       updatedAt = other.updatedAt;
     }
-    
+
     // Handle deletion
     isDeleted = isDeleted || other.isDeleted;
   }
-  
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -813,7 +816,7 @@ class CRDTAttendanceRecord implements CRDTModel {
       'updated_at': updatedAt.physicalTime,
     };
   }
-  
+
   @override
   Map<String, dynamic> toCRDTJson() {
     return {

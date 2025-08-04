@@ -23,22 +23,23 @@ import 'core/config/feature_flags.dart';
 void main(List<String> args) async {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize feature flags first
   debugPrint('🏳️ Initializing feature flags...');
   final featureFlags = FeatureFlags();
   await featureFlags.initialize();
-  debugPrint('✅ Feature flags initialized - Demo data: ${featureFlags.isDemoDataEnabled}');
-  
+  debugPrint(
+      '✅ Feature flags initialized - Demo data: ${featureFlags.isDemoDataEnabled}');
+
   // Handle CLI mode first
   if (args.isNotEmpty) {
     final cliService = CLIService();
     await cliService.initialize();
-    
+
     // Check if running in headless mode
     if (cliService.isHeadlessMode(args)) {
       debugPrint('🖥️ Running in headless mode');
-      
+
       // Process CLI commands without GUI
       final result = await cliService.processArguments(args);
       if (result.output != null) {
@@ -47,19 +48,19 @@ void main(List<String> args) async {
       if (result.error != null) {
         print('Error: ${result.error}');
       }
-      
+
       exit(result.exitCode);
     }
   }
-  
+
   // Configure Wayland-specific optimizations for Linux
   if (Platform.isLinux) {
     await WaylandHelper.applyOptimizations();
     WaylandHelper.logPlatformInfo();
-    
+
     // Initialize Mesa rendering configuration
     MesaRenderingConfig().initialize();
-    
+
     // Print Mesa debug info in debug mode
     if (kDebugMode) {
       MesaRenderingDetector.printDebugInfo();
@@ -78,9 +79,9 @@ void main(List<String> args) async {
     }
   }
 
-  // Initialize mobile-specific services  
+  // Initialize mobile-specific services
   debugPrint('📱 Initializing mobile services...');
-  
+
   try {
     // Initialize theme service first
     final themeService = ThemeService();
@@ -122,27 +123,26 @@ void main(List<String> args) async {
     debugPrint('⚠️ Error initializing mobile services: $e');
     // Continue with app startup - mobile features will have limited functionality
   }
-  
+
   // Initialize the database services with comprehensive error handling
   try {
     debugPrint('🚀 Initializing BizSync database services...');
-    
+
     // Initialize CRDT Database Service first
     final crdtDatabaseService = CRDTDatabaseService();
     await crdtDatabaseService.initialize();
-    
+
     // Initialize Basic Database Service
     final basicDatabaseService = DatabaseService();
     await basicDatabaseService.database; // Trigger initialization
-    
+
     // Verify both services are working
     await _verifyDatabaseIntegrity(crdtDatabaseService, basicDatabaseService);
-    
+
     debugPrint('✅ All database services initialized successfully');
-    
   } catch (e) {
     debugPrint('❌ Critical error initializing database services: $e');
-    
+
     // Attempt recovery
     try {
       debugPrint('🔧 Attempting database recovery...');
@@ -156,7 +156,7 @@ void main(List<String> args) async {
       }
     }
   }
-  
+
   // Configure system UI for professional appearance
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -195,21 +195,22 @@ void main(List<String> args) async {
 
 /// Verify database integrity and force table creation if needed
 Future<void> _verifyDatabaseIntegrity(
-  CRDTDatabaseService crdtService, 
-  DatabaseService basicService
-) async {
+    CRDTDatabaseService crdtService, DatabaseService basicService) async {
   try {
     // Test basic operations
     final db = await crdtService.database;
-    
+
     // Check if customers table exists and is accessible
-    final customerCount = await db.rawQuery('SELECT COUNT(*) as count FROM customers');
-    debugPrint('✓ Customers table accessible, found ${customerCount.first['count']} records');
-    
+    final customerCount =
+        await db.rawQuery('SELECT COUNT(*) as count FROM customers');
+    debugPrint(
+        '✓ Customers table accessible, found ${customerCount.first['count']} records');
+
     // Check CRDT customers table
-    final crdtCustomerCount = await db.rawQuery('SELECT COUNT(*) as count FROM customers_crdt');
-    debugPrint('✓ CRDT customers table accessible, found ${crdtCustomerCount.first['count']} records');
-    
+    final crdtCustomerCount =
+        await db.rawQuery('SELECT COUNT(*) as count FROM customers_crdt');
+    debugPrint(
+        '✓ CRDT customers table accessible, found ${crdtCustomerCount.first['count']} records');
   } catch (e) {
     debugPrint('⚠️  Database integrity check failed: $e');
     throw Exception('Database tables not accessible: $e');
@@ -223,13 +224,12 @@ Future<void> _attemptDatabaseRecovery() async {
     final crdtService = CRDTDatabaseService();
     await crdtService.initialize();
     await crdtService.forceCreateTables();
-    
+
     final basicService = DatabaseService();
     await basicService.forceCreateTables();
-    
+
     // Verify recovery worked
     await _verifyDatabaseIntegrity(crdtService, basicService);
-    
   } catch (e) {
     throw Exception('Database recovery failed: $e');
   }
@@ -241,7 +241,7 @@ class BizSyncApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeService = ref.watch(themeServiceProvider);
-    
+
     return PerformanceMonitor(
       showOverlay: kDebugMode,
       child: MaterialApp.router(
@@ -264,7 +264,8 @@ class BizSyncApp extends ConsumerWidget {
                   const Breakpoint(start: 0, end: 450, name: MOBILE),
                   const Breakpoint(start: 451, end: 800, name: TABLET),
                   const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-                  const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+                  const Breakpoint(
+                      start: 1921, end: double.infinity, name: '4K'),
                 ],
               ),
             ),
@@ -273,7 +274,4 @@ class BizSyncApp extends ConsumerWidget {
       ),
     );
   }
-
 }
-
-

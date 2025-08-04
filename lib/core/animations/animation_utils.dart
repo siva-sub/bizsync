@@ -92,7 +92,7 @@ class AnimationUtils {
         child: child,
       );
     }
-    
+
     return FutureBuilder(
       future: Future.delayed(delay),
       builder: (context, snapshot) {

@@ -44,7 +44,7 @@ class EnhancedInvoice {
   final bool isRecurring;
   final String? recurringPattern;
   final Map<String, dynamic> metadata;
-  
+
   // Additional properties for compatibility with analytics
   final DateTime? paidAt;
 
@@ -237,7 +237,7 @@ class InvoiceLineItem {
 
   /// Calculate subtotal (before tax)
   double get subtotal => lineTotal - taxAmount;
-  
+
   /// Compatibility getter for analytics service
   double get total => lineTotal;
 }

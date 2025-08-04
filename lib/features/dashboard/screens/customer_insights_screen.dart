@@ -8,15 +8,18 @@ class CustomerInsightsScreen extends ConsumerStatefulWidget {
   const CustomerInsightsScreen({super.key});
 
   @override
-  ConsumerState<CustomerInsightsScreen> createState() => _CustomerInsightsScreenState();
+  ConsumerState<CustomerInsightsScreen> createState() =>
+      _CustomerInsightsScreenState();
 }
 
-class _CustomerInsightsScreenState extends ConsumerState<CustomerInsightsScreen> {
+class _CustomerInsightsScreenState
+    extends ConsumerState<CustomerInsightsScreen> {
   TimePeriod _selectedPeriod = TimePeriod.thisMonth;
 
   @override
   Widget build(BuildContext context) {
-    final customerInsights = ref.watch(customerInsightsProvider(_selectedPeriod));
+    final customerInsights =
+        ref.watch(customerInsightsProvider(_selectedPeriod));
 
     return Scaffold(
       appBar: AppBar(
@@ -26,9 +29,8 @@ class _CustomerInsightsScreenState extends ConsumerState<CustomerInsightsScreen>
         ],
       ),
       body: customerInsights.when(
-        data: (data) => data != null 
-            ? _buildContent(data)
-            : _buildNoDataState(),
+        data: (data) =>
+            data != null ? _buildContent(data) : _buildNoDataState(),
         loading: () => _buildLoadingState(),
         error: (error, stack) => _buildErrorState(error),
       ),
@@ -43,9 +45,9 @@ class _CustomerInsightsScreenState extends ConsumerState<CustomerInsightsScreen>
         children: [
           // Customer metrics cards
           _buildMetricsCards(data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Customer growth chart
           InteractiveLineChart(
             data: data.customerGrowth,
@@ -54,14 +56,14 @@ class _CustomerInsightsScreenState extends ConsumerState<CustomerInsightsScreen>
             lineColor: Colors.blue,
             height: 300,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Customer segments
           _buildSegmentationCharts(data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Behavior insights
           if (data.behaviorInsights.isNotEmpty)
             _buildBehaviorInsights(data.behaviorInsights),
@@ -111,7 +113,8 @@ class _CustomerInsightsScreenState extends ConsumerState<CustomerInsightsScreen>
     );
   }
 
-  Widget _buildMetricCard(String title, double value, String unit, IconData icon, Color color) {
+  Widget _buildMetricCard(
+      String title, double value, String unit, IconData icon, Color color) {
     return Card(
       elevation: 4,
       child: Padding(
@@ -212,7 +215,10 @@ class _CustomerInsightsScreenState extends ConsumerState<CustomerInsightsScreen>
                             Expanded(
                               child: Text(
                                 insight.insight,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
@@ -227,9 +233,10 @@ class _CustomerInsightsScreenState extends ConsumerState<CustomerInsightsScreen>
                         const SizedBox(height: 4),
                         Text(
                           'Impact: ${(insight.impact * 100).toStringAsFixed(0)}%',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                         ),
                       ],
                     ),

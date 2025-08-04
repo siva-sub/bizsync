@@ -88,7 +88,8 @@ class HapticConfig {
       enabled: enabled ?? this.enabled,
       enableForButtons: enableForButtons ?? this.enableForButtons,
       enableForGestures: enableForGestures ?? this.enableForGestures,
-      enableForNotifications: enableForNotifications ?? this.enableForNotifications,
+      enableForNotifications:
+          enableForNotifications ?? this.enableForNotifications,
       enableForErrors: enableForErrors ?? this.enableForErrors,
       intensity: intensity ?? this.intensity,
     );
@@ -120,7 +121,7 @@ class HapticConfig {
 // Haptic feedback service
 class HapticService extends ChangeNotifier {
   static const String _configKey = 'haptic_config';
-  
+
   HapticConfig _config = const HapticConfig();
   SharedPreferences? _prefs;
   bool _hasVibration = false;
@@ -136,7 +137,7 @@ class HapticService extends ChangeNotifier {
 
   Future<void> _loadConfig() async {
     if (_prefs == null) return;
-    
+
     final configJson = _prefs!.getString(_configKey);
     if (configJson != null) {
       try {
@@ -151,7 +152,7 @@ class HapticService extends ChangeNotifier {
 
   Future<void> _saveConfig() async {
     if (_prefs == null) return;
-    
+
     try {
       final configJson = _stringifyJson(_config.toJson());
       await _prefs!.setString(_configKey, configJson);
@@ -177,7 +178,8 @@ class HapticService extends ChangeNotifier {
   }
 
   // Main haptic feedback method
-  Future<void> provideFeedback(HapticFeedbackType type, {String? context}) async {
+  Future<void> provideFeedback(HapticFeedbackType type,
+      {String? context}) async {
     if (!_config.enabled || !_hasVibration) return;
 
     // Check context-specific settings
@@ -277,7 +279,7 @@ class HapticService extends ChangeNotifier {
       final adjustedPattern = pattern.pattern
           .map((duration) => (duration * _config.intensity).round())
           .toList();
-      
+
       final adjustedIntensities = pattern.intensities
           .map((intensity) => (intensity * _config.intensity).round())
           .toList();
@@ -291,7 +293,7 @@ class HapticService extends ChangeNotifier {
       final totalDuration = pattern.pattern
           .where((duration) => duration > 0)
           .fold(0, (sum, duration) => sum + duration);
-      
+
       if (totalDuration > 0) {
         await Vibration.vibrate(
           duration: (totalDuration * _config.intensity).round(),
@@ -334,7 +336,8 @@ class HapticService extends ChangeNotifier {
   }
 
   Future<void> notificationReceived() async {
-    await provideFeedback(HapticFeedbackType.notification, context: 'notification');
+    await provideFeedback(HapticFeedbackType.notification,
+        context: 'notification');
   }
 
   Future<void> dataSync() async {
@@ -360,16 +363,16 @@ class HapticService extends ChangeNotifier {
   // Simple JSON parsing methods
   Map<String, dynamic> _parseJson(String jsonString) {
     final Map<String, dynamic> result = {};
-    
+
     final content = jsonString.replaceAll(RegExp(r'[{}"]'), '');
     final pairs = content.split(',');
-    
+
     for (final pair in pairs) {
       final keyValue = pair.split(':');
       if (keyValue.length == 2) {
         final key = keyValue[0].trim();
         final value = keyValue[1].trim();
-        
+
         if (value == 'true') {
           result[key] = true;
         } else if (value == 'false') {
@@ -385,13 +388,13 @@ class HapticService extends ChangeNotifier {
         }
       }
     }
-    
+
     return result;
   }
 
   String _stringifyJson(Map<String, dynamic> data) {
     final List<String> pairs = [];
-    
+
     data.forEach((key, value) {
       String valueStr;
       if (value == null) {
@@ -405,7 +408,7 @@ class HapticService extends ChangeNotifier {
       }
       pairs.add('"$key":$valueStr');
     });
-    
+
     return '{${pairs.join(',')}}';
   }
 }
@@ -417,7 +420,8 @@ final hapticServiceProvider = Provider<HapticService>((ref) {
   return service;
 });
 
-final hapticConfigProvider = StateNotifierProvider<HapticConfigNotifier, HapticConfig>((ref) {
+final hapticConfigProvider =
+    StateNotifierProvider<HapticConfigNotifier, HapticConfig>((ref) {
   final service = ref.watch(hapticServiceProvider);
   return HapticConfigNotifier(service);
 });
@@ -442,15 +446,18 @@ class HapticConfigNotifier extends StateNotifier<HapticConfig> {
   }
 
   Future<void> toggleButtons() async {
-    await updateConfig(state.copyWith(enableForButtons: !state.enableForButtons));
+    await updateConfig(
+        state.copyWith(enableForButtons: !state.enableForButtons));
   }
 
   Future<void> toggleGestures() async {
-    await updateConfig(state.copyWith(enableForGestures: !state.enableForGestures));
+    await updateConfig(
+        state.copyWith(enableForGestures: !state.enableForGestures));
   }
 
   Future<void> toggleNotifications() async {
-    await updateConfig(state.copyWith(enableForNotifications: !state.enableForNotifications));
+    await updateConfig(
+        state.copyWith(enableForNotifications: !state.enableForNotifications));
   }
 
   Future<void> toggleErrors() async {

@@ -13,31 +13,31 @@ class IrasGstService {
   final IrasAuthService _authService;
   final IrasAuditService _auditService;
   static IrasGstService? _instance;
-  
+
   IrasGstService._({
     IrasApiClient? client,
     IrasAuthService? authService,
     IrasAuditService? auditService,
-  }) : _client = client ?? IrasApiClient.instance,
-       _authService = authService ?? IrasAuthService.instance,
-       _auditService = auditService ?? IrasAuditService.instance;
-  
+  })  : _client = client ?? IrasApiClient.instance,
+        _authService = authService ?? IrasAuthService.instance,
+        _auditService = auditService ?? IrasAuditService.instance;
+
   /// Singleton instance
   static IrasGstService get instance {
     _instance ??= IrasGstService._();
     return _instance!;
   }
-  
+
   /// Submit GST F5 Return
   Future<GstF5SubmissionResponse> submitF5Return(
     GstF5SubmissionRequest request,
   ) async {
     const operation = 'GST_F5_SUBMISSION';
-    
+
     try {
       // Validate request
       _validateF5Request(request);
-      
+
       // Log audit entry
       await _auditService.logOperation(
         operation: operation,
@@ -48,10 +48,11 @@ class IrasGstService {
           'period_start': request.filingInfo.dtPeriodStart,
           'period_end': request.filingInfo.dtPeriodEnd,
           'total_standard_supply': request.supplies.totStdSupply,
-          'net_gst_amount': request.taxes.outputTaxDue - request.taxes.inputTaxRefund,
+          'net_gst_amount':
+              request.taxes.outputTaxDue - request.taxes.inputTaxRefund,
         },
       );
-      
+
       // Execute authenticated request
       final responseData = await _authService.executeAuthenticatedRequest(
         (token) => _client.post(
@@ -60,9 +61,9 @@ class IrasGstService {
           accessToken: token,
         ),
       );
-      
+
       final response = GstF5SubmissionResponse.fromJson(responseData);
-      
+
       // Log successful submission
       if (response.isSuccess) {
         await _auditService.logSuccess(
@@ -75,7 +76,7 @@ class IrasGstService {
             'company_name': response.data?.filingInfo.companyName,
           },
         );
-        
+
         if (kDebugMode) {
           print('✅ GST F5 Return submitted successfully');
           print('📄 Acknowledgment: ${response.data?.filingInfo.ackNo}');
@@ -89,9 +90,8 @@ class IrasGstService {
           details: response.info?.toJson(),
         );
       }
-      
+
       return response;
-      
     } on IrasException catch (e) {
       await _auditService.logFailure(
         operation: operation,
@@ -111,23 +111,23 @@ class IrasGstService {
       throw IrasUnknownException('Failed to submit GST F5 return: $e');
     }
   }
-  
+
   /// Submit GST F8 Return (Annual Return)
   Future<Map<String, dynamic>> submitF8Return(
     Map<String, dynamic> request,
   ) async {
     const operation = 'GST_F8_SUBMISSION';
-    
+
     try {
       final taxRefNo = request['filingInfo']?['taxRefNo'] as String?;
-      
+
       await _auditService.logOperation(
         operation: operation,
         entityType: 'GST_ANNUAL_RETURN',
         entityId: taxRefNo ?? 'unknown',
         details: request,
       );
-      
+
       final responseData = await _authService.executeAuthenticatedRequest(
         (token) => _client.post(
           IrasConfig.gstF8SubmissionUrl,
@@ -135,16 +135,15 @@ class IrasGstService {
           accessToken: token,
         ),
       );
-      
+
       await _auditService.logSuccess(
         operation: operation,
         entityType: 'GST_ANNUAL_RETURN',
         entityId: taxRefNo ?? 'unknown',
         details: responseData,
       );
-      
+
       return responseData;
-      
     } catch (e) {
       await _auditService.logFailure(
         operation: operation,
@@ -155,23 +154,23 @@ class IrasGstService {
       rethrow;
     }
   }
-  
+
   /// Edit Past GST Return (F7)
   Future<Map<String, dynamic>> editPastGstReturn(
     Map<String, dynamic> request,
   ) async {
     const operation = 'GST_F7_EDIT';
-    
+
     try {
       final taxRefNo = request['filingInfo']?['taxRefNo'] as String?;
-      
+
       await _auditService.logOperation(
         operation: operation,
         entityType: 'GST_RETURN_EDIT',
         entityId: taxRefNo ?? 'unknown',
         details: request,
       );
-      
+
       final responseData = await _authService.executeAuthenticatedRequest(
         (token) => _client.post(
           IrasConfig.gstF7EditUrl,
@@ -179,16 +178,15 @@ class IrasGstService {
           accessToken: token,
         ),
       );
-      
+
       await _auditService.logSuccess(
         operation: operation,
         entityType: 'GST_RETURN_EDIT',
         entityId: taxRefNo ?? 'unknown',
         details: responseData,
       );
-      
+
       return responseData;
-      
     } catch (e) {
       await _auditService.logFailure(
         operation: operation,
@@ -199,23 +197,23 @@ class IrasGstService {
       rethrow;
     }
   }
-  
+
   /// Submit GST Transaction Listings
   Future<Map<String, dynamic>> submitGstTransactionListing(
     Map<String, dynamic> request,
   ) async {
     const operation = 'GST_TRANSACTION_LISTING';
-    
+
     try {
       final taxRefNo = request['filingInfo']?['taxRefNo'] as String?;
-      
+
       await _auditService.logOperation(
         operation: operation,
         entityType: 'GST_TRANSACTION_LISTING',
         entityId: taxRefNo ?? 'unknown',
         details: request,
       );
-      
+
       final responseData = await _authService.executeAuthenticatedRequest(
         (token) => _client.post(
           IrasConfig.gstTransactionListingUrl,
@@ -223,16 +221,15 @@ class IrasGstService {
           accessToken: token,
         ),
       );
-      
+
       await _auditService.logSuccess(
         operation: operation,
         entityType: 'GST_TRANSACTION_LISTING',
         entityId: taxRefNo ?? 'unknown',
         details: responseData,
       );
-      
+
       return responseData;
-      
     } catch (e) {
       await _auditService.logFailure(
         operation: operation,
@@ -243,38 +240,42 @@ class IrasGstService {
       rethrow;
     }
   }
-  
+
   /// Check GST Registration Status
   Future<GstRegisterCheckResponse> checkGstRegister(
     String gstRegNo,
   ) async {
     const operation = 'GST_REGISTER_CHECK';
-    
+
     try {
       // Validate GST registration number format
       if (!_isValidGstRegNo(gstRegNo)) {
         throw const IrasValidationException(
           'Invalid GST registration number format',
-          {'gstRegNo': ['Must be in format MXXXXXXXX (M + 8 digits + check character)']},
+          {
+            'gstRegNo': [
+              'Must be in format MXXXXXXXX (M + 8 digits + check character)'
+            ]
+          },
         );
       }
-      
+
       await _auditService.logOperation(
         operation: operation,
         entityType: 'GST_REGISTER',
         entityId: gstRegNo,
       );
-      
+
       final request = GstRegisterCheckRequest(gstRegNo: gstRegNo);
-      
+
       // GST register check doesn't require authentication
       final responseData = await _client.post(
         IrasConfig.gstRegisterCheckUrl,
         request.toJson(),
       );
-      
+
       final response = GstRegisterCheckResponse.fromJson(responseData);
-      
+
       if (response.isSuccess) {
         await _auditService.logSuccess(
           operation: operation,
@@ -291,9 +292,8 @@ class IrasGstService {
           details: response.info?.toJson(),
         );
       }
-      
+
       return response;
-      
     } catch (e) {
       await _auditService.logFailure(
         operation: operation,
@@ -304,21 +304,21 @@ class IrasGstService {
       rethrow;
     }
   }
-  
+
   /// Validate GST F5 submission request
   void _validateF5Request(GstF5SubmissionRequest request) {
     final errors = <String, List<String>>{};
-    
+
     // Validate tax reference number
     if (request.filingInfo.taxRefNo.isEmpty) {
       errors['taxRefNo'] = ['Tax reference number is required'];
     }
-    
+
     // Validate form type
     if (request.filingInfo.formType != 'F5') {
       errors['formType'] = ['Form type must be F5'];
     }
-    
+
     // Validate period dates
     try {
       DateTime.parse(request.filingInfo.dtPeriodStart);
@@ -326,56 +326,55 @@ class IrasGstService {
     } catch (e) {
       errors['period'] = ['Invalid date format - use YYYY-MM-DD'];
     }
-    
+
     // Validate amounts are non-negative
     if (request.supplies.totStdSupply < 0 ||
         request.supplies.totZeroSupply < 0 ||
         request.supplies.totExemptSupply < 0) {
       errors['supplies'] = ['Supply amounts cannot be negative'];
     }
-    
+
     if (request.purchases.totTaxPurchase < 0) {
       errors['purchases'] = ['Purchase amounts cannot be negative'];
     }
-    
-    if (request.taxes.outputTaxDue < 0 ||
-        request.taxes.inputTaxRefund < 0) {
+
+    if (request.taxes.outputTaxDue < 0 || request.taxes.inputTaxRefund < 0) {
       errors['taxes'] = ['Tax amounts cannot be negative'];
     }
-    
+
     // Validate contact information
     if (request.declaration.contactPerson.isEmpty) {
       errors['contactPerson'] = ['Contact person is required'];
     }
-    
+
     if (request.declaration.contactEmail.isEmpty) {
       errors['contactEmail'] = ['Contact email is required'];
     } else if (!_isValidEmail(request.declaration.contactEmail)) {
       errors['contactEmail'] = ['Invalid email format'];
     }
-    
+
     if (request.declaration.contactNumber.isEmpty) {
       errors['contactNumber'] = ['Contact number is required'];
     }
-    
+
     if (errors.isNotEmpty) {
       throw IrasValidationException('GST F5 validation failed', errors);
     }
   }
-  
+
   /// Validate GST registration number format
   bool _isValidGstRegNo(String gstRegNo) {
     // GST reg no format: MXXXXXXXX (M + 8 digits + check character)
     final pattern = RegExp(r'^M\d{8}[A-Z]$');
     return pattern.hasMatch(gstRegNo.toUpperCase());
   }
-  
+
   /// Validate email format
   bool _isValidEmail(String email) {
     final pattern = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     return pattern.hasMatch(email);
   }
-  
+
   /// Create a sample GST F5 request for testing
   static GstF5SubmissionRequest createSampleF5Request() {
     return GstF5SubmissionRequest(

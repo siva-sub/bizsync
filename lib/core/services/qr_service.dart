@@ -8,7 +8,7 @@ class QRService {
   static final QRService _instance = QRService._internal();
   factory QRService() => _instance;
   QRService._internal();
-  
+
   /// Generate QR code widget for display
   Widget generateQRWidget({
     required String data,
@@ -36,7 +36,7 @@ class QRService {
       throw BizSyncException('Failed to generate QR code widget: $e');
     }
   }
-  
+
   /// Generate QR code as image bytes
   Future<Uint8List> generateQRBytes({
     required String data,
@@ -58,21 +58,21 @@ class QRService {
           color: foregroundColor ?? Colors.black,
         ),
       );
-      
+
       final picData = await qrPainter.toImageData(
         size?.toDouble() ?? AppConstants.qrCodeSize.toDouble(),
       );
-      
+
       if (picData == null) {
         throw BizSyncException('Failed to generate QR code image data');
       }
-      
+
       return picData.buffer.asUint8List();
     } catch (e) {
       throw BizSyncException('Failed to generate QR code bytes: $e');
     }
   }
-  
+
   /// Create QR data for business contact sharing
   String createBusinessContactQR({
     required String businessName,
@@ -85,29 +85,29 @@ class QRService {
     vCard.writeln('BEGIN:VCARD');
     vCard.writeln('VERSION:3.0');
     vCard.writeln('FN:$businessName');
-    
+
     if (ownerName != null) {
       vCard.writeln('N:$ownerName');
     }
-    
+
     if (email != null) {
       vCard.writeln('EMAIL:$email');
     }
-    
+
     if (phone != null) {
       vCard.writeln('TEL:$phone');
     }
-    
+
     if (address != null) {
       vCard.writeln('ADR:;;$address');
     }
-    
+
     vCard.writeln('ORG:$businessName');
     vCard.writeln('END:VCARD');
-    
+
     return vCard.toString();
   }
-  
+
   /// Create QR data for product information
   String createProductQR({
     required String productId,
@@ -125,25 +125,25 @@ class QRService {
       if (category != null) 'category': category,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
     };
-    
+
     // Convert to simple string format for QR
     final buffer = StringBuffer();
     buffer.write('PRODUCT:');
     buffer.write('ID=$productId;');
     buffer.write('NAME=$name;');
     buffer.write('PRICE=$price;');
-    
+
     if (description != null) {
       buffer.write('DESC=$description;');
     }
-    
+
     if (category != null) {
       buffer.write('CAT=$category;');
     }
-    
+
     return buffer.toString();
   }
-  
+
   /// Create QR data for P2P connection
   String createP2PConnectionQR({
     required String deviceId,
@@ -158,17 +158,17 @@ class QRService {
       'app': AppConstants.appName,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
     };
-    
+
     // Convert to simple string format for QR
     final buffer = StringBuffer();
     buffer.write('BIZSYNC_P2P:');
     buffer.write('ID=$deviceId;');
     buffer.write('NAME=$deviceName;');
     buffer.write('KEY=$connectionKey;');
-    
+
     return buffer.toString();
   }
-  
+
   /// Parse QR data to determine type and extract information
   Map<String, dynamic> parseQRData(String qrData) {
     try {
@@ -188,11 +188,11 @@ class QRService {
       throw BizSyncException('Failed to parse QR data: $e');
     }
   }
-  
+
   Map<String, dynamic> _parseVCard(String vCard) {
     final result = <String, dynamic>{'type': 'vcard'};
     final lines = vCard.split('\n');
-    
+
     for (final line in lines) {
       if (line.startsWith('FN:')) {
         result['name'] = line.substring(3);
@@ -206,23 +206,23 @@ class QRService {
         result['organization'] = line.substring(4);
       }
     }
-    
+
     return result;
   }
-  
+
   Map<String, dynamic> _parseProductData(String productData) {
     final result = <String, dynamic>{'type': 'product'};
     final data = productData.substring(8); // Remove 'PRODUCT:'
     final parts = data.split(';');
-    
+
     for (final part in parts) {
       if (part.isEmpty) continue;
-      
+
       final keyValue = part.split('=');
       if (keyValue.length == 2) {
         final key = keyValue[0];
         final value = keyValue[1];
-        
+
         switch (key) {
           case 'ID':
             result['id'] = value;
@@ -242,23 +242,23 @@ class QRService {
         }
       }
     }
-    
+
     return result;
   }
-  
+
   Map<String, dynamic> _parseP2PData(String p2pData) {
     final result = <String, dynamic>{'type': 'p2p_connection'};
     final data = p2pData.substring(12); // Remove 'BIZSYNC_P2P:'
     final parts = data.split(';');
-    
+
     for (final part in parts) {
       if (part.isEmpty) continue;
-      
+
       final keyValue = part.split('=');
       if (keyValue.length == 2) {
         final key = keyValue[0];
         final value = keyValue[1];
-        
+
         switch (key) {
           case 'ID':
             result['device_id'] = value;
@@ -272,7 +272,7 @@ class QRService {
         }
       }
     }
-    
+
     return result;
   }
 }

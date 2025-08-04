@@ -8,7 +8,7 @@ import '../models/index.dart';
 /// Core Employee Service for CRUD operations and business logic
 class EmployeeService {
   final NotificationService _notificationService;
-  
+
   // In-memory storage for demo - replace with database repository
   final Map<String, CRDTEmployee> _employees = {};
   final Map<String, CRDTPayrollRecord> _payrollRecords = {};
@@ -16,24 +16,24 @@ class EmployeeService {
   final Map<String, CRDTAttendanceRecord> _attendanceRecords = {};
   final Map<String, CRDTPerformanceRecord> _performanceRecords = {};
   final Map<String, CRDTEmployeeGoal> _employeeGoals = {};
-  
+
   // Sequence counters for ID generation
   int _employeeSequence = 1;
   int _payrollSequence = 1;
   int _leaveSequence = 1;
-  
+
   final String _nodeId = UuidGenerator.generateId();
-  
+
   EmployeeService(this._notificationService);
-  
+
   // ============================================================================
   // EMPLOYEE CRUD OPERATIONS
   // ============================================================================
-  
+
   /// Create employee from CRDTEmployee object
   Future<CRDTEmployee> createEmployee(CRDTEmployee employee) async {
     _employees[employee.id] = employee;
-    
+
     // Send notification
     await _notificationService.sendNotification(
       title: 'New Employee Added',
@@ -41,7 +41,7 @@ class EmployeeService {
       type: 'employee_created',
       data: {'employee_id': employee.id},
     );
-    
+
     return employee;
   }
 
@@ -80,14 +80,14 @@ class EmployeeService {
   }) async {
     final employeeId = EmployeeUtils.generateEmployeeId(_employeeSequence++);
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     // Calculate CPF rate based on age and residency
     double cpfRate = 0.2; // Default for citizens/PRs below 55
     if (dateOfBirth != null) {
       final rates = EmployeeUtils.getCpfRates(dateOfBirth, workPermitType);
       cpfRate = rates['employee_rate'] ?? 0.2;
     }
-    
+
     final employee = CRDTEmployee(
       id: UuidGenerator.generateId(),
       nodeId: _nodeId,
@@ -127,12 +127,12 @@ class EmployeeService {
       emergencyRelation: emergencyContactRelationship,
       empMetadata: metadata,
     );
-    
+
     // Set default leave balances based on employment type and years of service
     _setDefaultLeaveBalances(employee);
-    
+
     _employees[employee.id] = employee;
-    
+
     // Send notification
     await _notificationService.sendNotification(
       title: 'New Employee Added',
@@ -140,27 +140,27 @@ class EmployeeService {
       type: 'employee_created',
       data: {'employee_id': employee.id},
     );
-    
+
     return employee;
   }
-  
+
   /// Get employee by ID
   CRDTEmployee? getEmployee(String employeeId) {
     return _employees[employeeId];
   }
-  
+
   /// Get employee by ID (alias for compatibility)
   CRDTEmployee? getEmployeeById(String employeeId) {
     return getEmployee(employeeId);
   }
-  
+
   /// Get employee by employee number
   CRDTEmployee? getEmployeeByNumber(String employeeNumber) {
     return _employees.values
         .where((emp) => emp.employeeId.value == employeeNumber)
         .firstOrNull;
   }
-  
+
   /// Get all employees
   List<CRDTEmployee> getAllEmployees({
     String? department,
@@ -170,33 +170,37 @@ class EmployeeService {
   }) {
     var employees = _employees.values.where((emp) {
       if (!includeDeleted && emp.isDeleted) return false;
-      if (department != null && emp.department.value != department) return false;
+      if (department != null && emp.department.value != department)
+        return false;
       if (status != null && emp.employmentStatus.value != status) return false;
-      if (employmentType != null && emp.employmentType.value != employmentType) return false;
+      if (employmentType != null && emp.employmentType.value != employmentType)
+        return false;
       return true;
     }).toList();
-    
+
     // Sort by employee ID
     employees.sort((a, b) => a.employeeId.value.compareTo(b.employeeId.value));
     return employees;
   }
-  
+
   /// Search employees
-  List<CRDTEmployee> searchEmployees(String query, {bool includeDeleted = false}) {
+  List<CRDTEmployee> searchEmployees(String query,
+      {bool includeDeleted = false}) {
     final lowercaseQuery = query.toLowerCase();
-    
+
     return _employees.values.where((emp) {
       if (!includeDeleted && emp.isDeleted) return false;
-      
+
       return emp.firstName.value.toLowerCase().contains(lowercaseQuery) ||
-             emp.lastName.value.toLowerCase().contains(lowercaseQuery) ||
-             emp.employeeId.value.toLowerCase().contains(lowercaseQuery) ||
-             emp.email.value.toLowerCase().contains(lowercaseQuery) ||
-             (emp.jobTitle.value.toLowerCase().contains(lowercaseQuery)) ||
-             (emp.department.value?.toLowerCase().contains(lowercaseQuery) ?? false);
+          emp.lastName.value.toLowerCase().contains(lowercaseQuery) ||
+          emp.employeeId.value.toLowerCase().contains(lowercaseQuery) ||
+          emp.email.value.toLowerCase().contains(lowercaseQuery) ||
+          (emp.jobTitle.value.toLowerCase().contains(lowercaseQuery)) ||
+          (emp.department.value?.toLowerCase().contains(lowercaseQuery) ??
+              false);
     }).toList();
   }
-  
+
   /// Update employee from CRDTEmployee object
   Future<CRDTEmployee> updateEmployee(CRDTEmployee employee) async {
     _employees[employee.id] = employee;
@@ -212,9 +216,9 @@ class EmployeeService {
     if (employee == null) {
       throw Exception('Employee not found: $employeeId');
     }
-    
+
     final timestamp = HLCTimestamp.now(_nodeId);
-    
+
     // Update personal information
     if (updates.containsKey('firstName') ||
         updates.containsKey('lastName') ||
@@ -238,7 +242,7 @@ class EmployeeService {
         timestamp: timestamp,
       );
     }
-    
+
     // Update employment details
     if (updates.containsKey('jobTitle') ||
         updates.containsKey('department') ||
@@ -256,7 +260,7 @@ class EmployeeService {
         timestamp: timestamp,
       );
     }
-    
+
     // Update salary information
     if (updates.containsKey('basicSalary') ||
         updates.containsKey('allowances') ||
@@ -272,7 +276,7 @@ class EmployeeService {
         timestamp: timestamp,
       );
     }
-    
+
     // Update work permit information
     if (updates.containsKey('workPermitType') ||
         updates.containsKey('workPermitNumber') ||
@@ -286,7 +290,7 @@ class EmployeeService {
         timestamp: timestamp,
       );
     }
-    
+
     // Update CPF information
     if (updates.containsKey('cpfNumber') ||
         updates.containsKey('isCpfMember') ||
@@ -302,7 +306,7 @@ class EmployeeService {
         timestamp: timestamp,
       );
     }
-    
+
     // Update emergency contact
     if (updates.containsKey('emergencyContactName') ||
         updates.containsKey('emergencyContactPhone') ||
@@ -314,19 +318,19 @@ class EmployeeService {
         timestamp: timestamp,
       );
     }
-    
+
     return employee;
   }
-  
+
   /// Delete employee (hard delete)
   Future<void> deleteEmployee(String employeeId) async {
     final employee = _employees[employeeId];
     if (employee == null) {
       throw Exception('Employee not found: $employeeId');
     }
-    
+
     _employees.remove(employeeId);
-    
+
     // Send notification
     await _notificationService.sendNotification(
       title: 'Employee Deleted',
@@ -342,92 +346,95 @@ class EmployeeService {
     if (employee == null) {
       throw Exception('Employee not found: $employeeId');
     }
-    
+
     final timestamp = HLCTimestamp.now(_nodeId);
     employee.updateEmploymentDetails(
       newStatus: 'terminated',
       newEndDate: DateTime.now(),
       timestamp: timestamp,
     );
-    
+
     // Send notification
     await _notificationService.sendNotification(
       title: 'Employee Deactivated',
-      message: 'Employee ${employee.fullName} has been deactivated. Reason: $reason',
+      message:
+          'Employee ${employee.fullName} has been deactivated. Reason: $reason',
       type: 'employee_deactivated',
       data: {'employee_id': employee.id, 'reason': reason},
     );
   }
-  
+
   /// Get employees by manager
   List<CRDTEmployee> getEmployeesByManager(String managerId) {
     return _employees.values
         .where((emp) => emp.managerId.value == managerId && !emp.isDeleted)
         .toList();
   }
-  
+
   /// Get employees by department
   List<CRDTEmployee> getEmployeesByDepartment(String department) {
     return _employees.values
         .where((emp) => emp.department.value == department && !emp.isDeleted)
         .toList();
   }
-  
+
   /// Get employees with expiring work permits (within 90 days)
   List<CRDTEmployee> getEmployeesWithExpiringWorkPermits() {
     return _employees.values
         .where((emp) => !emp.isDeleted && emp.isWorkPermitExpiringSoon)
         .toList();
   }
-  
+
   /// Add skill to employee
   Future<void> addSkillToEmployee(String employeeId, String skill) async {
     final employee = _employees[employeeId];
     if (employee == null) {
       throw Exception('Employee not found: $employeeId');
     }
-    
+
     employee.addSkill(skill);
   }
-  
+
   /// Remove skill from employee
   Future<void> removeSkillFromEmployee(String employeeId, String skill) async {
     final employee = _employees[employeeId];
     if (employee == null) {
       throw Exception('Employee not found: $employeeId');
     }
-    
+
     employee.removeSkill(skill);
   }
-  
+
   /// Add certification to employee
-  Future<void> addCertificationToEmployee(String employeeId, String certification) async {
+  Future<void> addCertificationToEmployee(
+      String employeeId, String certification) async {
     final employee = _employees[employeeId];
     if (employee == null) {
       throw Exception('Employee not found: $employeeId');
     }
-    
+
     employee.addCertification(certification);
   }
-  
+
   /// Get employee statistics
   Map<String, dynamic> getEmployeeStatistics() {
     final allEmployees = getAllEmployees();
     final activeEmployees = getAllEmployees(status: 'active');
-    final foreignWorkers = allEmployees.where((emp) => emp.isForeignWorker).length;
+    final foreignWorkers =
+        allEmployees.where((emp) => emp.isForeignWorker).length;
     final workPermitExpiring = getEmployeesWithExpiringWorkPermits().length;
-    
+
     final departments = <String, int>{};
     final employmentTypes = <String, int>{};
-    
+
     for (final emp in activeEmployees) {
       final dept = emp.department.value ?? 'Unassigned';
       departments[dept] = (departments[dept] ?? 0) + 1;
-      
+
       final type = emp.employmentType.value;
       employmentTypes[type] = (employmentTypes[type] ?? 0) + 1;
     }
-    
+
     return {
       'total_employees': allEmployees.length,
       'active_employees': activeEmployees.length,
@@ -438,33 +445,36 @@ class EmployeeService {
       'average_tenure_months': _calculateAverageTenure(activeEmployees),
     };
   }
-  
+
   // ============================================================================
   // PRIVATE HELPER METHODS
   // ============================================================================
-  
+
   void _setDefaultLeaveBalances(CRDTEmployee employee) {
     // Set standard Singapore leave entitlements
     employee.adjustLeaveBalance(
-      annualLeaveAdjustment: EmployeeConstants.standardLeaveEntitlements['annual_leave_min']!,
-      sickLeaveAdjustment: EmployeeConstants.standardLeaveEntitlements['sick_leave']!,
+      annualLeaveAdjustment:
+          EmployeeConstants.standardLeaveEntitlements['annual_leave_min']!,
+      sickLeaveAdjustment:
+          EmployeeConstants.standardLeaveEntitlements['sick_leave']!,
     );
-    
+
     // Additional leave for parents
     if (employee.tags.elements.contains('parent')) {
       employee.adjustLeaveBalance(
-        compassionateLeaveAdjustment: EmployeeConstants.standardLeaveEntitlements['childcare_leave']!,
+        compassionateLeaveAdjustment:
+            EmployeeConstants.standardLeaveEntitlements['childcare_leave']!,
       );
     }
   }
-  
+
   double _calculateAverageTenure(List<CRDTEmployee> employees) {
     if (employees.isEmpty) return 0.0;
-    
+
     final totalMonths = employees.fold<double>(0.0, (sum, emp) {
       return sum + EmployeeUtils.calculateMonthsOfService(emp.startDate.value);
     });
-    
+
     return totalMonths / employees.length;
   }
 }

@@ -11,10 +11,12 @@ class MobileFeaturesSettingsScreen extends ConsumerStatefulWidget {
   const MobileFeaturesSettingsScreen({super.key});
 
   @override
-  ConsumerState<MobileFeaturesSettingsScreen> createState() => _MobileFeaturesSettingsScreenState();
+  ConsumerState<MobileFeaturesSettingsScreen> createState() =>
+      _MobileFeaturesSettingsScreenState();
 }
 
-class _MobileFeaturesSettingsScreenState extends ConsumerState<MobileFeaturesSettingsScreen>
+class _MobileFeaturesSettingsScreenState
+    extends ConsumerState<MobileFeaturesSettingsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -80,7 +82,6 @@ class _ThemeSettingsTab extends ConsumerWidget {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -92,7 +93,6 @@ class _ThemeSettingsTab extends ConsumerWidget {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
-                
                 RadioListTile<AppThemeMode>(
                   title: const Text('Light'),
                   subtitle: const Text('Always use light theme'),
@@ -104,7 +104,6 @@ class _ThemeSettingsTab extends ConsumerWidget {
                     }
                   },
                 ),
-                
                 RadioListTile<AppThemeMode>(
                   title: const Text('Dark'),
                   subtitle: const Text('Always use dark theme'),
@@ -116,7 +115,6 @@ class _ThemeSettingsTab extends ConsumerWidget {
                     }
                   },
                 ),
-                
                 RadioListTile<AppThemeMode>(
                   title: const Text('System'),
                   subtitle: const Text('Follow system theme'),
@@ -132,9 +130,7 @@ class _ThemeSettingsTab extends ConsumerWidget {
             ),
           ),
         ),
-        
         const SizedBox(height: 16),
-        
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -146,7 +142,6 @@ class _ThemeSettingsTab extends ConsumerWidget {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
-                
                 SwitchListTile(
                   title: const Text('Use System Accent Color'),
                   subtitle: const Text('Follow system color scheme'),
@@ -155,7 +150,6 @@ class _ThemeSettingsTab extends ConsumerWidget {
                     themeNotifier.updateSystemAccentColor(value);
                   },
                 ),
-                
                 if (themePreferences.customPrimaryColor != null)
                   ListTile(
                     title: const Text('Custom Primary Color'),
@@ -172,7 +166,6 @@ class _ThemeSettingsTab extends ConsumerWidget {
                       _showColorPicker(context, themeNotifier);
                     },
                   ),
-                
                 if (themePreferences.customPrimaryColor == null)
                   ListTile(
                     title: const Text('Set Custom Color'),
@@ -207,20 +200,22 @@ class _ThemeSettingsTab extends ConsumerWidget {
               Colors.teal,
               Colors.indigo,
               Colors.pink,
-            ].map((color) => GestureDetector(
-              onTap: () {
-                notifier.updateCustomPrimaryColor(color);
-                Navigator.pop(context);
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            )).toList(),
+            ]
+                .map((color) => GestureDetector(
+                      onTap: () {
+                        notifier.updateCustomPrimaryColor(color);
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ))
+                .toList(),
           ),
         ),
         actions: [
@@ -259,7 +254,6 @@ class _BiometricSettingsTab extends ConsumerWidget {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        
         if (biometricsService.capabilities?.isDeviceSupported == true) ...[
           Card(
             child: Padding(
@@ -269,17 +263,17 @@ class _BiometricSettingsTab extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.fingerprint, 
-                           color: Theme.of(context).primaryColor),
+                      Icon(Icons.fingerprint,
+                          color: Theme.of(context).primaryColor),
                       const SizedBox(width: 8),
                       Text(
                         '${biometricsService.capabilities?.primaryBiometricName} Available',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  
                   SwitchListTile(
                     title: const Text('Enable Biometric Authentication'),
                     subtitle: const Text('Use biometrics to secure app access'),
@@ -292,24 +286,24 @@ class _BiometricSettingsTab extends ConsumerWidget {
                       }
                     },
                   ),
-                  
                   if (biometricConfig.enabled) ...[
                     const Divider(),
-                    
                     SwitchListTile(
                       title: const Text('Require for Sensitive Data'),
-                      subtitle: const Text('Require biometrics for financial data access'),
+                      subtitle: const Text(
+                          'Require biometrics for financial data access'),
                       value: biometricConfig.requireForSensitiveData,
                       onChanged: (value) {
                         biometricNotifier.updateConfig(
-                          biometricConfig.copyWith(requireForSensitiveData: value),
+                          biometricConfig.copyWith(
+                              requireForSensitiveData: value),
                         );
                       },
                     ),
-                    
                     SwitchListTile(
                       title: const Text('Require at App Launch'),
-                      subtitle: const Text('Require biometrics when opening the app'),
+                      subtitle:
+                          const Text('Require biometrics when opening the app'),
                       value: biometricConfig.requireForAppLaunch,
                       onChanged: (value) {
                         biometricNotifier.updateConfig(
@@ -328,8 +322,7 @@ class _BiometricSettingsTab extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Icon(Icons.warning, 
-                       color: Colors.orange, size: 48),
+                  Icon(Icons.warning, color: Colors.orange, size: 48),
                   const SizedBox(height: 16),
                   const Text(
                     'Biometric Authentication Not Available',
@@ -369,7 +362,6 @@ class _OfflineSettingsTab extends ConsumerWidget {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -379,50 +371,46 @@ class _OfflineSettingsTab extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      connectionStatus == ConnectionStatus.online 
-                          ? Icons.cloud_done 
+                      connectionStatus == ConnectionStatus.online
+                          ? Icons.cloud_done
                           : Icons.cloud_off,
-                      color: connectionStatus == ConnectionStatus.online 
-                          ? Colors.green 
+                      color: connectionStatus == ConnectionStatus.online
+                          ? Colors.green
                           : Colors.red,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      connectionStatus == ConnectionStatus.online 
-                          ? 'Online' 
+                      connectionStatus == ConnectionStatus.online
+                          ? 'Online'
                           : 'Offline',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                
                 ListTile(
                   title: const Text('Pending Operations'),
-                  subtitle: Text('${syncStats.pendingOperations} operations waiting to sync'),
+                  subtitle: Text(
+                      '${syncStats.pendingOperations} operations waiting to sync'),
                   trailing: Text('${syncStats.pendingOperations}'),
                 ),
-                
                 ListTile(
                   title: const Text('Completed Operations'),
                   subtitle: const Text('Successfully synced operations'),
                   trailing: Text('${syncStats.completedOperations}'),
                 ),
-                
                 ListTile(
                   title: const Text('Failed Operations'),
                   subtitle: const Text('Operations that failed to sync'),
                   trailing: Text('${syncStats.failedOperations}'),
                 ),
-                
                 if (syncStats.lastSyncTime != null)
                   ListTile(
                     title: const Text('Last Sync'),
                     subtitle: Text(_formatDateTime(syncStats.lastSyncTime!)),
                   ),
-                
                 const SizedBox(height: 16),
-                
                 Row(
                   children: [
                     Expanded(
@@ -437,7 +425,8 @@ class _OfflineSettingsTab extends ConsumerWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () => offlineService.clearPendingOperations(),
+                        onPressed: () =>
+                            offlineService.clearPendingOperations(),
                         icon: const Icon(Icons.clear),
                         label: const Text('Clear Queue'),
                       ),
@@ -455,7 +444,7 @@ class _OfflineSettingsTab extends ConsumerWidget {
   String _formatDateTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {
@@ -486,7 +475,6 @@ class _HapticSettingsTab extends ConsumerWidget {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -495,60 +483,52 @@ class _HapticSettingsTab extends ConsumerWidget {
               children: [
                 SwitchListTile(
                   title: const Text('Enable Haptic Feedback'),
-                  subtitle: Text(hapticService.hasVibration 
-                      ? 'Device supports vibration' 
+                  subtitle: Text(hapticService.hasVibration
+                      ? 'Device supports vibration'
                       : 'Device does not support vibration'),
                   value: hapticConfig.enabled,
-                  onChanged: hapticService.hasVibration 
+                  onChanged: hapticService.hasVibration
                       ? (value) => hapticNotifier.toggleEnabled()
                       : null,
                 ),
-                
                 if (hapticConfig.enabled) ...[
                   const Divider(),
-                  
                   const Text(
                     'Feedback Types',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
-                  
                   SwitchListTile(
                     title: const Text('Button Interactions'),
                     subtitle: const Text('Vibrate when tapping buttons'),
                     value: hapticConfig.enableForButtons,
                     onChanged: (value) => hapticNotifier.toggleButtons(),
                   ),
-                  
                   SwitchListTile(
                     title: const Text('Gesture Actions'),
-                    subtitle: const Text('Vibrate for swipe and gesture actions'),
+                    subtitle:
+                        const Text('Vibrate for swipe and gesture actions'),
                     value: hapticConfig.enableForGestures,
                     onChanged: (value) => hapticNotifier.toggleGestures(),
                   ),
-                  
                   SwitchListTile(
                     title: const Text('Notifications'),
                     subtitle: const Text('Vibrate for app notifications'),
                     value: hapticConfig.enableForNotifications,
                     onChanged: (value) => hapticNotifier.toggleNotifications(),
                   ),
-                  
                   SwitchListTile(
                     title: const Text('Error Alerts'),
                     subtitle: const Text('Vibrate for error messages'),
                     value: hapticConfig.enableForErrors,
                     onChanged: (value) => hapticNotifier.toggleErrors(),
                   ),
-                  
                   const SizedBox(height: 16),
-                  
                   const Text(
                     'Intensity',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
-                  
                   Slider(
                     value: hapticConfig.intensity,
                     min: 0.1,
@@ -557,9 +537,7 @@ class _HapticSettingsTab extends ConsumerWidget {
                     label: '${(hapticConfig.intensity * 100).round()}%',
                     onChanged: (value) => hapticNotifier.setIntensity(value),
                   ),
-                  
                   const SizedBox(height: 16),
-                  
                   Center(
                     child: ElevatedButton.icon(
                       onPressed: () => hapticService.buttonPress(),
@@ -584,7 +562,8 @@ class _NotificationSettingsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notificationSettings = ref.watch(notificationSettingsProvider);
-    final notificationNotifier = ref.read(notificationSettingsProvider.notifier);
+    final notificationNotifier =
+        ref.read(notificationSettingsProvider.notifier);
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -594,7 +573,6 @@ class _NotificationSettingsTab extends ConsumerWidget {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -603,7 +581,8 @@ class _NotificationSettingsTab extends ConsumerWidget {
               children: [
                 SwitchListTile(
                   title: const Text('Enable Notifications'),
-                  subtitle: const Text('Receive push notifications from the app'),
+                  subtitle:
+                      const Text('Receive push notifications from the app'),
                   value: notificationSettings.enabled,
                   onChanged: (value) {
                     notificationNotifier.updateSettings(
@@ -611,92 +590,86 @@ class _NotificationSettingsTab extends ConsumerWidget {
                     );
                   },
                 ),
-                
                 if (notificationSettings.enabled) ...[
                   const Divider(),
-                  
                   const Text(
                     'Business Notifications',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
-                  
                   SwitchListTile(
                     title: const Text('Payment Reminders'),
                     subtitle: const Text('Notify when payments are due'),
                     value: notificationSettings.enablePaymentReminders,
                     onChanged: (value) {
                       notificationNotifier.updateSettings(
-                        notificationSettings.copyWith(enablePaymentReminders: value),
+                        notificationSettings.copyWith(
+                            enablePaymentReminders: value),
                       );
                     },
                   ),
-                  
                   SwitchListTile(
                     title: const Text('Invoice Due Alerts'),
                     subtitle: const Text('Alert when invoices are overdue'),
                     value: notificationSettings.enableInvoiceDueAlerts,
                     onChanged: (value) {
                       notificationNotifier.updateSettings(
-                        notificationSettings.copyWith(enableInvoiceDueAlerts: value),
+                        notificationSettings.copyWith(
+                            enableInvoiceDueAlerts: value),
                       );
                     },
                   ),
-                  
                   SwitchListTile(
                     title: const Text('Inventory Alerts'),
                     subtitle: const Text('Notify when stock is low'),
                     value: notificationSettings.enableInventoryAlerts,
                     onChanged: (value) {
                       notificationNotifier.updateSettings(
-                        notificationSettings.copyWith(enableInventoryAlerts: value),
+                        notificationSettings.copyWith(
+                            enableInventoryAlerts: value),
                       );
                     },
                   ),
-                  
                   SwitchListTile(
                     title: const Text('Tax Deadlines'),
                     subtitle: const Text('Remind about tax filing deadlines'),
                     value: notificationSettings.enableTaxDeadlines,
                     onChanged: (value) {
                       notificationNotifier.updateSettings(
-                        notificationSettings.copyWith(enableTaxDeadlines: value),
+                        notificationSettings.copyWith(
+                            enableTaxDeadlines: value),
                       );
                     },
                   ),
-                  
                   const Divider(),
-                  
                   const Text(
                     'System Notifications',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
-                  
                   SwitchListTile(
                     title: const Text('Sync Notifications'),
                     subtitle: const Text('Notify about sync status'),
                     value: notificationSettings.enableSyncNotifications,
                     onChanged: (value) {
                       notificationNotifier.updateSettings(
-                        notificationSettings.copyWith(enableSyncNotifications: value),
+                        notificationSettings.copyWith(
+                            enableSyncNotifications: value),
                       );
                     },
                   ),
-                  
                   SwitchListTile(
                     title: const Text('Report Notifications'),
                     subtitle: const Text('Daily and weekly business reports'),
                     value: notificationSettings.enableReportNotifications,
                     onChanged: (value) {
                       notificationNotifier.updateSettings(
-                        notificationSettings.copyWith(enableReportNotifications: value),
+                        notificationSettings.copyWith(
+                            enableReportNotifications: value),
                       );
                     },
                   ),
-                  
                   const Divider(),
-                  
                   SwitchListTile(
                     title: const Text('Quiet Hours'),
                     subtitle: Text(
@@ -744,7 +717,6 @@ class _PerformanceSettingsTab extends ConsumerWidget {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        
         if (metrics != null) ...[
           Card(
             child: Padding(
@@ -755,18 +727,22 @@ class _PerformanceSettingsTab extends ConsumerWidget {
                   Row(
                     children: [
                       Icon(
-                        metrics.isPerformanceGood ? Icons.check_circle : Icons.warning,
-                        color: metrics.isPerformanceGood ? Colors.green : Colors.orange,
+                        metrics.isPerformanceGood
+                            ? Icons.check_circle
+                            : Icons.warning,
+                        color: metrics.isPerformanceGood
+                            ? Colors.green
+                            : Colors.orange,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Performance Status: ${metrics.isPerformanceGood ? "Good" : "Needs Attention"}',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
                   Row(
                     children: [
                       Expanded(
@@ -780,21 +756,21 @@ class _PerformanceSettingsTab extends ConsumerWidget {
                       Expanded(
                         child: _PerformanceMetricCard(
                           title: 'Dropped Frames',
-                          value: '${metrics.droppedFramePercentage.toStringAsFixed(1)}%',
+                          value:
+                              '${metrics.droppedFramePercentage.toStringAsFixed(1)}%',
                           isGood: metrics.droppedFramePercentage < 5,
                         ),
                       ),
                     ],
                   ),
-                  
                   const SizedBox(height: 8),
-                  
                   Row(
                     children: [
                       Expanded(
                         child: _PerformanceMetricCard(
                           title: 'Frame Time',
-                          value: '${metrics.frameRenderTime.toStringAsFixed(1)}ms',
+                          value:
+                              '${metrics.frameRenderTime.toStringAsFixed(1)}ms',
                           isGood: metrics.frameRenderTime < 16.67,
                         ),
                       ),
@@ -814,7 +790,6 @@ class _PerformanceSettingsTab extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
         ],
-        
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -826,7 +801,6 @@ class _PerformanceSettingsTab extends ConsumerWidget {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
-                
                 SwitchListTile(
                   title: const Text('Performance Monitoring'),
                   subtitle: const Text('Track app performance metrics'),
@@ -835,7 +809,6 @@ class _PerformanceSettingsTab extends ConsumerWidget {
                     performanceOptimizer.enablePerformanceMonitoring(value);
                   },
                 ),
-                
                 SwitchListTile(
                   title: const Text('Image Caching'),
                   subtitle: const Text('Cache images for faster loading'),
@@ -844,7 +817,6 @@ class _PerformanceSettingsTab extends ConsumerWidget {
                     performanceOptimizer.enableImageCaching(value);
                   },
                 ),
-                
                 SwitchListTile(
                   title: const Text('Lazy Loading'),
                   subtitle: const Text('Load content as needed'),
@@ -853,9 +825,7 @@ class _PerformanceSettingsTab extends ConsumerWidget {
                     performanceOptimizer.enableLazyLoading(value);
                   },
                 ),
-                
                 const SizedBox(height: 16),
-                
                 Row(
                   children: [
                     Expanded(
@@ -899,10 +869,14 @@ class _PerformanceMetricCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isGood ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+        color: isGood
+            ? Colors.green.withOpacity(0.1)
+            : Colors.orange.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isGood ? Colors.green.withOpacity(0.3) : Colors.orange.withOpacity(0.3),
+          color: isGood
+              ? Colors.green.withOpacity(0.3)
+              : Colors.orange.withOpacity(0.3),
         ),
       ),
       child: Column(

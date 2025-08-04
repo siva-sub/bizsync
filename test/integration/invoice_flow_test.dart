@@ -34,7 +34,7 @@ void main() {
           TestFactories.createProduct(name: 'Product A', price: 100.0),
           TestFactories.createProduct(name: 'Product B', price: 200.0),
         ];
-        
+
         // Act - Create invoice
         final invoiceData = TestFactories.createDraftInvoice(
           customer: customer,
@@ -50,13 +50,13 @@ void main() {
 
         // Validate calculations
         expect(TestValidators.validateInvoiceCalculations(invoiceData), isTrue);
-        
+
         // Check subtotal (2 * 100 + 2 * 200 = 600)
         expect(invoiceData['subtotal'], equals(600.0));
-        
+
         // Check GST (9% of 600 = 54)
         expect(invoiceData['tax_amount'], closeTo(54.0, 0.01));
-        
+
         // Check total (600 + 54 = 654)
         expect(invoiceData['total_amount'], closeTo(654.0, 0.01));
       });
@@ -64,7 +64,7 @@ void main() {
       test('should create invoice with discounts correctly', () async {
         // Arrange
         final customer = TestFactories.createSingaporeGstCustomer();
-        
+
         // Act - Create invoice with 15% discount
         final invoiceData = TestFactories.createDiscountedInvoice(
           customer: customer,
@@ -73,13 +73,13 @@ void main() {
 
         // Assert
         expect(TestValidators.validateInvoiceCalculations(invoiceData), isTrue);
-        
+
         final subtotal = invoiceData['subtotal'] as double;
         final discount = invoiceData['discount_amount'] as double;
         final expectedDiscount = subtotal * 0.15;
-        
+
         expect(discount, closeTo(expectedDiscount, 0.01));
-        
+
         // GST should be calculated on net amount (after discount)
         final netAmount = subtotal - discount;
         final expectedTax = netAmount * 0.09;
@@ -88,8 +88,9 @@ void main() {
 
       test('should handle export invoices with zero GST', () async {
         // Arrange
-        final exportCustomer = TestFactories.createExportCustomer(countryCode: 'US');
-        
+        final exportCustomer =
+            TestFactories.createExportCustomer(countryCode: 'US');
+
         // Act
         final invoiceData = TestFactories.createExportInvoice(
           exportCustomer: exportCustomer,
@@ -198,7 +199,8 @@ void main() {
         );
 
         expect(validation.isValid, isFalse);
-        expect(validation.errors, contains('Invalid GST registration number format'));
+        expect(validation.errors,
+            contains('Invalid GST registration number format'));
       });
 
       test('should detect calculation inconsistencies', () async {
@@ -214,7 +216,8 @@ void main() {
         );
 
         expect(validation.isValid, isFalse);
-        expect(validation.errors, contains('Amount calculation inconsistency detected'));
+        expect(validation.errors,
+            contains('Amount calculation inconsistency detected'));
       });
     });
 
@@ -222,8 +225,9 @@ void main() {
       test('should generate valid PayNow QR code for invoice', () async {
         // Arrange
         final customer = TestFactories.createSingaporeGstCustomer();
-        final invoiceData = TestFactories.createDraftInvoice(customer: customer);
-        
+        final invoiceData =
+            TestFactories.createDraftInvoice(customer: customer);
+
         // Act - Generate PayNow QR
         final qrString = PayNowSGQRService.generateInvoicePaymentQR(
           invoiceNumber: invoiceData['invoice_number'],
@@ -236,7 +240,7 @@ void main() {
         expect(qrString, isNotEmpty);
         expect(TestValidators.validatePayNowQR(qrString), isTrue);
         expect(PayNowSGQRService.isValidSGQR(qrString), isTrue);
-        
+
         // Verify QR contains correct amount and reference
         expect(qrString, contains('SG.PAYNOW'));
         final metadata = PayNowSGQRService.parseSGQRMetadata(qrString);
@@ -301,7 +305,7 @@ void main() {
             'line_total': 100.0,
           },
           {
-            'id': 'item2', 
+            'id': 'item2',
             'product_name': 'Export Item',
             'quantity': 1.0,
             'unit_price': 200.0,
@@ -357,20 +361,21 @@ void main() {
       test('should transition invoice through complete workflow', () async {
         // Create draft invoice
         final customer = TestFactories.createSingaporeGstCustomer();
-        final invoiceData = TestFactories.createDraftInvoice(customer: customer);
-        
+        final invoiceData =
+            TestFactories.createDraftInvoice(customer: customer);
+
         expect(invoiceData['status'], equals('draft'));
 
         // Simulate sending invoice
         invoiceData['status'] = 'sent';
         invoiceData['sent_date'] = DateTime.now();
-        
+
         // Simulate payment
         final paymentData = TestFactories.createPaymentData(
           invoiceId: invoiceData['id'],
           amount: invoiceData['total_amount'],
         );
-        
+
         // Update invoice status to paid
         invoiceData['status'] = 'paid';
         invoiceData['paid_at'] = DateTime.now();
@@ -384,24 +389,26 @@ void main() {
 
       test('should handle partial payments correctly', () async {
         final customer = TestFactories.createSingaporeGstCustomer();
-        final invoiceData = TestFactories.createDraftInvoice(customer: customer);
+        final invoiceData =
+            TestFactories.createDraftInvoice(customer: customer);
         final totalAmount = invoiceData['total_amount'] as double;
-        
+
         // Create partial payment (50% of total)
         final partialPayment = TestFactories.createPaymentData(
           invoiceId: invoiceData['id'],
           amount: totalAmount * 0.5,
         );
 
-        final remainingBalance = totalAmount - (partialPayment['amount'] as double);
-        
+        final remainingBalance =
+            totalAmount - (partialPayment['amount'] as double);
+
         expect(remainingBalance, equals(totalAmount * 0.5));
         expect(remainingBalance > 0, isTrue);
-        
+
         // Invoice should be partially paid
         invoiceData['status'] = 'partially_paid';
         invoiceData['remaining_balance'] = remainingBalance;
-        
+
         expect(invoiceData['status'], equals('partially_paid'));
       });
     });

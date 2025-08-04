@@ -11,7 +11,7 @@ abstract class CloudStorageProvider {
   String get name;
   String get displayName;
   bool get isConfigured;
-  
+
   Future<void> initialize();
   Future<CloudUploadResult> uploadBackup(String filePath, {String? customName});
   Future<List<CloudBackupInfo>> listBackups();
@@ -24,11 +24,11 @@ abstract class CloudStorageProvider {
 class CloudBackupService extends ChangeNotifier {
   final Map<String, CloudStorageProvider> _providers = {};
   CloudStorageProvider? _activeProvider;
-  
+
   List<CloudBackupInfo> _cloudBackups = [];
   bool _isSyncing = false;
   CloudSyncProgress? _currentSync;
-  
+
   // Getters
   List<String> get availableProviders => _providers.keys.toList();
   CloudStorageProvider? get activeProvider => _activeProvider;
@@ -36,7 +36,7 @@ class CloudBackupService extends ChangeNotifier {
   bool get isSyncing => _isSyncing;
   CloudSyncProgress? get currentSync => _currentSync;
   bool get isConfigured => _activeProvider?.isConfigured ?? false;
-  
+
   /// Initialize cloud backup service
   Future<void> initialize() async {
     // Register available providers
@@ -45,7 +45,7 @@ class CloudBackupService extends ChangeNotifier {
     // _providers['google_drive'] = GoogleDriveProvider();
     // _providers['dropbox'] = DropboxProvider();
     // _providers['aws_s3'] = S3Provider();
-    
+
     // Initialize providers
     for (final provider in _providers.values) {
       try {
@@ -54,31 +54,31 @@ class CloudBackupService extends ChangeNotifier {
         debugPrint('Failed to initialize provider ${provider.name}: $e');
       }
     }
-    
+
     // Load saved provider preference
     await _loadActiveProvider();
   }
-  
+
   /// Set the active cloud storage provider
   Future<void> setActiveProvider(String providerName) async {
     final provider = _providers[providerName];
     if (provider == null) {
       throw CloudBackupException('Unknown provider: $providerName');
     }
-    
+
     if (!provider.isConfigured) {
       throw CloudBackupException('Provider not configured: $providerName');
     }
-    
+
     _activeProvider = provider;
     await _saveActiveProvider(providerName);
-    
+
     // Refresh backup list
     await refreshCloudBackups();
-    
+
     notifyListeners();
   }
-  
+
   /// Upload a backup to cloud storage
   Future<CloudUploadResult> uploadBackup(
     String backupFilePath, {
@@ -88,11 +88,11 @@ class CloudBackupService extends ChangeNotifier {
     if (_activeProvider == null) {
       throw CloudBackupException('No cloud storage provider configured');
     }
-    
+
     if (_isSyncing) {
       throw CloudBackupException('Another sync operation is in progress');
     }
-    
+
     _isSyncing = true;
     _currentSync = CloudSyncProgress(
       operation: CloudSyncOperation.upload,
@@ -103,28 +103,28 @@ class CloudBackupService extends ChangeNotifier {
       status: CloudSyncStatus.preparing,
       startedAt: DateTime.now(),
     );
-    
+
     notifyListeners();
     onProgress?.call(_currentSync!);
-    
+
     try {
       // Get file size
       final file = File(backupFilePath);
       final fileSize = await file.length();
-      
+
       _currentSync = _currentSync!.copyWith(
         totalBytes: fileSize,
         status: CloudSyncStatus.uploading,
       );
       notifyListeners();
       onProgress?.call(_currentSync!);
-      
+
       // Upload file
       final result = await _activeProvider!.uploadBackup(
         backupFilePath,
         customName: customName,
       );
-      
+
       _currentSync = _currentSync!.copyWith(
         transferredBytes: fileSize,
         progressPercentage: 100.0,
@@ -133,12 +133,11 @@ class CloudBackupService extends ChangeNotifier {
       );
       notifyListeners();
       onProgress?.call(_currentSync!);
-      
+
       // Refresh backup list
       await refreshCloudBackups();
-      
+
       return result;
-      
     } catch (e) {
       _currentSync = _currentSync!.copyWith(
         status: CloudSyncStatus.failed,
@@ -150,7 +149,7 @@ class CloudBackupService extends ChangeNotifier {
       rethrow;
     } finally {
       _isSyncing = false;
-      
+
       // Clear sync progress after delay
       Future.delayed(const Duration(seconds: 5), () {
         _currentSync = null;
@@ -158,7 +157,7 @@ class CloudBackupService extends ChangeNotifier {
       });
     }
   }
-  
+
   /// Download a backup from cloud storage
   Future<String> downloadBackup(
     String backupId,
@@ -168,16 +167,16 @@ class CloudBackupService extends ChangeNotifier {
     if (_activeProvider == null) {
       throw CloudBackupException('No cloud storage provider configured');
     }
-    
+
     if (_isSyncing) {
       throw CloudBackupException('Another sync operation is in progress');
     }
-    
+
     final backup = _cloudBackups.firstWhere(
       (b) => b.id == backupId,
       orElse: () => throw CloudBackupException('Backup not found: $backupId'),
     );
-    
+
     _isSyncing = true;
     _currentSync = CloudSyncProgress(
       operation: CloudSyncOperation.download,
@@ -188,13 +187,14 @@ class CloudBackupService extends ChangeNotifier {
       status: CloudSyncStatus.downloading,
       startedAt: DateTime.now(),
     );
-    
+
     notifyListeners();
     onProgress?.call(_currentSync!);
-    
+
     try {
-      final downloadedPath = await _activeProvider!.downloadBackup(backupId, destinationPath);
-      
+      final downloadedPath =
+          await _activeProvider!.downloadBackup(backupId, destinationPath);
+
       _currentSync = _currentSync!.copyWith(
         transferredBytes: backup.fileSize,
         progressPercentage: 100.0,
@@ -203,9 +203,8 @@ class CloudBackupService extends ChangeNotifier {
       );
       notifyListeners();
       onProgress?.call(_currentSync!);
-      
+
       return downloadedPath;
-      
     } catch (e) {
       _currentSync = _currentSync!.copyWith(
         status: CloudSyncStatus.failed,
@@ -217,7 +216,7 @@ class CloudBackupService extends ChangeNotifier {
       rethrow;
     } finally {
       _isSyncing = false;
-      
+
       // Clear sync progress after delay
       Future.delayed(const Duration(seconds: 5), () {
         _currentSync = null;
@@ -225,24 +224,24 @@ class CloudBackupService extends ChangeNotifier {
       });
     }
   }
-  
+
   /// Delete a backup from cloud storage
   Future<void> deleteCloudBackup(String backupId) async {
     if (_activeProvider == null) {
       throw CloudBackupException('No cloud storage provider configured');
     }
-    
+
     await _activeProvider!.deleteBackup(backupId);
-    
+
     // Remove from local list
     _cloudBackups.removeWhere((backup) => backup.id == backupId);
     notifyListeners();
   }
-  
+
   /// Refresh the list of cloud backups
   Future<void> refreshCloudBackups() async {
     if (_activeProvider == null) return;
-    
+
     try {
       _cloudBackups = await _activeProvider!.listBackups();
       notifyListeners();
@@ -250,29 +249,29 @@ class CloudBackupService extends ChangeNotifier {
       debugPrint('Failed to refresh cloud backups: $e');
     }
   }
-  
+
   /// Get cloud storage quota information
   Future<CloudQuotaInfo> getQuotaInfo() async {
     if (_activeProvider == null) {
       throw CloudBackupException('No cloud storage provider configured');
     }
-    
+
     return await _activeProvider!.getQuotaInfo();
   }
-  
+
   /// Auto-sync local backups to cloud
   Future<void> autoSyncBackups(List<BackupHistoryEntry> localBackups) async {
     if (_activeProvider == null || _isSyncing) return;
-    
+
     try {
       // Find backups that aren't in cloud storage
       final cloudBackupNames = _cloudBackups.map((b) => b.fileName).toSet();
       final backupsToSync = localBackups
           .where((backup) => !cloudBackupNames.contains(backup.fileName))
           .toList();
-      
+
       if (backupsToSync.isEmpty) return;
-      
+
       // Upload missing backups
       for (final backup in backupsToSync) {
         try {
@@ -285,7 +284,7 @@ class CloudBackupService extends ChangeNotifier {
       debugPrint('Auto-sync failed: $e');
     }
   }
-  
+
   /// Load active provider preference
   Future<void> _loadActiveProvider() async {
     // In a real implementation, load from SharedPreferences
@@ -294,7 +293,7 @@ class CloudBackupService extends ChangeNotifier {
       _activeProvider = _providers['local'];
     }
   }
-  
+
   /// Save active provider preference
   Future<void> _saveActiveProvider(String providerName) async {
     // In a real implementation, save to SharedPreferences
@@ -305,27 +304,28 @@ class CloudBackupService extends ChangeNotifier {
 class LocalStorageProvider implements CloudStorageProvider {
   @override
   String get name => 'local';
-  
+
   @override
   String get displayName => 'Local Storage';
-  
+
   @override
   bool get isConfigured => true; // Always available
-  
+
   @override
   Future<void> initialize() async {
     // No initialization needed for local storage
   }
-  
+
   @override
-  Future<CloudUploadResult> uploadBackup(String filePath, {String? customName}) async {
+  Future<CloudUploadResult> uploadBackup(String filePath,
+      {String? customName}) async {
     // For local storage, "upload" means copy to a designated backup directory
     final fileName = customName ?? path.basename(filePath);
     final backupId = 'local_${DateTime.now().millisecondsSinceEpoch}';
-    
+
     // In a real implementation, you would copy the file to a backup directory
     await Future.delayed(const Duration(milliseconds: 500)); // Simulate upload
-    
+
     return CloudUploadResult(
       backupId: backupId,
       fileName: fileName,
@@ -334,7 +334,7 @@ class LocalStorageProvider implements CloudStorageProvider {
       checksum: 'mock_checksum',
     );
   }
-  
+
   @override
   Future<List<CloudBackupInfo>> listBackups() async {
     // Return mock data for demonstration
@@ -357,33 +357,33 @@ class LocalStorageProvider implements CloudStorageProvider {
       ),
     ];
   }
-  
+
   @override
   Future<String> downloadBackup(String backupId, String destinationPath) async {
     // Simulate download
     await Future.delayed(const Duration(seconds: 2));
-    
+
     final fileName = 'downloaded_backup_$backupId.bdb';
     final fullPath = path.join(destinationPath, fileName);
-    
+
     // In a real implementation, copy the file from backup directory
     return fullPath;
   }
-  
+
   @override
   Future<void> deleteBackup(String backupId) async {
     // In a real implementation, delete the file from backup directory
     await Future.delayed(const Duration(milliseconds: 100));
   }
-  
+
   @override
   Future<CloudQuotaInfo> getQuotaInfo() async {
     // For local storage, return disk space information
     await Future.delayed(const Duration(milliseconds: 100));
-    
+
     return const CloudQuotaInfo(
       totalSpace: 100 * 1024 * 1024 * 1024, // 100GB
-      usedSpace: 25 * 1024 * 1024 * 1024,   // 25GB
+      usedSpace: 25 * 1024 * 1024 * 1024, // 25GB
       availableSpace: 75 * 1024 * 1024 * 1024, // 75GB
     );
   }
@@ -516,6 +516,7 @@ class CloudBackupException implements Exception {
 }
 
 /// Provider for cloud backup service
-final cloudBackupServiceProvider = ChangeNotifierProvider<CloudBackupService>((ref) {
+final cloudBackupServiceProvider =
+    ChangeNotifierProvider<CloudBackupService>((ref) {
   return CloudBackupService();
 });

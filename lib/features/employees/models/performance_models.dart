@@ -6,51 +6,51 @@ import '../../../core/database/crdt_models.dart';
 
 /// Performance review status
 enum PerformanceStatus {
-  draft,      // Draft review
-  submitted,  // Submitted for approval
-  approved,   // Approved by manager
-  completed,  // Review completed
-  archived    // Archived review
+  draft, // Draft review
+  submitted, // Submitted for approval
+  approved, // Approved by manager
+  completed, // Review completed
+  archived // Archived review
 }
 
 /// Performance rating scale
 enum PerformanceRating {
-  outstanding,    // 5 - Outstanding
-  exceeds,        // 4 - Exceeds expectations
-  meets,          // 3 - Meets expectations
-  developing,     // 2 - Developing
-  unsatisfactory  // 1 - Unsatisfactory
+  outstanding, // 5 - Outstanding
+  exceeds, // 4 - Exceeds expectations
+  meets, // 3 - Meets expectations
+  developing, // 2 - Developing
+  unsatisfactory // 1 - Unsatisfactory
 }
 
 /// Goal status
 enum GoalStatus {
-  notStarted,   // Not started
-  inProgress,   // In progress
-  completed,    // Completed
-  overdue,      // Overdue
-  cancelled     // Cancelled
+  notStarted, // Not started
+  inProgress, // In progress
+  completed, // Completed
+  overdue, // Overdue
+  cancelled // Cancelled
 }
 
 /// CRDT-enabled Performance Record model
 class CRDTPerformanceRecord implements CRDTModel {
   @override
   final String id;
-  
+
   @override
   final String nodeId;
-  
+
   @override
   final HLCTimestamp createdAt;
-  
+
   @override
   HLCTimestamp updatedAt;
-  
+
   @override
   CRDTVectorClock version;
-  
+
   @override
   bool isDeleted;
-  
+
   // Basic information
   late LWWRegister<String> employeeId;
   late LWWRegister<String> reviewerId;
@@ -58,88 +58,91 @@ class CRDTPerformanceRecord implements CRDTModel {
   late LWWRegister<DateTime> reviewStartDate;
   late LWWRegister<DateTime> reviewEndDate;
   late LWWRegister<DateTime?> reviewDueDate;
-  late LWWRegister<String> status; // draft, submitted, approved, completed, archived
-  late LWWRegister<String> reviewType; // quarterly, semi_annual, annual, probation
-  
+  late LWWRegister<String>
+      status; // draft, submitted, approved, completed, archived
+  late LWWRegister<String>
+      reviewType; // quarterly, semi_annual, annual, probation
+
   // Overall rating
-  late LWWRegister<String?> overallRating; // outstanding, exceeds, meets, developing, unsatisfactory
+  late LWWRegister<String?>
+      overallRating; // outstanding, exceeds, meets, developing, unsatisfactory
   late LWWRegister<double?> overallScore; // 1.0 to 5.0
   late LWWRegister<String?> overallComments;
-  
+
   // Performance categories with ratings
   late LWWRegister<String?> jobKnowledgeRating;
   late LWWRegister<double?> jobKnowledgeScore;
   late LWWRegister<String?> jobKnowledgeComments;
-  
+
   late LWWRegister<String?> qualityOfWorkRating;
   late LWWRegister<double?> qualityOfWorkScore;
   late LWWRegister<String?> qualityOfWorkComments;
-  
+
   late LWWRegister<String?> productivityRating;
   late LWWRegister<double?> productivityScore;
   late LWWRegister<String?> productivityComments;
-  
+
   late LWWRegister<String?> communicationRating;
   late LWWRegister<double?> communicationScore;
   late LWWRegister<String?> communicationComments;
-  
+
   late LWWRegister<String?> teamworkRating;
   late LWWRegister<double?> teamworkScore;
   late LWWRegister<String?> teamworkComments;
-  
+
   late LWWRegister<String?> leadershipRating;
   late LWWRegister<double?> leadershipScore;
   late LWWRegister<String?> leadershipComments;
-  
+
   late LWWRegister<String?> initiativeRating;
   late LWWRegister<double?> initiativeScore;
   late LWWRegister<String?> initiativeComments;
-  
+
   // Strengths and areas for improvement
   late LWWRegister<String?> strengths;
   late LWWRegister<String?> areasForImprovement;
   late LWWRegister<String?> developmentPlan;
   late LWWRegister<String?> careerAspirations;
-  
+
   // Goals and objectives as OR-Set
   late ORSet<String> goalIds;
-  
+
   // Training and development
   late LWWRegister<String?> trainingNeeds;
   late LWWRegister<String?> skillGaps;
   late LWWRegister<String?> mentorshipNeeds;
-  
+
   // Employee self-assessment
   late LWWRegister<String?> selfAssessment;
   late LWWRegister<String?> selfRating;
   late LWWRegister<double?> selfScore;
   late LWWRegister<String?> employeeComments;
-  
+
   // Manager assessment
   late LWWRegister<String?> managerAssessment;
   late LWWRegister<String?> managerRecommendations;
   late LWWRegister<DateTime?> managerSignOffDate;
-  
+
   // HR review
   late LWWRegister<String?> hrComments;
   late LWWRegister<DateTime?> hrReviewDate;
   late LWWRegister<String?> hrRecommendations;
-  
+
   // Action items and follow-ups
   late LWWRegister<String?> actionItems;
   late LWWRegister<DateTime?> nextReviewDate;
   late LWWRegister<String?> followUpRequired;
-  
+
   // Salary and promotion recommendations
   late LWWRegister<bool> salaryIncreaseRecommended;
   late LWWRegister<double?> recommendedSalaryIncrease;
   late LWWRegister<bool> promotionRecommended;
   late LWWRegister<String?> recommendedPosition;
   late LWWRegister<DateTime?> recommendedEffectiveDate;
-  
+
   // Additional information
   late LWWRegister<Map<String, dynamic>?> metadata;
-  
+
   CRDTPerformanceRecord({
     required this.id,
     required this.nodeId,
@@ -215,87 +218,87 @@ class CRDTPerformanceRecord implements CRDTModel {
     reviewDueDate = LWWRegister(dueDate, createdAt);
     status = LWWRegister(reviewStatus, createdAt);
     reviewType = LWWRegister(type, createdAt);
-    
+
     // Initialize overall rating
     overallRating = LWWRegister(overallRat, createdAt);
     overallScore = LWWRegister(overallSc, createdAt);
     overallComments = LWWRegister(overallComm, createdAt);
-    
+
     // Initialize performance categories
     jobKnowledgeRating = LWWRegister(jobKnowledge, createdAt);
     jobKnowledgeScore = LWWRegister(jobKnowledgeSc, createdAt);
     jobKnowledgeComments = LWWRegister(jobKnowledgeComm, createdAt);
-    
+
     qualityOfWorkRating = LWWRegister(qualityWork, createdAt);
     qualityOfWorkScore = LWWRegister(qualityWorkSc, createdAt);
     qualityOfWorkComments = LWWRegister(qualityWorkComm, createdAt);
-    
+
     productivityRating = LWWRegister(productivity, createdAt);
     productivityScore = LWWRegister(productivitySc, createdAt);
     productivityComments = LWWRegister(productivityComm, createdAt);
-    
+
     communicationRating = LWWRegister(communication, createdAt);
     communicationScore = LWWRegister(communicationSc, createdAt);
     communicationComments = LWWRegister(communicationComm, createdAt);
-    
+
     teamworkRating = LWWRegister(teamwork, createdAt);
     teamworkScore = LWWRegister(teamworkSc, createdAt);
     teamworkComments = LWWRegister(teamworkComm, createdAt);
-    
+
     leadershipRating = LWWRegister(leadership, createdAt);
     leadershipScore = LWWRegister(leadershipSc, createdAt);
     leadershipComments = LWWRegister(leadershipComm, createdAt);
-    
+
     initiativeRating = LWWRegister(initiative, createdAt);
     initiativeScore = LWWRegister(initiativeSc, createdAt);
     initiativeComments = LWWRegister(initiativeComm, createdAt);
-    
+
     // Initialize development areas
     strengths = LWWRegister(empStrengths, createdAt);
     areasForImprovement = LWWRegister(improvements, createdAt);
     developmentPlan = LWWRegister(devPlan, createdAt);
     careerAspirations = LWWRegister(career, createdAt);
-    
+
     // Initialize goals
     goalIds = ORSet(nodeId);
-    
+
     // Initialize training and development
     trainingNeeds = LWWRegister(training, createdAt);
     skillGaps = LWWRegister(skills, createdAt);
     mentorshipNeeds = LWWRegister(mentorship, createdAt);
-    
+
     // Initialize employee self-assessment
     selfAssessment = LWWRegister(selfAssess, createdAt);
     selfRating = LWWRegister(selfRat, createdAt);
     selfScore = LWWRegister(selfSc, createdAt);
     employeeComments = LWWRegister(empComments, createdAt);
-    
+
     // Initialize manager assessment
     managerAssessment = LWWRegister(managerAssess, createdAt);
     managerRecommendations = LWWRegister(managerRec, createdAt);
     managerSignOffDate = LWWRegister(managerSignOff, createdAt);
-    
+
     // Initialize HR review
     hrComments = LWWRegister(hrComm, createdAt);
     hrReviewDate = LWWRegister(hrReview, createdAt);
     hrRecommendations = LWWRegister(hrRec, createdAt);
-    
+
     // Initialize action items
     actionItems = LWWRegister(actions, createdAt);
     nextReviewDate = LWWRegister(nextReview, createdAt);
     followUpRequired = LWWRegister(followUp, createdAt);
-    
+
     // Initialize salary and promotion recommendations
     salaryIncreaseRecommended = LWWRegister(salaryIncrease, createdAt);
     recommendedSalaryIncrease = LWWRegister(salaryAmount, createdAt);
     promotionRecommended = LWWRegister(promotion, createdAt);
     recommendedPosition = LWWRegister(newPosition, createdAt);
     recommendedEffectiveDate = LWWRegister(effectiveDate, createdAt);
-    
+
     // Initialize additional information
     metadata = LWWRegister(performanceMetadata, createdAt);
   }
-  
+
   /// Calculate average performance score
   double get averageScore {
     final scores = [
@@ -307,21 +310,21 @@ class CRDTPerformanceRecord implements CRDTModel {
       leadershipScore.value,
       initiativeScore.value,
     ].where((score) => score != null).cast<double>();
-    
+
     if (scores.isEmpty) return 0.0;
     return scores.reduce((a, b) => a + b) / scores.length;
   }
-  
+
   /// Check if review is overdue
   bool get isOverdue {
     final due = reviewDueDate.value;
     if (due == null) return false;
     return DateTime.now().isAfter(due) && status.value != 'completed';
   }
-  
+
   /// Check if review is completed
   bool get isCompleted => status.value == 'completed';
-  
+
   /// Update overall rating
   void updateOverallRating({
     String? rating,
@@ -334,7 +337,7 @@ class CRDTPerformanceRecord implements CRDTModel {
     if (comments != null) overallComments.setValue(comments, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Update performance category
   void updatePerformanceCategory({
     required String category,
@@ -347,22 +350,26 @@ class CRDTPerformanceRecord implements CRDTModel {
       case 'job_knowledge':
         if (rating != null) jobKnowledgeRating.setValue(rating, timestamp);
         if (score != null) jobKnowledgeScore.setValue(score, timestamp);
-        if (comments != null) jobKnowledgeComments.setValue(comments, timestamp);
+        if (comments != null)
+          jobKnowledgeComments.setValue(comments, timestamp);
         break;
       case 'quality_of_work':
         if (rating != null) qualityOfWorkRating.setValue(rating, timestamp);
         if (score != null) qualityOfWorkScore.setValue(score, timestamp);
-        if (comments != null) qualityOfWorkComments.setValue(comments, timestamp);
+        if (comments != null)
+          qualityOfWorkComments.setValue(comments, timestamp);
         break;
       case 'productivity':
         if (rating != null) productivityRating.setValue(rating, timestamp);
         if (score != null) productivityScore.setValue(score, timestamp);
-        if (comments != null) productivityComments.setValue(comments, timestamp);
+        if (comments != null)
+          productivityComments.setValue(comments, timestamp);
         break;
       case 'communication':
         if (rating != null) communicationRating.setValue(rating, timestamp);
         if (score != null) communicationScore.setValue(score, timestamp);
-        if (comments != null) communicationComments.setValue(comments, timestamp);
+        if (comments != null)
+          communicationComments.setValue(comments, timestamp);
         break;
       case 'teamwork':
         if (rating != null) teamworkRating.setValue(rating, timestamp);
@@ -382,7 +389,7 @@ class CRDTPerformanceRecord implements CRDTModel {
     }
     _updateTimestamp(timestamp);
   }
-  
+
   /// Update development areas
   void updateDevelopmentAreas({
     String? empStrengths,
@@ -392,34 +399,35 @@ class CRDTPerformanceRecord implements CRDTModel {
     required HLCTimestamp timestamp,
   }) {
     if (empStrengths != null) strengths.setValue(empStrengths, timestamp);
-    if (improvements != null) areasForImprovement.setValue(improvements, timestamp);
+    if (improvements != null)
+      areasForImprovement.setValue(improvements, timestamp);
     if (devPlan != null) developmentPlan.setValue(devPlan, timestamp);
     if (career != null) careerAspirations.setValue(career, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Add goal
   void addGoal(String goalId) {
     goalIds.add(goalId);
   }
-  
+
   /// Remove goal
   void removeGoal(String goalId) {
     goalIds.remove(goalId);
   }
-  
+
   /// Submit for approval
   void submitForApproval(HLCTimestamp timestamp) {
     status.setValue('submitted', timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Complete review
   void completeReview(HLCTimestamp timestamp) {
     status.setValue('completed', timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// Manager sign-off
   void managerSignOff({
     String? assessment,
@@ -427,11 +435,12 @@ class CRDTPerformanceRecord implements CRDTModel {
     required HLCTimestamp timestamp,
   }) {
     if (assessment != null) managerAssessment.setValue(assessment, timestamp);
-    if (recommendations != null) managerRecommendations.setValue(recommendations, timestamp);
+    if (recommendations != null)
+      managerRecommendations.setValue(recommendations, timestamp);
     managerSignOffDate.setValue(DateTime.now(), timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   /// HR review
   void hrReview({
     String? comments,
@@ -439,24 +448,25 @@ class CRDTPerformanceRecord implements CRDTModel {
     required HLCTimestamp timestamp,
   }) {
     if (comments != null) hrComments.setValue(comments, timestamp);
-    if (recommendations != null) hrRecommendations.setValue(recommendations, timestamp);
+    if (recommendations != null)
+      hrRecommendations.setValue(recommendations, timestamp);
     hrReviewDate.setValue(DateTime.now(), timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   void _updateTimestamp(HLCTimestamp timestamp) {
     if (timestamp.happensAfter(updatedAt)) {
       updatedAt = timestamp;
       version = version.tick();
     }
   }
-  
+
   @override
   void mergeWith(CRDTModel other) {
     if (other is! CRDTPerformanceRecord || other.id != id) {
       throw ArgumentError('Cannot merge with different performance record');
     }
-    
+
     // Merge all CRDT fields
     employeeId.mergeWith(other.employeeId);
     reviewerId.mergeWith(other.reviewerId);
@@ -466,85 +476,85 @@ class CRDTPerformanceRecord implements CRDTModel {
     reviewDueDate.mergeWith(other.reviewDueDate);
     status.mergeWith(other.status);
     reviewType.mergeWith(other.reviewType);
-    
+
     overallRating.mergeWith(other.overallRating);
     overallScore.mergeWith(other.overallScore);
     overallComments.mergeWith(other.overallComments);
-    
+
     jobKnowledgeRating.mergeWith(other.jobKnowledgeRating);
     jobKnowledgeScore.mergeWith(other.jobKnowledgeScore);
     jobKnowledgeComments.mergeWith(other.jobKnowledgeComments);
-    
+
     qualityOfWorkRating.mergeWith(other.qualityOfWorkRating);
     qualityOfWorkScore.mergeWith(other.qualityOfWorkScore);
     qualityOfWorkComments.mergeWith(other.qualityOfWorkComments);
-    
+
     productivityRating.mergeWith(other.productivityRating);
     productivityScore.mergeWith(other.productivityScore);
     productivityComments.mergeWith(other.productivityComments);
-    
+
     communicationRating.mergeWith(other.communicationRating);
     communicationScore.mergeWith(other.communicationScore);
     communicationComments.mergeWith(other.communicationComments);
-    
+
     teamworkRating.mergeWith(other.teamworkRating);
     teamworkScore.mergeWith(other.teamworkScore);
     teamworkComments.mergeWith(other.teamworkComments);
-    
+
     leadershipRating.mergeWith(other.leadershipRating);
     leadershipScore.mergeWith(other.leadershipScore);
     leadershipComments.mergeWith(other.leadershipComments);
-    
+
     initiativeRating.mergeWith(other.initiativeRating);
     initiativeScore.mergeWith(other.initiativeScore);
     initiativeComments.mergeWith(other.initiativeComments);
-    
+
     strengths.mergeWith(other.strengths);
     areasForImprovement.mergeWith(other.areasForImprovement);
     developmentPlan.mergeWith(other.developmentPlan);
     careerAspirations.mergeWith(other.careerAspirations);
-    
+
     goalIds.mergeWith(other.goalIds);
-    
+
     trainingNeeds.mergeWith(other.trainingNeeds);
     skillGaps.mergeWith(other.skillGaps);
     mentorshipNeeds.mergeWith(other.mentorshipNeeds);
-    
+
     selfAssessment.mergeWith(other.selfAssessment);
     selfRating.mergeWith(other.selfRating);
     selfScore.mergeWith(other.selfScore);
     employeeComments.mergeWith(other.employeeComments);
-    
+
     managerAssessment.mergeWith(other.managerAssessment);
     managerRecommendations.mergeWith(other.managerRecommendations);
     managerSignOffDate.mergeWith(other.managerSignOffDate);
-    
+
     hrComments.mergeWith(other.hrComments);
     hrReviewDate.mergeWith(other.hrReviewDate);
     hrRecommendations.mergeWith(other.hrRecommendations);
-    
+
     actionItems.mergeWith(other.actionItems);
     nextReviewDate.mergeWith(other.nextReviewDate);
     followUpRequired.mergeWith(other.followUpRequired);
-    
+
     salaryIncreaseRecommended.mergeWith(other.salaryIncreaseRecommended);
     recommendedSalaryIncrease.mergeWith(other.recommendedSalaryIncrease);
     promotionRecommended.mergeWith(other.promotionRecommended);
     recommendedPosition.mergeWith(other.recommendedPosition);
     recommendedEffectiveDate.mergeWith(other.recommendedEffectiveDate);
-    
+
     metadata.mergeWith(other.metadata);
-    
+
     // Update version and timestamp
     version = version.update(other.version);
     if (other.updatedAt.happensAfter(updatedAt)) {
       updatedAt = other.updatedAt;
     }
-    
+
     // Handle deletion
     isDeleted = isDeleted || other.isDeleted;
   }
-  
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -609,14 +619,15 @@ class CRDTPerformanceRecord implements CRDTModel {
       'recommended_salary_increase': recommendedSalaryIncrease.value,
       'promotion_recommended': promotionRecommended.value,
       'recommended_position': recommendedPosition.value,
-      'recommended_effective_date': recommendedEffectiveDate.value?.millisecondsSinceEpoch,
+      'recommended_effective_date':
+          recommendedEffectiveDate.value?.millisecondsSinceEpoch,
       'metadata': metadata.value,
       'is_deleted': isDeleted,
       'created_at': createdAt.physicalTime,
       'updated_at': updatedAt.physicalTime,
     };
   }
-  
+
   @override
   Map<String, dynamic> toCRDTJson() {
     return {
@@ -693,27 +704,28 @@ class CRDTPerformanceRecord implements CRDTModel {
 class CRDTEmployeeGoal implements CRDTModel {
   @override
   final String id;
-  
+
   @override
   final String nodeId;
-  
+
   @override
   final HLCTimestamp createdAt;
-  
+
   @override
   HLCTimestamp updatedAt;
-  
+
   @override
   CRDTVectorClock version;
-  
+
   @override
   bool isDeleted;
-  
+
   late LWWRegister<String> employeeId;
   late LWWRegister<String?> performanceRecordId;
   late LWWRegister<String> goalTitle;
   late LWWRegister<String?> goalDescription;
-  late LWWRegister<String> status; // not_started, in_progress, completed, overdue, cancelled
+  late LWWRegister<String>
+      status; // not_started, in_progress, completed, overdue, cancelled
   late LWWRegister<String> priority; // low, medium, high, critical
   late LWWRegister<DateTime> targetDate;
   late LWWRegister<DateTime?> completedDate;
@@ -721,7 +733,7 @@ class CRDTEmployeeGoal implements CRDTModel {
   late LWWRegister<String?> notes;
   late LWWRegister<String?> managerComments;
   late LWWRegister<Map<String, dynamic>?> metadata;
-  
+
   CRDTEmployeeGoal({
     required this.id,
     required this.nodeId,
@@ -755,19 +767,20 @@ class CRDTEmployeeGoal implements CRDTModel {
     managerComments = LWWRegister(managerComment, createdAt);
     metadata = LWWRegister(goalMetadata, createdAt);
   }
-  
+
   /// Check if goal is overdue
   bool get isOverdue {
-    return DateTime.now().isAfter(targetDate.value) && status.value != 'completed';
+    return DateTime.now().isAfter(targetDate.value) &&
+        status.value != 'completed';
   }
-  
+
   /// Check if goal is completed
   bool get isCompleted => status.value == 'completed';
-  
+
   /// Update progress
   void updateProgress(double newProgress, HLCTimestamp timestamp) {
     progressPercentage.setValue(newProgress.clamp(0.0, 100.0), timestamp);
-    
+
     // Auto-complete if 100%
     if (newProgress >= 100.0 && status.value != 'completed') {
       status.setValue('completed', timestamp);
@@ -775,7 +788,7 @@ class CRDTEmployeeGoal implements CRDTModel {
     }
     _updateTimestamp(timestamp);
   }
-  
+
   /// Complete goal
   void completeGoal(HLCTimestamp timestamp) {
     status.setValue('completed', timestamp);
@@ -783,20 +796,20 @@ class CRDTEmployeeGoal implements CRDTModel {
     progressPercentage.setValue(100.0, timestamp);
     _updateTimestamp(timestamp);
   }
-  
+
   void _updateTimestamp(HLCTimestamp timestamp) {
     if (timestamp.happensAfter(updatedAt)) {
       updatedAt = timestamp;
       version = version.tick();
     }
   }
-  
+
   @override
   void mergeWith(CRDTModel other) {
     if (other is! CRDTEmployeeGoal || other.id != id) {
       throw ArgumentError('Cannot merge with different employee goal');
     }
-    
+
     employeeId.mergeWith(other.employeeId);
     performanceRecordId.mergeWith(other.performanceRecordId);
     goalTitle.mergeWith(other.goalTitle);
@@ -809,15 +822,15 @@ class CRDTEmployeeGoal implements CRDTModel {
     notes.mergeWith(other.notes);
     managerComments.mergeWith(other.managerComments);
     metadata.mergeWith(other.metadata);
-    
+
     version = version.update(other.version);
     if (other.updatedAt.happensAfter(updatedAt)) {
       updatedAt = other.updatedAt;
     }
-    
+
     isDeleted = isDeleted || other.isDeleted;
   }
-  
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -841,7 +854,7 @@ class CRDTEmployeeGoal implements CRDTModel {
       'updated_at': updatedAt.physicalTime,
     };
   }
-  
+
   @override
   Map<String, dynamic> toCRDTJson() {
     return {

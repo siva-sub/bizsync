@@ -26,15 +26,15 @@ class TaxCalculationResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'grossAmount': grossAmount,
-    'taxableAmount': taxableAmount,
-    'taxRate': taxRate,
-    'taxAmount': taxAmount,
-    'netAmount': netAmount,
-    'breakdown': breakdown.map((b) => b.toJson()).toList(),
-    'appliedReliefs': appliedReliefs.map((r) => r.toJson()).toList(),
-    'metadata': metadata,
-  };
+        'grossAmount': grossAmount,
+        'taxableAmount': taxableAmount,
+        'taxRate': taxRate,
+        'taxAmount': taxAmount,
+        'netAmount': netAmount,
+        'breakdown': breakdown.map((b) => b.toJson()).toList(),
+        'appliedReliefs': appliedReliefs.map((r) => r.toJson()).toList(),
+        'metadata': metadata,
+      };
 }
 
 class TaxCalculationBreakdown {
@@ -55,13 +55,13 @@ class TaxCalculationBreakdown {
   });
 
   Map<String, dynamic> toJson() => {
-    'description': description,
-    'amount': amount,
-    'rate': rate,
-    'taxAmount': taxAmount,
-    'taxType': taxType.name,
-    'legislation': legislation,
-  };
+        'description': description,
+        'amount': amount,
+        'rate': rate,
+        'taxAmount': taxAmount,
+        'taxType': taxType.name,
+        'legislation': legislation,
+      };
 }
 
 class TaxCalculationContext {
@@ -111,9 +111,9 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
     required TaxRateRepository taxRateRepository,
     required TaxReliefRepository taxReliefRepository,
     required FxRateService fxRateService,
-  }) : _taxRateRepository = taxRateRepository,
-       _taxReliefRepository = taxReliefRepository,
-       _fxRateService = fxRateService;
+  })  : _taxRateRepository = taxRateRepository,
+        _taxReliefRepository = taxReliefRepository,
+        _fxRateService = fxRateService;
 
   @override
   Future<TaxCalculationResult> calculateTax({
@@ -169,7 +169,8 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
     );
 
     if (taxRate == null) {
-      throw TaxCalculationException('No GST rate found for date ${context.calculationDate}');
+      throw TaxCalculationException(
+          'No GST rate found for date ${context.calculationDate}');
     }
 
     final taxAmount = amount * taxRate.rate;
@@ -216,13 +217,12 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
 
     // Apply reliefs and exemptions
     for (final relief in reliefs) {
-      if (relief.reliefType == ReliefType.startupExemption && 
+      if (relief.reliefType == ReliefType.startupExemption &&
           context.companyProfile.isEligibleForStartupExemption()) {
-        
         final exemptAmount = math.min(taxableIncome, 100000); // First S$100k
         taxableIncome -= exemptAmount;
         appliedReliefs.add(relief);
-        
+
         breakdown.add(TaxCalculationBreakdown(
           description: 'Startup Tax Exemption - First S\$100,000',
           amount: exemptAmount.toDouble(),
@@ -238,7 +238,7 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
           final partialTax = partialAmount * 0.085;
           totalTax += partialTax;
           taxableIncome -= partialAmount;
-          
+
           breakdown.add(TaxCalculationBreakdown(
             description: 'Startup Partial Exemption - Next S\$200,000 at 8.5%',
             amount: partialAmount.toDouble(),
@@ -249,13 +249,12 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
           ));
         }
       } else if (relief.reliefType == ReliefType.partialExemption &&
-                 context.companyProfile.isQualifiedForPartialExemption()) {
-        
+          context.companyProfile.isQualifiedForPartialExemption()) {
         // First S$10k at 0%
         final exemptAmount = math.min(taxableIncome, 10000);
         taxableIncome -= exemptAmount;
         appliedReliefs.add(relief);
-        
+
         breakdown.add(TaxCalculationBreakdown(
           description: 'Partial Tax Exemption - First S\$10,000',
           amount: exemptAmount.toDouble(),
@@ -271,7 +270,7 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
           final partialTax = partialAmount * 0.085;
           totalTax += partialTax;
           taxableIncome -= partialAmount;
-          
+
           breakdown.add(TaxCalculationBreakdown(
             description: 'Partial Tax Exemption - Next S\$190,000 at 8.5%',
             amount: partialAmount.toDouble(),
@@ -289,7 +288,7 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
       final standardRate = 0.17; // 17% standard rate
       final standardTax = taxableIncome * standardRate;
       totalTax += standardTax;
-      
+
       breakdown.add(TaxCalculationBreakdown(
         description: 'Standard Corporate Tax Rate 17%',
         amount: taxableIncome,
@@ -323,10 +322,12 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
     TaxCalculationContext context,
   ) async {
     final incomeType = context.transactionDetails['incomeType'] as String?;
-    final recipientCountry = context.transactionDetails['recipientCountry'] as String?;
-    
+    final recipientCountry =
+        context.transactionDetails['recipientCountry'] as String?;
+
     if (incomeType == null) {
-      throw TaxCalculationException('Income type is required for withholding tax calculation');
+      throw TaxCalculationException(
+          'Income type is required for withholding tax calculation');
     }
 
     double withholdingRate = 0;
@@ -340,7 +341,7 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
         incomeType,
         context.calculationDate,
       );
-      
+
       if (treatyRate != null) {
         withholdingRate = treatyRate;
         legislation = 'Double Taxation Agreement';
@@ -380,7 +381,8 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
       netAmount: netAmount,
       breakdown: [
         TaxCalculationBreakdown(
-          description: '$description ${(withholdingRate * 100).toStringAsFixed(1)}%',
+          description:
+              '$description ${(withholdingRate * 100).toStringAsFixed(1)}%',
           amount: amount,
           rate: withholdingRate,
           taxAmount: taxAmount,
@@ -401,10 +403,12 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
     double amount,
     TaxCalculationContext context,
   ) async {
-    final instrumentType = context.transactionDetails['instrumentType'] as String?;
-    
+    final instrumentType =
+        context.transactionDetails['instrumentType'] as String?;
+
     if (instrumentType == null) {
-      throw TaxCalculationException('Instrument type is required for stamp duty calculation');
+      throw TaxCalculationException(
+          'Instrument type is required for stamp duty calculation');
     }
 
     double stampDutyRate = 0;
@@ -453,9 +457,12 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
     );
   }
 
-  double _calculatePropertyStampDuty(double propertyValue, TaxCalculationContext context) {
-    final buyerType = context.transactionDetails['buyerType'] as String? ?? 'citizen';
-    final isFirstProperty = context.transactionDetails['isFirstProperty'] as bool? ?? true;
+  double _calculatePropertyStampDuty(
+      double propertyValue, TaxCalculationContext context) {
+    final buyerType =
+        context.transactionDetails['buyerType'] as String? ?? 'citizen';
+    final isFirstProperty =
+        context.transactionDetails['isFirstProperty'] as bool? ?? true;
 
     // Simplified progressive rates for Singapore citizens (first property)
     if (buyerType == 'citizen' && isFirstProperty) {
@@ -478,9 +485,11 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
     // For now, return from static data
     switch (taxType) {
       case TaxType.gst:
-        return SingaporeTaxRates.getGstHistory().getRateForDate(date, companyType: companyType);
+        return SingaporeTaxRates.getGstHistory()
+            .getRateForDate(date, companyType: companyType);
       case TaxType.corporateTax:
-        return SingaporeTaxRates.getCorporateTaxHistory().getRateForDate(date, companyType: companyType);
+        return SingaporeTaxRates.getCorporateTaxHistory()
+            .getRateForDate(date, companyType: companyType);
       default:
         return null;
     }
@@ -507,24 +516,28 @@ class TaxCalculationServiceImpl implements TaxCalculationService {
 
 // Abstract repository interfaces (to be implemented with actual data sources)
 abstract class TaxRateRepository {
-  Future<TaxRate?> getTaxRate(TaxType taxType, DateTime date, {CompanyType? companyType});
-  Future<List<TaxRate>> getHistoricalRates(TaxType taxType, DateTime startDate, DateTime endDate);
+  Future<TaxRate?> getTaxRate(TaxType taxType, DateTime date,
+      {CompanyType? companyType});
+  Future<List<TaxRate>> getHistoricalRates(
+      TaxType taxType, DateTime startDate, DateTime endDate);
 }
 
 abstract class TaxReliefRepository {
-  Future<List<TaxRelief>> getApplicableReliefs(CompanyTaxProfile profile, TaxType taxType, DateTime date);
+  Future<List<TaxRelief>> getApplicableReliefs(
+      CompanyTaxProfile profile, TaxType taxType, DateTime date);
   Future<TaxRelief?> getReliefById(String reliefId);
 }
 
 abstract class FxRateService {
   Future<FxRate?> getFxRate(Currency from, Currency to, DateTime date);
-  Future<double?> convertAmount(double amount, Currency from, Currency to, DateTime date);
+  Future<double?> convertAmount(
+      double amount, Currency from, Currency to, DateTime date);
 }
 
 class TaxCalculationException implements Exception {
   final String message;
   TaxCalculationException(this.message);
-  
+
   @override
   String toString() => 'TaxCalculationException: $message';
 }

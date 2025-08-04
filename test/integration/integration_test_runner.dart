@@ -12,15 +12,15 @@ void main() {
   group('BizSync Production Validation Suite', () {
     print('🚀 Starting BizSync Integration Test Suite...');
     print('📋 Testing critical business paths before production release');
-    
+
     // Run all integration test suites
     invoice_tests.main();
-    inventory_tests.main(); 
+    inventory_tests.main();
     customer_tests.main();
     tax_tests.main();
     offline_tests.main();
     integrity_tests.main();
-    
+
     print('✅ BizSync Integration Test Suite Complete');
   });
 }

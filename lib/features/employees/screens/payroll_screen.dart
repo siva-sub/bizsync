@@ -18,23 +18,26 @@ class PayrollScreen extends ConsumerStatefulWidget {
   ConsumerState<PayrollScreen> createState() => _PayrollScreenState();
 }
 
-class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProviderStateMixin {
+class _PayrollScreenState extends ConsumerState<PayrollScreen>
+    with TickerProviderStateMixin {
   final _employeeService = EmployeeService(NotificationService());
   final _payrollService = SingaporePayrollService();
-  
+
   late TabController _tabController;
-  
+
   // State variables
   List<CRDTEmployee> _employees = [];
   List<CRDTPayrollRecord> _payrollRecords = [];
   List<CRDTEmployee> _selectedEmployees = [];
   bool _isLoading = false;
   bool _isProcessing = false;
-  
+
   // Payroll period
-  DateTime _payPeriodStart = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  DateTime _payPeriodEnd = DateTime(DateTime.now().year, DateTime.now().month + 1, 0);
-  
+  DateTime _payPeriodStart =
+      DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime _payPeriodEnd =
+      DateTime(DateTime.now().year, DateTime.now().month + 1, 0);
+
   // Filters
   String _statusFilter = 'all';
   String _departmentFilter = 'all';
@@ -61,7 +64,9 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
     try {
       _employees = await _employeeService.getAllEmployees();
       // Filter only active employees
-      _employees = _employees.where((emp) => emp.employmentStatus.value == 'active').toList();
+      _employees = _employees
+          .where((emp) => emp.employmentStatus.value == 'active')
+          .toList();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -153,8 +158,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
             Text(
               'Payroll Period',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -213,7 +218,7 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
 
   Widget _buildEmployeeSelectionCard() {
     final filteredEmployees = _getFilteredEmployees();
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -226,8 +231,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                 Text(
                   'Select Employees',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 Row(
                   children: [
@@ -293,10 +298,12 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                     final employee = _selectedEmployees[index];
                     return ListTile(
                       leading: CircleAvatar(
-                        child: Text(employee.displayName.substring(0, 1).toUpperCase()),
+                        child: Text(
+                            employee.displayName.substring(0, 1).toUpperCase()),
                       ),
                       title: Text(employee.fullName),
-                      subtitle: Text('${employee.jobTitle.value} • \$${employee.totalCompensation.toStringAsFixed(0)}'),
+                      subtitle: Text(
+                          '${employee.jobTitle.value} • \$${employee.totalCompensation.toStringAsFixed(0)}'),
                       trailing: IconButton(
                         icon: const Icon(Icons.remove_circle_outline),
                         onPressed: () {
@@ -320,7 +327,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.people_outline, size: 32, color: Colors.grey),
+                    const Icon(Icons.people_outline,
+                        size: 32, color: Colors.grey),
                     const SizedBox(height: 8),
                     Text(
                       'No employees selected',
@@ -338,22 +346,31 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
 
   Widget _buildPayrollSummaryCard() {
     final totalBasicSalary = _selectedEmployees.fold<double>(
-      0.0, 
+      0.0,
       (sum, emp) => sum + emp.basicSalary.value,
     );
     final totalAllowances = _selectedEmployees.fold<double>(
-      0.0, 
+      0.0,
       (sum, emp) => sum + emp.allowances.value,
     );
     final estimatedCpfEmployee = _selectedEmployees.fold<double>(
-      0.0, 
-      (sum, emp) => sum + (emp.isCpfMember.value ? emp.totalCompensation * emp.cpfContributionRate.value : 0.0),
+      0.0,
+      (sum, emp) =>
+          sum +
+          (emp.isCpfMember.value
+              ? emp.totalCompensation * emp.cpfContributionRate.value
+              : 0.0),
     );
     final estimatedCpfEmployer = _selectedEmployees.fold<double>(
-      0.0, 
-      (sum, emp) => sum + (emp.isCpfMember.value ? emp.totalCompensation * 0.17 : 0.0), // Employer rate
+      0.0,
+      (sum, emp) =>
+          sum +
+          (emp.isCpfMember.value
+              ? emp.totalCompensation * 0.17
+              : 0.0), // Employer rate
     );
-    final estimatedNetPay = totalBasicSalary + totalAllowances - estimatedCpfEmployee;
+    final estimatedNetPay =
+        totalBasicSalary + totalAllowances - estimatedCpfEmployee;
 
     return Card(
       child: Padding(
@@ -364,25 +381,32 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
             Text(
               'Payroll Summary',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _buildSummaryRow('Total Basic Salary', totalBasicSalary),
             _buildSummaryRow('Total Allowances', totalAllowances),
-            _buildSummaryRow('Est. Employee CPF', estimatedCpfEmployee, isDeduction: true),
+            _buildSummaryRow('Est. Employee CPF', estimatedCpfEmployee,
+                isDeduction: true),
             const Divider(),
             _buildSummaryRow('Est. Net Pay', estimatedNetPay, isTotal: true),
             const SizedBox(height: 8),
-            _buildSummaryRow('Est. Employer CPF', estimatedCpfEmployer, isEmployerCost: true),
-            _buildSummaryRow('Est. Total Cost', estimatedNetPay + estimatedCpfEmployer, isTotal: true),
+            _buildSummaryRow('Est. Employer CPF', estimatedCpfEmployer,
+                isEmployerCost: true),
+            _buildSummaryRow(
+                'Est. Total Cost', estimatedNetPay + estimatedCpfEmployer,
+                isTotal: true),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryRow(String label, double amount, {bool isDeduction = false, bool isTotal = false, bool isEmployerCost = false}) {
+  Widget _buildSummaryRow(String label, double amount,
+      {bool isDeduction = false,
+      bool isTotal = false,
+      bool isEmployerCost = false}) {
     Color? textColor;
     if (isDeduction) textColor = Colors.red;
     if (isEmployerCost) textColor = Colors.orange;
@@ -422,15 +446,16 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
             Text(
               'Process Actions',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: _selectedEmployees.isEmpty ? null : _previewPayroll,
+                    onPressed:
+                        _selectedEmployees.isEmpty ? null : _previewPayroll,
                     icon: const Icon(Icons.preview),
                     label: const Text('Preview Payroll'),
                   ),
@@ -438,15 +463,18 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _selectedEmployees.isEmpty || _isProcessing ? null : _processPayroll,
-                    icon: _isProcessing 
+                    onPressed: _selectedEmployees.isEmpty || _isProcessing
+                        ? null
+                        : _processPayroll,
+                    icon: _isProcessing
                         ? const SizedBox(
                             height: 16,
                             width: 16,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.play_arrow),
-                    label: Text(_isProcessing ? 'Processing...' : 'Process Payroll'),
+                    label: Text(
+                        _isProcessing ? 'Processing...' : 'Process Payroll'),
                   ),
                 ),
               ],
@@ -455,8 +483,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
             Text(
               'Selected ${_selectedEmployees.length} employees for payroll processing',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey.shade600,
-              ),
+                    color: Colors.grey.shade600,
+                  ),
             ),
           ],
         ),
@@ -481,9 +509,11 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                   items: const [
                     DropdownMenuItem(value: 'all', child: Text('All Status')),
                     DropdownMenuItem(value: 'draft', child: Text('Draft')),
-                    DropdownMenuItem(value: 'approved', child: Text('Approved')),
+                    DropdownMenuItem(
+                        value: 'approved', child: Text('Approved')),
                     DropdownMenuItem(value: 'paid', child: Text('Paid')),
-                    DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
+                    DropdownMenuItem(
+                        value: 'cancelled', child: Text('Cancelled')),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -523,7 +553,9 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                       margin: const EdgeInsets.only(bottom: 8),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: _getPayrollStatusColor(payroll.status.value).withOpacity(0.1),
+                          backgroundColor:
+                              _getPayrollStatusColor(payroll.status.value)
+                                  .withOpacity(0.1),
                           child: Icon(
                             _getPayrollStatusIcon(payroll.status.value),
                             color: _getPayrollStatusColor(payroll.status.value),
@@ -533,8 +565,10 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Period: ${_formatDate(payroll.payPeriodStart.value)} - ${_formatDate(payroll.payPeriodEnd.value)}'),
-                            Text('Net Pay: \$${payroll.netPay.toStringAsFixed(2)}'),
+                            Text(
+                                'Period: ${_formatDate(payroll.payPeriodStart.value)} - ${_formatDate(payroll.payPeriodEnd.value)}'),
+                            Text(
+                                'Net Pay: \$${payroll.netPay.toStringAsFixed(2)}'),
                           ],
                         ),
                         trailing: Column(
@@ -542,15 +576,19 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: _getPayrollStatusColor(payroll.status.value).withOpacity(0.1),
+                                color:
+                                    _getPayrollStatusColor(payroll.status.value)
+                                        .withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 payroll.status.value.toUpperCase(),
                                 style: TextStyle(
-                                  color: _getPayrollStatusColor(payroll.status.value),
+                                  color: _getPayrollStatusColor(
+                                      payroll.status.value),
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -618,11 +656,13 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
     );
   }
 
-  Widget _buildReportCard(String title, String description, IconData icon, VoidCallback onTap) {
+  Widget _buildReportCard(
+      String title, String description, IconData icon, VoidCallback onTap) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          backgroundColor:
+              Theme.of(context).colorScheme.primary.withOpacity(0.1),
           child: Icon(icon, color: Theme.of(context).colorScheme.primary),
         ),
         title: Text(title),
@@ -661,7 +701,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
           _payPeriodStart = pickedDate;
           // Adjust end date if it's before start date
           if (_payPeriodEnd.isBefore(_payPeriodStart)) {
-            _payPeriodEnd = DateTime(_payPeriodStart.year, _payPeriodStart.month + 1, 0);
+            _payPeriodEnd =
+                DateTime(_payPeriodStart.year, _payPeriodStart.month + 1, 0);
           }
         } else {
           _payPeriodEnd = pickedDate;
@@ -674,8 +715,10 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
     int workingDays = 0;
     DateTime current = _payPeriodStart;
 
-    while (current.isBefore(_payPeriodEnd) || current.isAtSameMomentAs(_payPeriodEnd)) {
-      if (current.weekday != DateTime.saturday && current.weekday != DateTime.sunday) {
+    while (current.isBefore(_payPeriodEnd) ||
+        current.isAtSameMomentAs(_payPeriodEnd)) {
+      if (current.weekday != DateTime.saturday &&
+          current.weekday != DateTime.sunday) {
         workingDays++;
       }
       current = current.add(const Duration(days: 1));
@@ -686,7 +729,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
 
   List<CRDTEmployee> _getFilteredEmployees() {
     return _employees.where((emp) {
-      if (_departmentFilter != 'all' && emp.department.value != _departmentFilter) {
+      if (_departmentFilter != 'all' &&
+          emp.department.value != _departmentFilter) {
         return false;
       }
       return true;
@@ -700,7 +744,7 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
         departments.add(emp.department.value!);
       }
     }
-    
+
     return departments.map((dept) {
       return DropdownMenuItem(
         value: dept,
@@ -725,7 +769,7 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                 itemBuilder: (context, index) {
                   final employee = filteredEmployees[index];
                   final isSelected = _selectedEmployees.contains(employee);
-                  
+
                   return CheckboxListTile(
                     value: isSelected,
                     onChanged: (value) {
@@ -738,9 +782,11 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                       });
                     },
                     title: Text(employee.fullName),
-                    subtitle: Text('${employee.jobTitle.value} • \$${employee.totalCompensation.toStringAsFixed(0)}'),
+                    subtitle: Text(
+                        '${employee.jobTitle.value} • \$${employee.totalCompensation.toStringAsFixed(0)}'),
                     secondary: CircleAvatar(
-                      child: Text(employee.displayName.substring(0, 1).toUpperCase()),
+                      child: Text(
+                          employee.displayName.substring(0, 1).toUpperCase()),
                     ),
                   );
                 },
@@ -788,11 +834,12 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
                 ),
                 const SizedBox(height: 8),
                 ...(_selectedEmployees.map((emp) => ListTile(
-                  dense: true,
-                  title: Text(emp.fullName),
-                  subtitle: Text(emp.jobTitle.value),
-                  trailing: Text('\$${emp.totalCompensation.toStringAsFixed(0)}'),
-                ))),
+                      dense: true,
+                      title: Text(emp.fullName),
+                      subtitle: Text(emp.jobTitle.value),
+                      trailing:
+                          Text('\$${emp.totalCompensation.toStringAsFixed(0)}'),
+                    ))),
               ],
             ),
           ),
@@ -821,7 +868,7 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
 
     try {
       final newPayrollRecords = <CRDTPayrollRecord>[];
-      
+
       for (final employee in _selectedEmployees) {
         final payroll = await _payrollService.processPayroll(
           employeeId: employee.id,
@@ -830,10 +877,10 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
           payPeriodEnd: _payPeriodEnd,
           // Additional parameters can be added here for overtime, bonuses, etc.
         );
-        
+
         newPayrollRecords.add(payroll);
       }
-      
+
       setState(() {
         _payrollRecords.addAll(newPayrollRecords);
         _selectedEmployees.clear();
@@ -842,7 +889,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Payroll processed successfully for ${newPayrollRecords.length} employees'),
+            content: Text(
+                'Payroll processed successfully for ${newPayrollRecords.length} employees'),
             backgroundColor: Colors.green,
             action: SnackBarAction(
               label: 'View',
@@ -882,24 +930,40 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildDetailRow('Employee ID', payroll.employeeId.value),
-                _buildDetailRow('Period', '${_formatDate(payroll.payPeriodStart.value)} - ${_formatDate(payroll.payPeriodEnd.value)}'),
+                _buildDetailRow('Period',
+                    '${_formatDate(payroll.payPeriodStart.value)} - ${_formatDate(payroll.payPeriodEnd.value)}'),
                 _buildDetailRow('Pay Date', _formatDate(payroll.payDate.value)),
                 _buildDetailRow('Status', payroll.status.value.toUpperCase()),
                 const Divider(),
-                const Text('Earnings', style: TextStyle(fontWeight: FontWeight.bold)),
-                _buildDetailRow('Basic Salary', '\$${(payroll.basicSalaryCents.value / 100).toStringAsFixed(2)}'),
-                _buildDetailRow('Allowances', '\$${(payroll.allowancesCents.value / 100).toStringAsFixed(2)}'),
-                _buildDetailRow('Overtime', '\$${(payroll.overtimeCents.value / 100).toStringAsFixed(2)}'),
-                _buildDetailRow('Bonus', '\$${(payroll.bonusCents.value / 100).toStringAsFixed(2)}'),
-                _buildDetailRow('Gross Pay', '\$${payroll.grossPay.toStringAsFixed(2)}', isTotal: true),
+                const Text('Earnings',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                _buildDetailRow('Basic Salary',
+                    '\$${(payroll.basicSalaryCents.value / 100).toStringAsFixed(2)}'),
+                _buildDetailRow('Allowances',
+                    '\$${(payroll.allowancesCents.value / 100).toStringAsFixed(2)}'),
+                _buildDetailRow('Overtime',
+                    '\$${(payroll.overtimeCents.value / 100).toStringAsFixed(2)}'),
+                _buildDetailRow('Bonus',
+                    '\$${(payroll.bonusCents.value / 100).toStringAsFixed(2)}'),
+                _buildDetailRow(
+                    'Gross Pay', '\$${payroll.grossPay.toStringAsFixed(2)}',
+                    isTotal: true),
                 const Divider(),
-                const Text('Deductions', style: TextStyle(fontWeight: FontWeight.bold)),
-                _buildDetailRow('Employee CPF', '\$${(payroll.cpfEmployeeCents.value / 100).toStringAsFixed(2)}'),
-                _buildDetailRow('Tax', '\$${(payroll.taxDeductionCents.value / 100).toStringAsFixed(2)}'),
-                _buildDetailRow('Other', '\$${(payroll.otherDeductionsCents.value / 100).toStringAsFixed(2)}'),
-                _buildDetailRow('Total Deductions', '\$${payroll.totalDeductions.toStringAsFixed(2)}', isTotal: true),
+                const Text('Deductions',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                _buildDetailRow('Employee CPF',
+                    '\$${(payroll.cpfEmployeeCents.value / 100).toStringAsFixed(2)}'),
+                _buildDetailRow('Tax',
+                    '\$${(payroll.taxDeductionCents.value / 100).toStringAsFixed(2)}'),
+                _buildDetailRow('Other',
+                    '\$${(payroll.otherDeductionsCents.value / 100).toStringAsFixed(2)}'),
+                _buildDetailRow('Total Deductions',
+                    '\$${payroll.totalDeductions.toStringAsFixed(2)}',
+                    isTotal: true),
                 const Divider(),
-                _buildDetailRow('Net Pay', '\$${payroll.netPay.toStringAsFixed(2)}', isTotal: true, isHighlight: true),
+                _buildDetailRow(
+                    'Net Pay', '\$${payroll.netPay.toStringAsFixed(2)}',
+                    isTotal: true, isHighlight: true),
               ],
             ),
           ),
@@ -918,7 +982,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
     );
   }
 
-  Widget _buildDetailRow(String label, String value, {bool isTotal = false, bool isHighlight = false}) {
+  Widget _buildDetailRow(String label, String value,
+      {bool isTotal = false, bool isHighlight = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
@@ -934,7 +999,8 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
           Text(
             value,
             style: TextStyle(
-              fontWeight: isTotal || isHighlight ? FontWeight.bold : FontWeight.w500,
+              fontWeight:
+                  isTotal || isHighlight ? FontWeight.bold : FontWeight.w500,
               color: isHighlight ? Theme.of(context).colorScheme.primary : null,
             ),
           ),
@@ -946,25 +1012,28 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
   Future<void> _generatePayslip(CRDTPayrollRecord payroll) async {
     try {
       // Find the employee
-      final employee = _employees.firstWhere((emp) => emp.id == payroll.employeeId.value);
-      
+      final employee =
+          _employees.firstWhere((emp) => emp.id == payroll.employeeId.value);
+
       // Generate payslip data
-      final payslipData = _payrollService.generatePayslipData(payroll, employee);
-      
+      final payslipData =
+          _payrollService.generatePayslipData(payroll, employee);
+
       // Convert to readable format
       final payslipText = _formatPayslipText(payslipData);
-      
+
       // Save to temporary file
       final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/payslip_${payroll.payrollNumber.value}.txt');
+      final file =
+          File('${directory.path}/payslip_${payroll.payrollNumber.value}.txt');
       await file.writeAsString(payslipText);
-      
+
       // Share the file
       await Share.shareXFiles(
         [XFile(file.path)],
         text: 'Payslip for ${employee.fullName}',
       );
-      
+
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -992,7 +1061,7 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen> with TickerProvid
     final earnings = payslipData['earnings'];
     final deductions = payslipData['deductions'];
     final employerContrib = payslipData['employer_contributions'];
-    
+
     return '''
 PAYSLIP
 =======
@@ -1040,16 +1109,17 @@ Generated by BizSync Payroll System
   Future<void> _exportPayrollData() async {
     try {
       final csvData = _generatePayrollCSV();
-      
+
       final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/payroll_export_${DateTime.now().millisecondsSinceEpoch}.csv');
+      final file = File(
+          '${directory.path}/payroll_export_${DateTime.now().millisecondsSinceEpoch}.csv');
       await file.writeAsString(csvData);
-      
+
       await Share.shareXFiles(
         [XFile(file.path)],
         text: 'Payroll Export',
       );
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -1072,8 +1142,9 @@ Generated by BizSync Payroll System
 
   String _generatePayrollCSV() {
     final buffer = StringBuffer();
-    buffer.writeln('Payroll Number,Employee ID,Period Start,Period End,Basic Salary,Allowances,Overtime,Bonus,Gross Pay,Employee CPF,Total Deductions,Net Pay,Status');
-    
+    buffer.writeln(
+        'Payroll Number,Employee ID,Period Start,Period End,Basic Salary,Allowances,Overtime,Bonus,Gross Pay,Employee CPF,Total Deductions,Net Pay,Status');
+
     for (final payroll in _payrollRecords) {
       buffer.writeln([
         payroll.payrollNumber.value,
@@ -1091,7 +1162,7 @@ Generated by BizSync Payroll System
         payroll.status.value,
       ].join(','));
     }
-    
+
     return buffer.toString();
   }
 
@@ -1100,7 +1171,8 @@ Generated by BizSync Payroll System
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Generate ${reportType.toUpperCase()} Report'),
-        content: const Text('This feature will generate the selected report. Implementation depends on specific business requirements.'),
+        content: const Text(
+            'This feature will generate the selected report. Implementation depends on specific business requirements.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1110,7 +1182,9 @@ Generated by BizSync Payroll System
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${reportType.toUpperCase()} report generation started')),
+                SnackBar(
+                    content: Text(
+                        '${reportType.toUpperCase()} report generation started')),
               );
             },
             child: const Text('Generate'),

@@ -9,11 +9,13 @@ class RecurringInvoicesScreen extends StatefulWidget {
   const RecurringInvoicesScreen({super.key});
 
   @override
-  State<RecurringInvoicesScreen> createState() => _RecurringInvoicesScreenState();
+  State<RecurringInvoicesScreen> createState() =>
+      _RecurringInvoicesScreenState();
 }
 
 class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
-  final RecurringInvoiceService _recurringService = RecurringInvoiceService.instance;
+  final RecurringInvoiceService _recurringService =
+      RecurringInvoiceService.instance;
   List<RecurringInvoiceTemplate> _templates = [];
   bool _isLoading = true;
   String _filter = 'all'; // all, active, inactive
@@ -26,7 +28,7 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
 
   Future<void> _loadTemplates() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final templates = await _recurringService.getAllTemplates();
       setState(() {
@@ -57,7 +59,7 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
   Future<void> _generateDueInvoices() async {
     try {
       final result = await _recurringService.generateDueRecurringInvoices();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -69,7 +71,7 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
             backgroundColor: result.success ? Colors.green : Colors.orange,
           ),
         );
-        
+
         if (result.generatedInvoiceIds.isNotEmpty) {
           await _loadTemplates(); // Refresh to show updated counts
         }
@@ -94,15 +96,15 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
         final reactivatedTemplate = template.copyWith(isActive: true);
         await _recurringService.updateTemplate(reactivatedTemplate);
       }
-      
+
       await _loadTemplates();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              template.isActive 
-                  ? 'Template deactivated' 
+              template.isActive
+                  ? 'Template deactivated'
                   : 'Template reactivated',
             ),
           ),
@@ -147,7 +149,7 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
       try {
         await _recurringService.deleteTemplate(template.id);
         await _loadTemplates();
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Template deleted successfully')),
@@ -180,7 +182,8 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
             itemBuilder: (context) => [
               const PopupMenuItem(value: 'all', child: Text('All Templates')),
               const PopupMenuItem(value: 'active', child: Text('Active Only')),
-              const PopupMenuItem(value: 'inactive', child: Text('Inactive Only')),
+              const PopupMenuItem(
+                  value: 'inactive', child: Text('Inactive Only')),
             ],
             child: const Icon(Icons.filter_list),
           ),
@@ -211,7 +214,7 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
               builder: (context) => const RecurringInvoiceFormScreen(),
             ),
           );
-          
+
           if (result == true) {
             await _loadTemplates();
           }
@@ -246,7 +249,7 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
 
   Widget _buildTemplatesList() {
     final filteredTemplates = _filteredTemplates;
-    
+
     return ListView.builder(
       itemCount: filteredTemplates.length,
       padding: const EdgeInsets.all(16),
@@ -260,12 +263,12 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
   Widget _buildTemplateCard(RecurringInvoiceTemplate template) {
     final dateFormat = DateFormat('dd/MM/yyyy');
     final currencyFormat = NumberFormat.currency(symbol: '\$');
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: template.isActive 
+          backgroundColor: template.isActive
               ? Colors.green.withOpacity(0.1)
               : Colors.grey.withOpacity(0.1),
           child: Icon(
@@ -296,7 +299,8 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
               children: [
                 Text(
                   '${template.generatedCount} generated',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 if (template.nextGenerationDate != null)
                   Text(
@@ -356,12 +360,16 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoRow('Start Date', dateFormat.format(template.startDate)),
+                _buildInfoRow(
+                    'Start Date', dateFormat.format(template.startDate)),
                 if (template.endDate != null)
-                  _buildInfoRow('End Date', dateFormat.format(template.endDate!)),
+                  _buildInfoRow(
+                      'End Date', dateFormat.format(template.endDate!)),
                 if (template.maxOccurrences != null)
-                  _buildInfoRow('Max Occurrences', '${template.maxOccurrences}'),
-                _buildInfoRow('Status', template.isActive ? 'Active' : 'Inactive'),
+                  _buildInfoRow(
+                      'Max Occurrences', '${template.maxOccurrences}'),
+                _buildInfoRow(
+                    'Status', template.isActive ? 'Active' : 'Inactive'),
                 const SizedBox(height: 8),
                 Text(
                   'Invoice Details:',
@@ -372,9 +380,12 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text('Items: ${template.invoiceTemplate.lineItems.length}'),
-                Text('Subtotal: ${currencyFormat.format(template.invoiceTemplate.subtotal)}'),
-                Text('Tax: ${currencyFormat.format(template.invoiceTemplate.taxAmount)}'),
-                Text('Total: ${currencyFormat.format(template.invoiceTemplate.totalAmount)}'),
+                Text(
+                    'Subtotal: ${currencyFormat.format(template.invoiceTemplate.subtotal)}'),
+                Text(
+                    'Tax: ${currencyFormat.format(template.invoiceTemplate.taxAmount)}'),
+                Text(
+                    'Total: ${currencyFormat.format(template.invoiceTemplate.totalAmount)}'),
               ],
             ),
           ),
@@ -404,9 +415,9 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
   Future<void> _showGenerationHistory(RecurringInvoiceTemplate template) async {
     try {
       final history = await _recurringService.getGenerationHistory(template.id);
-      
+
       if (!mounted) return;
-      
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -422,16 +433,18 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
                       final entry = history[index];
                       final date = DateTime.parse(entry['generation_date']);
                       final success = entry['success'] == 1;
-                      
+
                       return ListTile(
                         leading: Icon(
                           success ? Icons.check_circle : Icons.error,
                           color: success ? Colors.green : Colors.red,
                         ),
-                        title: Text(DateFormat('dd/MM/yyyy HH:mm').format(date)),
+                        title:
+                            Text(DateFormat('dd/MM/yyyy HH:mm').format(date)),
                         subtitle: success
                             ? Text('Invoice: ${entry['invoice_id']}')
-                            : Text('Error: ${entry['error_message'] ?? 'Unknown error'}'),
+                            : Text(
+                                'Error: ${entry['error_message'] ?? 'Unknown error'}'),
                       );
                     },
                   ),

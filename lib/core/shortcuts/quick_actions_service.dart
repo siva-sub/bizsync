@@ -225,12 +225,12 @@ class _QuickActionHandlerState extends ConsumerState<QuickActionHandler> {
   @override
   void initState() {
     super.initState();
-    
+
     // Set up the callback for handling quick actions
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final quickActionsService = ref.read(quickActionsServiceProvider);
       quickActionsService.setActionCallback(_handleQuickAction);
-      
+
       // Check if there's a pending action from app launch
       if (quickActionsService.lastActionType != null) {
         _handleQuickAction(quickActionsService.lastActionType!);
@@ -242,15 +242,16 @@ class _QuickActionHandlerState extends ConsumerState<QuickActionHandler> {
   void _handleQuickAction(String actionType) {
     final quickActionsService = ref.read(quickActionsServiceProvider);
     final actionTypeEnum = quickActionsService.getActionType(actionType);
-    
+
     if (actionTypeEnum != null) {
       widget.onQuickAction?.call(actionTypeEnum);
-      
+
       // Show a snackbar to indicate the action
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Quick action: ${quickActionsService.getActionDescription(actionTypeEnum)}'),
+            content: Text(
+                'Quick action: ${quickActionsService.getActionDescription(actionTypeEnum)}'),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -301,12 +302,12 @@ class QuickActionsFAB extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
             Wrap(
               spacing: 16,
               runSpacing: 16,
               children: QuickActionType.values.map((actionType) {
-                final quickActionsService = ref.read(quickActionsServiceProvider);
+                final quickActionsService =
+                    ref.read(quickActionsServiceProvider);
                 return _QuickActionTile(
                   actionType: actionType,
                   title: _getActionTitle(actionType),
@@ -318,7 +319,6 @@ class QuickActionsFAB extends ConsumerWidget {
                 );
               }).toList(),
             ),
-            
             const SizedBox(height: 16),
           ],
         ),

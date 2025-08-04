@@ -126,7 +126,7 @@ class PayNowQRData {
     if (cleanMobile.startsWith('65')) {
       cleanMobile = cleanMobile.substring(2);
     }
-    
+
     return PayNowQRData(
       identifierType: PayNowIdentifierType.mobile,
       identifier: cleanMobile,
@@ -229,7 +229,7 @@ class AdditionalConsumerData {
   /// Convert to SGQR format string
   String toSGQRFormat() {
     final buffer = StringBuffer();
-    
+
     if (billNumber) buffer.write('01');
     if (mobileNumber) buffer.write('02');
     if (storeLabel) buffer.write('03');

@@ -48,10 +48,11 @@ class TaxTreaty {
 
   bool isEffectiveOn(DateTime date) {
     return date.isAfter(effectiveDate) &&
-           (terminationDate == null || date.isBefore(terminationDate!));
+        (terminationDate == null || date.isBefore(terminationDate!));
   }
 
-  double? getWithholdingTaxRate(String incomeType, {Map<String, dynamic>? conditions}) {
+  double? getWithholdingTaxRate(String incomeType,
+      {Map<String, dynamic>? conditions}) {
     final baseRate = withholdingTaxRates[incomeType];
     if (baseRate == null) return null;
 
@@ -73,17 +74,23 @@ class TaxTreaty {
   ) {
     // Example: Reduced rate for substantial shareholding
     if (provisions.containsKey('substantial_shareholding')) {
-      final threshold = provisions['substantial_shareholding']['threshold'] as double?;
-      final reducedRate = provisions['substantial_shareholding']['rate'] as double?;
+      final threshold =
+          provisions['substantial_shareholding']['threshold'] as double?;
+      final reducedRate =
+          provisions['substantial_shareholding']['rate'] as double?;
       final shareholding = conditions['shareholding_percentage'] as double?;
 
-      if (threshold != null && reducedRate != null && shareholding != null && shareholding >= threshold) {
+      if (threshold != null &&
+          reducedRate != null &&
+          shareholding != null &&
+          shareholding >= threshold) {
         return reducedRate;
       }
     }
 
     // Example: Government securities exemption
-    if (provisions.containsKey('government_securities') && conditions['is_government_security'] == true) {
+    if (provisions.containsKey('government_securities') &&
+        conditions['is_government_security'] == true) {
       return 0.0;
     }
 
@@ -139,16 +146,16 @@ class InternationalTaxResult {
   });
 
   Map<String, dynamic> toJson() => {
-    'grossAmount': grossAmount,
-    'withholdingTaxRate': withholdingTaxRate,
-    'withholdingTaxAmount': withholdingTaxAmount,
-    'netAmount': netAmount,
-    'treatyApplied': treatyApplied,
-    'benefitsReceived': benefitsReceived.map((b) => b.name).toList(),
-    'treatySavings': treatySavings,
-    'taxBasis': taxBasis,
-    'complianceRequirements': complianceRequirements,
-  };
+        'grossAmount': grossAmount,
+        'withholdingTaxRate': withholdingTaxRate,
+        'withholdingTaxAmount': withholdingTaxAmount,
+        'netAmount': netAmount,
+        'treatyApplied': treatyApplied,
+        'benefitsReceived': benefitsReceived.map((b) => b.name).toList(),
+        'treatySavings': treatySavings,
+        'taxBasis': taxBasis,
+        'complianceRequirements': complianceRequirements,
+      };
 }
 
 class InternationalTaxService {
@@ -157,10 +164,12 @@ class InternationalTaxService {
   InternationalTaxService({Map<String, TaxTreaty>? treaties})
       : _treaties = treaties ?? _getDefaultTreaties();
 
-  InternationalTaxResult calculateInternationalTax(InternationalTaxContext context) {
+  InternationalTaxResult calculateInternationalTax(
+      InternationalTaxContext context) {
     // Find applicable treaty
-    final treaty = _findApplicableTreaty(context.payerCountry, context.recipientCountry, context.paymentDate);
-    
+    final treaty = _findApplicableTreaty(
+        context.payerCountry, context.recipientCountry, context.paymentDate);
+
     double withholdingTaxRate;
     double treatySavings = 0;
     String treatyApplied = 'None';
@@ -173,13 +182,13 @@ class InternationalTaxService {
         context.incomeType,
         conditions: context.transactionDetails,
       );
-      
+
       if (treatyRate != null) {
         withholdingTaxRate = treatyRate;
         treatyApplied = treaty.officialName;
         benefitsReceived = [TreatyBenefit.reducedWithholdingTax];
         taxBasis = 'Double taxation agreement';
-        
+
         // Calculate savings compared to domestic rate
         final domesticRate = _getDomesticWithholdingTaxRate(context);
         treatySavings = context.amount * (domesticRate - treatyRate);
@@ -207,16 +216,17 @@ class InternationalTaxService {
     );
   }
 
-  TaxTreaty? _findApplicableTreaty(String payerCountry, String recipientCountry, DateTime date) {
+  TaxTreaty? _findApplicableTreaty(
+      String payerCountry, String recipientCountry, DateTime date) {
     final treatyKey = '${payerCountry}_$recipientCountry';
     final reverseTreatyKey = '${recipientCountry}_$payerCountry';
-    
+
     var treaty = _treaties[treatyKey] ?? _treaties[reverseTreatyKey];
-    
+
     if (treaty != null && treaty.isEffectiveOn(date)) {
       return treaty;
     }
-    
+
     return null;
   }
 
@@ -226,18 +236,25 @@ class InternationalTaxService {
       case 'dividends':
         return 0.0; // One-tier system
       case 'interest':
-        return context.recipientResidency == TaxResidencyStatus.nonResident ? 0.15 : 0.0;
+        return context.recipientResidency == TaxResidencyStatus.nonResident
+            ? 0.15
+            : 0.0;
       case 'royalties':
-        return context.recipientResidency == TaxResidencyStatus.nonResident ? 0.10 : 0.0;
+        return context.recipientResidency == TaxResidencyStatus.nonResident
+            ? 0.10
+            : 0.0;
       case 'management_fees':
       case 'technical_fees':
-        return context.recipientResidency == TaxResidencyStatus.nonResident ? 0.17 : 0.0;
+        return context.recipientResidency == TaxResidencyStatus.nonResident
+            ? 0.17
+            : 0.0;
       default:
         return 0.17; // Standard corporate rate
     }
   }
 
-  Map<String, dynamic> _getComplianceRequirements(InternationalTaxContext context, TaxTreaty? treaty) {
+  Map<String, dynamic> _getComplianceRequirements(
+      InternationalTaxContext context, TaxTreaty? treaty) {
     final requirements = <String, dynamic>{
       'filingRequirements': [],
       'documentationNeeded': [],
@@ -246,16 +263,21 @@ class InternationalTaxService {
 
     if (context.recipientResidency == TaxResidencyStatus.nonResident) {
       requirements['filingRequirements'].add('File withholding tax return');
-      requirements['documentationNeeded'].add('Recipient details and tax identification');
-      requirements['deadlines']['withholdingTaxReturn'] = 'Within 1 month of payment';
+      requirements['documentationNeeded']
+          .add('Recipient details and tax identification');
+      requirements['deadlines']['withholdingTaxReturn'] =
+          'Within 1 month of payment';
     }
 
     if (treaty != null) {
-      requirements['documentationNeeded'].add('Certificate of residence from recipient country');
+      requirements['documentationNeeded']
+          .add('Certificate of residence from recipient country');
       requirements['documentationNeeded'].add('Treaty claim form');
-      
-      if (treaty.availableBenefits.contains(TreatyBenefit.mutualAgreementProcedure)) {
-        requirements['additionalBenefits'] = 'Mutual agreement procedure available for disputes';
+
+      if (treaty.availableBenefits
+          .contains(TreatyBenefit.mutualAgreementProcedure)) {
+        requirements['additionalBenefits'] =
+            'Mutual agreement procedure available for disputes';
       }
     }
 
@@ -267,13 +289,15 @@ class InternationalTaxService {
     required String recipientCountry,
     required List<Map<String, dynamic>> plannedPayments,
   }) async {
-    final treaty = _findApplicableTreaty(payerCountry, recipientCountry, DateTime.now());
-    
+    final treaty =
+        _findApplicableTreaty(payerCountry, recipientCountry, DateTime.now());
+
     if (treaty == null) {
       return {
         'treatyAvailable': false,
         'totalSavings': 0,
-        'recommendation': 'No tax treaty available between $payerCountry and $recipientCountry',
+        'recommendation':
+            'No tax treaty available between $payerCountry and $recipientCountry',
       };
     }
 
@@ -308,7 +332,7 @@ class InternationalTaxService {
       'treatyName': treaty.officialName,
       'totalSavings': totalTreatySavings,
       'paymentAnalysis': paymentAnalysis,
-      'recommendation': totalTreatySavings > 1000 
+      'recommendation': totalTreatySavings > 1000
           ? 'Significant treaty benefits available. Ensure proper documentation.'
           : 'Limited treaty benefits for planned payments.',
       'requiredDocuments': _getRequiredTreatyDocuments(treaty),
@@ -327,18 +351,19 @@ class InternationalTaxService {
 
   Map<String, dynamic> generateTreatyMap() {
     final treatyMap = <String, dynamic>{};
-    
+
     _treaties.forEach((key, treaty) {
       treatyMap[key] = {
         'countries': [treaty.countryA, treaty.countryB],
         'officialName': treaty.officialName,
         'effectiveDate': treaty.effectiveDate.toIso8601String(),
         'withholdingTaxRates': treaty.withholdingTaxRates,
-        'availableBenefits': treaty.availableBenefits.map((b) => b.name).toList(),
+        'availableBenefits':
+            treaty.availableBenefits.map((b) => b.name).toList(),
         'lastAmended': treaty.lastAmended.toIso8601String(),
       };
     });
-    
+
     return {
       'totalTreaties': _treaties.length,
       'treaties': treatyMap,
@@ -352,7 +377,7 @@ class InternationalTaxService {
       countries.add(treaty.countryA);
       countries.add(treaty.countryB);
     });
-    
+
     return {
       'countriesWithTreaties': countries.length,
       'majorTradingPartners': _getMajorTradingPartners(),
@@ -362,7 +387,14 @@ class InternationalTaxService {
 
   List<String> _getMajorTradingPartners() {
     // Singapore's major trading partners with treaties
-    return ['United States', 'United Kingdom', 'China', 'India', 'Japan', 'Australia'];
+    return [
+      'United States',
+      'United Kingdom',
+      'China',
+      'India',
+      'Japan',
+      'Australia'
+    ];
   }
 
   List<String> _getRecommendedTreatyExpansion() {
@@ -399,7 +431,6 @@ class InternationalTaxService {
         ],
         lastAmended: DateTime(2009, 1, 1),
       ),
-      
       'SG_UK': TaxTreaty(
         treatyId: 'sg_uk_dta',
         countryA: 'Singapore',
@@ -418,7 +449,6 @@ class InternationalTaxService {
         ],
         lastAmended: DateTime(2010, 1, 1),
       ),
-      
       'SG_CN': TaxTreaty(
         treatyId: 'sg_china_dta',
         countryA: 'Singapore',
@@ -437,12 +467,12 @@ class InternationalTaxService {
         ],
         lastAmended: DateTime(2009, 1, 1),
       ),
-      
       'SG_IN': TaxTreaty(
         treatyId: 'sg_india_ceca',
         countryA: 'Singapore',
         countryB: 'India',
-        officialName: 'Singapore-India Comprehensive Economic Cooperation Agreement',
+        officialName:
+            'Singapore-India Comprehensive Economic Cooperation Agreement',
         signedDate: DateTime(1993, 1, 1),
         effectiveDate: DateTime(1994, 1, 1),
         withholdingTaxRates: {

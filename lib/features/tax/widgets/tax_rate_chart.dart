@@ -43,7 +43,8 @@ class _TaxRateChartState extends State<TaxRateChart> {
             child: CustomPaint(
               painter: TaxRateChartPainter(
                 data: _data,
-                primaryColor: widget.primaryColor ?? Theme.of(context).primaryColor,
+                primaryColor:
+                    widget.primaryColor ?? Theme.of(context).primaryColor,
               ),
               size: Size.infinite,
             ),
@@ -130,20 +131,21 @@ class TaxRateChartPainter extends CustomPainter {
 
     // Calculate chart bounds
     final chartRect = Rect.fromLTWH(40, 20, size.width - 80, size.height - 60);
-    
+
     // Find min/max values
     final minYear = data.first.year;
     final maxYear = data.last.year;
     final minRate = data.map((p) => p.rate).reduce((a, b) => a < b ? a : b);
     final maxRate = data.map((p) => p.rate).reduce((a, b) => a > b ? a : b);
-    
+
     // Add padding to rate range
     final rateRange = maxRate - minRate;
     final paddedMinRate = minRate - (rateRange * 0.1);
     final paddedMaxRate = maxRate + (rateRange * 0.1);
 
     // Draw grid lines
-    _drawGrid(canvas, chartRect, minYear, maxYear, paddedMinRate, paddedMaxRate);
+    _drawGrid(
+        canvas, chartRect, minYear, maxYear, paddedMinRate, paddedMaxRate);
 
     // Draw chart line
     final path = Path();
@@ -151,14 +153,16 @@ class TaxRateChartPainter extends CustomPainter {
 
     for (int i = 0; i < data.length; i++) {
       final point = data[i];
-      final x = chartRect.left + 
+      final x = chartRect.left +
           (point.year - minYear) / (maxYear - minYear) * chartRect.width;
-      final y = chartRect.bottom - 
-          (point.rate - paddedMinRate) / (paddedMaxRate - paddedMinRate) * chartRect.height;
-      
+      final y = chartRect.bottom -
+          (point.rate - paddedMinRate) /
+              (paddedMaxRate - paddedMinRate) *
+              chartRect.height;
+
       final offset = Offset(x, y);
       points.add(offset);
-      
+
       if (i == 0) {
         path.moveTo(x, y);
       } else {
@@ -173,13 +177,17 @@ class TaxRateChartPainter extends CustomPainter {
     for (int i = 0; i < points.length; i++) {
       final point = points[i];
       final dataPoint = data[i];
-      
+
       // Draw point circle
-      canvas.drawCircle(point, 4, pointPaint..color = dataPoint.color ?? primaryColor);
-      canvas.drawCircle(point, 4, Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2);
+      canvas.drawCircle(
+          point, 4, pointPaint..color = dataPoint.color ?? primaryColor);
+      canvas.drawCircle(
+          point,
+          4,
+          Paint()
+            ..color = Colors.white
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2);
 
       // Draw rate label
       textPainter.text = TextSpan(
@@ -198,11 +206,12 @@ class TaxRateChartPainter extends CustomPainter {
     }
 
     // Draw axis labels
-    _drawAxisLabels(canvas, chartRect, minYear, maxYear, paddedMinRate, paddedMaxRate);
+    _drawAxisLabels(
+        canvas, chartRect, minYear, maxYear, paddedMinRate, paddedMaxRate);
   }
 
-  void _drawGrid(Canvas canvas, Rect chartRect, int minYear, int maxYear, 
-                double minRate, double maxRate) {
+  void _drawGrid(Canvas canvas, Rect chartRect, int minYear, int maxYear,
+      double minRate, double maxRate) {
     final gridPaint = Paint()
       ..color = Colors.grey.withOpacity(0.3)
       ..strokeWidth = 1;
@@ -210,7 +219,7 @@ class TaxRateChartPainter extends CustomPainter {
     // Vertical grid lines (years)
     final yearStep = ((maxYear - minYear) / 5).ceil();
     for (int year = minYear; year <= maxYear; year += yearStep) {
-      final x = chartRect.left + 
+      final x = chartRect.left +
           (year - minYear) / (maxYear - minYear) * chartRect.width;
       canvas.drawLine(
         Offset(x, chartRect.top),
@@ -222,7 +231,7 @@ class TaxRateChartPainter extends CustomPainter {
     // Horizontal grid lines (rates)
     final rateStep = (maxRate - minRate) / 5;
     for (double rate = minRate; rate <= maxRate; rate += rateStep) {
-      final y = chartRect.bottom - 
+      final y = chartRect.bottom -
           (rate - minRate) / (maxRate - minRate) * chartRect.height;
       canvas.drawLine(
         Offset(chartRect.left, y),
@@ -233,7 +242,7 @@ class TaxRateChartPainter extends CustomPainter {
   }
 
   void _drawAxisLabels(Canvas canvas, Rect chartRect, int minYear, int maxYear,
-                      double minRate, double maxRate) {
+      double minRate, double maxRate) {
     final textPainter = TextPainter(
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
@@ -242,9 +251,9 @@ class TaxRateChartPainter extends CustomPainter {
     // Y-axis labels (rates)
     final rateStep = (maxRate - minRate) / 5;
     for (double rate = minRate; rate <= maxRate; rate += rateStep) {
-      final y = chartRect.bottom - 
+      final y = chartRect.bottom -
           (rate - minRate) / (maxRate - minRate) * chartRect.height;
-      
+
       textPainter.text = TextSpan(
         text: '${(rate * 100).toStringAsFixed(1)}%',
         style: const TextStyle(
@@ -255,16 +264,17 @@ class TaxRateChartPainter extends CustomPainter {
       textPainter.layout();
       textPainter.paint(
         canvas,
-        Offset(chartRect.left - textPainter.width - 8, y - textPainter.height / 2),
+        Offset(
+            chartRect.left - textPainter.width - 8, y - textPainter.height / 2),
       );
     }
 
     // X-axis labels (years)
     final yearStep = ((maxYear - minYear) / 5).ceil();
     for (int year = minYear; year <= maxYear; year += yearStep) {
-      final x = chartRect.left + 
+      final x = chartRect.left +
           (year - minYear) / (maxYear - minYear) * chartRect.width;
-      
+
       textPainter.text = TextSpan(
         text: year.toString(),
         style: const TextStyle(

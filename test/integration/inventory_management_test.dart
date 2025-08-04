@@ -54,10 +54,11 @@ void main() {
         // Assert
         expect(result, hasLength(1));
         final retrievedProduct = Product.fromDatabase(result.first);
-        
+
         expect(retrievedProduct.id, equals(product.id));
         expect(retrievedProduct.name, equals('Integration Test Product'));
-        expect(retrievedProduct.description, equals('Product for integration testing'));
+        expect(retrievedProduct.description,
+            equals('Product for integration testing'));
         expect(retrievedProduct.price, equals(299.99));
         expect(retrievedProduct.cost, equals(150.00));
         expect(retrievedProduct.stockQuantity, equals(100));
@@ -77,7 +78,7 @@ void main() {
         };
 
         final db = await databaseService.database;
-        
+
         // Should fail due to NOT NULL constraint on name
         expect(
           () async => await db.insert('products', invalidProduct),
@@ -89,7 +90,7 @@ void main() {
         // Negative price should be rejected by CHECK constraint
         final product = TestFactories.createProduct(price: -10.0);
         final db = await databaseService.database;
-        
+
         expect(
           () async => await db.insert('products', product.toDatabase()),
           throwsException,
@@ -143,7 +144,7 @@ void main() {
           where: 'id = ?',
           whereArgs: [product.id],
         );
-        
+
         final updatedProduct = Product.fromDatabase(result.first);
         expect(updatedProduct.stockQuantity, equals(85));
         expect(updatedProduct.isInStock, isTrue);
@@ -172,17 +173,18 @@ void main() {
           where: 'id = ?',
           whereArgs: [product.id],
         );
-        
+
         final outOfStockProduct = Product.fromDatabase(result.first);
         expect(outOfStockProduct.stockQuantity, equals(0));
         expect(outOfStockProduct.isInStock, isFalse);
-        expect(outOfStockProduct.isLowStock, isFalse); // 0 is not low stock, it's out of stock
+        expect(outOfStockProduct.isLowStock,
+            isFalse); // 0 is not low stock, it's out of stock
       });
 
       test('should prevent negative stock quantities', () async {
         final product = TestFactories.createProduct(stockQuantity: -5);
         final db = await databaseService.database;
-        
+
         // Should fail due to CHECK constraint
         expect(
           () async => await db.insert('products', product.toDatabase()),
@@ -213,7 +215,7 @@ void main() {
         final previousQty = stockMovement['previous_quantity'] as int;
         final change = stockMovement['quantity_change'] as int;
         final newQty = stockMovement['new_quantity'] as int;
-        
+
         expect(newQty, equals(previousQty + change)); // 100 + (-15) = 85
       });
     });
@@ -292,7 +294,7 @@ void main() {
 
         // Lead time indicates when to reorder
         expect(product.leadTimeDays, equals(7)); // Default lead time
-        
+
         // Should reorder if current stock < (daily usage * lead time + min stock)
         // For this test, we'll assume daily usage can be calculated from historical data
       });
@@ -472,7 +474,7 @@ void main() {
         ''');
 
         expect(categoryResults, hasLength(3));
-        
+
         // Electronics should have 2 products
         final electronicsCategory = categoryResults.firstWhere(
           (row) => row['category'] == 'Electronics',
@@ -515,13 +517,13 @@ void main() {
 
         expect(inventoryValue, hasLength(1));
         final electronics = inventoryValue.first;
-        
+
         // Cost value: (60 * 10) + (120 * 5) = 600 + 600 = 1200
         expect(electronics['cost_value'], equals(1200.0));
-        
+
         // Retail value: (100 * 10) + (200 * 5) = 1000 + 1000 = 2000
         expect(electronics['retail_value'], equals(2000.0));
-        
+
         // Total units: 10 + 5 = 15
         expect(electronics['total_units'], equals(15));
       });
@@ -530,15 +532,15 @@ void main() {
     group('Bulk Operations', () {
       test('should support bulk stock updates', () async {
         // Create multiple products
-        final products = List.generate(5, (index) => 
-          TestFactories.createProduct(
-            name: 'Product ${index + 1}',
-            stockQuantity: 100,
-          )
-        );
+        final products = List.generate(
+            5,
+            (index) => TestFactories.createProduct(
+                  name: 'Product ${index + 1}',
+                  stockQuantity: 100,
+                ));
 
         final db = await databaseService.database;
-        
+
         // Use batch for efficient bulk operations
         final batch = db.batch();
         for (final product in products) {
@@ -622,7 +624,7 @@ void main() {
         // Create a large number of products
         const productCount = 1000;
         final db = await databaseService.database;
-        
+
         final batch = db.batch();
         for (int i = 0; i < productCount; i++) {
           final product = TestFactories.createProduct(
@@ -632,27 +634,30 @@ void main() {
           );
           batch.insert('products', product.toDatabase());
         }
-        
+
         final stopwatch = Stopwatch()..start();
         await batch.commit();
         stopwatch.stop();
-        
-        print('Bulk insert of $productCount products took: ${stopwatch.elapsedMilliseconds}ms');
-        expect(stopwatch.elapsedMilliseconds, lessThan(5000)); // Should be under 5 seconds
+
+        print(
+            'Bulk insert of $productCount products took: ${stopwatch.elapsedMilliseconds}ms');
+        expect(stopwatch.elapsedMilliseconds,
+            lessThan(5000)); // Should be under 5 seconds
 
         // Test indexed queries performance
         stopwatch.reset();
         stopwatch.start();
-        
+
         final searchResults = await db.query(
           'products',
           where: 'name LIKE ?',
           whereArgs: ['%0500%'],
         );
-        
+
         stopwatch.stop();
         print('Name search query took: ${stopwatch.elapsedMilliseconds}ms');
-        expect(stopwatch.elapsedMilliseconds, lessThan(100)); // Should be under 100ms
+        expect(stopwatch.elapsedMilliseconds,
+            lessThan(100)); // Should be under 100ms
         expect(searchResults, isNotEmpty);
       });
     });

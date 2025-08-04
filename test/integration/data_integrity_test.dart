@@ -189,7 +189,7 @@ void main() {
         // In business logic layer, this should be validated
         expect(customer.gstRegistered, isTrue);
         expect(customer.hasValidGstNumber, isFalse);
-        
+
         // Business rule violation - registered but invalid number
         expect(customer.gstStatusDisplay, contains('Invalid Number'));
       });
@@ -203,31 +203,32 @@ void main() {
 
         expect(product.profitMarginPercentage, lessThan(0));
         expect(product.profitAmount, lessThan(0));
-        
+
         // This should trigger a business warning in real application
       });
 
       test('should validate invoice calculation rules', () async {
         // Business rule: Invoice totals must be mathematically correct
         final invoiceData = TestFactories.createInvoiceData();
-        
+
         // Validate calculation consistency
         expect(TestValidators.validateInvoiceCalculations(invoiceData), isTrue);
 
         // Manually corrupt the calculations
         invoiceData['total_amount'] = 999.99; // Incorrect total
-        
-        expect(TestValidators.validateInvoiceCalculations(invoiceData), isFalse);
+
+        expect(
+            TestValidators.validateInvoiceCalculations(invoiceData), isFalse);
       });
 
       test('should validate stock level business rules', () async {
         // Business rule: Cannot sell more than available stock
         final product = TestFactories.createProduct(stockQuantity: 10);
-        
+
         final requestedQuantity = 15; // More than available
-        
+
         expect(product.stockQuantity, lessThan(requestedQuantity));
-        
+
         // In real application, this should prevent the sale
         final availableForSale = product.stockQuantity;
         expect(availableForSale, equals(10));
@@ -244,7 +245,7 @@ void main() {
         // Calculate due date based on terms
         final issueDate = invoiceData['issue_date'] as DateTime;
         final paymentTerms = invoiceData['payment_terms'] as PaymentTerm;
-        
+
         DateTime expectedDueDate;
         switch (paymentTerms) {
           case PaymentTerm.dueOnReceipt:
@@ -272,10 +273,10 @@ void main() {
       test('should log customer creation in audit trail', () async {
         final customer = TestFactories.createCustomer();
         final db = await databaseService.database;
-        
+
         // Insert customer
         await db.insert('customers', customer.toDatabase());
-        
+
         // Manually log audit trail (in real app, this would be automatic)
         await db.insert('audit_trail', {
           'id': UuidGenerator.generateId(),
@@ -307,7 +308,7 @@ void main() {
           name: 'Original Name',
           email: 'original@test.com',
         );
-        
+
         final db = await databaseService.database;
         await db.insert('customers', customer.toDatabase());
 
@@ -348,7 +349,7 @@ void main() {
 
         expect(auditRecords, hasLength(1));
         final auditRecord = auditRecords.first;
-        
+
         expect(auditRecord['old_values'], contains('Original Name'));
         expect(auditRecord['new_values'], contains('Updated Name'));
         expect(auditRecord['old_values'], contains('original@test.com'));
@@ -357,7 +358,7 @@ void main() {
 
       test('should track user actions and context', () async {
         final db = await databaseService.database;
-        
+
         // Simulate user action with context
         final actionLog = {
           'id': UuidGenerator.generateId(),
@@ -394,7 +395,7 @@ void main() {
 
         // Create multiple audit entries for same customer
         final operations = ['INSERT', 'UPDATE', 'UPDATE', 'DELETE'];
-        
+
         for (int i = 0; i < operations.length; i++) {
           await db.insert('audit_trail', {
             'id': UuidGenerator.generateId(),
@@ -431,7 +432,8 @@ void main() {
         expect(updatesOnly, hasLength(2));
 
         // Query recent activity (last 24 hours)
-        final yesterday = DateTime.now().subtract(Duration(days: 1)).millisecondsSinceEpoch;
+        final yesterday =
+            DateTime.now().subtract(Duration(days: 1)).millisecondsSinceEpoch;
         final recentActivity = await db.query(
           'audit_trail',
           where: 'timestamp > ?',
@@ -446,16 +448,16 @@ void main() {
     group('Data Integrity Checks', () {
       test('should run foreign key constraint checks', () async {
         final violations = await databaseService.runIntegrityChecks();
-        
+
         // Should start with no violations
         expect(violations.where((v) => v.containsKey('table')), isEmpty);
-        
+
         // Create orphaned record to test detection
         final db = await databaseService.database;
-        
+
         // Temporarily disable foreign key constraints
         await db.execute('PRAGMA foreign_keys = OFF');
-        
+
         await db.execute('''
           CREATE TABLE IF NOT EXISTS test_orphan_orders (
             id TEXT PRIMARY KEY,
@@ -463,16 +465,16 @@ void main() {
             FOREIGN KEY (customer_id) REFERENCES customers (id)
           )
         ''');
-        
+
         // Insert orphaned record
         await db.insert('test_orphan_orders', {
           'id': 'orphan_order',
           'customer_id': 'non_existent_customer',
         });
-        
+
         // Re-enable foreign key constraints
         await db.execute('PRAGMA foreign_keys = ON');
-        
+
         // Check for violations
         final newViolations = await databaseService.runIntegrityChecks();
         expect(newViolations.where((v) => v.containsKey('table')), isNotEmpty);
@@ -480,10 +482,10 @@ void main() {
 
       test('should validate double-entry bookkeeping balance', () async {
         final db = await databaseService.database;
-        
+
         // Create test transaction entries
         final transactionId = UuidGenerator.generateId();
-        
+
         // Balanced transaction: Debit = Credit
         await db.insert('journal_entries', {
           'id': UuidGenerator.generateId(),
@@ -494,7 +496,7 @@ void main() {
           'description': 'Cash received',
           'created_at': DateTime.now().millisecondsSinceEpoch,
         });
-        
+
         await db.insert('journal_entries', {
           'id': UuidGenerator.generateId(),
           'transaction_id': transactionId,
@@ -518,7 +520,7 @@ void main() {
 
         // Create unbalanced transaction
         final unbalancedTransactionId = UuidGenerator.generateId();
-        
+
         await db.insert('journal_entries', {
           'id': UuidGenerator.generateId(),
           'transaction_id': unbalancedTransactionId,
@@ -538,7 +540,8 @@ void main() {
           HAVING ABS(total_debit - total_credit) > 0.01
         ''', [unbalancedTransactionId]);
 
-        expect(unbalancedCheck, hasLength(1)); // One unbalanced transaction found
+        expect(
+            unbalancedCheck, hasLength(1)); // One unbalanced transaction found
       });
 
       test('should run custom integrity checks', () async {
@@ -550,7 +553,8 @@ void main() {
           'check_name': 'Product Price Consistency',
           'check_type': 'BUSINESS_RULE',
           'table_name': 'products',
-          'description': 'Ensure product cost does not exceed selling price by more than expected margin',
+          'description':
+              'Ensure product cost does not exceed selling price by more than expected margin',
           'check_sql': '''
             SELECT id, name, price, cost, (cost - price) as loss_amount
             FROM products 
@@ -570,46 +574,48 @@ void main() {
 
         // Run integrity checks
         final violations = await databaseService.runIntegrityChecks();
-        
+
         // Should detect the pricing violation
         final pricingViolations = violations.where(
           (v) => v['check_name'] == 'Product Price Consistency',
         );
-        
+
         expect(pricingViolations, isNotEmpty);
       });
 
       test('should validate data consistency across related tables', () async {
         final db = await databaseService.database;
-        
+
         // Create customer
         final customer = TestFactories.createCustomer();
         await db.insert('customers', customer.toDatabase());
 
         // Create invoice for customer
-        final invoiceData = TestFactories.createInvoiceData(customerId: customer.id);
-        
+        final invoiceData =
+            TestFactories.createInvoiceData(customerId: customer.id);
+
         // In real implementation, this would be stored in invoices table
         // For test, verify the relationship is valid
         expect(invoiceData['customer_id'], equals(customer.id));
-        
+
         // Verify customer exists for the invoice
         final customerCheck = await db.query(
           'customers',
           where: 'id = ?',
           whereArgs: [invoiceData['customer_id']],
         );
-        
+
         expect(customerCheck, hasLength(1));
         expect(customerCheck.first['id'], equals(customer.id));
       });
     });
 
     group('Performance of Integrity Checks', () {
-      test('should efficiently run integrity checks on large datasets', () async {
+      test('should efficiently run integrity checks on large datasets',
+          () async {
         const recordCount = 500;
         final db = await databaseService.database;
-        
+
         // Create large number of customers
         final batch = db.batch();
         for (int i = 0; i < recordCount; i++) {
@@ -626,9 +632,11 @@ void main() {
         final violations = await databaseService.runIntegrityChecks();
         stopwatch.stop();
 
-        print('Integrity checks on $recordCount records took: ${stopwatch.elapsedMilliseconds}ms');
-        expect(stopwatch.elapsedMilliseconds, lessThan(2000)); // Should be under 2 seconds
-        
+        print(
+            'Integrity checks on $recordCount records took: ${stopwatch.elapsedMilliseconds}ms');
+        expect(stopwatch.elapsedMilliseconds,
+            lessThan(2000)); // Should be under 2 seconds
+
         // Should find no violations with valid test data
         expect(violations.where((v) => v.containsKey('table')), isEmpty);
       });
@@ -636,7 +644,7 @@ void main() {
       test('should efficiently query audit trail history', () async {
         const auditRecordCount = 1000;
         final db = await databaseService.database;
-        
+
         // Create large number of audit records
         final batch = db.batch();
         for (int i = 0; i < auditRecordCount; i++) {
@@ -656,19 +664,23 @@ void main() {
 
         // Query audit trail and measure performance
         final stopwatch = Stopwatch()..start();
-        
+
         final recentAudits = await db.query(
           'audit_trail',
           where: 'timestamp > ?',
-          whereArgs: [DateTime.now().subtract(Duration(days: 1)).millisecondsSinceEpoch],
+          whereArgs: [
+            DateTime.now().subtract(Duration(days: 1)).millisecondsSinceEpoch
+          ],
           orderBy: 'timestamp DESC',
           limit: 100,
         );
-        
+
         stopwatch.stop();
 
-        print('Audit trail query on $auditRecordCount records took: ${stopwatch.elapsedMilliseconds}ms');
-        expect(stopwatch.elapsedMilliseconds, lessThan(100)); // Should be under 100ms
+        print(
+            'Audit trail query on $auditRecordCount records took: ${stopwatch.elapsedMilliseconds}ms');
+        expect(stopwatch.elapsedMilliseconds,
+            lessThan(100)); // Should be under 100ms
         expect(recentAudits.length, greaterThan(0));
       });
     });

@@ -23,7 +23,7 @@ void main() {
     setUpAll(() async {
       databaseService = CRDTDatabaseService();
       await databaseService.initialize('test_node_offline');
-      
+
       nodeAId = 'node_a_${DateTime.now().millisecondsSinceEpoch}';
       nodeBId = 'node_b_${DateTime.now().millisecondsSinceEpoch}';
       nodeAClock = HybridLogicalClock(nodeAId);
@@ -87,7 +87,8 @@ void main() {
         await databaseService.upsertCustomer(customer);
 
         // Verify offline changes persisted
-        final retrieved = await databaseService.getCustomer('offline_customer_1');
+        final retrieved =
+            await databaseService.getCustomer('offline_customer_1');
         expect(retrieved!.name.value, equals('Updated Offline Customer'));
         expect(retrieved.email.value, equals('updated@offline.com'));
         expect(retrieved.loyaltyPoints.value, equals(100));
@@ -113,17 +114,20 @@ void main() {
 
         // Vector clock should have advanced
         expect(customer.version.toString(), isNot(equals(initialVersion)));
-        
+
         // Persist and retrieve
         await databaseService.upsertCustomer(customer);
-        final retrieved = await databaseService.getCustomer('vector_clock_test');
-        
-        expect(retrieved!.version.toString(), equals(customer.version.toString()));
+        final retrieved =
+            await databaseService.getCustomer('vector_clock_test');
+
+        expect(
+            retrieved!.version.toString(), equals(customer.version.toString()));
       });
     });
 
     group('CRDT Conflict Resolution', () {
-      test('should resolve concurrent name updates using LWW-Register', () async {
+      test('should resolve concurrent name updates using LWW-Register',
+          () async {
         // Create same customer on two nodes
         final timestampA1 = nodeAClock.tick();
         final customerA = CRDTCustomer(
@@ -165,7 +169,8 @@ void main() {
         }
       });
 
-      test('should handle concurrent loyalty points updates with PN-Counter', () async {
+      test('should handle concurrent loyalty points updates with PN-Counter',
+          () async {
         final customer = CRDTCustomer(
           id: 'loyalty_conflict_test',
           nodeId: nodeAId,
@@ -180,9 +185,10 @@ void main() {
 
         // Simulate concurrent loyalty point updates from different nodes
         customer.addLoyaltyPoints(50); // Node A adds 50 points
-        
+
         // Create another instance representing Node B's view
-        final customerB = await databaseService.getCustomer('loyalty_conflict_test');
+        final customerB =
+            await databaseService.getCustomer('loyalty_conflict_test');
         customerB!.loyaltyPoints.nodeId = nodeBId; // Simulate different node
         customerB.addLoyaltyPoints(75); // Node B adds 75 points
 
@@ -236,7 +242,7 @@ void main() {
 
       test('should handle complex invoice conflict scenarios', () async {
         final invoiceId = 'complex_invoice_conflict';
-        
+
         // Create invoice on Node A
         final invoiceA = CRDTInvoiceEnhanced(
           id: invoiceId,
@@ -289,7 +295,8 @@ void main() {
         // LWW fields should use latest timestamp
         // PN-Counter payments should sum: 500 + 300 = 800 cents = 8.00 SGD
         expect(invoiceA.paymentsReceived.value, equals(80000)); // In cents
-        expect(invoiceA.remainingBalance, greaterThan(0)); // Should have remaining balance
+        expect(invoiceA.remainingBalance,
+            greaterThan(0)); // Should have remaining balance
       });
     });
 
@@ -308,7 +315,7 @@ void main() {
             name: 'Sync Customer $i',
             email: 'sync$i@test.com',
           );
-          
+
           await databaseService.upsertCustomer(customer);
           entities.add(customer);
         }
@@ -316,9 +323,10 @@ void main() {
         // Phase 2: Go offline - make local modifications
         for (int i = 0; i < entities.length; i++) {
           final customer = entities[i];
-          customer.updateName('Offline Updated ${customer.name.value}', nodeAClock.tick());
+          customer.updateName(
+              'Offline Updated ${customer.name.value}', nodeAClock.tick());
           customer.addLoyaltyPoints(100 * (i + 1));
-          
+
           // Store offline changes
           await databaseService.upsertCustomer(customer);
         }
@@ -341,24 +349,26 @@ void main() {
 
         // Phase 4: Come online - merge conflicts
         for (int i = 0; i < entities.length; i++) {
-          final localCustomer = await databaseService.getCustomer('sync_customer_$i');
+          final localCustomer =
+              await databaseService.getCustomer('sync_customer_$i');
           final externalCustomer = externalUpdates[i];
-          
+
           // Merge external changes
           localCustomer!.mergeWith(externalCustomer);
-          
+
           // Persist merged state
           await databaseService.upsertCustomer(localCustomer);
         }
 
         // Phase 5: Verify final state
         for (int i = 0; i < entities.length; i++) {
-          final finalCustomer = await databaseService.getCustomer('sync_customer_$i');
-          
+          final finalCustomer =
+              await databaseService.getCustomer('sync_customer_$i');
+
           // Loyalty points should be sum of both updates
           final expectedPoints = (100 * (i + 1)) + (50 * (i + 1));
           expect(finalCustomer!.loyaltyPoints.value, equals(expectedPoints));
-          
+
           // Name should be resolved by LWW (latest timestamp wins)
           expect(finalCustomer.name.value, isNotEmpty);
         }
@@ -379,7 +389,7 @@ void main() {
 
         // Simulate rapid updates from multiple sources
         final updates = <Future<void>>[];
-        
+
         // Node A updates
         for (int i = 0; i < 10; i++) {
           updates.add(Future(() async {
@@ -417,7 +427,7 @@ void main() {
       test('should handle network partition and healing', () async {
         // Create initial customer on both nodes
         final customerId = 'partition_test';
-        
+
         final customerA = CRDTCustomer(
           id: customerId,
           nodeId: nodeAId,
@@ -463,21 +473,22 @@ void main() {
         // Verify conflict resolution
         final healedCustomer = await databaseService.getCustomer(customerId);
         expect(healedCustomer, isNotNull);
-        
+
         // PN-Counter should sum: 100 + 150 = 250
         expect(healedCustomer!.loyaltyPoints.value, equals(250));
-        
+
         // OR-Set should contain both tags
         expect(healedCustomer.tags.elements.contains('node_a_tag'), isTrue);
         expect(healedCustomer.tags.elements.contains('node_b_tag'), isTrue);
-        
+
         // LWW fields resolved by timestamp
-        expect(healedCustomer.name.value, isIn(['Node A Updated', 'Node B Updated']));
+        expect(healedCustomer.name.value,
+            isIn(['Node A Updated', 'Node B Updated']));
       });
 
       test('should maintain causal ordering during partition', () async {
         final customerId = 'causal_ordering_test';
-        
+
         // Create customer with causal chain of updates
         final customer = CRDTCustomer(
           id: customerId,
@@ -490,10 +501,10 @@ void main() {
 
         // Update 1: Change name
         customer.updateName('Updated Name', nodeAClock.tick());
-        
+
         // Update 2: Change email (causally depends on name change)
         customer.updateEmail('updated@test.com', nodeAClock.tick());
-        
+
         // Update 3: Add loyalty points (causally depends on email change)
         customer.addLoyaltyPoints(50);
 
@@ -507,7 +518,7 @@ void main() {
         expect(nameTimestamp.happensAfter(customer.createdAt), isTrue);
         expect(emailTimestamp.happensAfter(nameTimestamp), isTrue);
         // PN-Counter doesn't use LWW timestamp, so skip this check
-        
+
         // Verify final state consistency
         final retrievedCustomer = await databaseService.getCustomer(customerId);
         expect(retrievedCustomer!.name.value, equals('Updated Name'));
@@ -533,19 +544,20 @@ void main() {
         await databaseService.upsertCustomer(customer);
 
         // Simulate creating invoice that references customer
-        final invoiceData = TestFactories.createInvoiceData(customerId: customerId);
-        
+        final invoiceData =
+            TestFactories.createInvoiceData(customerId: customerId);
+
         // Verify customer exists before creating invoice
         final customerExists = await databaseService.getCustomer(customerId);
         expect(customerExists, isNotNull);
-        
+
         // In a real scenario, invoice creation would validate customer reference
         expect(invoiceData['customer_id'], equals(customerId));
       });
 
       test('should handle deletion conflicts correctly', () async {
         final customerId = 'deletion_conflict_test';
-        
+
         // Create customer on both nodes
         final customerA = CRDTCustomer(
           id: customerId,
@@ -586,7 +598,7 @@ void main() {
       test('should efficiently resolve large number of conflicts', () async {
         const conflictCount = 100;
         final customerId = 'performance_conflict_test';
-        
+
         final baseCustomer = CRDTCustomer(
           id: customerId,
           nodeId: nodeAId,
@@ -614,18 +626,23 @@ void main() {
 
         // Measure conflict resolution performance
         final stopwatch = Stopwatch()..start();
-        
+
         for (final version in conflictingVersions) {
           baseCustomer.mergeWith(version);
         }
-        
+
         stopwatch.stop();
 
-        print('Resolved $conflictCount conflicts in ${stopwatch.elapsedMilliseconds}ms');
-        expect(stopwatch.elapsedMilliseconds, lessThan(1000)); // Should be under 1 second
+        print(
+            'Resolved $conflictCount conflicts in ${stopwatch.elapsedMilliseconds}ms');
+        expect(stopwatch.elapsedMilliseconds,
+            lessThan(1000)); // Should be under 1 second
 
         // Verify final state
-        expect(baseCustomer.loyaltyPoints.value, equals(conflictCount * (conflictCount + 1) ~/ 2)); // Sum 1+2+...+100
+        expect(
+            baseCustomer.loyaltyPoints.value,
+            equals(
+                conflictCount * (conflictCount + 1) ~/ 2)); // Sum 1+2+...+100
         expect(baseCustomer.tags.elements.length, equals(conflictCount));
       });
     });

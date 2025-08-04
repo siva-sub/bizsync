@@ -11,7 +11,7 @@ class Employee {
   final bool isActive;
   final DateTime joinDate;
   final int leaveBalance;
-  
+
   const Employee({
     required this.id,
     required this.name,
@@ -26,7 +26,7 @@ class Employee {
     required this.joinDate,
     this.leaveBalance = 14,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -43,7 +43,7 @@ class Employee {
       'leave_balance': leaveBalance,
     };
   }
-  
+
   factory Employee.fromJson(Map<String, dynamic> json) {
     return Employee(
       id: json['id'] as String,
@@ -60,7 +60,7 @@ class Employee {
       leaveBalance: json['leave_balance'] as int? ?? 14,
     );
   }
-  
+
   String get workPassDisplayName {
     switch (workPassType.toLowerCase()) {
       case 'citizen':
@@ -77,20 +77,20 @@ class Employee {
         return workPassType;
     }
   }
-  
+
   String get formattedSalary {
     return '\$${basicSalary.toStringAsFixed(0)}';
   }
-  
+
   String get formattedCpf {
     return '\$${cpfContribution.toStringAsFixed(0)}';
   }
-  
+
   int get yearsOfService {
     final now = DateTime.now();
     return now.difference(joinDate).inDays ~/ 365;
   }
-  
+
   @override
   String toString() {
     return 'Employee(id: $id, name: $name, position: $position)';

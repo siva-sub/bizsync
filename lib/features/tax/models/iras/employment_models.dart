@@ -23,10 +23,12 @@ class EmploymentIncomeSubmissionRequest {
     this.validateOnly = false,
   });
 
-  factory EmploymentIncomeSubmissionRequest.fromJson(Map<String, dynamic> json) =>
+  factory EmploymentIncomeSubmissionRequest.fromJson(
+          Map<String, dynamic> json) =>
       _$EmploymentIncomeSubmissionRequestFromJson(json);
 
-  Map<String, dynamic> toJson() => _$EmploymentIncomeSubmissionRequestToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$EmploymentIncomeSubmissionRequestToJson(this);
 }
 
 /// Employment Income Records submission response
@@ -42,10 +44,12 @@ class EmploymentIncomeSubmissionResponse {
     this.info,
   });
 
-  factory EmploymentIncomeSubmissionResponse.fromJson(Map<String, dynamic> json) =>
+  factory EmploymentIncomeSubmissionResponse.fromJson(
+          Map<String, dynamic> json) =>
       _$EmploymentIncomeSubmissionResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$EmploymentIncomeSubmissionResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$EmploymentIncomeSubmissionResponseToJson(this);
 
   bool get isSuccess => returnCode == 10 || returnCode == 30;
 }
@@ -408,10 +412,10 @@ class BulkEmploymentRecords {
 
   Map<String, dynamic> toJson() => _$BulkEmploymentRecordsToJson(this);
 
-  int get totalRecords => 
-      ir8aRecords.length + 
-      ir8sRecords.length + 
-      a8aRecords.length + 
+  int get totalRecords =>
+      ir8aRecords.length +
+      ir8sRecords.length +
+      a8aRecords.length +
       a8bRecords.length;
 
   /// Convert to CSV format for IRAS submission
@@ -419,13 +423,15 @@ class BulkEmploymentRecords {
     final result = <String, String>{};
 
     if (ir8aRecords.isNotEmpty) {
-      final header = 'UEN,Employer Name,YA,NRIC,Employee Name,Address,Designation,Start Date,End Date,Gross Income,Employee CPF,Employer CPF,Bonuses,Benefits,Director,Overseas,Exempt,Total';
+      final header =
+          'UEN,Employer Name,YA,NRIC,Employee Name,Address,Designation,Start Date,End Date,Gross Income,Employee CPF,Employer CPF,Bonuses,Benefits,Director,Overseas,Exempt,Total';
       final rows = ir8aRecords.map((record) => record.toCsvRow()).join('\n');
       result['IR8A'] = '$header\n$rows';
     }
 
     if (ir8sRecords.isNotEmpty) {
-      final header = 'UEN,Employer Name,YA,NRIC,Employee Name,Designation,Shares Held,Percentage,Director Fees,Benefits,Total';
+      final header =
+          'UEN,Employer Name,YA,NRIC,Employee Name,Designation,Shares Held,Percentage,Director Fees,Benefits,Total';
       final rows = ir8sRecords.map((record) => record.toCsvRow()).join('\n');
       result['IR8S'] = '$header\n$rows';
     }

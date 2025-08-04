@@ -27,17 +27,15 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
   @override
   Widget build(BuildContext context) {
     final currentLocation = GoRouterState.of(context).uri.path;
-    
+
     return Container(
-      width: widget.isDesktopMode 
-          ? (widget.isExpanded ? 280 : 72) 
-          : null,
+      width: widget.isDesktopMode ? (widget.isExpanded ? 280 : 72) : null,
       child: Drawer(
         child: Column(
           children: [
             // Header
             _buildDrawerHeader(context),
-            
+
             // Navigation Items
             Expanded(
               child: ListView(
@@ -53,14 +51,14 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     isExpanded: widget.isExpanded,
                     onTap: () => _navigateTo(context, '/'),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Business Operations Section
                   if (widget.isExpanded) ...[
                     _SectionHeader('Business Operations'),
                   ],
-                  
+
                   // Invoices with submenu
                   _NavigationTile(
                     icon: Icons.receipt_long_outlined,
@@ -75,12 +73,15 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onSubmenuToggle: () => _toggleSubmenu('invoices'),
                     submenuItems: [
                       _SubmenuItem('All Invoices', '/invoices', Icons.list),
-                      _SubmenuItem('Create Invoice', '/invoices/create', Icons.add),
-                      _SubmenuItem('Draft Invoices', '/invoices?status=draft', Icons.drafts),
-                      _SubmenuItem('Overdue Invoices', '/invoices?status=overdue', Icons.warning),
+                      _SubmenuItem(
+                          'Create Invoice', '/invoices/create', Icons.add),
+                      _SubmenuItem('Draft Invoices', '/invoices?status=draft',
+                          Icons.drafts),
+                      _SubmenuItem('Overdue Invoices',
+                          '/invoices?status=overdue', Icons.warning),
                     ],
                   ),
-                  
+
                   // Customers
                   _NavigationTile(
                     icon: Icons.people_outlined,
@@ -95,10 +96,11 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onSubmenuToggle: () => _toggleSubmenu('customers'),
                     submenuItems: [
                       _SubmenuItem('All Customers', '/customers', Icons.list),
-                      _SubmenuItem('Add Customer', '/customers/create', Icons.person_add),
+                      _SubmenuItem('Add Customer', '/customers/create',
+                          Icons.person_add),
                     ],
                   ),
-                  
+
                   // Inventory
                   _NavigationTile(
                     icon: Icons.inventory_2_outlined,
@@ -113,11 +115,13 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onSubmenuToggle: () => _toggleSubmenu('inventory'),
                     submenuItems: [
                       _SubmenuItem('All Products', '/inventory', Icons.list),
-                      _SubmenuItem('Add Product', '/inventory/create', Icons.add_box),
-                      _SubmenuItem('Low Stock', '/inventory?filter=low_stock', Icons.warning),
+                      _SubmenuItem(
+                          'Add Product', '/inventory/create', Icons.add_box),
+                      _SubmenuItem('Low Stock', '/inventory?filter=low_stock',
+                          Icons.warning),
                     ],
                   ),
-                  
+
                   // Vendors
                   _NavigationTile(
                     icon: Icons.store_outlined,
@@ -132,11 +136,13 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onSubmenuToggle: () => _toggleSubmenu('vendors'),
                     submenuItems: [
                       _SubmenuItem('All Vendors', '/vendors', Icons.list),
-                      _SubmenuItem('Add Vendor', '/vendors/create', Icons.add_business),
-                      _SubmenuItem('International', '/vendors?filter=international', Icons.public),
+                      _SubmenuItem(
+                          'Add Vendor', '/vendors/create', Icons.add_business),
+                      _SubmenuItem('International',
+                          '/vendors?filter=international', Icons.public),
                     ],
                   ),
-                  
+
                   // Payments
                   _NavigationTile(
                     icon: Icons.payment_outlined,
@@ -150,18 +156,20 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onTap: () => _navigateTo(context, '/payments'),
                     onSubmenuToggle: () => _toggleSubmenu('payments'),
                     submenuItems: [
-                      _SubmenuItem('Payment Center', '/payments', Icons.dashboard),
-                      _SubmenuItem('SGQR Generator', '/payments/sgqr', Icons.qr_code),
+                      _SubmenuItem(
+                          'Payment Center', '/payments', Icons.dashboard),
+                      _SubmenuItem(
+                          'SGQR Generator', '/payments/sgqr', Icons.qr_code),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Management Section
                   if (widget.isExpanded) ...[
                     _SectionHeader('Management'),
                   ],
-                  
+
                   // Employee Management
                   _NavigationTile(
                     icon: Icons.badge_outlined,
@@ -176,11 +184,13 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onSubmenuToggle: () => _toggleSubmenu('employees'),
                     submenuItems: [
                       _SubmenuItem('All Employees', '/employees', Icons.list),
-                      _SubmenuItem('Add Employee', '/employees/create', Icons.person_add),
-                      _SubmenuItem('Employee Reports', '/employees/reports', Icons.analytics),
+                      _SubmenuItem('Add Employee', '/employees/create',
+                          Icons.person_add),
+                      _SubmenuItem('Employee Reports', '/employees/reports',
+                          Icons.analytics),
                     ],
                   ),
-                  
+
                   // Payroll
                   _NavigationTile(
                     icon: Icons.payments_outlined,
@@ -194,13 +204,17 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onTap: () => _navigateTo(context, '/payroll'),
                     onSubmenuToggle: () => _toggleSubmenu('payroll'),
                     submenuItems: [
-                      _SubmenuItem('Process Payroll', '/payroll', Icons.play_arrow),
-                      _SubmenuItem('Payroll History', '/payroll#history', Icons.history),
-                      _SubmenuItem('CPF Reports', '/payroll#reports', Icons.account_balance),
-                      _SubmenuItem('IR8A Forms', '/payroll#ir8a', Icons.description),
+                      _SubmenuItem(
+                          'Process Payroll', '/payroll', Icons.play_arrow),
+                      _SubmenuItem(
+                          'Payroll History', '/payroll#history', Icons.history),
+                      _SubmenuItem('CPF Reports', '/payroll#reports',
+                          Icons.account_balance),
+                      _SubmenuItem(
+                          'IR8A Forms', '/payroll#ir8a', Icons.description),
                     ],
                   ),
-                  
+
                   // Tax Management
                   _NavigationTile(
                     icon: Icons.account_balance_outlined,
@@ -215,17 +229,18 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onSubmenuToggle: () => _toggleSubmenu('tax'),
                     submenuItems: [
                       _SubmenuItem('Tax Dashboard', '/tax', Icons.dashboard),
-                      _SubmenuItem('Tax Calculator', '/tax/calculator', Icons.calculate),
+                      _SubmenuItem(
+                          'Tax Calculator', '/tax/calculator', Icons.calculate),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Analytics Section
                   if (widget.isExpanded) ...[
                     _SectionHeader('Analytics & Reports'),
                   ],
-                  
+
                   // Forecasting & Analytics
                   _NavigationTile(
                     icon: Icons.trending_up_outlined,
@@ -239,15 +254,21 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onTap: () => _navigateTo(context, '/forecasting'),
                     onSubmenuToggle: () => _toggleSubmenu('forecasting'),
                     submenuItems: [
-                      _SubmenuItem('Dashboard', '/forecasting', Icons.dashboard),
-                      _SubmenuItem('Revenue Forecast', '/forecasting/revenue', Icons.trending_up),
-                      _SubmenuItem('Expense Forecast', '/forecasting/expenses', Icons.trending_down),
-                      _SubmenuItem('Cash Flow Forecast', '/forecasting/cashflow', Icons.account_balance),
-                      _SubmenuItem('Inventory Forecast', '/forecasting/inventory', Icons.inventory),
-                      _SubmenuItem('Financial Reports', '/forecasting/reports', Icons.assessment),
+                      _SubmenuItem(
+                          'Dashboard', '/forecasting', Icons.dashboard),
+                      _SubmenuItem('Revenue Forecast', '/forecasting/revenue',
+                          Icons.trending_up),
+                      _SubmenuItem('Expense Forecast', '/forecasting/expenses',
+                          Icons.trending_down),
+                      _SubmenuItem('Cash Flow Forecast',
+                          '/forecasting/cashflow', Icons.account_balance),
+                      _SubmenuItem('Inventory Forecast',
+                          '/forecasting/inventory', Icons.inventory),
+                      _SubmenuItem('Financial Reports', '/forecasting/reports',
+                          Icons.assessment),
                     ],
                   ),
-                  
+
                   // Reports & Analytics
                   _NavigationTile(
                     icon: Icons.analytics_outlined,
@@ -262,19 +283,22 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onSubmenuToggle: () => _toggleSubmenu('reports'),
                     submenuItems: [
                       _SubmenuItem('Dashboard', '/reports', Icons.dashboard),
-                      _SubmenuItem('Sales Report', '/reports/sales', Icons.show_chart),
-                      _SubmenuItem('Tax Report', '/reports/tax', Icons.receipt_long),
-                      _SubmenuItem('Financial Report', '/reports/financial', Icons.account_balance),
+                      _SubmenuItem(
+                          'Sales Report', '/reports/sales', Icons.show_chart),
+                      _SubmenuItem(
+                          'Tax Report', '/reports/tax', Icons.receipt_long),
+                      _SubmenuItem('Financial Report', '/reports/financial',
+                          Icons.account_balance),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // System Section
                   if (widget.isExpanded) ...[
                     _SectionHeader('System'),
                   ],
-                  
+
                   // Notifications
                   _NavigationTile(
                     icon: Icons.notifications_outlined,
@@ -286,7 +310,7 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     badge: '3',
                     onTap: () => _navigateTo(context, '/notifications'),
                   ),
-                  
+
                   // Sync & Share
                   _NavigationTile(
                     icon: Icons.sync_outlined,
@@ -297,7 +321,7 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     isExpanded: widget.isExpanded,
                     onTap: () => _navigateTo(context, '/sync'),
                   ),
-                  
+
                   // Backup & Restore
                   _NavigationTile(
                     icon: Icons.backup_outlined,
@@ -308,7 +332,7 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     isExpanded: widget.isExpanded,
                     onTap: () => _navigateTo(context, '/backup'),
                   ),
-                  
+
                   // Settings
                   _NavigationTile(
                     icon: Icons.settings_outlined,
@@ -322,7 +346,7 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                 ],
               ),
             ),
-            
+
             // Footer with toggle button for desktop
             if (widget.isDesktopMode) ...[
               const Divider(height: 1),
@@ -331,11 +355,12 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                 child: IconButton(
                   onPressed: widget.onToggle,
                   icon: Icon(
-                    widget.isExpanded 
-                        ? Icons.keyboard_arrow_left 
+                    widget.isExpanded
+                        ? Icons.keyboard_arrow_left
                         : Icons.keyboard_arrow_right,
                   ),
-                  tooltip: widget.isExpanded ? 'Collapse sidebar' : 'Expand sidebar',
+                  tooltip:
+                      widget.isExpanded ? 'Collapse sidebar' : 'Expand sidebar',
                 ),
               ),
             ],
@@ -358,7 +383,7 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
         ),
       );
     }
-    
+
     return DrawerHeader(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -413,13 +438,13 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
 
   void _navigateTo(BuildContext context, String route) {
     context.go(route);
-    
+
     // Close drawer on mobile
     if (!widget.isDesktopMode) {
       Navigator.of(context).pop();
     }
   }
-  
+
   void _toggleSubmenu(String section) {
     setState(() {
       _expandedSection = _expandedSection == section ? null : section;
@@ -429,9 +454,9 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
 
 class _SectionHeader extends StatelessWidget {
   final String title;
-  
+
   const _SectionHeader(this.title);
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -494,7 +519,7 @@ class _NavigationTileState extends State<_NavigationTile>
       duration: AnimationConstants.buttonPress,
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 0.98,
@@ -513,8 +538,10 @@ class _NavigationTileState extends State<_NavigationTile>
   @override
   Widget build(BuildContext context) {
     final isSelected = _isRouteSelected();
-    final displayIcon = isSelected && widget.selectedIcon != null ? widget.selectedIcon! : widget.icon;
-    
+    final displayIcon = isSelected && widget.selectedIcon != null
+        ? widget.selectedIcon!
+        : widget.icon;
+
     return AnimationUtils.slideAndFade(
       begin: const Offset(-20, 0),
       child: Column(
@@ -526,7 +553,9 @@ class _NavigationTileState extends State<_NavigationTile>
               onTapDown: (_) => _controller.forward(),
               onTapUp: (_) {
                 _controller.reverse();
-                widget.hasSubmenu ? widget.onSubmenuToggle?.call() : widget.onTap();
+                widget.hasSubmenu
+                    ? widget.onSubmenuToggle?.call()
+                    : widget.onTap();
               },
               onTapCancel: () => _controller.reverse(),
               child: AnimatedBuilder(
@@ -537,17 +566,27 @@ class _NavigationTileState extends State<_NavigationTile>
                     child: AnimatedContainer(
                       duration: AnimationConstants.cardHover,
                       curve: AnimationConstants.cardCurve,
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: isSelected 
-                            ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                            : _isHovered 
-                                ? Theme.of(context).colorScheme.primary.withOpacity(0.05)
+                        color: isSelected
+                            ? Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.1)
+                            : _isHovered
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.05)
                                 : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                         border: isSelected
                             ? Border.all(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.3),
                                 width: 1,
                               )
                             : null,
@@ -559,10 +598,13 @@ class _NavigationTileState extends State<_NavigationTile>
                               duration: AnimationConstants.cardHover,
                               child: Icon(
                                 displayIcon,
-                                color: isSelected 
+                                color: isSelected
                                     ? Theme.of(context).colorScheme.primary
                                     : _isHovered
-                                        ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .primary
+                                            .withOpacity(0.8)
                                         : null,
                                 size: _isHovered ? 26 : 24,
                               ),
@@ -596,20 +638,30 @@ class _NavigationTileState extends State<_NavigationTile>
                               ),
                           ],
                         ),
-                        title: widget.isExpanded ? AnimatedDefaultTextStyle(
-                          duration: AnimationConstants.cardHover,
-                          style: TextStyle(
-                            color: isSelected 
-                                ? Theme.of(context).colorScheme.primary
-                                : _isHovered
-                                    ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
-                                    : Theme.of(context).textTheme.bodyMedium?.color,
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                            fontSize: _isHovered ? 15 : 14,
-                          ),
-                          child: Text(widget.title),
-                        ) : null,
-                        trailing: widget.isExpanded && widget.hasSubmenu 
+                        title: widget.isExpanded
+                            ? AnimatedDefaultTextStyle(
+                                duration: AnimationConstants.cardHover,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Theme.of(context).colorScheme.primary
+                                      : _isHovered
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.8)
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.color,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  fontSize: _isHovered ? 15 : 14,
+                                ),
+                                child: Text(widget.title),
+                              )
+                            : null,
+                        trailing: widget.isExpanded && widget.hasSubmenu
                             ? AnimatedRotation(
                                 duration: AnimationConfig.drawerSlide.duration,
                                 curve: AnimationConfig.drawerSlide.curve,
@@ -623,7 +675,8 @@ class _NavigationTileState extends State<_NavigationTile>
                                 ),
                               )
                             : null,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 4),
                       ),
                     ),
                   );
@@ -648,7 +701,9 @@ class _NavigationTileState extends State<_NavigationTile>
                               horizontalOffset: 20.0,
                               child: FadeInAnimation(child: widget),
                             ),
-                            children: widget.submenuItems!.map((item) => _buildSubmenuTile(item)).toList(),
+                            children: widget.submenuItems!
+                                .map((item) => _buildSubmenuTile(item))
+                                .toList(),
                           ),
                         ),
                       ),
@@ -662,7 +717,7 @@ class _NavigationTileState extends State<_NavigationTile>
 
   Widget _buildSubmenuTile(_SubmenuItem item) {
     final isSelected = widget.currentRoute.startsWith(item.route);
-    
+
     return AnimatedCard(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
       elevation: 0,
@@ -671,7 +726,7 @@ class _NavigationTileState extends State<_NavigationTile>
         leading: Icon(
           item.icon,
           size: 18,
-          color: isSelected 
+          color: isSelected
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         ),
@@ -679,9 +734,7 @@ class _NavigationTileState extends State<_NavigationTile>
           item.title,
           style: TextStyle(
             fontSize: 13,
-            color: isSelected 
-                ? Theme.of(context).colorScheme.primary
-                : null,
+            color: isSelected ? Theme.of(context).colorScheme.primary : null,
             fontWeight: isSelected ? FontWeight.w600 : null,
           ),
         ),
@@ -695,7 +748,8 @@ class _NavigationTileState extends State<_NavigationTile>
         dense: true,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         selected: isSelected,
-        selectedTileColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        selectedTileColor:
+            Theme.of(context).colorScheme.primary.withOpacity(0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -720,7 +774,7 @@ class _SubmenuItem {
   final String title;
   final String route;
   final IconData icon;
-  
+
   _SubmenuItem(this.title, this.route, this.icon);
 }
 

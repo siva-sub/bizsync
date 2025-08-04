@@ -8,10 +8,13 @@ import '../models/sync_models.dart';
 /// Bluetooth transport implementation for P2P communication (STUB)
 /// This is a stub implementation since flutter_bluetooth_serial is not available
 class BluetoothTransport extends P2PTransport {
-  final StreamController<DeviceInfo> _discoveryController = StreamController<DeviceInfo>.broadcast();
-  final StreamController<P2PConnection> _connectionController = StreamController<P2PConnection>.broadcast();
-  final StreamController<P2PDataPacket> _dataController = StreamController<P2PDataPacket>.broadcast();
-  
+  final StreamController<DeviceInfo> _discoveryController =
+      StreamController<DeviceInfo>.broadcast();
+  final StreamController<P2PConnection> _connectionController =
+      StreamController<P2PConnection>.broadcast();
+  final StreamController<P2PDataPacket> _dataController =
+      StreamController<P2PDataPacket>.broadcast();
+
   @override
   TransportType get transportType => TransportType.bluetooth;
 

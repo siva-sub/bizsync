@@ -298,7 +298,7 @@ void main() {
       // OW contribution: 20% + 17% of 5000 = 1850
       expect(result.employeeContribution, greaterThan(1000.0));
       expect(result.employerContribution, greaterThan(850.0));
-      
+
       // Should cap AW based on remaining ceiling
       final remainingCeiling = 102000.0 - 50000.0; // S$52k remaining
       expect(result.cappedAdditionalWage, equals(remainingCeiling));
@@ -315,11 +315,14 @@ void main() {
 
       expect(result.isEligible, isTrue);
       expect(result.totalContribution, equals(1110.0)); // 37% of 3000
-      
+
       // Check account allocation (below 55 rates)
-      expect(result.breakdown.ordinaryAccount, closeTo(689.976, 0.01)); // ~62.16%
-      expect(result.breakdown.specialAccount, closeTo(179.442, 0.01)); // ~16.22%
-      expect(result.breakdown.medisaveAccount, closeTo(239.982, 0.01)); // ~21.62%
+      expect(
+          result.breakdown.ordinaryAccount, closeTo(689.976, 0.01)); // ~62.16%
+      expect(
+          result.breakdown.specialAccount, closeTo(179.442, 0.01)); // ~16.22%
+      expect(
+          result.breakdown.medisaveAccount, closeTo(239.982, 0.01)); // ~21.62%
       expect(result.breakdown.totalContribution, equals(1110.0));
     });
 
@@ -337,7 +340,8 @@ void main() {
       expect(projection.monthlyContribution, equals(1480.0));
       // Bonus: 37% of 8000 = 2960
       expect(projection.bonusContribution, equals(2960.0));
-      expect(projection.annualTotalContribution, equals(20720.0)); // 17760 + 2960
+      expect(
+          projection.annualTotalContribution, equals(20720.0)); // 17760 + 2960
     });
   });
 
@@ -376,7 +380,7 @@ void main() {
       final grossSalary = 5000.0;
       final netSalary = grossSalary - cpfResult.employeeContribution; // 4000
       final employerCost = grossSalary + cpfResult.employerContribution; // 5850
-      
+
       expect(netSalary, equals(4000.0));
       expect(employerCost, equals(5850.0));
     });
@@ -460,13 +464,15 @@ void main() {
     });
 
     test('should handle negative amounts gracefully', () {
-      expect(() => SingaporeGstService.calculateGst(
-        amount: -100.0,
-        calculationDate: DateTime(2024, 6, 1),
-        taxCategory: GstTaxCategory.standard,
-        isGstRegistered: true,
-        customerIsGstRegistered: false,
-      ), returnsNormally);
+      expect(
+          () => SingaporeGstService.calculateGst(
+                amount: -100.0,
+                calculationDate: DateTime(2024, 6, 1),
+                taxCategory: GstTaxCategory.standard,
+                isGstRegistered: true,
+                customerIsGstRegistered: false,
+              ),
+          returnsNormally);
     });
 
     test('should validate GST registration number format', () {
@@ -498,7 +504,8 @@ void main() {
       );
 
       expect(validation.isValid, isFalse);
-      expect(validation.errors, contains('Invalid GST registration number format'));
+      expect(validation.errors,
+          contains('Invalid GST registration number format'));
     });
 
     test('should detect amount calculation inconsistencies', () {
@@ -514,7 +521,8 @@ void main() {
       );
 
       expect(validation.isValid, isFalse);
-      expect(validation.errors, contains('Amount calculation inconsistency detected'));
+      expect(validation.errors,
+          contains('Amount calculation inconsistency detected'));
     });
   });
 }

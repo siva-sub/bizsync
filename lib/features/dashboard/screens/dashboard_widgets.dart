@@ -25,8 +25,8 @@ mixin DashboardWidgetsMixin {
               Text(
                 'Quick Actions',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 16),
               AnimationLimiter(
@@ -53,7 +53,8 @@ mixin DashboardWidgetsMixin {
                           icon: Icons.warning_amber_outlined,
                           label: 'Overdue',
                           color: Colors.orange,
-                          onPressed: () => context.go('/invoices?filter=overdue'),
+                          onPressed: () =>
+                              context.go('/invoices?filter=overdue'),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -85,7 +86,8 @@ mixin DashboardWidgetsMixin {
     );
   }
 
-  Widget buildKPISection(BuildContext context, List<KPI> kpis, ThemeData theme) {
+  Widget buildKPISection(
+      BuildContext context, List<KPI> kpis, ThemeData theme) {
     return AnimationUtils.slideAndFade(
       begin: const Offset(0, 20),
       duration: AnimationConstants.medium,
@@ -110,7 +112,8 @@ mixin DashboardWidgetsMixin {
                 mainAxisSpacing: 16,
               ),
               itemCount: kpis.length,
-              itemBuilder: (context, index) => AnimationConfiguration.staggeredGrid(
+              itemBuilder: (context, index) =>
+                  AnimationConfiguration.staggeredGrid(
                 position: index,
                 duration: AnimationConstants.fast,
                 delay: AnimationConstants.listItemStagger,
@@ -131,7 +134,7 @@ mixin DashboardWidgetsMixin {
   Widget buildKPICard(BuildContext context, KPI kpi, ThemeData theme) {
     final isPositive = kpi.trend == TrendDirection.up;
     final isNegative = kpi.trend == TrendDirection.down;
-    
+
     return GestureDetector(
       onTap: () => _navigateToKPIDetail(context, kpi),
       child: AnimatedCard(
@@ -173,18 +176,27 @@ mixin DashboardWidgetsMixin {
                   child: Row(
                     children: [
                       Icon(
-                        isPositive ? Icons.trending_up : 
-                        isNegative ? Icons.trending_down : Icons.trending_flat,
+                        isPositive
+                            ? Icons.trending_up
+                            : isNegative
+                                ? Icons.trending_down
+                                : Icons.trending_flat,
                         size: 16,
-                        color: isPositive ? Colors.green : 
-                               isNegative ? Colors.red : Colors.grey,
+                        color: isPositive
+                            ? Colors.green
+                            : isNegative
+                                ? Colors.red
+                                : Colors.grey,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${kpi.percentageChange.abs().toStringAsFixed(1)}%',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isPositive ? Colors.green : 
-                                 isNegative ? Colors.red : Colors.grey,
+                          color: isPositive
+                              ? Colors.green
+                              : isNegative
+                                  ? Colors.red
+                                  : Colors.grey,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -225,9 +237,10 @@ mixin DashboardWidgetsMixin {
   Widget _buildAnimatedKPIValue(KPI kpi, ThemeData theme) {
     // Extract numeric value from formatted string for animation
     final numericValue = _extractNumericValue(kpi.formattedValue);
-    
+
     if (numericValue != null) {
-      final prefix = kpi.formattedValue.replaceAll(RegExp(r'[\d,.]'), '').trim();
+      final prefix =
+          kpi.formattedValue.replaceAll(RegExp(r'[\d,.]'), '').trim();
       return AnimatedNumberCounter(
         value: numericValue,
         duration: AnimationConstants.numberCounter,
@@ -265,7 +278,8 @@ mixin DashboardWidgetsMixin {
   }
 
   // Continue with simplified charts that work...
-  Widget buildRevenueChart(BuildContext context, RevenueAnalytics analytics, ThemeData theme) {
+  Widget buildRevenueChart(
+      BuildContext context, RevenueAnalytics analytics, ThemeData theme) {
     return MesaSafeCard(
       child: InkWell(
         onTap: () => context.go('/reports/sales'),
@@ -288,7 +302,8 @@ mixin DashboardWidgetsMixin {
               ),
               const SizedBox(height: 16),
               Text(
-                NumberFormat.currency(symbol: '\$').format(analytics.totalRevenue),
+                NumberFormat.currency(symbol: '\$')
+                    .format(analytics.totalRevenue),
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -301,7 +316,8 @@ mixin DashboardWidgetsMixin {
     );
   }
 
-  Widget buildCashFlowChart(BuildContext context, CashFlowData cashFlow, ThemeData theme) {
+  Widget buildCashFlowChart(
+      BuildContext context, CashFlowData cashFlow, ThemeData theme) {
     return MesaSafeCard(
       child: InkWell(
         onTap: () => context.go('/reports/financial'),
@@ -324,7 +340,8 @@ mixin DashboardWidgetsMixin {
               ),
               const SizedBox(height: 8),
               Text(
-                NumberFormat.currency(symbol: '\$').format(cashFlow.netCashFlow),
+                NumberFormat.currency(symbol: '\$')
+                    .format(cashFlow.netCashFlow),
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: cashFlow.netCashFlow >= 0 ? Colors.green : Colors.red,
                   fontWeight: FontWeight.bold,
@@ -337,7 +354,8 @@ mixin DashboardWidgetsMixin {
     );
   }
 
-  Widget buildInvoiceStatusChart(BuildContext context, DashboardData data, ThemeData theme) {
+  Widget buildInvoiceStatusChart(
+      BuildContext context, DashboardData data, ThemeData theme) {
     return MesaSafeCard(
       child: InkWell(
         onTap: () => context.go('/invoices'),
@@ -367,7 +385,8 @@ mixin DashboardWidgetsMixin {
     );
   }
 
-  Widget buildCustomerGrowthChart(BuildContext context, CustomerInsights insights, ThemeData theme) {
+  Widget buildCustomerGrowthChart(
+      BuildContext context, CustomerInsights insights, ThemeData theme) {
     return MesaSafeCard(
       child: InkWell(
         onTap: () => context.go('/customers'),
@@ -424,7 +443,8 @@ mixin DashboardWidgetsMixin {
     );
   }
 
-  Widget buildTopCustomers(BuildContext context, RevenueAnalytics analytics, ThemeData theme) {
+  Widget buildTopCustomers(
+      BuildContext context, RevenueAnalytics analytics, ThemeData theme) {
     return MesaSafeCard(
       child: InkWell(
         onTap: () => context.go('/customers'),
@@ -516,9 +536,9 @@ class QuickActionButton extends StatelessWidget {
             Text(
               label,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w500,
-              ),
+                    color: color,
+                    fontWeight: FontWeight.w500,
+                  ),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -546,7 +566,8 @@ class AnimatedQuickActionButton extends StatefulWidget {
   });
 
   @override
-  State<AnimatedQuickActionButton> createState() => _AnimatedQuickActionButtonState();
+  State<AnimatedQuickActionButton> createState() =>
+      _AnimatedQuickActionButtonState();
 }
 
 class _AnimatedQuickActionButtonState extends State<AnimatedQuickActionButton>
@@ -562,7 +583,7 @@ class _AnimatedQuickActionButtonState extends State<AnimatedQuickActionButton>
       duration: AnimationConstants.buttonPress,
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 0.95,
@@ -598,16 +619,17 @@ class _AnimatedQuickActionButtonState extends State<AnimatedQuickActionButton>
               child: AnimatedContainer(
                 duration: AnimationConstants.cardHover,
                 curve: AnimationConstants.cardCurve,
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: _isHovered 
-                        ? widget.color.withOpacity(0.6) 
+                    color: _isHovered
+                        ? widget.color.withOpacity(0.6)
                         : widget.color.withOpacity(0.3),
                   ),
-                  color: _isHovered 
-                      ? widget.color.withOpacity(0.05) 
+                  color: _isHovered
+                      ? widget.color.withOpacity(0.05)
                       : Colors.transparent,
                   boxShadow: _isHovered
                       ? createMesaSafeBoxShadow(
@@ -631,9 +653,10 @@ class _AnimatedQuickActionButtonState extends State<AnimatedQuickActionButton>
                     Text(
                       widget.label,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: widget.color,
-                        fontWeight: _isHovered ? FontWeight.w600 : FontWeight.w500,
-                      ),
+                            color: widget.color,
+                            fontWeight:
+                                _isHovered ? FontWeight.w600 : FontWeight.w500,
+                          ),
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

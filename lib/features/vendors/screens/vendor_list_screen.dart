@@ -165,9 +165,12 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                       segments: const [
                         ButtonSegment(value: 'all', label: Text('All Vendors')),
                         ButtonSegment(value: 'active', label: Text('Active')),
-                        ButtonSegment(value: 'inactive', label: Text('Inactive')),
+                        ButtonSegment(
+                            value: 'inactive', label: Text('Inactive')),
                         ButtonSegment(value: 'local', label: Text('Local')),
-                        ButtonSegment(value: 'international', label: Text('International')),
+                        ButtonSegment(
+                            value: 'international',
+                            label: Text('International')),
                       ],
                       selected: {_selectedFilter},
                       onSelectionChanged: (Set<String> selected) {
@@ -243,7 +246,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                               cells: [
                                 DataCell(
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
@@ -252,7 +256,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      if (vendor.contactPerson?.isNotEmpty == true)
+                                      if (vendor.contactPerson?.isNotEmpty ==
+                                          true)
                                         Text(
                                           'Contact: ${vendor.contactPerson}',
                                           style: Theme.of(context)
@@ -277,7 +282,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                                 ),
                                 DataCell(
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       if (vendor.email?.isNotEmpty == true)
@@ -297,23 +303,30 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                                 ),
                                 DataCell(
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Row(
                                         children: [
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: vendor.isInternational 
-                                                  ? Colors.purple.withOpacity(0.1) 
-                                                  : Colors.green.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(8),
+                                              color: vendor.isInternational
+                                                  ? Colors.purple
+                                                      .withOpacity(0.1)
+                                                  : Colors.green
+                                                      .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               vendor.countryCode ?? 'SG',
                                               style: TextStyle(
-                                                color: vendor.isInternational ? Colors.purple : Colors.green,
+                                                color: vendor.isInternational
+                                                    ? Colors.purple
+                                                    : Colors.green,
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.w500,
                                               ),
@@ -321,7 +334,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                                           ),
                                           const SizedBox(width: 4),
                                           if (vendor.isInternational)
-                                            const Icon(Icons.public, size: 16, color: Colors.purple),
+                                            const Icon(Icons.public,
+                                                size: 16, color: Colors.purple),
                                         ],
                                       ),
                                       if (vendor.address?.isNotEmpty == true)
@@ -347,17 +361,20 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                                 ),
                                 DataCell(
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: vendor.isActive 
-                                          ? Colors.green.withOpacity(0.1) 
+                                      color: vendor.isActive
+                                          ? Colors.green.withOpacity(0.1)
                                           : Colors.grey.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
                                       vendor.isActive ? 'Active' : 'Inactive',
                                       style: TextStyle(
-                                        color: vendor.isActive ? Colors.green : Colors.grey,
+                                        color: vendor.isActive
+                                            ? Colors.green
+                                            : Colors.grey,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -375,8 +392,10 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                                         tooltip: 'Edit Vendor',
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.more_vert, size: 20),
-                                        onPressed: () => _showVendorActions(vendor),
+                                        icon: const Icon(Icons.more_vert,
+                                            size: 20),
+                                        onPressed: () =>
+                                            _showVendorActions(vendor),
                                         tooltip: 'More Actions',
                                       ),
                                     ],
@@ -399,8 +418,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            _searchQuery.isNotEmpty || _selectedFilter != 'all' 
-                ? Icons.search_off 
+            _searchQuery.isNotEmpty || _selectedFilter != 'all'
+                ? Icons.search_off
                 : Icons.store_outlined,
             size: 64,
             color: Colors.grey[400],
@@ -445,7 +464,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _DetailRow('Contact Person', vendor.contactPerson ?? 'Not provided'),
+              _DetailRow(
+                  'Contact Person', vendor.contactPerson ?? 'Not provided'),
               _DetailRow('Email', vendor.email ?? 'Not provided'),
               _DetailRow('Phone', vendor.phone ?? 'Not provided'),
               _DetailRow('Address', vendor.address ?? 'Not provided'),
@@ -454,8 +474,10 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
               _DetailRow('Payment Terms', vendor.paymentTermsDisplay),
               _DetailRow('Bank Account', vendor.bankAccount ?? 'Not provided'),
               _DetailRow('Status', vendor.isActive ? 'Active' : 'Inactive'),
-              _DetailRow('Location', vendor.isInternational ? 'International' : 'Local'),
-              _DetailRow('Created', '${vendor.createdAt.day}/${vendor.createdAt.month}/${vendor.createdAt.year}'),
+              _DetailRow('Location',
+                  vendor.isInternational ? 'International' : 'Local'),
+              _DetailRow('Created',
+                  '${vendor.createdAt.day}/${vendor.createdAt.month}/${vendor.createdAt.year}'),
               if (vendor.notes?.isNotEmpty == true)
                 _DetailRow('Notes', vendor.notes!),
             ],
@@ -514,7 +536,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                 vendor.isActive ? Icons.pause_circle : Icons.play_circle,
                 color: vendor.isActive ? Colors.orange : Colors.green,
               ),
-              title: Text(vendor.isActive ? 'Deactivate Vendor' : 'Activate Vendor'),
+              title: Text(
+                  vendor.isActive ? 'Deactivate Vendor' : 'Activate Vendor'),
               onTap: () {
                 Navigator.pop(context);
                 _toggleVendorStatus(vendor);
@@ -522,7 +545,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete Vendor', style: TextStyle(color: Colors.red)),
+              title: const Text('Delete Vendor',
+                  style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 _showDeleteConfirmation(vendor);
@@ -542,15 +566,13 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
         updatedAt: DateTime.now(),
       );
       await repository.updateVendor(updatedVendor);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              vendor.isActive 
-                  ? '${vendor.name} deactivated' 
-                  : '${vendor.name} activated'
-            ),
+            content: Text(vendor.isActive
+                ? '${vendor.name} deactivated'
+                : '${vendor.name} activated'),
             backgroundColor: Colors.green,
           ),
         );

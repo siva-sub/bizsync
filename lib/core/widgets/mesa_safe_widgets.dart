@@ -14,7 +14,7 @@ class MesaSafeCard extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final Clip? clipBehavior;
   final bool semanticContainer;
-  
+
   const MesaSafeCard({
     Key? key,
     this.color,
@@ -28,11 +28,11 @@ class MesaSafeCard extends StatelessWidget {
     this.child,
     this.semanticContainer = true,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final config = MesaRenderingConfig();
-    
+
     return Card(
       color: color,
       shadowColor: config.isMesaActive ? Colors.transparent : shadowColor,
@@ -63,7 +63,7 @@ class MesaSafeContainer extends StatelessWidget {
   final Matrix4? transform;
   final AlignmentGeometry? transformAlignment;
   final Clip clipBehavior;
-  
+
   const MesaSafeContainer({
     Key? key,
     this.alignment,
@@ -80,21 +80,22 @@ class MesaSafeContainer extends StatelessWidget {
     this.child,
     this.clipBehavior = Clip.none,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final config = MesaRenderingConfig();
-    
+
     Decoration? safeDecoration = decoration;
     if (decoration is BoxDecoration) {
       safeDecoration = config.getSafeBoxDecoration(decoration as BoxDecoration);
     }
-    
+
     Decoration? safeForegroundDecoration = foregroundDecoration;
     if (foregroundDecoration is BoxDecoration) {
-      safeForegroundDecoration = config.getSafeBoxDecoration(foregroundDecoration as BoxDecoration);
+      safeForegroundDecoration =
+          config.getSafeBoxDecoration(foregroundDecoration as BoxDecoration);
     }
-    
+
     return Container(
       alignment: alignment,
       padding: padding,
@@ -127,7 +128,7 @@ class MesaSafeMaterial extends StatelessWidget {
   final Clip clipBehavior;
   final Duration animationDuration;
   final BorderRadiusGeometry? borderRadius;
-  
+
   const MesaSafeMaterial({
     Key? key,
     this.type = MaterialType.canvas,
@@ -143,11 +144,11 @@ class MesaSafeMaterial extends StatelessWidget {
     this.borderRadius,
     this.child,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final config = MesaRenderingConfig();
-    
+
     return Material(
       type: type,
       elevation: config.getSafeElevation(elevation),
@@ -170,23 +171,23 @@ class MesaSafeBackdropFilter extends StatelessWidget {
   final ImageFilter? filter;
   final Widget? child;
   final BlendMode blendMode;
-  
+
   const MesaSafeBackdropFilter({
     Key? key,
     required this.filter,
     this.child,
     this.blendMode = BlendMode.srcOver,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final config = MesaRenderingConfig();
-    
+
     // If Mesa is active and blur should be disabled, just return the child
     if (config.isMesaActive) {
       return child ?? const SizedBox.shrink();
     }
-    
+
     return BackdropFilter(
       filter: filter ?? ImageFilter.blur(sigmaX: 0, sigmaY: 0),
       blendMode: blendMode,
@@ -201,7 +202,7 @@ class MesaSafeBlur extends StatelessWidget {
   final double sigmaX;
   final double sigmaY;
   final BlendMode blendMode;
-  
+
   const MesaSafeBlur({
     Key? key,
     required this.child,
@@ -209,16 +210,16 @@ class MesaSafeBlur extends StatelessWidget {
     this.sigmaY = 10.0,
     this.blendMode = BlendMode.srcOver,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final config = MesaRenderingConfig();
-    
+
     // If Mesa is active, just return the child without blur
     if (config.isMesaActive) {
       return child;
     }
-    
+
     return BackdropFilter(
       filter: ImageFilter.blur(
         sigmaX: config.getSafeBlurSigma(sigmaX),
@@ -238,11 +239,11 @@ List<BoxShadow>? createMesaSafeBoxShadow({
   double spreadRadius = 0.0,
 }) {
   final config = MesaRenderingConfig();
-  
+
   if (config.isMesaActive) {
     return null;
   }
-  
+
   return [
     BoxShadow(
       color: config.getSafeShadowColor(color),

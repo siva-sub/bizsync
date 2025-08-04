@@ -40,11 +40,13 @@ class InvoiceCommand implements CLICommand {
   @override
   ArgParser get argParser {
     final parser = ArgParser();
-    parser.addOption('action', abbr: 'a', help: 'Action to perform (create, list, show, export)');
+    parser.addOption('action',
+        abbr: 'a', help: 'Action to perform (create, list, show, export)');
     parser.addOption('number', abbr: 'n', help: 'Invoice number');
     parser.addOption('customer', abbr: 'c', help: 'Customer ID or name');
     parser.addOption('amount', help: 'Invoice amount');
-    parser.addOption('format', abbr: 'f', help: 'Export format (pdf, csv, json)', defaultsTo: 'pdf');
+    parser.addOption('format',
+        abbr: 'f', help: 'Export format (pdf, csv, json)', defaultsTo: 'pdf');
     parser.addOption('output', abbr: 'o', help: 'Output file path');
     parser.addFlag('help', abbr: 'h', help: 'Show help for invoice command');
     return parser;
@@ -109,7 +111,7 @@ class InvoiceCommand implements CLICommand {
 
     // Create invoice logic would go here
     final invoiceNumber = 'INV-${DateTime.now().millisecondsSinceEpoch}';
-    
+
     return CLIResult(
       success: true,
       output: 'Invoice created successfully: $invoiceNumber',
@@ -124,17 +126,28 @@ class InvoiceCommand implements CLICommand {
   Future<CLIResult> _listInvoices(ArgResults args) async {
     // List invoices logic would go here
     final invoices = [
-      {'number': 'INV-001', 'customer': 'John Doe', 'amount': 1000.0, 'status': 'paid'},
-      {'number': 'INV-002', 'customer': 'Jane Smith', 'amount': 750.0, 'status': 'pending'},
+      {
+        'number': 'INV-001',
+        'customer': 'John Doe',
+        'amount': 1000.0,
+        'status': 'paid'
+      },
+      {
+        'number': 'INV-002',
+        'customer': 'Jane Smith',
+        'amount': 750.0,
+        'status': 'pending'
+      },
     ];
 
     final output = StringBuffer();
     output.writeln('Invoice List:');
     output.writeln('Number\t\tCustomer\t\tAmount\t\tStatus');
     output.writeln('─' * 60);
-    
+
     for (final invoice in invoices) {
-      output.writeln('${invoice['number']}\t\t${invoice['customer']}\t\t\$${invoice['amount']}\t\t${invoice['status']}');
+      output.writeln(
+          '${invoice['number']}\t\t${invoice['customer']}\t\t\$${invoice['amount']}\t\t${invoice['status']}');
     }
 
     return CLIResult(
@@ -176,7 +189,8 @@ class InvoiceCommand implements CLICommand {
     output.writeln('Amount: \$${invoice['amount']}');
     output.writeln('\nLine Items:');
     for (final item in invoice['items'] as List) {
-      output.writeln('  ${item['description']} - Qty: ${item['quantity']} - Price: \$${item['price']}');
+      output.writeln(
+          '  ${item['description']} - Qty: ${item['quantity']} - Price: \$${item['price']}');
     }
 
     return CLIResult(
@@ -199,8 +213,9 @@ class InvoiceCommand implements CLICommand {
       );
     }
 
-    final fileName = outputPath ?? 'invoice_${number}_${DateTime.now().millisecondsSinceEpoch}.$format';
-    
+    final fileName = outputPath ??
+        'invoice_${number}_${DateTime.now().millisecondsSinceEpoch}.$format';
+
     // Export logic would go here
     return CLIResult(
       success: true,
@@ -249,7 +264,9 @@ class CustomerCommand implements CLICommand {
   @override
   ArgParser get argParser {
     final parser = ArgParser();
-    parser.addOption('action', abbr: 'a', help: 'Action to perform (create, list, show, update, delete)');
+    parser.addOption('action',
+        abbr: 'a',
+        help: 'Action to perform (create, list, show, update, delete)');
     parser.addOption('id', help: 'Customer ID');
     parser.addOption('name', abbr: 'n', help: 'Customer name');
     parser.addOption('email', abbr: 'e', help: 'Customer email');
@@ -306,7 +323,7 @@ class CustomerCommand implements CLICommand {
     }
 
     final customerId = 'CUST-${DateTime.now().millisecondsSinceEpoch}';
-    
+
     return CLIResult(
       success: true,
       output: 'Customer created successfully: $customerId',
@@ -322,17 +339,28 @@ class CustomerCommand implements CLICommand {
 
   Future<CLIResult> _listCustomers(ArgResults args) async {
     final customers = [
-      {'id': 'CUST-001', 'name': 'John Doe', 'email': 'john@email.com', 'company': 'ABC Corp'},
-      {'id': 'CUST-002', 'name': 'Jane Smith', 'email': 'jane@email.com', 'company': 'XYZ Ltd'},
+      {
+        'id': 'CUST-001',
+        'name': 'John Doe',
+        'email': 'john@email.com',
+        'company': 'ABC Corp'
+      },
+      {
+        'id': 'CUST-002',
+        'name': 'Jane Smith',
+        'email': 'jane@email.com',
+        'company': 'XYZ Ltd'
+      },
     ];
 
     final output = StringBuffer();
     output.writeln('Customer List:');
     output.writeln('ID\t\tName\t\tEmail\t\t\tCompany');
     output.writeln('─' * 70);
-    
+
     for (final customer in customers) {
-      output.writeln('${customer['id']}\t\t${customer['name']}\t\t${customer['email']}\t\t${customer['company']}');
+      output.writeln(
+          '${customer['id']}\t\t${customer['name']}\t\t${customer['email']}\t\t${customer['company']}');
     }
 
     return CLIResult(
@@ -405,7 +433,7 @@ Examples:
 }
 
 /// CLI Service for Linux Desktop
-/// 
+///
 /// Provides command line interface functionality:
 /// - CLI arguments for quick actions
 /// - Batch operations support
@@ -426,10 +454,10 @@ class CLIService {
       // Register built-in commands
       _registerCommand(InvoiceCommand());
       _registerCommand(CustomerCommand());
-      
+
       // Set up main argument parser
       _setupMainParser();
-      
+
       _isInitialized = true;
       debugPrint('✅ CLI service initialized successfully');
     } catch (e) {
@@ -444,7 +472,8 @@ class CLIService {
     _mainParser.addFlag('version', abbr: 'v', help: 'Show version information');
     _mainParser.addFlag('headless', help: 'Run in headless mode (no GUI)');
     _mainParser.addOption('config', abbr: 'c', help: 'Configuration file path');
-    _mainParser.addOption('log-level', help: 'Set log level (debug, info, warn, error)', defaultsTo: 'info');
+    _mainParser.addOption('log-level',
+        help: 'Set log level (debug, info, warn, error)', defaultsTo: 'info');
     _mainParser.addFlag('quiet', abbr: 'q', help: 'Suppress output');
     _mainParser.addFlag('verbose', help: 'Verbose output');
   }
@@ -475,7 +504,7 @@ class CLIService {
 
       // Check for main flags first
       final mainArgs = _mainParser.parse(arguments);
-      
+
       if (mainArgs['help'] as bool) {
         return CLIResult(
           success: true,
@@ -497,7 +526,8 @@ class CLIService {
       if (command == null) {
         return CLIResult(
           success: false,
-          error: 'Unknown command: $commandName\nUse --help to see available commands',
+          error:
+              'Unknown command: $commandName\nUse --help to see available commands',
           exitCode: 1,
         );
       }
@@ -522,11 +552,13 @@ class CLIService {
     try {
       final file = File(filePath);
       if (!await file.exists()) {
-        return [CLIResult(
-          success: false,
-          error: 'Batch file not found: $filePath',
-          exitCode: 1,
-        )];
+        return [
+          CLIResult(
+            success: false,
+            error: 'Batch file not found: $filePath',
+            exitCode: 1,
+          )
+        ];
       }
 
       final lines = await file.readAsLines();
@@ -550,11 +582,13 @@ class CLIService {
 
       return results;
     } catch (e) {
-      return [CLIResult(
-        success: false,
-        error: 'Error executing batch file: $e',
-        exitCode: 1,
-      )];
+      return [
+        CLIResult(
+          success: false,
+          error: 'Error executing batch file: $e',
+          exitCode: 1,
+        )
+      ];
     }
   }
 
@@ -563,22 +597,27 @@ class CLIService {
     try {
       final file = File(jsonPath);
       if (!await file.exists()) {
-        return [CLIResult(
-          success: false,
-          error: 'JSON batch file not found: $jsonPath',
-          exitCode: 1,
-        )];
+        return [
+          CLIResult(
+            success: false,
+            error: 'JSON batch file not found: $jsonPath',
+            exitCode: 1,
+          )
+        ];
       }
 
       final jsonContent = await file.readAsString();
       final batchData = jsonDecode(jsonContent);
-      
-      if (batchData is! Map<String, dynamic> || !batchData.containsKey('commands')) {
-        return [CLIResult(
-          success: false,
-          error: 'Invalid JSON batch format',
-          exitCode: 1,
-        )];
+
+      if (batchData is! Map<String, dynamic> ||
+          !batchData.containsKey('commands')) {
+        return [
+          CLIResult(
+            success: false,
+            error: 'Invalid JSON batch format',
+            exitCode: 1,
+          )
+        ];
       }
 
       final commands = batchData['commands'] as List;
@@ -603,11 +642,13 @@ class CLIService {
 
       return results;
     } catch (e) {
-      return [CLIResult(
-        success: false,
-        error: 'Error executing JSON batch: $e',
-        exitCode: 1,
-      )];
+      return [
+        CLIResult(
+          success: false,
+          error: 'Error executing JSON batch: $e',
+          exitCode: 1,
+        )
+      ];
     }
   }
 
@@ -667,24 +708,27 @@ class CLIService {
     buffer.writeln('  -v, --version     Show version information');
     buffer.writeln('  --headless        Run in headless mode (no GUI)');
     buffer.writeln('  -c, --config      Configuration file path');
-    buffer.writeln('  --log-level       Set log level (debug, info, warn, error)');
+    buffer.writeln(
+        '  --log-level       Set log level (debug, info, warn, error)');
     buffer.writeln('  -q, --quiet       Suppress output');
     buffer.writeln('  --verbose         Verbose output');
     buffer.writeln('');
     buffer.writeln('Available Commands:');
-    
+
     for (final command in _commands.values) {
       buffer.writeln('  ${command.name.padRight(12)} ${command.description}');
     }
-    
+
     buffer.writeln('');
     buffer.writeln('Use "bizsync <command> --help" for command-specific help.');
     buffer.writeln('');
     buffer.writeln('Examples:');
     buffer.writeln('  bizsync invoice --action list');
-    buffer.writeln('  bizsync customer --action create --name "John Doe" --email john@email.com');
-    buffer.writeln('  bizsync --headless invoice --action export --number INV-001');
-    
+    buffer.writeln(
+        '  bizsync customer --action create --name "John Doe" --email john@email.com');
+    buffer.writeln(
+        '  bizsync --headless invoice --action export --number INV-001');
+
     return buffer.toString();
   }
 

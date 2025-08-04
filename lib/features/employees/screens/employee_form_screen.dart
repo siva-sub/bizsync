@@ -10,7 +10,7 @@ import '../services/employee_service.dart';
 
 class EmployeeFormScreen extends ConsumerStatefulWidget {
   final CRDTEmployee? employee;
-  
+
   const EmployeeFormScreen({super.key, this.employee});
 
   @override
@@ -20,10 +20,10 @@ class EmployeeFormScreen extends ConsumerStatefulWidget {
 class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _employeeService = EmployeeService(NotificationService());
-  
+
   bool _isLoading = false;
   bool _isEditing = false;
-  
+
   // Form controllers
   final _employeeIdController = TextEditingController();
   final _firstNameController = TextEditingController();
@@ -44,7 +44,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
   final _emergencyContactNameController = TextEditingController();
   final _emergencyContactPhoneController = TextEditingController();
   final _emergencyContactRelationshipController = TextEditingController();
-  
+
   // Form values
   DateTime? _dateOfBirth;
   DateTime _startDate = DateTime.now();
@@ -57,7 +57,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
   String _payFrequency = 'monthly';
   bool _isCpfMember = true;
   double _cpfContributionRate = 0.2;
-  
+
   // Leave balances
   int _annualLeaveBalance = 14;
   int _sickLeaveBalance = 14;
@@ -91,16 +91,19 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
       _bankCodeController.text = emp.bankCode.value ?? '';
       _cpfNumberController.text = emp.cpfNumber.value ?? '';
       _workPermitNumberController.text = emp.workPermitNumber.value ?? '';
-      _emergencyContactNameController.text = emp.emergencyContactName.value ?? '';
-      _emergencyContactPhoneController.text = emp.emergencyContactPhone.value ?? '';
-      _emergencyContactRelationshipController.text = emp.emergencyContactRelationship.value ?? '';
-      
+      _emergencyContactNameController.text =
+          emp.emergencyContactName.value ?? '';
+      _emergencyContactPhoneController.text =
+          emp.emergencyContactPhone.value ?? '';
+      _emergencyContactRelationshipController.text =
+          emp.emergencyContactRelationship.value ?? '';
+
       _dateOfBirth = emp.dateOfBirth.value;
       _startDate = emp.startDate.value;
       _endDate = emp.endDate.value;
       _workPermitExpiry = emp.workPermitExpiry.value;
       _nationality = emp.nationality.value ?? 'Singapore';
-      
+
       // Parse enums
       _employmentStatus = EmploymentStatus.values.firstWhere(
         (e) => e.name == emp.employmentStatus.value,
@@ -114,11 +117,11 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
         (e) => e.name == emp.workPermitType.value,
         orElse: () => WorkPermitType.citizen,
       );
-      
+
       _payFrequency = emp.payFrequency.value;
       _isCpfMember = emp.isCpfMember.value;
       _cpfContributionRate = emp.cpfContributionRate.value;
-      
+
       // Leave balances
       _annualLeaveBalance = emp.annualLeaveBalance.value;
       _sickLeaveBalance = emp.sickLeaveBalance.value;
@@ -129,7 +132,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
       // Generate employee ID for new employee
       _employeeIdController.text = _generateEmployeeId();
     }
-    
+
     // Update CPF settings based on work permit type and age
     _updateCpfSettings();
   }
@@ -141,9 +144,10 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
 
   void _updateCpfSettings() {
     setState(() {
-      if (_workPermitType == WorkPermitType.citizen || _workPermitType == WorkPermitType.pr) {
+      if (_workPermitType == WorkPermitType.citizen ||
+          _workPermitType == WorkPermitType.pr) {
         _isCpfMember = true;
-        
+
         // Calculate CPF rate based on age
         if (_dateOfBirth != null) {
           final age = DateTime.now().year - _dateOfBirth!.year;
@@ -248,8 +252,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             Text(
               'Personal Details',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -326,7 +330,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                 if (value == null || value.isEmpty) {
                   return 'Please enter email address';
                 }
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                    .hasMatch(value)) {
                   return 'Please enter a valid email address';
                 }
                 return null;
@@ -382,14 +387,20 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                       prefixIcon: Icon(Icons.flag),
                     ),
                     items: const [
-                      DropdownMenuItem(value: 'Singapore', child: Text('Singapore')),
-                      DropdownMenuItem(value: 'Malaysia', child: Text('Malaysia')),
+                      DropdownMenuItem(
+                          value: 'Singapore', child: Text('Singapore')),
+                      DropdownMenuItem(
+                          value: 'Malaysia', child: Text('Malaysia')),
                       DropdownMenuItem(value: 'India', child: Text('India')),
                       DropdownMenuItem(value: 'China', child: Text('China')),
-                      DropdownMenuItem(value: 'Philippines', child: Text('Philippines')),
-                      DropdownMenuItem(value: 'Indonesia', child: Text('Indonesia')),
-                      DropdownMenuItem(value: 'Myanmar', child: Text('Myanmar')),
-                      DropdownMenuItem(value: 'Bangladesh', child: Text('Bangladesh')),
+                      DropdownMenuItem(
+                          value: 'Philippines', child: Text('Philippines')),
+                      DropdownMenuItem(
+                          value: 'Indonesia', child: Text('Indonesia')),
+                      DropdownMenuItem(
+                          value: 'Myanmar', child: Text('Myanmar')),
+                      DropdownMenuItem(
+                          value: 'Bangladesh', child: Text('Bangladesh')),
                       DropdownMenuItem(value: 'Other', child: Text('Other')),
                     ],
                     onChanged: (value) {
@@ -430,8 +441,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             Text(
               'Employment Details',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -559,8 +570,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             Text(
               'Work Pass Information',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<WorkPermitType>(
@@ -626,8 +637,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             Text(
               'Salary & Benefits',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -707,15 +718,18 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             Text(
               'CPF Information',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text('CPF Member'),
-              subtitle: Text(_isCpfMember ? 'Subject to CPF contributions' : 'Not subject to CPF'),
+              subtitle: Text(_isCpfMember
+                  ? 'Subject to CPF contributions'
+                  : 'Not subject to CPF'),
               value: _isCpfMember,
-              onChanged: (_workPermitType == WorkPermitType.citizen || _workPermitType == WorkPermitType.pr)
+              onChanged: (_workPermitType == WorkPermitType.citizen ||
+                      _workPermitType == WorkPermitType.pr)
                   ? null // Disabled for citizens and PRs
                   : (value) {
                       setState(() {
@@ -738,7 +752,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                initialValue: '${(_cpfContributionRate * 100).toStringAsFixed(1)}%',
+                initialValue:
+                    '${(_cpfContributionRate * 100).toStringAsFixed(1)}%',
                 decoration: const InputDecoration(
                   labelText: 'CPF Contribution Rate',
                   border: OutlineInputBorder(),
@@ -763,8 +778,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             Text(
               'Bank Details',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -810,8 +825,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             Text(
               'Leave Balances (Days)',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -910,8 +925,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             Text(
               'Emergency Contact',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -1004,7 +1019,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
         lastDate = DateTime.now().add(const Duration(days: 365 * 5));
         break;
       case 'workPermitExpiry':
-        initialDate = _workPermitExpiry ?? DateTime.now().add(const Duration(days: 365));
+        initialDate =
+            _workPermitExpiry ?? DateTime.now().add(const Duration(days: 365));
         firstDate = DateTime.now();
         lastDate = DateTime.now().add(const Duration(days: 365 * 10));
         break;
@@ -1056,69 +1072,98 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
       if (_isEditing) {
         // Update existing employee
         final employee = widget.employee!;
-        
+
         employee.updatePersonalInfo(
           newFirstName: _firstNameController.text,
           newLastName: _lastNameController.text,
-          newPreferredName: _preferredNameController.text.isEmpty ? null : _preferredNameController.text,
+          newPreferredName: _preferredNameController.text.isEmpty
+              ? null
+              : _preferredNameController.text,
           newEmail: _emailController.text,
-          newPhone: _phoneController.text.isEmpty ? null : _phoneController.text,
-          newAddress: _addressController.text.isEmpty ? null : _addressController.text,
+          newPhone:
+              _phoneController.text.isEmpty ? null : _phoneController.text,
+          newAddress:
+              _addressController.text.isEmpty ? null : _addressController.text,
           newDateOfBirth: _dateOfBirth,
           newNationality: _nationality,
-          newNricFin: _nricFinController.text.isEmpty ? null : _nricFinController.text,
+          newNricFin:
+              _nricFinController.text.isEmpty ? null : _nricFinController.text,
           timestamp: timestamp,
         );
-        
+
         employee.updateEmploymentDetails(
           newJobTitle: _jobTitleController.text,
-          newDepartment: _departmentController.text.isEmpty ? null : _departmentController.text,
+          newDepartment: _departmentController.text.isEmpty
+              ? null
+              : _departmentController.text,
           newEndDate: _endDate,
           newStatus: _employmentStatus.name,
           newType: _employmentType.name,
           timestamp: timestamp,
         );
-        
+
         employee.updateSalary(
           newBasicSalary: double.parse(_basicSalaryController.text),
-          newAllowances: double.parse(_allowancesController.text.isEmpty ? '0' : _allowancesController.text),
+          newAllowances: double.parse(_allowancesController.text.isEmpty
+              ? '0'
+              : _allowancesController.text),
           newPayFrequency: _payFrequency,
-          newBankAccount: _bankAccountController.text.isEmpty ? null : _bankAccountController.text,
-          newBankCode: _bankCodeController.text.isEmpty ? null : _bankCodeController.text,
+          newBankAccount: _bankAccountController.text.isEmpty
+              ? null
+              : _bankAccountController.text,
+          newBankCode: _bankCodeController.text.isEmpty
+              ? null
+              : _bankCodeController.text,
           timestamp: timestamp,
         );
-        
+
         employee.updateWorkPermit(
           newPermitType: _workPermitType.name,
-          newPermitNumber: _workPermitNumberController.text.isEmpty ? null : _workPermitNumberController.text,
+          newPermitNumber: _workPermitNumberController.text.isEmpty
+              ? null
+              : _workPermitNumberController.text,
           newPermitExpiry: _workPermitExpiry,
-          newIsLocal: _workPermitType == WorkPermitType.citizen || _workPermitType == WorkPermitType.pr,
+          newIsLocal: _workPermitType == WorkPermitType.citizen ||
+              _workPermitType == WorkPermitType.pr,
           timestamp: timestamp,
         );
-        
+
         employee.updateCpfInfo(
-          newCpfNumber: _cpfNumberController.text.isEmpty ? null : _cpfNumberController.text,
+          newCpfNumber: _cpfNumberController.text.isEmpty
+              ? null
+              : _cpfNumberController.text,
           newIsCpfMember: _isCpfMember,
           newCpfRate: _cpfContributionRate,
           timestamp: timestamp,
         );
-        
+
         employee.updateEmergencyContact(
-          name: _emergencyContactNameController.text.isEmpty ? null : _emergencyContactNameController.text,
-          phone: _emergencyContactPhoneController.text.isEmpty ? null : _emergencyContactPhoneController.text,
-          relationship: _emergencyContactRelationshipController.text.isEmpty ? null : _emergencyContactRelationshipController.text,
+          name: _emergencyContactNameController.text.isEmpty
+              ? null
+              : _emergencyContactNameController.text,
+          phone: _emergencyContactPhoneController.text.isEmpty
+              ? null
+              : _emergencyContactPhoneController.text,
+          relationship: _emergencyContactRelationshipController.text.isEmpty
+              ? null
+              : _emergencyContactRelationshipController.text,
           timestamp: timestamp,
         );
-        
+
         // Update leave balances
         employee.adjustLeaveBalance(
-          annualLeaveAdjustment: _annualLeaveBalance - employee.annualLeaveBalance.value,
-          sickLeaveAdjustment: _sickLeaveBalance - employee.sickLeaveBalance.value,
-          maternityLeaveAdjustment: _maternityLeaveBalance - employee.maternitylLeaveBalance.value,
-          paternityLeaveAdjustment: _paternityLeaveBalance - employee.paternitylLeaveBalance.value,
-          compassionateLeaveAdjustment: _compassionateLeaveBalance - employee.compassionateLeaveBalance.value,
+          annualLeaveAdjustment:
+              _annualLeaveBalance - employee.annualLeaveBalance.value,
+          sickLeaveAdjustment:
+              _sickLeaveBalance - employee.sickLeaveBalance.value,
+          maternityLeaveAdjustment:
+              _maternityLeaveBalance - employee.maternitylLeaveBalance.value,
+          paternityLeaveAdjustment:
+              _paternityLeaveBalance - employee.paternitylLeaveBalance.value,
+          compassionateLeaveAdjustment: _compassionateLeaveBalance -
+              employee.compassionateLeaveBalance.value,
         );
-        
+
         await _employeeService.updateEmployee(employee);
       } else {
         // Create new employee
@@ -1131,29 +1176,47 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
           empId: _employeeIdController.text,
           fname: _firstNameController.text,
           lname: _lastNameController.text,
-          prefName: _preferredNameController.text.isEmpty ? null : _preferredNameController.text,
+          prefName: _preferredNameController.text.isEmpty
+              ? null
+              : _preferredNameController.text,
           empEmail: _emailController.text,
-          empPhone: _phoneController.text.isEmpty ? null : _phoneController.text,
-          empAddress: _addressController.text.isEmpty ? null : _addressController.text,
+          empPhone:
+              _phoneController.text.isEmpty ? null : _phoneController.text,
+          empAddress:
+              _addressController.text.isEmpty ? null : _addressController.text,
           dob: _dateOfBirth,
           empNationality: _nationality,
-          nricFin: _nricFinController.text.isEmpty ? null : _nricFinController.text,
+          nricFin:
+              _nricFinController.text.isEmpty ? null : _nricFinController.text,
           title: _jobTitleController.text,
-          dept: _departmentController.text.isEmpty ? null : _departmentController.text,
+          dept: _departmentController.text.isEmpty
+              ? null
+              : _departmentController.text,
           start: _startDate,
           end: _endDate,
           status: _employmentStatus.name,
           type: _employmentType.name,
           permitType: _workPermitType.name,
-          permitNumber: _workPermitNumberController.text.isEmpty ? null : _workPermitNumberController.text,
+          permitNumber: _workPermitNumberController.text.isEmpty
+              ? null
+              : _workPermitNumberController.text,
           permitExpiry: _workPermitExpiry,
-          localEmployee: _workPermitType == WorkPermitType.citizen || _workPermitType == WorkPermitType.pr,
+          localEmployee: _workPermitType == WorkPermitType.citizen ||
+              _workPermitType == WorkPermitType.pr,
           salary: double.parse(_basicSalaryController.text),
-          empAllowances: double.parse(_allowancesController.text.isEmpty ? '0' : _allowancesController.text),
+          empAllowances: double.parse(_allowancesController.text.isEmpty
+              ? '0'
+              : _allowancesController.text),
           frequency: _payFrequency,
-          account: _bankAccountController.text.isEmpty ? null : _bankAccountController.text,
-          bank: _bankCodeController.text.isEmpty ? null : _bankCodeController.text,
-          cpf: _cpfNumberController.text.isEmpty ? null : _cpfNumberController.text,
+          account: _bankAccountController.text.isEmpty
+              ? null
+              : _bankAccountController.text,
+          bank: _bankCodeController.text.isEmpty
+              ? null
+              : _bankCodeController.text,
+          cpf: _cpfNumberController.text.isEmpty
+              ? null
+              : _cpfNumberController.text,
           cpfMember: _isCpfMember,
           cpfRate: _cpfContributionRate,
           annualLeave: _annualLeaveBalance,
@@ -1161,18 +1224,27 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
           maternityLeave: _maternityLeaveBalance,
           paternityLeave: _paternityLeaveBalance,
           compassionateLeave: _compassionateLeaveBalance,
-          emergencyName: _emergencyContactNameController.text.isEmpty ? null : _emergencyContactNameController.text,
-          emergencyPhone: _emergencyContactPhoneController.text.isEmpty ? null : _emergencyContactPhoneController.text,
-          emergencyRelation: _emergencyContactRelationshipController.text.isEmpty ? null : _emergencyContactRelationshipController.text,
+          emergencyName: _emergencyContactNameController.text.isEmpty
+              ? null
+              : _emergencyContactNameController.text,
+          emergencyPhone: _emergencyContactPhoneController.text.isEmpty
+              ? null
+              : _emergencyContactPhoneController.text,
+          emergencyRelation:
+              _emergencyContactRelationshipController.text.isEmpty
+                  ? null
+                  : _emergencyContactRelationshipController.text,
         );
-        
+
         await _employeeService.createEmployee(employee);
       }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing ? 'Employee updated successfully' : 'Employee created successfully'),
+            content: Text(_isEditing
+                ? 'Employee updated successfully'
+                : 'Employee created successfully'),
             backgroundColor: Colors.green,
           ),
         );
@@ -1199,7 +1271,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Employee'),
-        content: Text('Are you sure you want to delete ${widget.employee!.fullName}? This action cannot be undone.'),
+        content: Text(
+            'Are you sure you want to delete ${widget.employee!.fullName}? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -1226,7 +1299,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
 
     try {
       await _employeeService.deleteEmployee(widget.employee!.id);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

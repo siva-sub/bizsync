@@ -22,10 +22,12 @@ class AnomalyDetectionService {
     final anomalies = <BusinessAnomaly>[];
 
     // Revenue anomalies
-    anomalies.addAll(await _detectRevenueAnomalies(invoices, startDate, endDate));
+    anomalies
+        .addAll(await _detectRevenueAnomalies(invoices, startDate, endDate));
 
     // Customer behavior anomalies
-    anomalies.addAll(await _detectCustomerAnomalies(customers, invoices, startDate, endDate));
+    anomalies.addAll(await _detectCustomerAnomalies(
+        customers, invoices, startDate, endDate));
 
     // Inventory anomalies
     anomalies.addAll(await _detectInventoryAnomalies(products, invoices));
@@ -51,8 +53,9 @@ class AnomalyDetectionService {
     final anomalies = <BusinessAnomaly>[];
 
     // Filter invoices by date range if provided
-    final filteredInvoices = _filterInvoicesByDateRange(invoices, startDate, endDate);
-    
+    final filteredInvoices =
+        _filterInvoicesByDateRange(invoices, startDate, endDate);
+
     if (filteredInvoices.length < _minimumDataPoints) {
       return anomalies;
     }
@@ -75,11 +78,13 @@ class AnomalyDetectionService {
     anomalies.addAll(revenueDrops);
 
     // Revenue concentration anomalies (too much revenue from single source)
-    final concentrationAnomalies = await _detectRevenueConcentration(filteredInvoices);
+    final concentrationAnomalies =
+        await _detectRevenueConcentration(filteredInvoices);
     anomalies.addAll(concentrationAnomalies);
 
     // Average order value anomalies
-    final aovAnomalies = await _detectAverageOrderValueAnomalies(filteredInvoices);
+    final aovAnomalies =
+        await _detectAverageOrderValueAnomalies(filteredInvoices);
     anomalies.addAll(aovAnomalies);
 
     return anomalies;
@@ -95,11 +100,13 @@ class AnomalyDetectionService {
     final anomalies = <BusinessAnomaly>[];
 
     // Customer acquisition anomalies
-    final acquisitionAnomalies = await _detectCustomerAcquisitionAnomalies(customers);
+    final acquisitionAnomalies =
+        await _detectCustomerAcquisitionAnomalies(customers);
     anomalies.addAll(acquisitionAnomalies);
 
     // Customer churn anomalies
-    final churnAnomalies = await _detectCustomerChurnAnomalies(customers, invoices);
+    final churnAnomalies =
+        await _detectCustomerChurnAnomalies(customers, invoices);
     anomalies.addAll(churnAnomalies);
 
     // Customer lifetime value anomalies
@@ -107,7 +114,8 @@ class AnomalyDetectionService {
     anomalies.addAll(clvAnomalies);
 
     // Purchase frequency anomalies
-    final frequencyAnomalies = await _detectPurchaseFrequencyAnomalies(customers, invoices);
+    final frequencyAnomalies =
+        await _detectPurchaseFrequencyAnomalies(customers, invoices);
     anomalies.addAll(frequencyAnomalies);
 
     return anomalies;
@@ -125,7 +133,8 @@ class AnomalyDetectionService {
     anomalies.addAll(stockAnomalies);
 
     // Inventory turnover anomalies
-    final turnoverAnomalies = await _detectInventoryTurnoverAnomalies(products, invoices);
+    final turnoverAnomalies =
+        await _detectInventoryTurnoverAnomalies(products, invoices);
     anomalies.addAll(turnoverAnomalies);
 
     // Price anomalies
@@ -172,9 +181,10 @@ class AnomalyDetectionService {
 
     // Calculate expected seasonal patterns
     final seasonalPatterns = _calculateSeasonalPatterns(invoices);
-    
+
     // Compare current period with seasonal expectations
-    final seasonalDeviations = _detectSeasonalDeviations(invoices, seasonalPatterns);
+    final seasonalDeviations =
+        _detectSeasonalDeviations(invoices, seasonalPatterns);
     anomalies.addAll(seasonalDeviations);
 
     return anomalies;
@@ -193,7 +203,7 @@ class AnomalyDetectionService {
     }
 
     // Calculate rolling statistics
-    final rollingWindow = historicalData.length > 30 
+    final rollingWindow = historicalData.length > 30
         ? historicalData.skip(historicalData.length - 30).toList()
         : historicalData;
     final rollingStats = _calculateStatistics(
@@ -201,18 +211,21 @@ class AnomalyDetectionService {
     );
 
     // Check if new point is an anomaly
-    final zScore = (newDataPoint.value - rollingStats.mean) / rollingStats.standardDeviation;
-    
+    final zScore = (newDataPoint.value - rollingStats.mean) /
+        rollingStats.standardDeviation;
+
     if (zScore.abs() > _zScoreThreshold) {
       anomalies.add(BusinessAnomaly(
         id: 'realtime_${dataType}_${DateTime.now().millisecondsSinceEpoch}',
         type: 'Statistical Anomaly',
-        description: 'Real-time $dataType value significantly deviates from recent patterns',
+        description:
+            'Real-time $dataType value significantly deviates from recent patterns',
         severity: _calculateSeverity(zScore.abs()),
         detectedAt: DateTime.now(),
         context: {
           'value': newDataPoint.value,
-          'expected_range': '${rollingStats.mean - (2 * rollingStats.standardDeviation)} - ${rollingStats.mean + (2 * rollingStats.standardDeviation)}',
+          'expected_range':
+              '${rollingStats.mean - (2 * rollingStats.standardDeviation)} - ${rollingStats.mean + (2 * rollingStats.standardDeviation)}',
           'z_score': zScore,
           'data_type': dataType,
         },
@@ -233,7 +246,8 @@ class AnomalyDetectionService {
     DateTime? endDate,
   ) {
     return invoices.where((invoice) {
-      final invoiceDate = DateTime.fromMillisecondsSinceEpoch(invoice.createdAt.physicalTime);
+      final invoiceDate =
+          DateTime.fromMillisecondsSinceEpoch(invoice.createdAt.physicalTime);
       final afterStart = startDate == null || invoiceDate.isAfter(startDate);
       final beforeEnd = endDate == null || invoiceDate.isBefore(endDate);
       return afterStart && beforeEnd;
@@ -242,15 +256,17 @@ class AnomalyDetectionService {
 
   List<DataPoint> _calculateDailyRevenue(List<CRDTInvoiceEnhanced> invoices) {
     final dailyRevenue = <DateTime, double>{};
-    
+
     for (final invoice in invoices) {
-      if (invoice.status.value == InvoiceStatus.paid && invoice.paidAt.value != null) {
+      if (invoice.status.value == InvoiceStatus.paid &&
+          invoice.paidAt.value != null) {
         final day = DateTime(
           invoice.paidAt.value!.year,
           invoice.paidAt.value!.month,
           invoice.paidAt.value!.day,
         );
-        dailyRevenue[day] = (dailyRevenue[day] ?? 0) + invoice.totalAmount.value;
+        dailyRevenue[day] =
+            (dailyRevenue[day] ?? 0) + invoice.totalAmount.value;
       }
     }
 
@@ -277,10 +293,10 @@ class AnomalyDetectionService {
 
     final sortedValues = List<double>.from(values)..sort();
     final mean = values.reduce((a, b) => a + b) / values.length;
-    
-    final variance = values
-        .map((v) => math.pow(v - mean, 2))
-        .reduce((a, b) => a + b) / values.length;
+
+    final variance =
+        values.map((v) => math.pow(v - mean, 2)).reduce((a, b) => a + b) /
+            values.length;
     final standardDeviation = math.sqrt(variance);
 
     final median = _calculateMedian(sortedValues);
@@ -311,11 +327,11 @@ class AnomalyDetectionService {
     final index = percentile * (sortedValues.length - 1);
     final lower = index.floor();
     final upper = index.ceil();
-    
+
     if (lower == upper) {
       return sortedValues[lower];
     }
-    
+
     final weight = index - lower;
     return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
   }
@@ -330,11 +346,11 @@ class AnomalyDetectionService {
     for (final point in data) {
       // Z-score method
       final zScore = (point.value - stats.mean) / stats.standardDeviation;
-      
+
       // IQR method
       final lowerBound = stats.q1 - (_iqrMultiplier * stats.iqr);
       final upperBound = stats.q3 + (_iqrMultiplier * stats.iqr);
-      
+
       final isZScoreAnomaly = zScore.abs() > _zScoreThreshold;
       final isIQRAnomaly = point.value < lowerBound || point.value > upperBound;
 
@@ -342,18 +358,22 @@ class AnomalyDetectionService {
         anomalies.add(BusinessAnomaly(
           id: 'statistical_${dataType}_${point.timestamp.millisecondsSinceEpoch}',
           type: 'Statistical Anomaly',
-          description: 'Unusual $dataType value detected on ${_formatDate(point.timestamp)}',
+          description:
+              'Unusual $dataType value detected on ${_formatDate(point.timestamp)}',
           severity: _calculateSeverity(zScore.abs()),
           detectedAt: DateTime.now(),
           context: {
             'value': point.value,
             'date': point.timestamp.toIso8601String(),
             'z_score': zScore,
-            'expected_range': '${stats.mean - (2 * stats.standardDeviation)} - ${stats.mean + (2 * stats.standardDeviation)}',
+            'expected_range':
+                '${stats.mean - (2 * stats.standardDeviation)} - ${stats.mean + (2 * stats.standardDeviation)}',
             'detection_method': isZScoreAnomaly ? 'Z-Score' : 'IQR',
           },
-          possibleCauses: _getPossibleCauses(dataType, point.value > stats.mean),
-          recommendations: _getRecommendations(dataType, point.value > stats.mean),
+          possibleCauses:
+              _getPossibleCauses(dataType, point.value > stats.mean),
+          recommendations:
+              _getRecommendations(dataType, point.value > stats.mean),
           isResolved: false,
         ));
       }
@@ -367,21 +387,22 @@ class AnomalyDetectionService {
     String dataType,
   ) {
     final anomalies = <BusinessAnomaly>[];
-    
+
     if (data.length < 2) return anomalies;
 
     for (int i = 1; i < data.length; i++) {
       final current = data[i].value;
       final previous = data[i - 1].value;
-      
+
       if (previous > 0) {
         final changePercent = (current - previous) / previous;
-        
+
         if (changePercent < -_changePointThreshold) {
           anomalies.add(BusinessAnomaly(
             id: 'sudden_drop_${dataType}_${data[i].timestamp.millisecondsSinceEpoch}',
             type: 'Sudden Drop',
-            description: 'Significant drop in $dataType detected on ${_formatDate(data[i].timestamp)}',
+            description:
+                'Significant drop in $dataType detected on ${_formatDate(data[i].timestamp)}',
             severity: math.min(1.0, changePercent.abs() * 2),
             detectedAt: DateTime.now(),
             context: {
@@ -417,17 +438,18 @@ class AnomalyDetectionService {
     List<CRDTInvoiceEnhanced> invoices,
   ) async {
     final anomalies = <BusinessAnomaly>[];
-    
+
     if (invoices.isEmpty) return anomalies;
 
     // Calculate revenue by customer
     final revenueByCustomer = <String, double>{};
     double totalRevenue = 0;
-    
+
     for (final invoice in invoices) {
       if (invoice.status.value == InvoiceStatus.paid) {
-        revenueByCustomer[invoice.customerId.value ?? 'unknown'] = 
-            (revenueByCustomer[invoice.customerId.value ?? 'unknown'] ?? 0) + invoice.totalAmount.value;
+        revenueByCustomer[invoice.customerId.value ?? 'unknown'] =
+            (revenueByCustomer[invoice.customerId.value ?? 'unknown'] ?? 0) +
+                invoice.totalAmount.value;
         totalRevenue += invoice.totalAmount.value;
       }
     }
@@ -435,17 +457,19 @@ class AnomalyDetectionService {
     if (totalRevenue == 0) return anomalies;
 
     // Check for high concentration (80/20 rule violation)
-    final sortedRevenue = revenueByCustomer.values.toList()..sort((a, b) => b.compareTo(a));
-    
+    final sortedRevenue = revenueByCustomer.values.toList()
+      ..sort((a, b) => b.compareTo(a));
+
     if (sortedRevenue.isNotEmpty) {
       final topCustomerRevenue = sortedRevenue.first;
       final topCustomerPercentage = (topCustomerRevenue / totalRevenue) * 100;
-      
+
       if (topCustomerPercentage > 50) {
         anomalies.add(BusinessAnomaly(
           id: 'revenue_concentration_${DateTime.now().millisecondsSinceEpoch}',
           type: 'Revenue Concentration Risk',
-          description: 'High revenue concentration detected: ${topCustomerPercentage.toStringAsFixed(1)}% from single customer',
+          description:
+              'High revenue concentration detected: ${topCustomerPercentage.toStringAsFixed(1)}% from single customer',
           severity: math.min(1.0, topCustomerPercentage / 100),
           detectedAt: DateTime.now(),
           context: {
@@ -478,14 +502,15 @@ class AnomalyDetectionService {
     List<CRDTInvoiceEnhanced> invoices,
   ) async {
     final anomalies = <BusinessAnomaly>[];
-    
+
     if (invoices.length < _minimumDataPoints) return anomalies;
 
     // Calculate daily AOV
     final dailyAOV = <DateTime, List<double>>{};
-    
+
     for (final invoice in invoices) {
-      if (invoice.status.value == InvoiceStatus.paid && invoice.paidAt.value != null) {
+      if (invoice.status.value == InvoiceStatus.paid &&
+          invoice.paidAt.value != null) {
         final day = DateTime(
           invoice.paidAt.value!.year,
           invoice.paidAt.value!.month,
@@ -510,8 +535,9 @@ class AnomalyDetectionService {
     // Detect AOV anomalies
     final aovValues = aovData.map((dp) => dp.value).toList();
     final aovStats = _calculateStatistics(aovValues);
-    
-    final aovAnomalies = _detectStatisticalAnomalies(aovData, aovStats, 'Average Order Value');
+
+    final aovAnomalies =
+        _detectStatisticalAnomalies(aovData, aovStats, 'Average Order Value');
     anomalies.addAll(aovAnomalies);
 
     return anomalies;
@@ -521,12 +547,12 @@ class AnomalyDetectionService {
     List<Customer> customers,
   ) async {
     final anomalies = <BusinessAnomaly>[];
-    
+
     if (customers.length < _minimumDataPoints) return anomalies;
 
     // Calculate daily customer acquisition
     final dailyAcquisition = <DateTime, int>{};
-    
+
     for (final customer in customers) {
       final day = DateTime(
         customer.createdAt.year,
@@ -549,7 +575,7 @@ class AnomalyDetectionService {
     // Detect acquisition anomalies
     final acquisitionValues = acquisitionData.map((dp) => dp.value).toList();
     final acquisitionStats = _calculateStatistics(acquisitionValues);
-    
+
     final acquisitionAnomalies = _detectStatisticalAnomalies(
       acquisitionData,
       acquisitionStats,
@@ -587,7 +613,7 @@ class AnomalyDetectionService {
 
   List<BusinessAnomaly> _detectStockLevelAnomalies(List<Product> products) {
     final anomalies = <BusinessAnomaly>[];
-    
+
     for (final product in products) {
       // Zero stock anomaly
       if (product.stockLevel == 0) {
@@ -618,7 +644,7 @@ class AnomalyDetectionService {
           isResolved: false,
         ));
       }
-      
+
       // Critical low stock anomaly
       else if (product.stockLevel <= product.minStockLevel * 0.2) {
         anomalies.add(BusinessAnomaly(
@@ -672,22 +698,26 @@ class AnomalyDetectionService {
     return [];
   }
 
-  List<BusinessAnomaly> _detectPaymentDelayAnomalies(List<CRDTInvoiceEnhanced> invoices) {
+  List<BusinessAnomaly> _detectPaymentDelayAnomalies(
+      List<CRDTInvoiceEnhanced> invoices) {
     // Implementation for payment delay anomaly detection
     return [];
   }
 
-  List<BusinessAnomaly> _detectPaymentAmountAnomalies(List<CRDTInvoiceEnhanced> invoices) {
+  List<BusinessAnomaly> _detectPaymentAmountAnomalies(
+      List<CRDTInvoiceEnhanced> invoices) {
     // Implementation for payment amount anomaly detection
     return [];
   }
 
-  List<BusinessAnomaly> _detectPaymentMethodAnomalies(List<CRDTInvoiceEnhanced> invoices) {
+  List<BusinessAnomaly> _detectPaymentMethodAnomalies(
+      List<CRDTInvoiceEnhanced> invoices) {
     // Implementation for payment method anomaly detection
     return [];
   }
 
-  Map<int, double> _calculateSeasonalPatterns(List<CRDTInvoiceEnhanced> invoices) {
+  Map<int, double> _calculateSeasonalPatterns(
+      List<CRDTInvoiceEnhanced> invoices) {
     // Implementation for seasonal pattern calculation
     return {};
   }

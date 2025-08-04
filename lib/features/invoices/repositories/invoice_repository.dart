@@ -26,7 +26,8 @@ class InvoiceQueryBuilder {
     return this;
   }
 
-  InvoiceQueryBuilder whereDateRange(DateTime from, DateTime to, {String field = 'issue_date'}) {
+  InvoiceQueryBuilder whereDateRange(DateTime from, DateTime to,
+      {String field = 'issue_date'}) {
     _filters['${field}_from'] = from.millisecondsSinceEpoch;
     _filters['${field}_to'] = to.millisecondsSinceEpoch;
     return this;
@@ -141,7 +142,8 @@ class InvoiceRepository {
   }
 
   /// Query invoices with complex filters
-  Future<List<CRDTInvoiceEnhanced>> queryInvoices(Map<String, dynamic> query) async {
+  Future<List<CRDTInvoiceEnhanced>> queryInvoices(
+      Map<String, dynamic> query) async {
     // This would implement complex SQL-like queries against the CRDT database
     // For now, return a simulated result
     final entities = await _databaseService.queryEntities('invoices', query);
@@ -159,9 +161,7 @@ class InvoiceRepository {
     String? sortBy,
     bool sortAscending = true,
   }) async {
-    final query = InvoiceQueryBuilder()
-        .limit(limit)
-        .offset(offset);
+    final query = InvoiceQueryBuilder().limit(limit).offset(offset);
 
     if (statuses != null && statuses.isNotEmpty) {
       query.whereStatus(statuses);
@@ -259,7 +259,7 @@ class InvoiceRepository {
     }
 
     final invoices = await queryInvoices(query.build());
-    
+
     final stats = <String, dynamic>{};
     final statusCounts = <String, int>{};
     double totalAmount = 0.0;
@@ -295,8 +295,10 @@ class InvoiceRepository {
     stats['overdue_amount'] = overdueAmount;
     stats['overdue_count'] = overdueCount;
     stats['disputed_count'] = disputedCount;
-    stats['average_invoice_value'] = invoices.isEmpty ? 0.0 : totalAmount / invoices.length;
-    stats['payment_rate'] = totalAmount > 0 ? (paidAmount / totalAmount) * 100 : 0.0;
+    stats['average_invoice_value'] =
+        invoices.isEmpty ? 0.0 : totalAmount / invoices.length;
+    stats['payment_rate'] =
+        totalAmount > 0 ? (paidAmount / totalAmount) * 100 : 0.0;
 
     return stats;
   }
@@ -309,7 +311,7 @@ class InvoiceRepository {
       invoice.isDeleted = true;
       invoice.updatedAt = timestamp;
       invoice.version = invoice.version.tick();
-      
+
       await _databaseService.upsertEntity('invoices', invoice);
     }
   }
@@ -322,7 +324,7 @@ class InvoiceRepository {
       invoice.isDeleted = false;
       invoice.updatedAt = timestamp;
       invoice.version = invoice.version.tick();
-      
+
       await _databaseService.upsertEntity('invoices', invoice);
     }
   }
@@ -360,7 +362,7 @@ class InvoiceRepository {
       'invoice_id': invoiceId,
       'include_deleted': false,
     });
-    
+
     final items = entities.cast<CRDTInvoiceItem>();
     items.sort((a, b) => a.sortOrder.value.compareTo(b.sortOrder.value));
     return items;
@@ -374,7 +376,7 @@ class InvoiceRepository {
       item.isDeleted = true;
       item.updatedAt = timestamp;
       item.version = item.version.tick();
-      
+
       await _databaseService.upsertEntity('invoice_items', item);
     }
   }
@@ -402,7 +404,8 @@ class InvoiceRepository {
 
   /// Get payment by ID
   Future<CRDTInvoicePayment?> getPaymentById(String paymentId) async {
-    final entity = await _databaseService.getEntity('invoice_payments', paymentId);
+    final entity =
+        await _databaseService.getEntity('invoice_payments', paymentId);
     return entity as CRDTInvoicePayment?;
   }
 
@@ -412,7 +415,7 @@ class InvoiceRepository {
       'invoice_id': invoiceId,
       'include_deleted': false,
     });
-    
+
     final payments = entities.cast<CRDTInvoicePayment>();
     payments.sort((a, b) => b.paymentDate.value.compareTo(a.paymentDate.value));
     return payments;
@@ -426,7 +429,7 @@ class InvoiceRepository {
       payment.isDeleted = true;
       payment.updatedAt = timestamp;
       payment.version = payment.version.tick();
-      
+
       await _databaseService.upsertEntity('invoice_payments', payment);
     }
   }
@@ -434,7 +437,8 @@ class InvoiceRepository {
   /// Workflow Operations
 
   /// Create workflow entry
-  Future<CRDTInvoiceWorkflow> createWorkflowEntry(CRDTInvoiceWorkflow workflow) async {
+  Future<CRDTInvoiceWorkflow> createWorkflowEntry(
+      CRDTInvoiceWorkflow workflow) async {
     await _databaseService.upsertEntity('invoice_workflow', workflow);
     return workflow;
   }
@@ -445,7 +449,7 @@ class InvoiceRepository {
       'invoice_id': invoiceId,
       'include_deleted': false,
     });
-    
+
     final workflow = entities.cast<CRDTInvoiceWorkflow>();
     workflow.sort((a, b) => b.timestamp.value.compareTo(a.timestamp.value));
     return workflow;
@@ -458,12 +462,12 @@ class InvoiceRepository {
     List<CRDTInvoiceEnhanced> invoices,
   ) async {
     final results = <CRDTInvoiceEnhanced>[];
-    
+
     for (final invoice in invoices) {
       final updated = await updateInvoice(invoice);
       results.add(updated);
     }
-    
+
     return results;
   }
 
@@ -482,7 +486,7 @@ class InvoiceRepository {
   /// Validate data integrity
   Future<List<String>> validateDataIntegrity() async {
     final issues = <String>[];
-    
+
     // Check for orphaned line items
     final allItems = await _databaseService.queryEntities('invoice_items', {});
     for (final item in allItems.cast<CRDTInvoiceItem>()) {
@@ -491,51 +495,54 @@ class InvoiceRepository {
         issues.add('Orphaned line item: ${item.id}');
       }
     }
-    
+
     // Check for orphaned payments
-    final allPayments = await _databaseService.queryEntities('invoice_payments', {});
+    final allPayments =
+        await _databaseService.queryEntities('invoice_payments', {});
     for (final payment in allPayments.cast<CRDTInvoicePayment>()) {
       final invoice = await getInvoiceById(payment.invoiceId.value);
       if (invoice == null) {
         issues.add('Orphaned payment: ${payment.id}');
       }
     }
-    
+
     // Check for calculation inconsistencies
     final allInvoices = await queryInvoices({});
     for (final invoice in allInvoices) {
       final items = await getInvoiceLineItems(invoice.id);
       double calculatedSubtotal = 0.0;
-      
+
       for (final item in items) {
         calculatedSubtotal += item.lineTotal.value;
       }
-      
+
       const tolerance = 0.01;
       if ((calculatedSubtotal - invoice.subtotal.value).abs() > tolerance) {
-        issues.add('Calculation mismatch for invoice: ${invoice.invoiceNumber.value}');
+        issues.add(
+            'Calculation mismatch for invoice: ${invoice.invoiceNumber.value}');
       }
     }
-    
+
     return issues;
   }
 
   /// Clean up deleted records
   Future<int> cleanupDeletedRecords({DateTime? olderThan}) async {
-    final cutoffDate = olderThan ?? DateTime.now().subtract(const Duration(days: 90));
+    final cutoffDate =
+        olderThan ?? DateTime.now().subtract(const Duration(days: 90));
     int cleanedCount = 0;
-    
+
     // Clean up deleted invoices
     final deletedInvoices = await queryInvoices({
       'is_deleted': true,
       'updated_at_before': cutoffDate.millisecondsSinceEpoch,
     });
-    
+
     for (final invoice in deletedInvoices) {
       await _databaseService.deleteEntity('invoices', invoice.id);
       cleanedCount++;
     }
-    
+
     return cleanedCount;
   }
 
@@ -555,7 +562,7 @@ class InvoiceRepository {
       detectedAt: DateTime.now(),
       tableName: 'invoices',
     );
-    
+
     // Use conflict resolver to merge
     final resolution = await _conflictResolver.resolveConflict(conflict);
     await _databaseService.upsertEntity('invoices', resolution.resolvedValue);
@@ -563,7 +570,8 @@ class InvoiceRepository {
   }
 
   /// Get invoices modified since timestamp
-  Future<List<CRDTInvoiceEnhanced>> getInvoicesModifiedSince(DateTime timestamp) async {
+  Future<List<CRDTInvoiceEnhanced>> getInvoicesModifiedSince(
+      DateTime timestamp) async {
     return queryInvoices({
       'updated_at_after': timestamp.millisecondsSinceEpoch,
     });
@@ -575,7 +583,7 @@ class InvoiceRepository {
     int limit = 1000,
   }) async {
     final invoices = await getInvoicesModifiedSince(since);
-    
+
     return {
       'invoices': invoices.map((i) => i.toCRDTJson()).take(limit).toList(),
       'has_more': invoices.length > limit,
@@ -588,10 +596,10 @@ class InvoiceRepository {
     for (final change in changes) {
       // This would deserialize and merge remote changes
       // Implementation depends on the specific CRDT serialization format
-      
+
       final invoiceId = change['id'] as String;
       final existing = await getInvoiceById(invoiceId);
-      
+
       if (existing != null) {
         // Merge changes - this would need proper deserialization
         // For now, skip implementation details
@@ -616,7 +624,8 @@ class InvoiceRepository {
   }
 
   /// Preload related data for performance
-  Future<Map<String, dynamic>> getInvoiceWithRelatedData(String invoiceId) async {
+  Future<Map<String, dynamic>> getInvoiceWithRelatedData(
+      String invoiceId) async {
     final invoice = await getInvoiceById(invoiceId);
     if (invoice == null) {
       throw Exception('Invoice not found');

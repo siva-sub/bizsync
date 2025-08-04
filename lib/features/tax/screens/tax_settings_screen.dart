@@ -12,28 +12,31 @@ class TaxSettingsScreen extends StatefulWidget {
 
 class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Company GST Settings
   bool _isGstRegistered = false;
-  final TextEditingController _gstRegistrationNumberController = TextEditingController();
+  final TextEditingController _gstRegistrationNumberController =
+      TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _companyUenController = TextEditingController();
-  final TextEditingController _companyAddressController = TextEditingController();
+  final TextEditingController _companyAddressController =
+      TextEditingController();
   DateTime? _gstRegistrationDate;
-  
+
   // Default Tax Rates
   double _defaultGstRate = SingaporeGstService.currentGstRate * 100; // 9%
   bool _autoApplyGst = true;
   bool _gstInclusive = false;
-  
+
   // Tax Exemptions
   final List<String> _exemptCategories = [];
   final TextEditingController _newExemptionController = TextEditingController();
-  
+
   // CPF Settings
   bool _enableCpfCalculations = true;
   bool _autoCalculateAge = true;
-  final TextEditingController _cpfRateOverrideController = TextEditingController();
+  final TextEditingController _cpfRateOverrideController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -115,8 +118,8 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
             Text(
               'Company Information',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -174,13 +177,13 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
             Text(
               'GST Settings',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text('Company is GST Registered'),
-              subtitle: Text(_isGstRegistered 
+              subtitle: Text(_isGstRegistered
                   ? 'Your company is registered for GST'
                   : 'Your company is not GST registered'),
               value: _isGstRegistered,
@@ -236,7 +239,8 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
                         labelText: 'Default GST Rate (%)',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       readOnly: true, // Current rate is fixed by law
                       onChanged: (value) {
                         final rate = double.tryParse(value);
@@ -255,15 +259,17 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
                       children: [
                         Text(
                           'Current Rate Info',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
                         ),
                         Text(
                           '9% effective from 1 Jan 2023',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                         ),
                       ],
                     ),
@@ -273,7 +279,8 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
               const SizedBox(height: 16),
               SwitchListTile(
                 title: const Text('Auto-apply GST to Standard Items'),
-                subtitle: const Text('Automatically add GST to standard-rated items'),
+                subtitle:
+                    const Text('Automatically add GST to standard-rated items'),
                 value: _autoApplyGst,
                 onChanged: (value) {
                   setState(() {
@@ -311,8 +318,8 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
                   child: Text(
                     'Tax Exemptions',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 IconButton(
@@ -350,17 +357,19 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
                   Text(
                     'Current Exemptions:',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
-                    children: _exemptCategories.map((category) => Chip(
-                      label: Text(category),
-                      onDeleted: () => _removeExemption(category),
-                      deleteIcon: const Icon(Icons.close, size: 18),
-                    )).toList(),
+                    children: _exemptCategories
+                        .map((category) => Chip(
+                              label: Text(category),
+                              onDeleted: () => _removeExemption(category),
+                              deleteIcon: const Icon(Icons.close, size: 18),
+                            ))
+                        .toList(),
                   ),
                 ],
               ),
@@ -380,13 +389,14 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
             Text(
               'CPF Settings',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text('Enable CPF Calculations'),
-              subtitle: const Text('Automatically calculate CPF contributions for payroll'),
+              subtitle: const Text(
+                  'Automatically calculate CPF contributions for payroll'),
               value: _enableCpfCalculations,
               onChanged: (value) {
                 setState(() {
@@ -428,8 +438,8 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
           Text(
             'Current CPF Rates (2024)',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 8),
           const Text('Below 55: Employee 20%, Employer 17%'),
@@ -451,8 +461,8 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
             Text(
               'Advanced Settings',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             ListTile(
@@ -544,14 +554,14 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Common exempt categories:', 
-                style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Common exempt categories:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               ...SingaporeGstExemptions.exemptCategories
                   .map((category) => Text('• $category')),
               const SizedBox(height: 16),
-              const Text('Zero-rated categories:', 
-                style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Zero-rated categories:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               ...SingaporeGstExemptions.zeroRatedCategories
                   .map((category) => Text('• $category')),
@@ -583,11 +593,14 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
               Text('Registration Period: ${info['registration_period']} days'),
               Text('Effective Date: ${info['effective_date']}'),
               const SizedBox(height: 16),
-              const Text('Benefits:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Benefits:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               ...info['benefits'].map<Widget>((benefit) => Text('• $benefit')),
               const SizedBox(height: 16),
-              const Text('Obligations:', style: TextStyle(fontWeight: FontWeight.bold)),
-              ...info['obligations'].map<Widget>((obligation) => Text('• $obligation')),
+              const Text('Obligations:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              ...info['obligations']
+                  .map<Widget>((obligation) => Text('• $obligation')),
             ],
           ),
         ),
@@ -610,7 +623,8 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('1 Jan 2023 onwards: 9%', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('1 Jan 2023 onwards: 9%',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             Text('1 Jan 2022 - 31 Dec 2022: 8%'),
             Text('1 Jan 2016 - 31 Dec 2021: 7%'),
             Text('1 Jul 2007 - 31 Dec 2015: 7%'),
@@ -643,7 +657,8 @@ class _TaxSettingsScreenState extends State<TaxSettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Reset to Defaults'),
-        content: const Text('This will reset all tax settings to default values. Are you sure?'),
+        content: const Text(
+            'This will reset all tax settings to default values. Are you sure?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

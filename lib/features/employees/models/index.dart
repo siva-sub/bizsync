@@ -1,5 +1,5 @@
 // Employee Models Index
-// 
+//
 // This file provides a central export point for all employee-related models
 // including CRDT-enabled models for offline-first functionality and Singapore-specific
 // features for payroll, tax compliance, and HR management.
@@ -14,7 +14,7 @@ export 'enhanced_payroll_models.dart';
 
 // Enums and constants for employee management
 class EmployeeConstants {
-  // Singapore CPF contribution rates (2024) - Legacy format for backward compatibility  
+  // Singapore CPF contribution rates (2024) - Legacy format for backward compatibility
   static const Map<String, Map<String, double>> cpfRates = {
     'citizen_pr_below_55': {
       'employee_rate': 0.20,
@@ -45,15 +45,15 @@ class EmployeeConstants {
       'employer_rate': 0.06,
     },
   };
-  
+
   // CPF wage ceilings (2024)
   static const double ordinaryWageCeiling = 6800.0; // Monthly
   static const double additionalWageCeiling = 102000.0; // Annual
-  
+
   // Singapore levies
   static const double sdlRate = 0.0025; // 0.25%
   static const double sdlCeiling = 4500.0; // Monthly ceiling for SDL
-  
+
   // Foreign Worker Levy rates (monthly)
   static const Map<String, double> fwlRates = {
     'construction_basic': 300.0,
@@ -67,7 +67,7 @@ class EmployeeConstants {
     'services_basic': 300.0,
     'services_higher': 400.0,
   };
-  
+
   // Standard leave entitlements in Singapore
   static const Map<String, int> standardLeaveEntitlements = {
     'annual_leave_min': 7, // Minimum 7 days annual leave
@@ -78,7 +78,7 @@ class EmployeeConstants {
     'childcare_leave': 6, // 6 days per year for parents
     'infant_care_leave': 6, // 6 days for first year
   };
-  
+
   // Performance rating scales
   static const Map<String, double> performanceRatingScales = {
     'outstanding': 5.0,
@@ -87,7 +87,7 @@ class EmployeeConstants {
     'developing': 2.0,
     'unsatisfactory': 1.0,
   };
-  
+
   // Work permit types in Singapore
   static const List<String> workPermitTypes = [
     'citizen',
@@ -101,7 +101,7 @@ class EmployeeConstants {
     'student_pass',
     'dependent_pass',
   ];
-  
+
   // Employment statuses
   static const List<String> employmentStatuses = [
     'active',
@@ -110,7 +110,7 @@ class EmployeeConstants {
     'terminated',
     'retired',
   ];
-  
+
   // Employment types
   static const List<String> employmentTypes = [
     'full_time',
@@ -119,7 +119,7 @@ class EmployeeConstants {
     'intern',
     'freelancer',
   ];
-  
+
   // Leave types
   static const List<String> leaveTypes = [
     'annual',
@@ -136,7 +136,7 @@ class EmployeeConstants {
     'emergency',
     'other',
   ];
-  
+
   // Payroll frequencies
   static const List<String> payrollFrequencies = [
     'monthly',
@@ -144,7 +144,7 @@ class EmployeeConstants {
     'weekly',
     'daily',
   ];
-  
+
   // Singapore bank codes (major banks)
   static const Map<String, String> singaporeBankCodes = {
     'DBS': '7171',
@@ -158,7 +158,7 @@ class EmployeeConstants {
     'Bank of China': '7277',
     'ICBC': '7147',
   };
-  
+
   // Common job departments
   static const List<String> commonDepartments = [
     'Administration',
@@ -177,7 +177,7 @@ class EmployeeConstants {
     'Product Management',
     'Engineering',
   ];
-  
+
   // Skills categories
   static const List<String> skillCategories = [
     'Technical',
@@ -209,7 +209,7 @@ class EmployeeUtils {
     }
     return age;
   }
-  
+
   /// Determine CPF age category
   static String getCpfAgeCategory(DateTime dateOfBirth) {
     final age = calculateAge(dateOfBirth);
@@ -218,40 +218,42 @@ class EmployeeUtils {
     if (age < 65) return 'age_60_to_65';
     return 'above_65';
   }
-  
+
   /// Get CPF rates based on age and residency
-  static Map<String, double> getCpfRates(DateTime dateOfBirth, String residencyStatus) {
+  static Map<String, double> getCpfRates(
+      DateTime dateOfBirth, String residencyStatus) {
     final ageCategory = getCpfAgeCategory(dateOfBirth);
-    
+
     if (residencyStatus == 'pr_first_2_years') {
       return EmployeeConstants.cpfRates['spr_first_2_years']!;
     }
-    
+
     return EmployeeConstants.cpfRates['citizen_pr_$ageCategory']!;
   }
-  
+
   /// Calculate working days between two dates (excluding weekends)
   static int calculateWorkingDays(DateTime startDate, DateTime endDate) {
     int workingDays = 0;
     DateTime current = startDate;
-    
+
     while (current.isBefore(endDate) || current.isAtSameMomentAs(endDate)) {
-      if (current.weekday != DateTime.saturday && current.weekday != DateTime.sunday) {
+      if (current.weekday != DateTime.saturday &&
+          current.weekday != DateTime.sunday) {
         workingDays++;
       }
       current = current.add(const Duration(days: 1));
     }
-    
+
     return workingDays;
   }
-  
+
   /// Generate employee ID with format: EMP-YYYY-NNNN
   static String generateEmployeeId(int sequenceNumber) {
     final year = DateTime.now().year;
     final paddedNumber = sequenceNumber.toString().padLeft(4, '0');
     return 'EMP-$year-$paddedNumber';
   }
-  
+
   /// Generate payroll number with format: PAY-YYYY-MM-NNNN
   static String generatePayrollNumber(int sequenceNumber, DateTime payPeriod) {
     final year = payPeriod.year;
@@ -259,20 +261,20 @@ class EmployeeUtils {
     final paddedNumber = sequenceNumber.toString().padLeft(4, '0');
     return 'PAY-$year-$month-$paddedNumber';
   }
-  
+
   /// Generate leave request number with format: LV-YYYY-NNNN
   static String generateLeaveRequestNumber(int sequenceNumber) {
     final year = DateTime.now().year;
     final paddedNumber = sequenceNumber.toString().padLeft(4, '0');
     return 'LV-$year-$paddedNumber';
   }
-  
+
   /// Validate Singapore NRIC/FIN format
   static bool isValidNricFin(String nricFin) {
     final regex = RegExp(r'^[STFG]\d{7}[A-Z]$');
     return regex.hasMatch(nricFin.toUpperCase());
   }
-  
+
   /// Validate Singapore work permit number format
   static bool isValidWorkPermitNumber(String permitNumber, String permitType) {
     switch (permitType.toLowerCase()) {
@@ -286,26 +288,28 @@ class EmployeeUtils {
         return permitNumber.isNotEmpty; // Basic validation for other types
     }
   }
-  
+
   /// Calculate months of service
   static int calculateMonthsOfService(DateTime startDate, [DateTime? endDate]) {
     final end = endDate ?? DateTime.now();
-    int months = (end.year - startDate.year) * 12 + (end.month - startDate.month);
-    
+    int months =
+        (end.year - startDate.year) * 12 + (end.month - startDate.month);
+
     // Adjust for partial months
     if (end.day < startDate.day) {
       months--;
     }
-    
+
     return months;
   }
-  
+
   /// Calculate years of service
-  static double calculateYearsOfService(DateTime startDate, [DateTime? endDate]) {
+  static double calculateYearsOfService(DateTime startDate,
+      [DateTime? endDate]) {
     final months = calculateMonthsOfService(startDate, endDate);
     return months / 12.0;
   }
-  
+
   /// Get standard leave entitlement based on years of service
   static int getAnnualLeaveEntitlement(double yearsOfService) {
     if (yearsOfService < 1) return 7; // Minimum 7 days

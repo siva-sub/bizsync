@@ -22,10 +22,10 @@ class OfflineCacheService {
 
     _prefs = await SharedPreferences.getInstance();
     _cacheDirectory = await _getCacheDirectory();
-    
+
     // Check cache version and clear if outdated
     await _checkCacheVersion();
-    
+
     _isInitialized = true;
   }
 
@@ -33,18 +33,18 @@ class OfflineCacheService {
   Future<Directory> _getCacheDirectory() async {
     final appDir = await getApplicationDocumentsDirectory();
     final cacheDir = Directory('${appDir.path}/dashboard_cache');
-    
+
     if (!await cacheDir.exists()) {
       await cacheDir.create(recursive: true);
     }
-    
+
     return cacheDir;
   }
 
   /// Check and update cache version
   Future<void> _checkCacheVersion() async {
     final currentVersion = _prefs.getInt(_cacheVersionKey) ?? 0;
-    
+
     if (currentVersion < _currentCacheVersion) {
       await clearAllCache();
       await _prefs.setInt(_cacheVersionKey, _currentCacheVersion);
@@ -57,22 +57,22 @@ class OfflineCacheService {
     TimePeriod period,
   ) async {
     await _ensureInitialized();
-    
+
     try {
       final cacheKey = _getCacheKey('dashboard_data', period);
       final jsonData = json.encode(data.toJson());
-      
+
       // Save to file for large data
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
       await file.writeAsString(jsonData);
-      
+
       // Save metadata to SharedPreferences
-      await _prefs.setString('${cacheKey}_timestamp', DateTime.now().toIso8601String());
+      await _prefs.setString(
+          '${cacheKey}_timestamp', DateTime.now().toIso8601String());
       await _prefs.setString(_lastUpdateKey, DateTime.now().toIso8601String());
-      
+
       // Update cache index
       await _updateCacheIndex(cacheKey);
-      
     } catch (e) {
       throw CacheException('Failed to cache dashboard data: $e');
     }
@@ -81,26 +81,25 @@ class OfflineCacheService {
   /// Retrieve cached dashboard data
   Future<DashboardData?> getCachedDashboardData(TimePeriod period) async {
     await _ensureInitialized();
-    
+
     try {
       final cacheKey = _getCacheKey('dashboard_data', period);
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
-      
+
       if (!await file.exists()) {
         return null;
       }
-      
+
       // Check if cache is expired
       if (await _isCacheExpired(cacheKey)) {
         await _removeFromCache(cacheKey);
         return null;
       }
-      
+
       final jsonString = await file.readAsString();
       final jsonData = json.decode(jsonString) as Map<String, dynamic>;
-      
+
       return DashboardData.fromJson(jsonData);
-      
     } catch (e) {
       // If cache is corrupted, remove it
       await _removeFromCache(_getCacheKey('dashboard_data', period));
@@ -111,16 +110,16 @@ class OfflineCacheService {
   /// Cache KPIs data
   Future<void> cacheKPIs(List<KPI> kpis, TimePeriod period) async {
     await _ensureInitialized();
-    
+
     try {
       final cacheKey = _getCacheKey('kpis', period);
       final jsonData = json.encode(kpis.map((kpi) => kpi.toJson()).toList());
-      
+
       await _prefs.setString(cacheKey, jsonData);
-      await _prefs.setString('${cacheKey}_timestamp', DateTime.now().toIso8601String());
-      
+      await _prefs.setString(
+          '${cacheKey}_timestamp', DateTime.now().toIso8601String());
+
       await _updateCacheIndex(cacheKey);
-      
     } catch (e) {
       throw CacheException('Failed to cache KPIs: $e');
     }
@@ -129,21 +128,22 @@ class OfflineCacheService {
   /// Retrieve cached KPIs
   Future<List<KPI>?> getCachedKPIs(TimePeriod period) async {
     await _ensureInitialized();
-    
+
     final cacheKey = _getCacheKey('kpis', period);
-    
+
     try {
       if (await _isCacheExpired(cacheKey)) {
         await _removeFromCache(cacheKey);
         return null;
       }
-      
+
       final jsonString = _prefs.getString(cacheKey);
       if (jsonString == null) return null;
-      
+
       final jsonList = json.decode(jsonString) as List<dynamic>;
-      return jsonList.map((json) => KPI.fromJson(json as Map<String, dynamic>)).toList();
-      
+      return jsonList
+          .map((json) => KPI.fromJson(json as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       await _removeFromCache(cacheKey);
       return null;
@@ -151,19 +151,20 @@ class OfflineCacheService {
   }
 
   /// Cache revenue analytics
-  Future<void> cacheRevenueAnalytics(RevenueAnalytics analytics, TimePeriod period) async {
+  Future<void> cacheRevenueAnalytics(
+      RevenueAnalytics analytics, TimePeriod period) async {
     await _ensureInitialized();
-    
+
     try {
       final cacheKey = _getCacheKey('revenue_analytics', period);
       final jsonData = json.encode(analytics.toJson());
-      
+
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
       await file.writeAsString(jsonData);
-      
-      await _prefs.setString('${cacheKey}_timestamp', DateTime.now().toIso8601String());
+
+      await _prefs.setString(
+          '${cacheKey}_timestamp', DateTime.now().toIso8601String());
       await _updateCacheIndex(cacheKey);
-      
     } catch (e) {
       throw CacheException('Failed to cache revenue analytics: $e');
     }
@@ -172,22 +173,21 @@ class OfflineCacheService {
   /// Retrieve cached revenue analytics
   Future<RevenueAnalytics?> getCachedRevenueAnalytics(TimePeriod period) async {
     await _ensureInitialized();
-    
+
     final cacheKey = _getCacheKey('revenue_analytics', period);
-    
+
     try {
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
-      
+
       if (!await file.exists() || await _isCacheExpired(cacheKey)) {
         await _removeFromCache(cacheKey);
         return null;
       }
-      
+
       final jsonString = await file.readAsString();
       final jsonData = json.decode(jsonString) as Map<String, dynamic>;
-      
+
       return RevenueAnalytics.fromJson(jsonData);
-      
     } catch (e) {
       await _removeFromCache(cacheKey);
       return null;
@@ -197,17 +197,17 @@ class OfflineCacheService {
   /// Cache cash flow data
   Future<void> cacheCashFlowData(CashFlowData data, TimePeriod period) async {
     await _ensureInitialized();
-    
+
     try {
       final cacheKey = _getCacheKey('cash_flow', period);
       final jsonData = json.encode(data.toJson());
-      
+
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
       await file.writeAsString(jsonData);
-      
-      await _prefs.setString('${cacheKey}_timestamp', DateTime.now().toIso8601String());
+
+      await _prefs.setString(
+          '${cacheKey}_timestamp', DateTime.now().toIso8601String());
       await _updateCacheIndex(cacheKey);
-      
     } catch (e) {
       throw CacheException('Failed to cache cash flow data: $e');
     }
@@ -216,22 +216,21 @@ class OfflineCacheService {
   /// Retrieve cached cash flow data
   Future<CashFlowData?> getCachedCashFlowData(TimePeriod period) async {
     await _ensureInitialized();
-    
+
     final cacheKey = _getCacheKey('cash_flow', period);
-    
+
     try {
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
-      
+
       if (!await file.exists() || await _isCacheExpired(cacheKey)) {
         await _removeFromCache(cacheKey);
         return null;
       }
-      
+
       final jsonString = await file.readAsString();
       final jsonData = json.decode(jsonString) as Map<String, dynamic>;
-      
+
       return CashFlowData.fromJson(jsonData);
-      
     } catch (e) {
       await _removeFromCache(cacheKey);
       return null;
@@ -239,19 +238,20 @@ class OfflineCacheService {
   }
 
   /// Cache customer insights
-  Future<void> cacheCustomerInsights(CustomerInsights insights, TimePeriod period) async {
+  Future<void> cacheCustomerInsights(
+      CustomerInsights insights, TimePeriod period) async {
     await _ensureInitialized();
-    
+
     try {
       final cacheKey = _getCacheKey('customer_insights', period);
       final jsonData = json.encode(insights.toJson());
-      
+
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
       await file.writeAsString(jsonData);
-      
-      await _prefs.setString('${cacheKey}_timestamp', DateTime.now().toIso8601String());
+
+      await _prefs.setString(
+          '${cacheKey}_timestamp', DateTime.now().toIso8601String());
       await _updateCacheIndex(cacheKey);
-      
     } catch (e) {
       throw CacheException('Failed to cache customer insights: $e');
     }
@@ -260,22 +260,21 @@ class OfflineCacheService {
   /// Retrieve cached customer insights
   Future<CustomerInsights?> getCachedCustomerInsights(TimePeriod period) async {
     await _ensureInitialized();
-    
+
     final cacheKey = _getCacheKey('customer_insights', period);
-    
+
     try {
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
-      
+
       if (!await file.exists() || await _isCacheExpired(cacheKey)) {
         await _removeFromCache(cacheKey);
         return null;
       }
-      
+
       final jsonString = await file.readAsString();
       final jsonData = json.decode(jsonString) as Map<String, dynamic>;
-      
+
       return CustomerInsights.fromJson(jsonData);
-      
     } catch (e) {
       await _removeFromCache(cacheKey);
       return null;
@@ -285,16 +284,16 @@ class OfflineCacheService {
   /// Cache inventory overview
   Future<void> cacheInventoryOverview(InventoryOverview overview) async {
     await _ensureInitialized();
-    
+
     try {
       const cacheKey = 'inventory_overview';
       final jsonData = json.encode(overview.toJson());
-      
+
       await _prefs.setString(cacheKey, jsonData);
-      await _prefs.setString('${cacheKey}_timestamp', DateTime.now().toIso8601String());
-      
+      await _prefs.setString(
+          '${cacheKey}_timestamp', DateTime.now().toIso8601String());
+
       await _updateCacheIndex(cacheKey);
-      
     } catch (e) {
       throw CacheException('Failed to cache inventory overview: $e');
     }
@@ -303,22 +302,20 @@ class OfflineCacheService {
   /// Retrieve cached inventory overview
   Future<InventoryOverview?> getCachedInventoryOverview() async {
     await _ensureInitialized();
-    
+
     const cacheKey = 'inventory_overview';
-    
+
     try {
-      
       if (await _isCacheExpired(cacheKey)) {
         await _removeFromCache(cacheKey);
         return null;
       }
-      
+
       final jsonString = _prefs.getString(cacheKey);
       if (jsonString == null) return null;
-      
+
       final jsonData = json.decode(jsonString) as Map<String, dynamic>;
       return InventoryOverview.fromJson(jsonData);
-      
     } catch (e) {
       await _removeFromCache(cacheKey);
       return null;
@@ -328,17 +325,18 @@ class OfflineCacheService {
   /// Cache anomalies
   Future<void> cacheAnomalies(List<BusinessAnomaly> anomalies) async {
     await _ensureInitialized();
-    
+
     try {
       const cacheKey = 'business_anomalies';
-      final jsonData = json.encode(anomalies.map((anomaly) => anomaly.toJson()).toList());
-      
+      final jsonData =
+          json.encode(anomalies.map((anomaly) => anomaly.toJson()).toList());
+
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
       await file.writeAsString(jsonData);
-      
-      await _prefs.setString('${cacheKey}_timestamp', DateTime.now().toIso8601String());
+
+      await _prefs.setString(
+          '${cacheKey}_timestamp', DateTime.now().toIso8601String());
       await _updateCacheIndex(cacheKey);
-      
     } catch (e) {
       throw CacheException('Failed to cache anomalies: $e');
     }
@@ -347,23 +345,23 @@ class OfflineCacheService {
   /// Retrieve cached anomalies
   Future<List<BusinessAnomaly>?> getCachedAnomalies() async {
     await _ensureInitialized();
-    
+
     const cacheKey = 'business_anomalies';
-    
+
     try {
       final file = File('${_cacheDirectory.path}/$cacheKey.json');
-      
+
       if (!await file.exists() || await _isCacheExpired(cacheKey)) {
         await _removeFromCache(cacheKey);
         return null;
       }
-      
+
       final jsonString = await file.readAsString();
       final jsonList = json.decode(jsonString) as List<dynamic>;
-      
-      return jsonList.map((json) => 
-          BusinessAnomaly.fromJson(json as Map<String, dynamic>)).toList();
-      
+
+      return jsonList
+          .map((json) => BusinessAnomaly.fromJson(json as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       await _removeFromCache(cacheKey);
       return null;
@@ -373,14 +371,14 @@ class OfflineCacheService {
   /// Get cache status information
   Future<CacheStatus> getCacheStatus() async {
     await _ensureInitialized();
-    
+
     try {
       final cacheIndex = await _getCacheIndex();
       final lastUpdate = _prefs.getString(_lastUpdateKey);
-      
+
       int totalSize = 0;
       int expiredItems = 0;
-      
+
       for (final cacheKey in cacheIndex) {
         // Check file size
         final file = File('${_cacheDirectory.path}/$cacheKey.json');
@@ -388,20 +386,19 @@ class OfflineCacheService {
           final stat = await file.stat();
           totalSize += stat.size;
         }
-        
+
         // Check if expired
         if (await _isCacheExpired(cacheKey)) {
           expiredItems++;
         }
       }
-      
+
       return CacheStatus(
         totalItems: cacheIndex.length,
         expiredItems: expiredItems,
         totalSizeBytes: totalSize,
         lastUpdate: lastUpdate != null ? DateTime.parse(lastUpdate) : null,
       );
-      
     } catch (e) {
       return CacheStatus(
         totalItems: 0,
@@ -415,21 +412,20 @@ class OfflineCacheService {
   /// Clear expired cache entries
   Future<void> clearExpiredCache() async {
     await _ensureInitialized();
-    
+
     try {
       final cacheIndex = await _getCacheIndex();
       final expiredKeys = <String>[];
-      
+
       for (final cacheKey in cacheIndex) {
         if (await _isCacheExpired(cacheKey)) {
           expiredKeys.add(cacheKey);
         }
       }
-      
+
       for (final key in expiredKeys) {
         await _removeFromCache(key);
       }
-      
     } catch (e) {
       throw CacheException('Failed to clear expired cache: $e');
     }
@@ -438,24 +434,24 @@ class OfflineCacheService {
   /// Clear all cached data
   Future<void> clearAllCache() async {
     await _ensureInitialized();
-    
+
     try {
       // Delete all cache files
       if (await _cacheDirectory.exists()) {
         await _cacheDirectory.delete(recursive: true);
         await _cacheDirectory.create(recursive: true);
       }
-      
+
       // Clear SharedPreferences cache entries
-      final keys = _prefs.getKeys().where((key) => key.startsWith(_cachePrefix));
+      final keys =
+          _prefs.getKeys().where((key) => key.startsWith(_cachePrefix));
       for (final key in keys) {
         await _prefs.remove(key);
       }
-      
+
       // Clear cache index
       await _prefs.remove('cache_index');
       await _prefs.remove(_lastUpdateKey);
-      
     } catch (e) {
       throw CacheException('Failed to clear all cache: $e');
     }
@@ -464,10 +460,10 @@ class OfflineCacheService {
   /// Check if cache data is available for offline use
   Future<bool> isOfflineDataAvailable(TimePeriod period) async {
     await _ensureInitialized();
-    
+
     final dashboardData = await getCachedDashboardData(period);
     final kpis = await getCachedKPIs(period);
-    
+
     return dashboardData != null || kpis != null;
   }
 
@@ -487,7 +483,7 @@ class OfflineCacheService {
   Future<bool> _isCacheExpired(String cacheKey) async {
     final timestampString = _prefs.getString('${cacheKey}_timestamp');
     if (timestampString == null) return true;
-    
+
     try {
       final timestamp = DateTime.parse(timestampString);
       final now = DateTime.now();
@@ -501,13 +497,13 @@ class OfflineCacheService {
     // Remove from SharedPreferences
     await _prefs.remove(cacheKey);
     await _prefs.remove('${cacheKey}_timestamp');
-    
+
     // Remove file if exists
     final file = File('${_cacheDirectory.path}/$cacheKey.json');
     if (await file.exists()) {
       await file.delete();
     }
-    
+
     // Update cache index
     final cacheIndex = await _getCacheIndex();
     cacheIndex.remove(cacheKey);
@@ -542,7 +538,7 @@ class CacheStatus {
   });
 
   int get validItems => totalItems - expiredItems;
-  
+
   String get formattedSize {
     if (totalSizeBytes < 1024) {
       return '$totalSizeBytes B';
@@ -557,9 +553,9 @@ class CacheStatus {
 /// Cache exception
 class CacheException implements Exception {
   final String message;
-  
+
   CacheException(this.message);
-  
+
   @override
   String toString() => 'CacheException: $message';
 }

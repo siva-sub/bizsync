@@ -21,10 +21,10 @@ class ForecastSessionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dateFormatter = DateFormat('MMM dd, yyyy');
-    
+
     // Get best performing scenario
     final bestScenario = _getBestPerformingScenario();
-    
+
     return Card(
       elevation: 2,
       child: InkWell(
@@ -132,7 +132,8 @@ class ForecastSessionCard extends StatelessWidget {
               if (bestScenario != null) ...[
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: theme.primaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(4),
@@ -213,14 +214,14 @@ class ForecastSessionCard extends StatelessWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
-          ),
+                color: Colors.grey[600],
+              ),
         ),
       ],
     );

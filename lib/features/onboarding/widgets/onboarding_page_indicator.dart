@@ -22,7 +22,8 @@ class OnboardingPageIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final activeColorFinal = activeColor ?? theme.colorScheme.primary;
-    final inactiveColorFinal = inactiveColor ?? theme.colorScheme.outline.withOpacity(0.3);
+    final inactiveColorFinal =
+        inactiveColor ?? theme.colorScheme.outline.withOpacity(0.3);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -63,7 +64,8 @@ class OnboardingProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final backgroundColorFinal = backgroundColor ?? theme.colorScheme.outline.withOpacity(0.2);
+    final backgroundColorFinal =
+        backgroundColor ?? theme.colorScheme.outline.withOpacity(0.2);
     final progressColorFinal = progressColor ?? theme.colorScheme.primary;
 
     return Column(
@@ -138,7 +140,8 @@ class OnboardingStepIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final activeColorFinal = activeColor ?? theme.colorScheme.primary;
-    final inactiveColorFinal = inactiveColor ?? theme.colorScheme.outline.withOpacity(0.3);
+    final inactiveColorFinal =
+        inactiveColor ?? theme.colorScheme.outline.withOpacity(0.3);
     final completedColorFinal = completedColor ?? theme.colorScheme.tertiary;
 
     return Row(
@@ -221,7 +224,8 @@ class OnboardingStepIndicator extends StatelessWidget {
             shape: BoxShape.circle,
             border: isInactive
                 ? Border.all(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                    color:
+                        Theme.of(context).colorScheme.outline.withOpacity(0.3),
                     width: 2,
                   )
                 : null,
@@ -234,11 +238,14 @@ class OnboardingStepIndicator extends StatelessWidget {
           child: Text(
             steps[stepIndex],
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: isActive
-                  ? activeColor
-                  : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-            ),
+                  color: isActive
+                      ? activeColor
+                      : Theme.of(context)
+                          .colorScheme
+                          .onBackground
+                          .withOpacity(0.6),
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                ),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

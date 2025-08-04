@@ -22,9 +22,8 @@ class InventoryOverviewScreen extends ConsumerWidget {
         ],
       ),
       body: inventoryOverview.when(
-        data: (data) => data != null 
-            ? _buildContent(context, data)
-            : _buildNoDataState(),
+        data: (data) =>
+            data != null ? _buildContent(context, data) : _buildNoDataState(),
         loading: () => _buildLoadingState(),
         error: (error, stack) => _buildErrorState(context, error, ref),
       ),
@@ -39,15 +38,15 @@ class InventoryOverviewScreen extends ConsumerWidget {
         children: [
           // Inventory summary cards
           _buildSummaryCards(context, data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Stock alerts section
           if (data.stockAlerts.isNotEmpty)
             _buildStockAlerts(context, data.stockAlerts),
-          
+
           const SizedBox(height: 24),
-          
+
           // Stock by category chart
           InteractivePieChart(
             data: data.stockByCategory.entries
@@ -60,9 +59,9 @@ class InventoryOverviewScreen extends ConsumerWidget {
             title: 'Stock by Category',
             height: 350,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Inventory turnover chart
           InteractiveLineChart(
             data: data.inventoryTurnover,
@@ -158,7 +157,8 @@ class InventoryOverviewScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStockAlerts(BuildContext context, List<ProductStockAlert> alerts) {
+  Widget _buildStockAlerts(
+      BuildContext context, List<ProductStockAlert> alerts) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -203,7 +203,10 @@ class InventoryOverviewScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 alert.productName,
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
@@ -350,11 +353,13 @@ class InventoryOverviewScreen extends ConsumerWidget {
                   color: _getAlertColor(alert.severity),
                 ),
                 title: Text(alert.productName),
-                subtitle: Text('Current: ${alert.currentStock} | Min: ${alert.minStock}'),
+                subtitle: Text(
+                    'Current: ${alert.currentStock} | Min: ${alert.minStock}'),
                 trailing: Chip(
                   label: Text(alert.severity.toUpperCase()),
                   backgroundColor: _getAlertColor(alert.severity),
-                  labelStyle: const TextStyle(color: Colors.white, fontSize: 10),
+                  labelStyle:
+                      const TextStyle(color: Colors.white, fontSize: 10),
                 ),
               );
             },

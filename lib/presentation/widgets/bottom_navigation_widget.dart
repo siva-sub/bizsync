@@ -7,7 +7,7 @@ class BottomNavigationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentLocation = GoRouterState.of(context).uri.path;
-    
+
     return NavigationBar(
       selectedIndex: _getSelectedIndex(currentLocation),
       onDestinationSelected: (index) => _onDestinationSelected(context, index),

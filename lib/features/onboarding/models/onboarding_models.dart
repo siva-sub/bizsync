@@ -145,7 +145,8 @@ class UserProfile {
   });
 
   String get fullName => '$firstName $lastName';
-  String get initials => '${firstName.isNotEmpty ? firstName[0] : ''}${lastName.isNotEmpty ? lastName[0] : ''}';
+  String get initials =>
+      '${firstName.isNotEmpty ? firstName[0] : ''}${lastName.isNotEmpty ? lastName[0] : ''}';
 
   UserProfile copyWith({
     String? firstName,
@@ -225,12 +226,13 @@ class OnboardingConstants {
   static const Duration animationDuration = Duration(milliseconds: 300);
   static const Duration staggerDelay = Duration(milliseconds: 100);
   static const Duration pageTransitionDuration = Duration(milliseconds: 400);
-  
+
   static const double cardBorderRadius = 16.0;
   static const double inputBorderRadius = 12.0;
   static const double buttonBorderRadius = 12.0;
-  
+
   static const EdgeInsets pagePadding = EdgeInsets.all(24.0);
   static const EdgeInsets cardPadding = EdgeInsets.all(20.0);
-  static const EdgeInsets inputPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0);
+  static const EdgeInsets inputPadding =
+      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0);
 }

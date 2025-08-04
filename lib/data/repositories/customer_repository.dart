@@ -9,7 +9,7 @@ import '../../core/utils/uuid_generator.dart';
 /// Repository for customer-related database operations
 class CustomerRepository {
   CRDTDatabaseService? _databaseService;
-  
+
   CustomerRepository();
 
   /// Get database service, initializing if needed
@@ -84,7 +84,7 @@ class CustomerRepository {
     final dbService = await databaseService;
     final timestamp = HLCTimestamp.now(dbService.nodeId);
     final vectorClock = VectorClock(dbService.nodeId);
-    
+
     return CRDTCustomer(
       id: customer.id,
       nodeId: dbService.nodeId,
@@ -99,7 +99,7 @@ class CustomerRepository {
       isDeleted: false,
     );
   }
-  
+
   /// Convert CRDTCustomer to Customer
   Customer _crdtToCustomer(CRDTCustomer crdtCustomer) {
     return Customer(
@@ -107,9 +107,13 @@ class CustomerRepository {
       name: crdtCustomer.name.value,
       email: crdtCustomer.email.value.isEmpty ? null : crdtCustomer.email.value,
       phone: crdtCustomer.phone.value.isEmpty ? null : crdtCustomer.phone.value,
-      address: crdtCustomer.address.value.isEmpty ? null : crdtCustomer.address.value,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(crdtCustomer.createdAt.physicalTime),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(crdtCustomer.updatedAt.physicalTime),
+      address: crdtCustomer.address.value.isEmpty
+          ? null
+          : crdtCustomer.address.value,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(
+          crdtCustomer.createdAt.physicalTime),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(
+          crdtCustomer.updatedAt.physicalTime),
       isActive: !crdtCustomer.isDeleted,
       gstRegistered: false, // This should be added to CRDT model eventually
     );
@@ -156,13 +160,13 @@ class CustomerRepository {
       if (query.isEmpty) {
         return List.from(_mockCustomers);
       }
-      
+
       final lowercaseQuery = query.toLowerCase();
       return _mockCustomers.where((customer) {
         return customer.name.toLowerCase().contains(lowercaseQuery) ||
-               (customer.email?.toLowerCase().contains(lowercaseQuery) ?? false) ||
-               (customer.phone?.toLowerCase().contains(lowercaseQuery) ?? false) ||
-               (customer.uen?.toLowerCase().contains(lowercaseQuery) ?? false);
+            (customer.email?.toLowerCase().contains(lowercaseQuery) ?? false) ||
+            (customer.phone?.toLowerCase().contains(lowercaseQuery) ?? false) ||
+            (customer.uen?.toLowerCase().contains(lowercaseQuery) ?? false);
       }).toList();
     }
   }
@@ -171,13 +175,14 @@ class CustomerRepository {
   Future<Customer> createCustomer(Customer customer) async {
     try {
       // Generate new ID if not provided
-      final customerId = customer.id.isEmpty ? UuidGenerator.generateId() : customer.id;
+      final customerId =
+          customer.id.isEmpty ? UuidGenerator.generateId() : customer.id;
       final customerWithId = customer.copyWith(id: customerId);
-      
+
       final crdtCustomer = await _customerToCrdt(customerWithId);
       final dbService = await databaseService;
       await dbService.upsertCustomer(crdtCustomer);
-      
+
       return _crdtToCustomer(crdtCustomer);
     } catch (e) {
       // Fallback to mock data
@@ -199,7 +204,7 @@ class CustomerRepository {
         existingCrdt.phone.setValue(customer.phone ?? '', timestamp);
         existingCrdt.address.setValue(customer.address ?? '', timestamp);
         existingCrdt.updatedAt = timestamp;
-        
+
         await dbService.upsertCustomer(existingCrdt);
         return _crdtToCustomer(existingCrdt);
       } else {
@@ -233,7 +238,9 @@ class CustomerRepository {
       final allCustomers = await getAllCustomers();
       return allCustomers.where((customer) => customer.gstRegistered).toList();
     } catch (e) {
-      return _mockCustomers.where((customer) => customer.gstRegistered).toList();
+      return _mockCustomers
+          .where((customer) => customer.gstRegistered)
+          .toList();
     }
   }
 

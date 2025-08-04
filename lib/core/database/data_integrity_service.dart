@@ -17,10 +17,10 @@ enum IntegrityCheckType {
 
 /// Severity levels for integrity violations
 enum ViolationSeverity {
-  critical,  // Data corruption, must be fixed immediately
-  high,      // Business rule violation, should be fixed soon
-  medium,    // Data inconsistency, can be scheduled for fix
-  low,       // Minor issue, informational
+  critical, // Data corruption, must be fixed immediately
+  high, // Business rule violation, should be fixed soon
+  medium, // Data inconsistency, can be scheduled for fix
+  low, // Minor issue, informational
 }
 
 /// Integrity violation record
@@ -37,7 +37,7 @@ class IntegrityViolation {
   final DateTime detectedAt;
   final DateTime? resolvedAt;
   final String? resolutionNotes;
-  
+
   const IntegrityViolation({
     required this.id,
     required this.checkId,
@@ -52,7 +52,7 @@ class IntegrityViolation {
     this.resolvedAt,
     this.resolutionNotes,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -69,7 +69,7 @@ class IntegrityViolation {
       'resolution_notes': resolutionNotes,
     };
   }
-  
+
   factory IntegrityViolation.fromJson(Map<String, dynamic> json) {
     return IntegrityViolation(
       id: json['id'] as String,
@@ -85,8 +85,9 @@ class IntegrityViolation {
       description: json['description'] as String,
       details: jsonDecode(json['details'] as String) as Map<String, dynamic>,
       resolved: json['resolved'] as bool,
-      detectedAt: DateTime.fromMillisecondsSinceEpoch(json['detected_at'] as int),
-      resolvedAt: json['resolved_at'] != null 
+      detectedAt:
+          DateTime.fromMillisecondsSinceEpoch(json['detected_at'] as int),
+      resolvedAt: json['resolved_at'] != null
           ? DateTime.fromMillisecondsSinceEpoch(json['resolved_at'] as int)
           : null,
       resolutionNotes: json['resolution_notes'] as String?,
@@ -106,7 +107,7 @@ class IntegrityCheck {
   final bool isActive;
   final DateTime createdAt;
   final Map<String, dynamic>? parameters;
-  
+
   const IntegrityCheck({
     required this.id,
     required this.name,
@@ -119,7 +120,7 @@ class IntegrityCheck {
     required this.createdAt,
     this.parameters,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -134,7 +135,7 @@ class IntegrityCheck {
       'parameters': parameters != null ? jsonEncode(parameters) : null,
     };
   }
-  
+
   factory IntegrityCheck.fromJson(Map<String, dynamic> json) {
     return IntegrityCheck(
       id: json['id'] as String,
@@ -150,7 +151,7 @@ class IntegrityCheck {
       ),
       isActive: json['is_active'] as bool? ?? true,
       createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at'] as int),
-      parameters: json['parameters'] != null 
+      parameters: json['parameters'] != null
           ? jsonDecode(json['parameters'] as String) as Map<String, dynamic>
           : null,
     );
@@ -162,17 +163,17 @@ class DataIntegrityService {
   final CRDTDatabaseService _databaseService;
   final AuditService _auditService;
   final List<IntegrityCheck> _builtInChecks = [];
-  
+
   DataIntegrityService(this._databaseService, this._auditService) {
     _initializeBuiltInChecks();
   }
-  
+
   /// Initialize the integrity service and install built-in checks
   Future<void> initialize() async {
     await _installBuiltInChecks();
     await _createIntegrityTriggers();
   }
-  
+
   /// Run all active integrity checks
   Future<List<IntegrityViolation>> runIntegrityChecks({
     String? tableName,
@@ -181,33 +182,34 @@ class DataIntegrityService {
   }) async {
     final db = await _databaseService.database;
     final violations = <IntegrityViolation>[];
-    
+
     // Get checks to run
     String whereClause = '1=1';
     List<dynamic> whereArgs = [];
-    
+
     if (onlyActive) {
       whereClause += ' AND is_active = 1';
     }
-    
+
     if (tableName != null) {
       whereClause += ' AND table_name = ?';
       whereArgs.add(tableName);
     }
-    
+
     if (checkType != null) {
       whereClause += ' AND check_type = ?';
       whereArgs.add(checkType.name);
     }
-    
+
     final checksResult = await db.query(
       'integrity_checks',
       where: whereClause,
       whereArgs: whereArgs,
     );
-    
-    final checks = checksResult.map((row) => IntegrityCheck.fromJson(row)).toList();
-    
+
+    final checks =
+        checksResult.map((row) => IntegrityCheck.fromJson(row)).toList();
+
     // Run each check
     for (final check in checks) {
       try {
@@ -215,7 +217,7 @@ class DataIntegrityService {
         violations.addAll(checkViolations);
       } catch (e) {
         print('Failed to run integrity check ${check.name}: $e');
-        
+
         // Log the check failure
         await _auditService.logEvent(
           tableName: 'integrity_checks',
@@ -228,18 +230,18 @@ class DataIntegrityService {
         );
       }
     }
-    
+
     return violations;
   }
-  
+
   /// Run a single integrity check
   Future<List<IntegrityViolation>> _runSingleCheck(IntegrityCheck check) async {
     final db = await _databaseService.database;
     final violations = <IntegrityViolation>[];
-    
+
     try {
       final results = await db.rawQuery(check.checkSql);
-      
+
       for (final result in results) {
         final violation = IntegrityViolation(
           id: UuidGenerator.generateId(),
@@ -252,9 +254,9 @@ class DataIntegrityService {
           details: Map<String, dynamic>.from(result),
           detectedAt: DateTime.now(),
         );
-        
+
         violations.add(violation);
-        
+
         // Store violation in database
         await db.insert('integrity_violations', violation.toJson());
       }
@@ -262,18 +264,18 @@ class DataIntegrityService {
       print('Error running check ${check.name}: $e');
       rethrow;
     }
-    
+
     return violations;
   }
-  
+
   /// Run foreign key constraint checks
   Future<List<IntegrityViolation>> checkForeignKeyConstraints() async {
     final db = await _databaseService.database;
     final violations = <IntegrityViolation>[];
-    
+
     // Check SQLite foreign key violations
     final fkViolations = await db.rawQuery('PRAGMA foreign_key_check');
-    
+
     for (final violation in fkViolations) {
       final integrityViolation = IntegrityViolation(
         id: UuidGenerator.generateId(),
@@ -286,45 +288,46 @@ class DataIntegrityService {
         details: Map<String, dynamic>.from(violation),
         detectedAt: DateTime.now(),
       );
-      
+
       violations.add(integrityViolation);
-      
+
       // Store violation
       final violationDb = await _databaseService.database;
-      await violationDb.insert('integrity_violations', integrityViolation.toJson());
+      await violationDb.insert(
+          'integrity_violations', integrityViolation.toJson());
     }
-    
+
     return violations;
   }
-  
+
   /// Check business rule violations
   Future<List<IntegrityViolation>> checkBusinessRules() async {
     final violations = <IntegrityViolation>[];
-    
+
     // Check invoice business rules
     violations.addAll(await _checkInvoiceBusinessRules());
-    
+
     // Check customer business rules
     violations.addAll(await _checkCustomerBusinessRules());
-    
+
     // Check accounting transaction rules
     violations.addAll(await _checkAccountingBusinessRules());
-    
+
     return violations;
   }
-  
+
   /// Check invoice-specific business rules
   Future<List<IntegrityViolation>> _checkInvoiceBusinessRules() async {
     final db = await _databaseService.database;
     final violations = <IntegrityViolation>[];
-    
+
     // Check for invoices with negative amounts
     final negativeAmounts = await db.rawQuery('''
       SELECT id, invoice_number, total_amount
       FROM invoices_crdt 
       WHERE total_amount < 0 AND is_deleted = 0
     ''');
-    
+
     for (final result in negativeAmounts) {
       violations.add(IntegrityViolation(
         id: UuidGenerator.generateId(),
@@ -338,14 +341,14 @@ class DataIntegrityService {
         detectedAt: DateTime.now(),
       ));
     }
-    
+
     // Check for paid invoices with remaining balance
     final paidWithBalance = await db.rawQuery('''
       SELECT id, invoice_number, status, remaining_balance_cents
       FROM invoices_crdt 
       WHERE status = 'paid' AND remaining_balance_cents > 0 AND is_deleted = 0
     ''');
-    
+
     for (final result in paidWithBalance) {
       violations.add(IntegrityViolation(
         id: UuidGenerator.generateId(),
@@ -359,15 +362,15 @@ class DataIntegrityService {
         detectedAt: DateTime.now(),
       ));
     }
-    
+
     return violations;
   }
-  
+
   /// Check customer-specific business rules
   Future<List<IntegrityViolation>> _checkCustomerBusinessRules() async {
     final db = await _databaseService.database;
     final violations = <IntegrityViolation>[];
-    
+
     // Check for customers with invalid email formats
     final invalidEmails = await db.rawQuery('''
       SELECT id, name, email
@@ -377,7 +380,7 @@ class DataIntegrityService {
         AND email NOT LIKE '%@%.%'
         AND is_deleted = 0
     ''');
-    
+
     for (final result in invalidEmails) {
       violations.add(IntegrityViolation(
         id: UuidGenerator.generateId(),
@@ -391,7 +394,7 @@ class DataIntegrityService {
         detectedAt: DateTime.now(),
       ));
     }
-    
+
     // Check for duplicate customer names
     final duplicateNames = await db.rawQuery('''
       SELECT name, COUNT(*) as count, GROUP_CONCAT(id) as ids
@@ -400,7 +403,7 @@ class DataIntegrityService {
       GROUP BY LOWER(name)
       HAVING count > 1
     ''');
-    
+
     for (final result in duplicateNames) {
       final ids = (result['ids'] as String).split(',');
       for (final id in ids) {
@@ -421,15 +424,15 @@ class DataIntegrityService {
         ));
       }
     }
-    
+
     return violations;
   }
-  
+
   /// Check accounting-specific business rules
   Future<List<IntegrityViolation>> _checkAccountingBusinessRules() async {
     final db = await _databaseService.database;
     final violations = <IntegrityViolation>[];
-    
+
     // Check for unbalanced transactions
     final unbalancedTransactions = await db.rawQuery('''
       SELECT t.id, t.transaction_number, t.total_debit, t.total_credit,
@@ -439,7 +442,7 @@ class DataIntegrityService {
         AND t.status = 'posted'
         AND t.is_deleted = 0
     ''');
-    
+
     for (final result in unbalancedTransactions) {
       violations.add(IntegrityViolation(
         id: UuidGenerator.generateId(),
@@ -453,7 +456,7 @@ class DataIntegrityService {
         detectedAt: DateTime.now(),
       ));
     }
-    
+
     // Check for journal entries without corresponding transaction
     final orphanedEntries = await db.rawQuery('''
       SELECT je.id, je.transaction_id
@@ -461,7 +464,7 @@ class DataIntegrityService {
       LEFT JOIN transactions_crdt t ON je.transaction_id = t.id
       WHERE t.id IS NULL
     ''');
-    
+
     for (final result in orphanedEntries) {
       violations.add(IntegrityViolation(
         id: UuidGenerator.generateId(),
@@ -475,14 +478,15 @@ class DataIntegrityService {
         detectedAt: DateTime.now(),
       ));
     }
-    
+
     return violations;
   }
-  
+
   /// Resolve a violation
-  Future<void> resolveViolation(String violationId, String resolutionNotes) async {
+  Future<void> resolveViolation(
+      String violationId, String resolutionNotes) async {
     final db = await _databaseService.database;
-    
+
     await db.update(
       'integrity_violations',
       {
@@ -493,7 +497,7 @@ class DataIntegrityService {
       where: 'id = ?',
       whereArgs: [violationId],
     );
-    
+
     // Log resolution
     await _auditService.logEvent(
       tableName: 'integrity_violations',
@@ -505,27 +509,27 @@ class DataIntegrityService {
       },
     );
   }
-  
+
   /// Get violation statistics
   Future<Map<String, dynamic>> getViolationStatistics({
     DateTime? fromDate,
     DateTime? toDate,
   }) async {
     final db = await _databaseService.database;
-    
+
     String whereClause = '1=1';
     List<dynamic> whereArgs = [];
-    
+
     if (fromDate != null) {
       whereClause += ' AND detected_at >= ?';
       whereArgs.add(fromDate.millisecondsSinceEpoch);
     }
-    
+
     if (toDate != null) {
       whereClause += ' AND detected_at <= ?';
       whereArgs.add(toDate.millisecondsSinceEpoch);
     }
-    
+
     // Total violations
     final totalResult = await db.rawQuery('''
       SELECT COUNT(*) as total, 
@@ -533,7 +537,7 @@ class DataIntegrityService {
       FROM integrity_violations
       WHERE $whereClause
     ''', whereArgs);
-    
+
     // Violations by severity
     final severityResult = await db.rawQuery('''
       SELECT severity, COUNT(*) as count
@@ -541,7 +545,7 @@ class DataIntegrityService {
       WHERE $whereClause
       GROUP BY severity
     ''', whereArgs);
-    
+
     // Violations by type
     final typeResult = await db.rawQuery('''
       SELECT violation_type, COUNT(*) as count
@@ -549,7 +553,7 @@ class DataIntegrityService {
       WHERE $whereClause
       GROUP BY violation_type
     ''', whereArgs);
-    
+
     // Violations by table
     final tableResult = await db.rawQuery('''
       SELECT table_name, COUNT(*) as count
@@ -558,7 +562,7 @@ class DataIntegrityService {
       GROUP BY table_name
       ORDER BY count DESC
     ''', whereArgs);
-    
+
     return {
       'summary': totalResult.first,
       'by_severity': severityResult,
@@ -571,11 +575,11 @@ class DataIntegrityService {
       'generated_at': DateTime.now().toIso8601String(),
     };
   }
-  
+
   /// Install built-in integrity checks
   Future<void> _installBuiltInChecks() async {
     final db = await _databaseService.database;
-    
+
     for (final check in _builtInChecks) {
       await db.insert(
         'integrity_checks',
@@ -584,11 +588,11 @@ class DataIntegrityService {
       );
     }
   }
-  
+
   /// Create database triggers for real-time integrity checking
   Future<void> _createIntegrityTriggers() async {
     final db = await _databaseService.database;
-    
+
     // Trigger for invoice amount validation
     await db.execute('''
       CREATE TRIGGER IF NOT EXISTS validate_invoice_amount
@@ -612,7 +616,7 @@ class DataIntegrityService {
         );
       END
     ''');
-    
+
     // Trigger for customer email validation
     await db.execute('''
       CREATE TRIGGER IF NOT EXISTS validate_customer_email
@@ -637,7 +641,7 @@ class DataIntegrityService {
       END
     ''');
   }
-  
+
   /// Initialize built-in integrity checks
   void _initializeBuiltInChecks() {
     _builtInChecks.addAll([
@@ -659,7 +663,7 @@ class DataIntegrityService {
         defaultSeverity: ViolationSeverity.high,
         createdAt: DateTime.now(),
       ),
-      
+
       // Business rule checks
       IntegrityCheck(
         id: 'invoice_amount_positive',
@@ -675,7 +679,7 @@ class DataIntegrityService {
         defaultSeverity: ViolationSeverity.high,
         createdAt: DateTime.now(),
       ),
-      
+
       // Balance checks
       IntegrityCheck(
         id: 'transaction_balanced',
@@ -696,9 +700,10 @@ class DataIntegrityService {
       ),
     ]);
   }
-  
+
   /// Generate violation description
-  String _generateViolationDescription(IntegrityCheck check, Map<String, dynamic> result) {
+  String _generateViolationDescription(
+      IntegrityCheck check, Map<String, dynamic> result) {
     switch (check.id) {
       case 'fk_invoice_customer':
         return 'Invoice ${result['record_id']} references non-existent customer ${result['customer_id']}';

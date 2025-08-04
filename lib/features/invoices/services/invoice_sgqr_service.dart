@@ -5,7 +5,8 @@ import '../../payments/services/paynow_sgqr_service.dart';
 class InvoiceSGQRService {
   /// Generate SGQR code for invoice payment
   static Future<String> generateInvoiceSGQR({
-    required dynamic invoice, // Using dynamic to support different invoice types
+    required dynamic
+        invoice, // Using dynamic to support different invoice types
     String? customMessage,
     String? merchantUEN,
     String? merchantMobile,
@@ -15,7 +16,7 @@ class InvoiceSGQRService {
       final double amount = _getInvoiceAmount(invoice);
       final String invoiceNumber = _getInvoiceNumber(invoice);
       final String currency = _getInvoiceCurrency(invoice);
-      
+
       final result = await PayNowService.generateSGQR(
         amount: amount,
         currency: currency,
@@ -26,7 +27,7 @@ class InvoiceSGQRService {
         description: customMessage ?? 'Payment for Invoice $invoiceNumber',
         expiryMinutes: 60, // 1 hour expiry
       );
-      
+
       if (result.isSuccess && result.qrString != null) {
         return result.qrString!;
       } else {
@@ -36,7 +37,7 @@ class InvoiceSGQRService {
       throw Exception('SGQR generation failed: $e');
     }
   }
-  
+
   /// Generate SGQR with custom amount (for partial payments)
   static Future<String> generatePartialPaymentSGQR({
     required dynamic invoice,
@@ -49,10 +50,10 @@ class InvoiceSGQRService {
       if (amount <= 0) {
         throw Exception('Payment amount must be greater than 0');
       }
-      
+
       final String invoiceNumber = _getInvoiceNumber(invoice);
       final String currency = _getInvoiceCurrency(invoice);
-      
+
       final result = await PayNowService.generateSGQR(
         amount: amount,
         currency: currency,
@@ -60,10 +61,11 @@ class InvoiceSGQRService {
         merchantUEN: merchantUEN,
         merchantMobile: merchantMobile,
         reference: '$invoiceNumber-PARTIAL',
-        description: customMessage ?? 'Partial payment for Invoice $invoiceNumber',
+        description:
+            customMessage ?? 'Partial payment for Invoice $invoiceNumber',
         expiryMinutes: 60,
       );
-      
+
       if (result.isSuccess && result.qrString != null) {
         return result.qrString!;
       } else {
@@ -73,32 +75,32 @@ class InvoiceSGQRService {
       throw Exception('SGQR generation failed: $e');
     }
   }
-  
+
   /// Check if invoice is eligible for SGQR generation
   static bool canGenerateSGQR(dynamic invoice) {
     if (invoice == null) return false;
-    
+
     // Check if invoice has remaining balance
     final amount = _getInvoiceAmount(invoice);
     if (amount <= 0) {
       return false;
     }
-    
+
     // Check if currency is supported (SGD for PayNow)
     final currency = _getInvoiceCurrency(invoice);
     if (currency != 'SGD') {
       return false;
     }
-    
+
     return true;
   }
-  
+
   /// Get payment instructions for the invoice
   static Map<String, dynamic> getPaymentInstructions(dynamic invoice) {
     final String invoiceNumber = _getInvoiceNumber(invoice);
     final double amount = _getInvoiceAmount(invoice);
     final String currency = _getInvoiceCurrency(invoice);
-    
+
     return {
       'invoice_number': invoiceNumber,
       'total_amount': amount,
@@ -131,11 +133,11 @@ class InvoiceSGQRService {
       ],
     };
   }
-  
+
   /// Extract amount from invoice
   static double _getInvoiceAmount(dynamic invoice) {
     if (invoice == null) return 0.0;
-    
+
     try {
       // Try different property names for amount
       if (invoice['remaining_balance_cents'] != null) {
@@ -156,14 +158,14 @@ class InvoiceSGQRService {
     } catch (e) {
       // Ignore errors and try next approach
     }
-    
+
     return 0.0;
   }
-  
+
   /// Extract invoice number from invoice
   static String _getInvoiceNumber(dynamic invoice) {
     if (invoice == null) return 'INV-0000';
-    
+
     try {
       // Try different property names for invoice number
       if (invoice['invoice_number'] != null) {
@@ -184,14 +186,14 @@ class InvoiceSGQRService {
     } catch (e) {
       // Ignore errors and try next approach
     }
-    
+
     return 'INV-0000';
   }
-  
+
   /// Extract currency from invoice
   static String _getInvoiceCurrency(dynamic invoice) {
     if (invoice == null) return 'SGD';
-    
+
     try {
       // Try different property names for currency
       if (invoice.currency != null) {
@@ -206,7 +208,7 @@ class InvoiceSGQRService {
     } catch (e) {
       // Ignore errors and use default
     }
-    
+
     return 'SGD'; // Default to SGD
   }
 }

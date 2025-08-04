@@ -13,19 +13,20 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String _currentTheme = 'system';
-  
+
   @override
   void initState() {
     super.initState();
     _loadThemePreference();
   }
-  
+
   Future<void> _loadThemePreference() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _currentTheme = prefs.getString('theme_mode') ?? 'system';
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,9 +211,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.bold,
-        ),
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }
@@ -437,11 +438,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() {
       _currentTheme = themeMode;
     });
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('theme_mode', themeMode);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -461,7 +462,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
     }
   }
-  
+
   Future<void> _clearCache() async {
     showDialog(
       context: context,
@@ -476,21 +477,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       ),
     );
-    
+
     try {
       // Clear SharedPreferences cache (except theme and important settings)
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
-      final keysToRemove = keys.where((key) => 
-        !key.startsWith('theme_') && 
-        !key.startsWith('user_') &&
-        key != 'first_launch'
-      ).toList();
-      
+      final keysToRemove = keys
+          .where((key) =>
+              !key.startsWith('theme_') &&
+              !key.startsWith('user_') &&
+              key != 'first_launch')
+          .toList();
+
       for (final key in keysToRemove) {
         await prefs.remove(key);
       }
-      
+
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
@@ -513,7 +515,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
     }
   }
-  
+
   Future<void> _resetAllData() async {
     // Show confirmation dialog first
     final confirmed = await showDialog<bool>(
@@ -543,9 +545,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ],
       ),
     );
-    
+
     if (confirmed != true) return;
-    
+
     // Show progress dialog
     if (mounted) {
       showDialog(
@@ -562,19 +564,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       );
     }
-    
+
     try {
       // Clear all SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
-      
+
       // Clear database (would need actual implementation)
       final databaseService = CRDTDatabaseService();
       // await databaseService.clearAllData(); // Uncomment when method exists
-      
+
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
-        
+
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -583,7 +585,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             duration: Duration(seconds: 3),
           ),
         );
-        
+
         // Navigate back to splash screen for fresh start
         context.go('/splash');
       }

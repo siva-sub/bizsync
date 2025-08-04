@@ -13,31 +13,31 @@ class IrasCorporateTaxService {
   final IrasAuthService _authService;
   final IrasAuditService _auditService;
   static IrasCorporateTaxService? _instance;
-  
+
   IrasCorporateTaxService._({
     IrasApiClient? client,
     IrasAuthService? authService,
     IrasAuditService? auditService,
-  }) : _client = client ?? IrasApiClient.instance,
-       _authService = authService ?? IrasAuthService.instance,
-       _auditService = auditService ?? IrasAuditService.instance;
-  
+  })  : _client = client ?? IrasApiClient.instance,
+        _authService = authService ?? IrasAuthService.instance,
+        _auditService = auditService ?? IrasAuditService.instance;
+
   /// Singleton instance
   static IrasCorporateTaxService get instance {
     _instance ??= IrasCorporateTaxService._();
     return _instance!;
   }
-  
+
   /// Convert accounting data to Form C-S using CIT Conversion API
   Future<CitConversionResponse> convertToFormCS(
     CitConversionRequest request,
   ) async {
     const operation = 'CIT_CONVERSION';
-    
+
     try {
       // Validate request
       _validateCitRequest(request);
-      
+
       // Log audit entry
       await _auditService.logOperation(
         operation: operation,
@@ -46,18 +46,19 @@ class IrasCorporateTaxService {
         details: {
           'year_of_assessment': request.filingInfo.ya,
           'total_revenue': request.data.totalRevenue,
-          'qualified_for_form_cs': request.declaration.isQualifiedToUseConvFormCS,
+          'qualified_for_form_cs':
+              request.declaration.isQualifiedToUseConvFormCS,
         },
       );
-      
+
       // Execute request (CIT API doesn't require authentication in some cases)
       final responseData = await _client.post(
         IrasConfig.citConversionUrl,
         request.toJson(),
       );
-      
+
       final response = CitConversionResponse.fromJson(responseData);
-      
+
       // Log result
       if (response.isSuccess) {
         await _auditService.logSuccess(
@@ -71,7 +72,7 @@ class IrasCorporateTaxService {
             'form_cs_generated': response.data?.formCS != null,
           },
         );
-        
+
         if (kDebugMode) {
           print('✅ CIT conversion completed successfully');
           print('💰 Tax payable: \$${response.data?.formCS.taxPayable ?? 0}');
@@ -81,13 +82,13 @@ class IrasCorporateTaxService {
           operation: operation,
           entityType: 'CORPORATE_TAX',
           entityId: request.clientId,
-          error: 'CIT conversion failed with return code: ${response.returnCode}',
+          error:
+              'CIT conversion failed with return code: ${response.returnCode}',
           details: response.info?.toJson(),
         );
       }
-      
+
       return response;
-      
     } on IrasException catch (e) {
       await _auditService.logFailure(
         operation: operation,
@@ -107,7 +108,7 @@ class IrasCorporateTaxService {
       throw IrasUnknownException('Failed to convert CIT data: $e');
     }
   }
-  
+
   /// Generate tax computation from financial data
   Future<CitTaxComputation> generateTaxComputation(
     CitFinancialData financialData, {
@@ -120,9 +121,9 @@ class IrasCorporateTaxService {
       filingInfo: CitFilingInfo(ya: yearOfAssessment),
       data: financialData,
     );
-    
+
     final response = await convertToFormCS(request);
-    
+
     if (response.isSuccess && response.data?.taxComputation != null) {
       return response.data!.taxComputation;
     } else {
@@ -133,7 +134,7 @@ class IrasCorporateTaxService {
       );
     }
   }
-  
+
   /// Generate profit & loss statement
   Future<CitProfitLossStatement> generateProfitLossStatement(
     CitFinancialData financialData, {
@@ -146,9 +147,9 @@ class IrasCorporateTaxService {
       filingInfo: CitFilingInfo(ya: yearOfAssessment),
       data: financialData,
     );
-    
+
     final response = await convertToFormCS(request);
-    
+
     if (response.isSuccess && response.data?.profitLossStatement != null) {
       return response.data!.profitLossStatement;
     } else {
@@ -159,7 +160,7 @@ class IrasCorporateTaxService {
       );
     }
   }
-  
+
   /// Generate draft Form C-S
   Future<CitFormCS> generateFormCS(
     CitFinancialData financialData, {
@@ -172,9 +173,9 @@ class IrasCorporateTaxService {
       filingInfo: CitFilingInfo(ya: yearOfAssessment),
       data: financialData,
     );
-    
+
     final response = await convertToFormCS(request);
-    
+
     if (response.isSuccess && response.data?.formCS != null) {
       return response.data!.formCS;
     } else {
@@ -185,16 +186,16 @@ class IrasCorporateTaxService {
       );
     }
   }
-  
+
   /// Check eligibility for Form C-S
   Future<bool> checkFormCSEligibility(CitFinancialData financialData) async {
     try {
       // Parse revenue to check against S$5 million threshold
       final revenue = double.tryParse(financialData.totalRevenue) ?? 0;
-      
+
       // Companies with revenue ≤ S$5 million are eligible for Form C-S
       const eligibilityThreshold = 5000000; // S$5 million
-      
+
       return revenue <= eligibilityThreshold;
     } catch (e) {
       if (kDebugMode) {
@@ -203,7 +204,7 @@ class IrasCorporateTaxService {
       return false;
     }
   }
-  
+
   /// Calculate estimated corporate tax
   Future<double> calculateEstimatedTax(
     CitFinancialData financialData, {
@@ -222,38 +223,39 @@ class IrasCorporateTaxService {
       return 0.0;
     }
   }
-  
+
   /// Validate CIT conversion request
   void _validateCitRequest(CitConversionRequest request) {
     final errors = <String, List<String>>{};
-    
+
     // Validate year of assessment
     final ya = int.tryParse(request.filingInfo.ya);
     if (ya == null || ya < 2000 || ya > DateTime.now().year + 1) {
       errors['ya'] = ['Invalid year of assessment'];
     }
-    
+
     // Validate client ID
     if (request.clientId.isEmpty) {
       errors['clientId'] = ['Client ID is required'];
     }
-    
+
     // Validate qualification
     if (request.declaration.isQualifiedToUseConvFormCS != 'Y' &&
         request.declaration.isQualifiedToUseConvFormCS != 'N') {
       errors['isQualifiedToUseConvFormCS'] = ['Must be Y or N'];
     }
-    
+
     // Validate financial data
     _validateFinancialData(request.data, errors);
-    
+
     if (errors.isNotEmpty) {
       throw IrasValidationException('CIT conversion validation failed', errors);
     }
   }
-  
+
   /// Validate financial data
-  void _validateFinancialData(CitFinancialData data, Map<String, List<String>> errors) {
+  void _validateFinancialData(
+      CitFinancialData data, Map<String, List<String>> errors) {
     // Validate numeric fields
     final numericFields = {
       'totalRevenue': data.totalRevenue,
@@ -264,7 +266,7 @@ class IrasCorporateTaxService {
       'cpfContribution': data.cpfContribution,
       'salariesWages': data.salariesWages,
     };
-    
+
     for (final entry in numericFields.entries) {
       if (double.tryParse(entry.value) == null) {
         errors[entry.key] = ['Must be a valid number'];
@@ -275,14 +277,16 @@ class IrasCorporateTaxService {
         }
       }
     }
-    
+
     // Validate total revenue is not zero for active businesses
     final totalRevenue = double.tryParse(data.totalRevenue) ?? 0;
     if (totalRevenue == 0) {
-      errors['totalRevenue'] = ['Total revenue should not be zero for active businesses'];
+      errors['totalRevenue'] = [
+        'Total revenue should not be zero for active businesses'
+      ];
     }
   }
-  
+
   /// Create sample CIT request for testing
   static CitConversionRequest createSampleCitRequest() {
     return CitConversionRequest(

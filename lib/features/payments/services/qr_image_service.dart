@@ -258,7 +258,6 @@ class QRImageService {
           _calculateTotalHeight(styling, branding),
         ),
       );
-
     } catch (e) {
       return QRImageResult.failure(
         errors: ['Failed to generate QR image: $e'],
@@ -287,10 +286,11 @@ class QRImageService {
           if (branding?.title != null) ...[
             Text(
               branding!.title!,
-              style: branding.titleStyle ?? const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: branding.titleStyle ??
+                  const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -300,10 +300,11 @@ class QRImageService {
           if (branding?.subtitle != null) ...[
             Text(
               branding!.subtitle!,
-              style: branding.subtitleStyle ?? const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
+              style: branding.subtitleStyle ??
+                  const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -342,10 +343,11 @@ class QRImageService {
             const SizedBox(height: 16),
             Text(
               branding!.footer!,
-              style: branding.footerStyle ?? const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
+              style: branding.footerStyle ??
+                  const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -381,7 +383,8 @@ class QRImageService {
         padding: logoOptions.logoMargin,
         decoration: BoxDecoration(
           color: logoOptions.logoBackgroundColor,
-          borderRadius: logoOptions.logoBorderRadius ?? BorderRadius.circular(8),
+          borderRadius:
+              logoOptions.logoBorderRadius ?? BorderRadius.circular(8),
         ),
         child: logoWidget,
       );
@@ -447,7 +450,8 @@ class QRImageService {
     String? fileName,
   ) async {
     final Directory directory = await getApplicationDocumentsDirectory();
-    final String filePath = '${directory.path}/${fileName ?? 'qr_code_${DateTime.now().millisecondsSinceEpoch}.png'}';
+    final String filePath =
+        '${directory.path}/${fileName ?? 'qr_code_${DateTime.now().millisecondsSinceEpoch}.png'}';
     final File file = File(filePath);
     await file.writeAsBytes(imageBytes);
     return filePath;
@@ -487,7 +491,7 @@ class QRImageService {
 
     for (int i = 0; i < dataList.length; i++) {
       final QRBrandingOptions? branding = brandingList?[i];
-      final String? fileName = saveToFile 
+      final String? fileName = saveToFile
           ? '${fileNamePrefix ?? 'qr'}_${i + 1}_${DateTime.now().millisecondsSinceEpoch}.png'
           : null;
 

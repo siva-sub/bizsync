@@ -5,7 +5,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:path/path.dart' as path;
 
 /// System Tray Integration Service for Linux Desktop
-/// 
+///
 /// Provides system tray functionality with quick actions:
 /// - Minimize to tray option
 /// - Quick access to key features
@@ -30,7 +30,8 @@ class SystemTrayService {
 
     try {
       // Stub implementation - system_tray package has dependency conflicts
-      debugPrint('System tray initialization skipped due to dependency conflicts');
+      debugPrint(
+          'System tray initialization skipped due to dependency conflicts');
 
       _isInitialized = true;
       debugPrint('✅ System tray initialized successfully');
@@ -43,11 +44,14 @@ class SystemTrayService {
   String _getTrayIconPath() {
     if (Platform.isLinux) {
       // For Linux, use a simple icon path
-      return path.join(Directory.current.path, 'assets', 'icon', 'app_icon.png');
+      return path.join(
+          Directory.current.path, 'assets', 'icon', 'app_icon.png');
     } else if (Platform.isWindows) {
-      return path.join(Directory.current.path, 'assets', 'icon', 'app_icon.ico');
+      return path.join(
+          Directory.current.path, 'assets', 'icon', 'app_icon.ico');
     } else if (Platform.isMacOS) {
-      return path.join(Directory.current.path, 'assets', 'icon', 'app_icon.png');
+      return path.join(
+          Directory.current.path, 'assets', 'icon', 'app_icon.png');
     }
     return '';
   }
@@ -61,7 +65,7 @@ class SystemTrayService {
   /// Handle menu action clicks
   void _handleMenuAction(String action) {
     debugPrint('System tray action: $action');
-    
+
     switch (action) {
       case 'dashboard':
         _showWindowAndNavigate('/dashboard');
@@ -94,7 +98,7 @@ class SystemTrayService {
   void _showWindowAndNavigate(String route) async {
     await windowManager.show();
     await windowManager.focus();
-    
+
     // Navigate to route - this would be handled by the app's navigation service
     // For now, just ensure window is visible
     debugPrint('Navigate to: $route');
@@ -104,7 +108,7 @@ class SystemTrayService {
   void _showWindowAndTriggerSearch() async {
     await windowManager.show();
     await windowManager.focus();
-    
+
     // Trigger search functionality
     debugPrint('Trigger search functionality');
   }
@@ -117,7 +121,7 @@ class SystemTrayService {
       await windowManager.show();
       await windowManager.focus();
     }
-    
+
     // Update menu to reflect current state
     await _setupTrayMenu();
   }
@@ -133,10 +137,10 @@ class SystemTrayService {
   void _toggleMinimizeToTray() {
     _minimizeToTray = !_minimizeToTray;
     debugPrint('Minimize to tray: $_minimizeToTray');
-    
+
     // Save preference
     _saveMinimizeToTrayPreference(_minimizeToTray);
-    
+
     // Update menu
     _setupTrayMenu();
   }

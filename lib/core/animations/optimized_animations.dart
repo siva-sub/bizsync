@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 /// Custom page transitions for smooth navigation
 class PageTransitions {
-  
   /// Slide transition from right to left
   static Widget slideFromRight(
     BuildContext context,
@@ -21,7 +20,7 @@ class PageTransitions {
       child: child,
     );
   }
-  
+
   /// Fade transition
   static Widget fade(
     BuildContext context,
@@ -34,7 +33,7 @@ class PageTransitions {
       child: child,
     );
   }
-  
+
   /// Scale transition
   static Widget scale(
     BuildContext context,
@@ -56,7 +55,7 @@ class PageTransitions {
       ),
     );
   }
-  
+
   /// Slide up from bottom
   static Widget slideFromBottom(
     BuildContext context,
@@ -75,7 +74,7 @@ class PageTransitions {
       child: child,
     );
   }
-  
+
   /// Combined slide and fade for onboarding screens
   static Widget onboardingTransition(
     BuildContext context,
@@ -108,7 +107,7 @@ class PageTransitions {
 /// Performance-optimized animation controller mixin
 mixin OptimizedAnimationMixin<T extends StatefulWidget> on State<T> {
   final List<AnimationController> _controllers = [];
-  
+
   /// Create an optimized animation controller
   AnimationController createAnimationController({
     required Duration duration,
@@ -128,11 +127,11 @@ mixin OptimizedAnimationMixin<T extends StatefulWidget> on State<T> {
       vsync: vsync,
       animationBehavior: animationBehavior,
     );
-    
+
     _controllers.add(controller);
     return controller;
   }
-  
+
   @override
   void dispose() {
     for (final controller in _controllers) {
@@ -145,21 +144,22 @@ mixin OptimizedAnimationMixin<T extends StatefulWidget> on State<T> {
 /// Widget key generator for preventing unnecessary rebuilds
 class WidgetKeys {
   static const String _prefix = 'bizsync_';
-  
+
   /// Generate a value key for lists
   static ValueKey<String> listItem(String id) => ValueKey('${_prefix}list_$id');
-  
+
   /// Generate a value key for cards
   static ValueKey<String> card(String id) => ValueKey('${_prefix}card_$id');
-  
+
   /// Generate a value key for animated widgets
   static ValueKey<String> animated(String id) => ValueKey('${_prefix}anim_$id');
-  
+
   /// Generate a global key for forms
   static GlobalKey<FormState> form(String id) => GlobalKey<FormState>();
-  
+
   /// Generate a page storage key
-  static PageStorageKey<String> pageStorage(String id) => PageStorageKey('${_prefix}page_$id');
+  static PageStorageKey<String> pageStorage(String id) =>
+      PageStorageKey('${_prefix}page_$id');
 }
 
 /// Optimized animated list widget that prevents flickering

@@ -24,28 +24,30 @@ class ExponentialSmoothingModel implements ForecastingModel {
   @override
   Future<void> train(List<TimeSeriesPoint> data) async {
     if (data.isEmpty) {
-      throw ArgumentError('Need at least 1 data point for exponential smoothing');
+      throw ArgumentError(
+          'Need at least 1 data point for exponential smoothing');
     }
 
     _trainingData = List.from(data);
-    _smoothedValues = _calculateSmoothedValues(data.map((p) => p.value).toList());
+    _smoothedValues =
+        _calculateSmoothedValues(data.map((p) => p.value).toList());
     _lastSmoothedValue = _smoothedValues.last;
   }
 
   List<double> _calculateSmoothedValues(List<double> values) {
     final smoothed = <double>[];
-    
+
     if (values.isEmpty) return smoothed;
-    
+
     // Initialize with first value
     smoothed.add(values.first);
-    
+
     // Calculate exponentially smoothed values
     for (int i = 1; i < values.length; i++) {
       final smoothedValue = _alpha * values[i] + (1 - _alpha) * smoothed[i - 1];
       smoothed.add(smoothedValue);
     }
-    
+
     return smoothed;
   }
 
@@ -57,16 +59,18 @@ class ExponentialSmoothingModel implements ForecastingModel {
 
     final results = <ForecastResult>[];
     final standardError = _calculateStandardError();
-    
+
     for (int i = 1; i <= periods; i++) {
       final futureDate = _trainingData.last.date.add(Duration(days: i));
-      
+
       // For simple exponential smoothing, forecast is constant (last smoothed value)
       final predicted = _lastSmoothedValue;
-      
+
       // Calculate confidence interval using standard error
-      final margin = 1.96 * standardError * math.sqrt(i); // Wider intervals for longer horizons
-      
+      final margin = 1.96 *
+          standardError *
+          math.sqrt(i); // Wider intervals for longer horizons
+
       results.add(ForecastResult(
         date: futureDate,
         predictedValue: predicted,
@@ -103,7 +107,8 @@ class ExponentialSmoothingModel implements ForecastingModel {
   }
 
   @override
-  Future<ForecastAccuracy> calculateAccuracy(List<TimeSeriesPoint> testData) async {
+  Future<ForecastAccuracy> calculateAccuracy(
+      List<TimeSeriesPoint> testData) async {
     if (_trainingData.isEmpty) {
       throw StateError('Model must be trained before calculating accuracy');
     }
@@ -124,11 +129,11 @@ class ExponentialSmoothingModel implements ForecastingModel {
     for (final point in testData) {
       final predicted = currentSmoothed;
       final actual = point.value;
-      
+
       if (actual != 0) {
         final absoluteError = (actual - predicted).abs();
         final percentageError = (absoluteError / actual.abs()) * 100;
-        
+
         sumAbsoluteError += absoluteError;
         sumAbsolutePercentageError += percentageError;
         sumSquaredError += (actual - predicted) * (actual - predicted);
@@ -208,14 +213,15 @@ class DoubleExponentialSmoothingModel implements ForecastingModel {
   ForecastingMethod get method => ForecastingMethod.exponentialSmoothing;
 
   double _alpha = 0.3; // Level smoothing parameter
-  double _beta = 0.3;  // Trend smoothing parameter
+  double _beta = 0.3; // Trend smoothing parameter
   List<TimeSeriesPoint> _trainingData = [];
   double _lastLevel = 0.0;
   double _lastTrend = 0.0;
 
   /// Creates a double exponential smoothing model
-  DoubleExponentialSmoothingModel({double alpha = 0.3, double beta = 0.3}) 
-      : _alpha = alpha, _beta = beta {
+  DoubleExponentialSmoothingModel({double alpha = 0.3, double beta = 0.3})
+      : _alpha = alpha,
+        _beta = beta {
     if (_alpha <= 0 || _alpha > 1) {
       throw ArgumentError('Alpha must be between 0 and 1');
     }
@@ -227,7 +233,8 @@ class DoubleExponentialSmoothingModel implements ForecastingModel {
   @override
   Future<void> train(List<TimeSeriesPoint> data) async {
     if (data.length < 2) {
-      throw ArgumentError('Need at least 2 data points for double exponential smoothing');
+      throw ArgumentError(
+          'Need at least 2 data points for double exponential smoothing');
     }
 
     _trainingData = List.from(data);
@@ -244,12 +251,14 @@ class DoubleExponentialSmoothingModel implements ForecastingModel {
     // Calculate level and trend for each data point
     for (int i = 1; i < values.length; i++) {
       final previousLevel = _lastLevel;
-      
+
       // Update level
-      _lastLevel = _alpha * values[i] + (1 - _alpha) * (_lastLevel + _lastTrend);
-      
+      _lastLevel =
+          _alpha * values[i] + (1 - _alpha) * (_lastLevel + _lastTrend);
+
       // Update trend
-      _lastTrend = _beta * (_lastLevel - previousLevel) + (1 - _beta) * _lastTrend;
+      _lastTrend =
+          _beta * (_lastLevel - previousLevel) + (1 - _beta) * _lastTrend;
     }
   }
 
@@ -261,16 +270,16 @@ class DoubleExponentialSmoothingModel implements ForecastingModel {
 
     final results = <ForecastResult>[];
     final standardError = _calculateStandardError();
-    
+
     for (int i = 1; i <= periods; i++) {
       final futureDate = _trainingData.last.date.add(Duration(days: i));
-      
+
       // Holt's method: forecast = level + trend * horizon
       final predicted = _lastLevel + _lastTrend * i;
-      
+
       // Calculate confidence interval
       final margin = 1.96 * standardError * math.sqrt(i);
-      
+
       results.add(ForecastResult(
         date: futureDate,
         predictedValue: predicted,
@@ -298,7 +307,7 @@ class DoubleExponentialSmoothingModel implements ForecastingModel {
     final values = _trainingData.map((p) => p.value).toList();
     double level = values.first;
     double trend = values.length > 1 ? values[1] - values[0] : 0.0;
-    
+
     double sumSquaredErrors = 0.0;
     int count = 0;
 
@@ -318,7 +327,8 @@ class DoubleExponentialSmoothingModel implements ForecastingModel {
   }
 
   @override
-  Future<ForecastAccuracy> calculateAccuracy(List<TimeSeriesPoint> testData) async {
+  Future<ForecastAccuracy> calculateAccuracy(
+      List<TimeSeriesPoint> testData) async {
     if (_trainingData.isEmpty) {
       throw StateError('Model must be trained before calculating accuracy');
     }
@@ -340,11 +350,11 @@ class DoubleExponentialSmoothingModel implements ForecastingModel {
     for (int i = 0; i < testData.length; i++) {
       final predicted = currentLevel + currentTrend;
       final actual = testData[i].value;
-      
+
       if (actual != 0) {
         final absoluteError = (actual - predicted).abs();
         final percentageError = (absoluteError / actual.abs()) * 100;
-        
+
         sumAbsoluteError += absoluteError;
         sumAbsolutePercentageError += percentageError;
         sumSquaredError += (actual - predicted) * (actual - predicted);
@@ -355,8 +365,10 @@ class DoubleExponentialSmoothingModel implements ForecastingModel {
 
       // Update level and trend for next prediction
       final previousLevel = currentLevel;
-      currentLevel = _alpha * actual + (1 - _alpha) * (currentLevel + currentTrend);
-      currentTrend = _beta * (currentLevel - previousLevel) + (1 - _beta) * currentTrend;
+      currentLevel =
+          _alpha * actual + (1 - _alpha) * (currentLevel + currentTrend);
+      currentTrend =
+          _beta * (currentLevel - previousLevel) + (1 - _beta) * currentTrend;
     }
 
     if (validPoints == 0) {

@@ -21,22 +21,22 @@ class DemoDataService {
   List<EnhancedInvoice> _invoices = [];
   List<Employee> _employees = [];
   List<NotificationModel> _notifications = [];
-  
+
   // Getters - Return empty lists if demo data is disabled
-  List<Customer> get customers => 
+  List<Customer> get customers =>
       FeatureFlags().isDemoDataEnabled ? List.unmodifiable(_customers) : [];
-  List<EnhancedInvoice> get invoices => 
+  List<EnhancedInvoice> get invoices =>
       FeatureFlags().isDemoDataEnabled ? List.unmodifiable(_invoices) : [];
-  List<Employee> get employees => 
+  List<Employee> get employees =>
       FeatureFlags().isDemoDataEnabled ? List.unmodifiable(_employees) : [];
-  List<NotificationModel> get notifications => 
+  List<NotificationModel> get notifications =>
       FeatureFlags().isDemoDataEnabled ? List.unmodifiable(_notifications) : [];
 
   bool get isInitialized => _isInitialized;
 
   Future<void> initializeDemoData() async {
     if (_isInitialized) return;
-    
+
     // Only initialize demo data if feature flag is enabled
     if (!FeatureFlags().isDemoDataEnabled) {
       debugPrint('Demo data is disabled via feature flag');
@@ -117,8 +117,10 @@ class DemoDataService {
         gstRegistered: business['gstRegistered'] as bool,
         uen: business['uen'] as String,
         // Customer creation dates should be realistic - within the last 2 years
-        createdAt: DateTime.now().subtract(Duration(days: _random.nextInt(730) + 1)),
-        updatedAt: DateTime.now().subtract(Duration(days: _random.nextInt(90) + 1)),
+        createdAt:
+            DateTime.now().subtract(Duration(days: _random.nextInt(730) + 1)),
+        updatedAt:
+            DateTime.now().subtract(Duration(days: _random.nextInt(90) + 1)),
       ));
     }
   }
@@ -191,7 +193,8 @@ class DemoDataService {
         cpfContribution: emp['cpfContribution'] as double,
         isActive: true,
         // Employee join dates should be realistic - within the last 3 years but not future
-        joinDate: DateTime.now().subtract(Duration(days: _random.nextInt(1095) + 1)), // 1 day to 3 years ago
+        joinDate: DateTime.now().subtract(
+            Duration(days: _random.nextInt(1095) + 1)), // 1 day to 3 years ago
         leaveBalance: _random.nextInt(21) + 5, // 5-25 days
       ));
     }
@@ -199,16 +202,56 @@ class DemoDataService {
 
   Future<void> _generateInvoices() async {
     final invoiceItems = [
-      {'description': 'Web Development Services', 'unitPrice': 1200.0, 'quantity': 1},
-      {'description': 'Mobile App Development', 'unitPrice': 2500.0, 'quantity': 1},
-      {'description': 'UI/UX Design Consultation', 'unitPrice': 800.0, 'quantity': 2},
-      {'description': 'Digital Marketing Campaign', 'unitPrice': 1500.0, 'quantity': 1},
-      {'description': 'System Integration Services', 'unitPrice': 3000.0, 'quantity': 1},
-      {'description': 'Cloud Infrastructure Setup', 'unitPrice': 1800.0, 'quantity': 1},
-      {'description': 'Data Analytics Dashboard', 'unitPrice': 2200.0, 'quantity': 1},
-      {'description': 'E-commerce Platform Development', 'unitPrice': 4500.0, 'quantity': 1},
-      {'description': 'Software Maintenance (Monthly)', 'unitPrice': 500.0, 'quantity': 3},
-      {'description': 'Training & Support Services', 'unitPrice': 600.0, 'quantity': 4},
+      {
+        'description': 'Web Development Services',
+        'unitPrice': 1200.0,
+        'quantity': 1
+      },
+      {
+        'description': 'Mobile App Development',
+        'unitPrice': 2500.0,
+        'quantity': 1
+      },
+      {
+        'description': 'UI/UX Design Consultation',
+        'unitPrice': 800.0,
+        'quantity': 2
+      },
+      {
+        'description': 'Digital Marketing Campaign',
+        'unitPrice': 1500.0,
+        'quantity': 1
+      },
+      {
+        'description': 'System Integration Services',
+        'unitPrice': 3000.0,
+        'quantity': 1
+      },
+      {
+        'description': 'Cloud Infrastructure Setup',
+        'unitPrice': 1800.0,
+        'quantity': 1
+      },
+      {
+        'description': 'Data Analytics Dashboard',
+        'unitPrice': 2200.0,
+        'quantity': 1
+      },
+      {
+        'description': 'E-commerce Platform Development',
+        'unitPrice': 4500.0,
+        'quantity': 1
+      },
+      {
+        'description': 'Software Maintenance (Monthly)',
+        'unitPrice': 500.0,
+        'quantity': 3
+      },
+      {
+        'description': 'Training & Support Services',
+        'unitPrice': 600.0,
+        'quantity': 4
+      },
     ];
 
     final statuses = [
@@ -223,14 +266,18 @@ class DemoDataService {
       final customer = _customers[_random.nextInt(_customers.length)];
       final item = invoiceItems[_random.nextInt(invoiceItems.length)];
       final status = statuses[_random.nextInt(statuses.length)];
-      
-      final subtotal = (item['unitPrice'] as double) * (item['quantity'] as int);
-      final gstRate = customer.gstRegistered ? 0.09 : 0.0; // 9% GST for registered customers
+
+      final subtotal =
+          (item['unitPrice'] as double) * (item['quantity'] as int);
+      final gstRate = customer.gstRegistered
+          ? 0.09
+          : 0.0; // 9% GST for registered customers
       final gstAmount = subtotal * gstRate;
       final total = subtotal + gstAmount;
 
       // Generate invoice dates within the last 6 months (up to 180 days ago)
-      final invoiceDate = DateTime.now().subtract(Duration(days: _random.nextInt(180) + 1));
+      final invoiceDate =
+          DateTime.now().subtract(Duration(days: _random.nextInt(180) + 1));
       // Due date should be 15-45 days after invoice date (realistic payment terms)
       final dueDate = invoiceDate.add(Duration(days: _random.nextInt(31) + 15));
 
@@ -260,9 +307,10 @@ class DemoDataService {
         notes: _generateInvoiceNotes(status),
         terms: 'Payment due within 30 days. Late payment charges may apply.',
         createdAt: invoiceDate,
-        updatedAt: status == InvoiceStatus.paid 
-          ? invoiceDate.add(Duration(days: _random.nextInt(15) + 1)) // Paid 1-15 days after issue
-          : invoiceDate,
+        updatedAt: status == InvoiceStatus.paid
+            ? invoiceDate.add(Duration(
+                days: _random.nextInt(15) + 1)) // Paid 1-15 days after issue
+            : invoiceDate,
       ));
     }
 
@@ -315,7 +363,8 @@ class DemoDataService {
       },
       {
         'title': 'New Customer Added',
-        'message': 'Digital Innovations Hub has been added to your customer list',
+        'message':
+            'Digital Innovations Hub has been added to your customer list',
         'type': NotificationCategory.custom,
         'priority': NotificationPriority.medium,
       },
@@ -356,7 +405,8 @@ class DemoDataService {
         priority: notification['priority'] as NotificationPriority,
         channel: (notification['type'] as NotificationCategory).defaultChannel,
         // Notifications should be recent - within the last 72 hours
-        createdAt: DateTime.now().subtract(Duration(hours: _random.nextInt(72) + 1)),
+        createdAt:
+            DateTime.now().subtract(Duration(hours: _random.nextInt(72) + 1)),
       ));
     }
 
@@ -373,17 +423,23 @@ class DemoDataService {
     final thisMonth = DateTime(now.year, now.month, 1);
 
     // Calculate revenue metrics
-    final paidInvoices = _invoices.where((inv) => inv.status == InvoiceStatus.paid);
-    final totalRevenue = paidInvoices.fold<double>(0, (sum, inv) => sum + inv.total);
+    final paidInvoices =
+        _invoices.where((inv) => inv.status == InvoiceStatus.paid);
+    final totalRevenue =
+        paidInvoices.fold<double>(0, (sum, inv) => sum + inv.total);
     final monthlyRevenue = paidInvoices
         .where((inv) => inv.updatedAt.isAfter(thisMonth))
         .fold<double>(0, (sum, inv) => sum + inv.total);
 
     // Calculate invoice metrics
     final totalInvoices = _invoices.length;
-    final pendingInvoices = _invoices.where((inv) => 
-        inv.status == InvoiceStatus.sent || inv.status == InvoiceStatus.draft).length;
-    final overdueInvoices = _invoices.where((inv) => inv.status == InvoiceStatus.overdue).length;
+    final pendingInvoices = _invoices
+        .where((inv) =>
+            inv.status == InvoiceStatus.sent ||
+            inv.status == InvoiceStatus.draft)
+        .length;
+    final overdueInvoices =
+        _invoices.where((inv) => inv.status == InvoiceStatus.overdue).length;
 
     // Calculate customer metrics
     final totalCustomers = _customers.length;
@@ -430,7 +486,8 @@ class DemoDataService {
     for (final invoice in _invoices.take(3)) {
       activities.add({
         'icon': 'receipt_long',
-        'title': 'Invoice ${invoice.invoiceNumber} ${_getInvoiceActivityText(invoice.status)}',
+        'title':
+            'Invoice ${invoice.invoiceNumber} ${_getInvoiceActivityText(invoice.status)}',
         'subtitle': _getRelativeTime(invoice.updatedAt),
         'color': _getInvoiceActivityColor(invoice.status),
       });
@@ -447,56 +504,85 @@ class DemoDataService {
     }
 
     // Sort by most recent
-    activities.sort((a, b) => b['subtitle'].toString().compareTo(a['subtitle'].toString()));
+    activities.sort(
+        (a, b) => b['subtitle'].toString().compareTo(a['subtitle'].toString()));
 
     return activities.take(5).toList();
   }
 
   String _getInvoiceActivityText(InvoiceStatus status) {
     switch (status) {
-      case InvoiceStatus.draft: return 'created';
-      case InvoiceStatus.pending: return 'pending';
-      case InvoiceStatus.approved: return 'approved';
-      case InvoiceStatus.sent: return 'sent';
-      case InvoiceStatus.viewed: return 'viewed';
-      case InvoiceStatus.partiallyPaid: return 'partially paid';
-      case InvoiceStatus.paid: return 'paid';
-      case InvoiceStatus.overdue: return 'overdue';
-      case InvoiceStatus.cancelled: return 'cancelled';
-      case InvoiceStatus.disputed: return 'disputed';
-      case InvoiceStatus.voided: return 'voided';
-      case InvoiceStatus.refunded: return 'refunded';
+      case InvoiceStatus.draft:
+        return 'created';
+      case InvoiceStatus.pending:
+        return 'pending';
+      case InvoiceStatus.approved:
+        return 'approved';
+      case InvoiceStatus.sent:
+        return 'sent';
+      case InvoiceStatus.viewed:
+        return 'viewed';
+      case InvoiceStatus.partiallyPaid:
+        return 'partially paid';
+      case InvoiceStatus.paid:
+        return 'paid';
+      case InvoiceStatus.overdue:
+        return 'overdue';
+      case InvoiceStatus.cancelled:
+        return 'cancelled';
+      case InvoiceStatus.disputed:
+        return 'disputed';
+      case InvoiceStatus.voided:
+        return 'voided';
+      case InvoiceStatus.refunded:
+        return 'refunded';
     }
   }
 
   String _getInvoiceActivityColor(InvoiceStatus status) {
     switch (status) {
-      case InvoiceStatus.paid: return 'green';
-      case InvoiceStatus.overdue: return 'red';
-      case InvoiceStatus.sent: return 'blue';
-      case InvoiceStatus.cancelled: return 'grey';
-      default: return 'orange';
+      case InvoiceStatus.paid:
+        return 'green';
+      case InvoiceStatus.overdue:
+        return 'red';
+      case InvoiceStatus.sent:
+        return 'blue';
+      case InvoiceStatus.cancelled:
+        return 'grey';
+      default:
+        return 'orange';
     }
   }
 
   String _getNotificationIcon(NotificationCategory type) {
     switch (type) {
-      case NotificationCategory.payment: return 'payment';
-      case NotificationCategory.invoice: return 'receipt_long';
-      case NotificationCategory.custom: return 'person_add';
-      case NotificationCategory.tax: return 'account_balance';
-      case NotificationCategory.system: return 'settings';
-      default: return 'notifications';
+      case NotificationCategory.payment:
+        return 'payment';
+      case NotificationCategory.invoice:
+        return 'receipt_long';
+      case NotificationCategory.custom:
+        return 'person_add';
+      case NotificationCategory.tax:
+        return 'account_balance';
+      case NotificationCategory.system:
+        return 'settings';
+      default:
+        return 'notifications';
     }
   }
 
   String _getNotificationColor(NotificationPriority priority) {
     switch (priority) {
-      case NotificationPriority.critical: return 'darkred';
-      case NotificationPriority.high: return 'red';
-      case NotificationPriority.medium: return 'orange';
-      case NotificationPriority.low: return 'blue';
-      case NotificationPriority.info: return 'gray';
+      case NotificationPriority.critical:
+        return 'darkred';
+      case NotificationPriority.high:
+        return 'red';
+      case NotificationPriority.medium:
+        return 'orange';
+      case NotificationPriority.low:
+        return 'blue';
+      case NotificationPriority.info:
+        return 'gray';
     }
   }
 

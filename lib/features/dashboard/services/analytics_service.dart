@@ -33,8 +33,8 @@ class AnalyticsService {
         .fold(0.0, (sum, invoice) => sum + invoice.totalAmount.value);
 
     final recurringRevenue = filteredInvoices
-        .where((invoice) => 
-            invoice.status.value == InvoiceStatus.paid && 
+        .where((invoice) =>
+            invoice.status.value == InvoiceStatus.paid &&
             invoice.isRecurring == true)
         .fold(0.0, (sum, invoice) => sum + invoice.totalAmount.value);
 
@@ -56,9 +56,8 @@ class AnalyticsService {
     final paidInvoices = filteredInvoices
         .where((invoice) => invoice.status.value == InvoiceStatus.paid)
         .toList();
-    final averageOrderValue = paidInvoices.isEmpty
-        ? 0.0
-        : totalRevenue / paidInvoices.length;
+    final averageOrderValue =
+        paidInvoices.isEmpty ? 0.0 : totalRevenue / paidInvoices.length;
 
     // Calculate growth rate
     final previousPeriodRange = _getPreviousPeriodRange(period, dateRange);
@@ -169,13 +168,13 @@ class AnalyticsService {
 
     // Filter customers and invoices by date
     final currentCustomers = customers
-        .where((customer) => 
+        .where((customer) =>
             customer.createdAt.isAfter(dateRange.start) &&
             customer.createdAt.isBefore(dateRange.end))
         .toList();
 
     final previousCustomers = customers
-        .where((customer) => 
+        .where((customer) =>
             customer.createdAt.isAfter(previousPeriodRange.start) &&
             customer.createdAt.isBefore(previousPeriodRange.end))
         .toList();
@@ -183,18 +182,21 @@ class AnalyticsService {
     // Calculate basic metrics
     final totalCustomers = customers.length;
     final newCustomers = currentCustomers.length;
-    final activeCustomers = _calculateActiveCustomers(customers, invoices, dateRange);
+    final activeCustomers =
+        _calculateActiveCustomers(customers, invoices, dateRange);
     final churned = _calculateChurnedCustomers(customers, invoices, dateRange);
 
     // Calculate rates
-    final churnRate = totalCustomers == 0 ? 0.0 : (churned / totalCustomers) * 100;
-    final acquisitionRate = previousCustomers.isEmpty 
-        ? 0.0 
+    final churnRate =
+        totalCustomers == 0 ? 0.0 : (churned / totalCustomers) * 100;
+    final acquisitionRate = previousCustomers.isEmpty
+        ? 0.0
         : (newCustomers / previousCustomers.length) * 100;
     final retentionRate = 100 - churnRate;
 
     // Calculate customer lifetime value
-    final averageLifetimeValue = _calculateAverageLifetimeValue(customers, invoices);
+    final averageLifetimeValue =
+        _calculateAverageLifetimeValue(customers, invoices);
 
     // Generate customer growth data
     final customerGrowth = _generateCustomerGrowthData(customers, dateRange);
@@ -204,7 +206,8 @@ class AnalyticsService {
     final revenueBySegment = _calculateRevenueBySegment(customers, invoices);
 
     // Generate behavior insights
-    final behaviorInsights = await _generateBehaviorInsights(customers, invoices);
+    final behaviorInsights =
+        await _generateBehaviorInsights(customers, invoices);
 
     return CustomerInsights(
       id: 'customer_insights_${period.name}_${DateTime.now().millisecondsSinceEpoch}',
@@ -234,9 +237,8 @@ class AnalyticsService {
     final lowStockProducts = products
         .where((product) => product.stockLevel <= product.minStockLevel)
         .length;
-    final outOfStockProducts = products
-        .where((product) => product.stockLevel == 0)
-        .length;
+    final outOfStockProducts =
+        products.where((product) => product.stockLevel == 0).length;
 
     // Calculate total inventory value
     final totalInventoryValue = products.fold(
@@ -247,13 +249,15 @@ class AnalyticsService {
     // Calculate average stock level
     final averageStockLevel = products.isEmpty
         ? 0.0
-        : products.fold(0.0, (sum, product) => sum + product.stockLevel) / products.length;
+        : products.fold(0.0, (sum, product) => sum + product.stockLevel) /
+            products.length;
 
     // Group stock by category
     final stockByCategory = <String, int>{};
     for (final product in products) {
       final category = product.category ?? 'Uncategorized';
-      stockByCategory[category] = (stockByCategory[category] ?? 0) + product.stockLevel;
+      stockByCategory[category] =
+          (stockByCategory[category] ?? 0) + product.stockLevel;
     }
 
     // Generate stock alerts
@@ -292,9 +296,10 @@ class AnalyticsService {
 
     // Revenue KPI
     final currentRevenue = _calculateRevenueForPeriod(invoices, dateRange);
-    final previousRevenue = _calculateRevenueForPeriod(invoices, previousPeriodRange);
-    final revenueChange = previousRevenue == 0 
-        ? 0.0 
+    final previousRevenue =
+        _calculateRevenueForPeriod(invoices, previousPeriodRange);
+    final revenueChange = previousRevenue == 0
+        ? 0.0
         : ((currentRevenue - previousRevenue) / previousRevenue) * 100;
 
     kpis.add(KPI(
@@ -307,8 +312,11 @@ class AnalyticsService {
       targetValue: currentRevenue * 1.1, // 10% growth target
       unit: 'SGD',
       prefix: '\$',
-      trend: revenueChange > 0 ? TrendDirection.up : 
-             revenueChange < 0 ? TrendDirection.down : TrendDirection.stable,
+      trend: revenueChange > 0
+          ? TrendDirection.up
+          : revenueChange < 0
+              ? TrendDirection.down
+              : TrendDirection.stable,
       percentageChange: revenueChange,
       lastUpdated: DateTime.now(),
       historicalData: _generateRevenueHistoricalData(invoices, dateRange),
@@ -317,9 +325,8 @@ class AnalyticsService {
     ));
 
     // Customer KPI
-    final currentCustomers = customers
-        .where((c) => c.createdAt.isBefore(dateRange.end))
-        .length;
+    final currentCustomers =
+        customers.where((c) => c.createdAt.isBefore(dateRange.end)).length;
     final previousCustomers = customers
         .where((c) => c.createdAt.isBefore(previousPeriodRange.end))
         .length;
@@ -335,8 +342,11 @@ class AnalyticsService {
       currentValue: currentCustomers.toDouble(),
       previousValue: previousCustomers.toDouble(),
       unit: 'customers',
-      trend: customerChange > 0 ? TrendDirection.up : 
-             customerChange < 0 ? TrendDirection.down : TrendDirection.stable,
+      trend: customerChange > 0
+          ? TrendDirection.up
+          : customerChange < 0
+              ? TrendDirection.down
+              : TrendDirection.stable,
       percentageChange: customerChange,
       lastUpdated: DateTime.now(),
       historicalData: _generateCustomerHistoricalData(customers, dateRange),
@@ -371,7 +381,8 @@ class AnalyticsService {
 
   // Private helper methods
 
-  DateRange _getDateRange(TimePeriod period, DateTime? startDate, DateTime? endDate) {
+  DateRange _getDateRange(
+      TimePeriod period, DateTime? startDate, DateTime? endDate) {
     final now = DateTime.now();
     switch (period) {
       case TimePeriod.today:
@@ -429,8 +440,10 @@ class AnalyticsService {
   ) {
     return invoices
         .where((invoice) =>
-            invoice.createdAt.isAfter(HLCTimestamp.fromDateTime(startDate, _analyticsNodeId)) &&
-            invoice.createdAt.isBefore(HLCTimestamp.fromDateTime(endDate, _analyticsNodeId)))
+            invoice.createdAt.isAfter(
+                HLCTimestamp.fromDateTime(startDate, _analyticsNodeId)) &&
+            invoice.createdAt
+                .isBefore(HLCTimestamp.fromDateTime(endDate, _analyticsNodeId)))
         .toList();
   }
 
@@ -439,7 +452,7 @@ class AnalyticsService {
     DateRange dateRange,
   ) {
     final revenueByDay = <DateTime, double>{};
-    
+
     for (final invoice in invoices) {
       if (invoice.status.value == InvoiceStatus.paid) {
         final day = DateTime(
@@ -447,7 +460,8 @@ class AnalyticsService {
           invoice.lastPaymentDate.value!.month,
           invoice.lastPaymentDate.value!.day,
         );
-        revenueByDay[day] = (revenueByDay[day] ?? 0) + invoice.totalAmount.value;
+        revenueByDay[day] =
+            (revenueByDay[day] ?? 0) + invoice.totalAmount.value;
       }
     }
 
@@ -463,17 +477,17 @@ class AnalyticsService {
 
   List<DataPoint> _groupRevenueByProduct(List<CRDTInvoiceEnhanced> invoices) {
     final revenueByProduct = <String, double>{};
-    
+
     for (final invoice in invoices) {
       if (invoice.status.value == InvoiceStatus.paid) {
         // TODO: Fix line items access - itemIds are references, need to fetch actual items
         // for (final itemId in invoice.itemIds.elements) {
         //   // Need to fetch item by ID and then access properties
         // }
-        
+
         // For now, use invoice total as single product revenue
         final productName = 'General Revenue';
-        revenueByProduct[productName] = 
+        revenueByProduct[productName] =
             (revenueByProduct[productName] ?? 0) + invoice.totalAmount.value;
       }
     }
@@ -490,11 +504,11 @@ class AnalyticsService {
 
   List<DataPoint> _groupRevenueByCustomer(List<CRDTInvoiceEnhanced> invoices) {
     final revenueByCustomer = <String, double>{};
-    
+
     for (final invoice in invoices) {
       if (invoice.status.value == InvoiceStatus.paid) {
         final customerName = invoice.customerName.value ?? 'Unknown Customer';
-        revenueByCustomer[customerName] = 
+        revenueByCustomer[customerName] =
             (revenueByCustomer[customerName] ?? 0) + invoice.totalAmount.value;
       }
     }
@@ -509,9 +523,10 @@ class AnalyticsService {
       ..sort((a, b) => b.value.compareTo(a.value));
   }
 
-  Map<String, double> _calculateRevenueByCategory(List<CRDTInvoiceEnhanced> invoices) {
+  Map<String, double> _calculateRevenueByCategory(
+      List<CRDTInvoiceEnhanced> invoices) {
     final revenueByCategory = <String, double>{};
-    
+
     for (final invoice in invoices) {
       if (invoice.status.value == InvoiceStatus.paid) {
         // For demo purposes, categorize based on invoice amount
@@ -523,8 +538,8 @@ class AnalyticsService {
         } else {
           category = 'Small Orders';
         }
-        
-        revenueByCategory[category] = 
+
+        revenueByCategory[category] =
             (revenueByCategory[category] ?? 0) + invoice.totalAmount.value;
       }
     }
@@ -538,10 +553,11 @@ class AnalyticsService {
     DateRange dateRange,
   ) {
     final dailyFlow = <DateTime, double>{};
-    
+
     // Add inflows from paid invoices
     for (final invoice in invoices) {
-      if (invoice.status.value == InvoiceStatus.paid && invoice.lastPaymentDate.value != null) {
+      if (invoice.status.value == InvoiceStatus.paid &&
+          invoice.lastPaymentDate.value != null) {
         final day = DateTime(
           invoice.lastPaymentDate.value!.year,
           invoice.lastPaymentDate.value!.month,
@@ -555,7 +571,8 @@ class AnalyticsService {
     final random = math.Random();
     var currentDate = dateRange.start;
     while (currentDate.isBefore(dateRange.end)) {
-      final day = DateTime(currentDate.year, currentDate.month, currentDate.day);
+      final day =
+          DateTime(currentDate.year, currentDate.month, currentDate.day);
       final dailyExpense = random.nextDouble() * 500 + 100; // Random expense
       dailyFlow[day] = (dailyFlow[day] ?? 0) - dailyExpense;
       currentDate = currentDate.add(const Duration(days: 1));
@@ -573,15 +590,15 @@ class AnalyticsService {
 
   Map<String, double> _categorizeInflows(List<CRDTInvoiceEnhanced> invoices) {
     final inflowByCategory = <String, double>{};
-    
+
     for (final invoice in invoices) {
       if (invoice.status.value == InvoiceStatus.paid) {
         String category = 'Sales Revenue';
         if (invoice.isRecurring == true) {
           category = 'Recurring Revenue';
         }
-        
-        inflowByCategory[category] = 
+
+        inflowByCategory[category] =
             (inflowByCategory[category] ?? 0) + invoice.totalAmount.value;
       }
     }
@@ -607,21 +624,23 @@ class AnalyticsService {
   ) async {
     final forecasts = <CashFlowForecast>[];
     final random = math.Random();
-    
+
     // Simple linear regression for forecasting
     if (historicalData.length >= 7) {
-      final avgInflow = inflowCategories.values.fold(0.0, (a, b) => a + b) / _forecastDays;
-      final avgOutflow = outflowCategories.values.fold(0.0, (a, b) => a + b) / _forecastDays;
-      
+      final avgInflow =
+          inflowCategories.values.fold(0.0, (a, b) => a + b) / _forecastDays;
+      final avgOutflow =
+          outflowCategories.values.fold(0.0, (a, b) => a + b) / _forecastDays;
+
       var runningBalance = historicalData.last.value;
-      
+
       for (int i = 1; i <= _forecastDays; i++) {
         final date = DateTime.now().add(Duration(days: i));
         final predictedInflow = avgInflow * (0.8 + random.nextDouble() * 0.4);
         final predictedOutflow = avgOutflow * (0.8 + random.nextDouble() * 0.4);
-        
+
         runningBalance += predictedInflow - predictedOutflow;
-        
+
         forecasts.add(CashFlowForecast(
           date: date,
           predictedInflow: predictedInflow,
@@ -685,7 +704,7 @@ class AnalyticsService {
     DateRange dateRange,
   ) {
     final growthData = <DateTime, int>{};
-    
+
     // Group customers by creation date
     for (final customer in customers) {
       if (customer.createdAt.isAfter(dateRange.start) &&
@@ -715,10 +734,10 @@ class AnalyticsService {
     List<CRDTInvoiceEnhanced> invoices,
   ) {
     final segments = <String, double>{};
-    
+
     for (final customer in customers) {
       final customerRevenue = invoices
-          .where((invoice) => 
+          .where((invoice) =>
               invoice.customerId.value == customer.id &&
               invoice.status.value == InvoiceStatus.paid)
           .fold(0.0, (sum, invoice) => sum + invoice.totalAmount.value);
@@ -743,10 +762,10 @@ class AnalyticsService {
     List<CRDTInvoiceEnhanced> invoices,
   ) {
     final revenueBySegment = <String, double>{};
-    
+
     for (final customer in customers) {
       final customerRevenue = invoices
-          .where((invoice) => 
+          .where((invoice) =>
               invoice.customerId.value == customer.id &&
               invoice.status.value == InvoiceStatus.paid)
           .fold(0.0, (sum, invoice) => sum + invoice.totalAmount.value);
@@ -760,7 +779,7 @@ class AnalyticsService {
         segment = 'Basic';
       }
 
-      revenueBySegment[segment] = 
+      revenueBySegment[segment] =
           (revenueBySegment[segment] ?? 0) + customerRevenue;
     }
 
@@ -776,28 +795,32 @@ class AnalyticsService {
     // Analyze purchase patterns
     final avgOrderValue = invoices.isEmpty
         ? 0.0
-        : invoices.fold(0.0, (sum, inv) => sum + inv.totalAmount.value) / invoices.length;
+        : invoices.fold(0.0, (sum, inv) => sum + inv.totalAmount.value) /
+            invoices.length;
 
     if (avgOrderValue > 1000) {
       insights.add(const CustomerBehaviorInsight(
         insight: 'High average order value indicates premium customer base',
         category: 'Purchase Behavior',
         impact: 0.8,
-        recommendation: 'Focus on premium product offerings and personalized service',
+        recommendation:
+            'Focus on premium product offerings and personalized service',
       ));
     }
 
     // Analyze customer growth trend
     final recentCustomers = customers
-        .where((c) => c.createdAt.isAfter(DateTime.now().subtract(const Duration(days: 30))))
+        .where((c) => c.createdAt
+            .isAfter(DateTime.now().subtract(const Duration(days: 30))))
         .length;
-    
+
     if (recentCustomers > customers.length * 0.1) {
       insights.add(const CustomerBehaviorInsight(
         insight: 'Strong customer acquisition in the last 30 days',
         category: 'Growth',
         impact: 0.9,
-        recommendation: 'Invest in onboarding processes and customer retention strategies',
+        recommendation:
+            'Invest in onboarding processes and customer retention strategies',
       ));
     }
 
@@ -806,7 +829,7 @@ class AnalyticsService {
 
   List<ProductStockAlert> _generateStockAlerts(List<Product> products) {
     final alerts = <ProductStockAlert>[];
-    
+
     for (final product in products) {
       String severity;
       if (product.stockLevel == 0) {
@@ -829,21 +852,22 @@ class AnalyticsService {
       ));
     }
 
-    return alerts..sort((a, b) {
-      const severityOrder = {'out_of_stock': 0, 'critical': 1, 'low': 2};
-      return (severityOrder[a.severity] ?? 3)
-          .compareTo(severityOrder[b.severity] ?? 3);
-    });
+    return alerts
+      ..sort((a, b) {
+        const severityOrder = {'out_of_stock': 0, 'critical': 1, 'low': 2};
+        return (severityOrder[a.severity] ?? 3)
+            .compareTo(severityOrder[b.severity] ?? 3);
+      });
   }
 
   List<DataPoint> _generateInventoryTurnoverData() {
     final random = math.Random();
     final data = <DataPoint>[];
-    
+
     for (int i = 30; i >= 0; i--) {
       final date = DateTime.now().subtract(Duration(days: i));
       final turnover = 2.5 + (random.nextDouble() * 2); // 2.5-4.5 turnover rate
-      
+
       data.add(DataPoint(
         timestamp: date,
         value: turnover,
@@ -854,7 +878,8 @@ class AnalyticsService {
     return data;
   }
 
-  double _calculateRevenueForPeriod(List<CRDTInvoiceEnhanced> invoices, DateRange period) {
+  double _calculateRevenueForPeriod(
+      List<CRDTInvoiceEnhanced> invoices, DateRange period) {
     return invoices
         .where((invoice) =>
             invoice.status.value == InvoiceStatus.paid &&
@@ -870,12 +895,13 @@ class AnalyticsService {
   ) {
     final data = <DataPoint>[];
     final random = math.Random();
-    
+
     // Generate 30 days of historical data
     for (int i = 30; i >= 0; i--) {
       final date = dateRange.end.subtract(Duration(days: i));
-      final dailyRevenue = random.nextDouble() * 2000 + 500; // $500-$2500 per day
-      
+      final dailyRevenue =
+          random.nextDouble() * 2000 + 500; // $500-$2500 per day
+
       data.add(DataPoint(
         timestamp: date,
         value: dailyRevenue,
@@ -892,19 +918,19 @@ class AnalyticsService {
   ) {
     final data = <DataPoint>[];
     var cumulativeCustomers = 0;
-    
+
     // Generate cumulative customer count over time
     for (int i = 30; i >= 0; i--) {
       final date = dateRange.end.subtract(Duration(days: i));
       final newCustomers = customers
-          .where((c) => 
+          .where((c) =>
               c.createdAt.year == date.year &&
               c.createdAt.month == date.month &&
               c.createdAt.day == date.day)
           .length;
-      
+
       cumulativeCustomers += newCustomers;
-      
+
       data.add(DataPoint(
         timestamp: date,
         value: cumulativeCustomers.toDouble(),

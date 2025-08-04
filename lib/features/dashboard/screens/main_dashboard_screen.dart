@@ -13,10 +13,12 @@ class MainDashboardScreen extends ConsumerStatefulWidget {
   const MainDashboardScreen({super.key});
 
   @override
-  ConsumerState<MainDashboardScreen> createState() => _MainDashboardScreenState();
+  ConsumerState<MainDashboardScreen> createState() =>
+      _MainDashboardScreenState();
 }
 
-class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with DashboardWidgetsMixin {
+class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen>
+    with DashboardWidgetsMixin {
   TimePeriod _selectedPeriod = TimePeriod.thisMonth;
   bool _isRefreshing = false;
 
@@ -31,13 +33,15 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
 
   Future<void> _refreshDashboard() async {
     if (_isRefreshing) return;
-    
+
     setState(() {
       _isRefreshing = true;
     });
-    
+
     try {
-      await ref.read(mockDashboardDataProvider.notifier).refreshData(_selectedPeriod);
+      await ref
+          .read(mockDashboardDataProvider.notifier)
+          .refreshData(_selectedPeriod);
     } finally {
       if (mounted) {
         setState(() {
@@ -51,7 +55,7 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
   Widget build(BuildContext context) {
     final dashboardData = ref.watch(mockDashboardDataProvider);
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Business Dashboard'),
@@ -89,7 +93,7 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
           ),
           // Refresh button
           IconButton(
-            icon: _isRefreshing 
+            icon: _isRefreshing
                 ? const SizedBox(
                     width: 20,
                     height: 20,
@@ -115,7 +119,8 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
+              Icon(Icons.error_outline,
+                  size: 64, color: theme.colorScheme.error),
               const SizedBox(height: 16),
               Text(
                 'Failed to load dashboard',
@@ -146,16 +151,16 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
                 // Quick Actions Row
                 buildQuickActions(context),
                 const SizedBox(height: 24),
-                
+
                 // KPI Cards
                 buildKPISection(context, data.kpis, theme),
                 const SizedBox(height: 24),
-                
+
                 // Revenue Chart
                 if (data.revenueAnalytics != null)
                   buildRevenueChart(context, data.revenueAnalytics!, theme),
                 const SizedBox(height: 24),
-                
+
                 // Charts Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,10 +169,11 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
                     if (data.cashFlowData != null)
                       Expanded(
                         flex: 2,
-                        child: buildCashFlowChart(context, data.cashFlowData!, theme),
+                        child: buildCashFlowChart(
+                            context, data.cashFlowData!, theme),
                       ),
                     const SizedBox(width: 16),
-                    
+
                     // Invoice Status Pie Chart
                     Expanded(
                       child: buildInvoiceStatusChart(context, data, theme),
@@ -175,7 +181,7 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
                   ],
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Customer Growth and Activity Feed Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,10 +189,11 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
                     // Customer Growth Chart
                     if (data.customerInsights != null)
                       Expanded(
-                        child: buildCustomerGrowthChart(context, data.customerInsights!, theme),
+                        child: buildCustomerGrowthChart(
+                            context, data.customerInsights!, theme),
                       ),
                     const SizedBox(width: 16),
-                    
+
                     // Activity Feed
                     Expanded(
                       child: buildActivityFeed(theme),
@@ -194,7 +201,7 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen> with 
                   ],
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Top Customers
                 if (data.revenueAnalytics != null)
                   buildTopCustomers(context, data.revenueAnalytics!, theme),

@@ -37,20 +37,20 @@ class InvoiceActionsSheet extends StatelessWidget {
                 child: Text(
                   'Invoice Actions',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
               Text(
                 invoice.invoiceNumber.value,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Edit and Delete
           _buildActionTile(
             context,
@@ -72,9 +72,9 @@ class InvoiceActionsSheet extends StatelessWidget {
               onActionSelected?.call('duplicate');
             },
           ),
-          
+
           const Divider(),
-          
+
           // Status Changes
           if (invoice.status.value == InvoiceStatus.draft)
             _buildActionTile(
@@ -87,8 +87,8 @@ class InvoiceActionsSheet extends StatelessWidget {
                 onActionSelected?.call('send');
               },
             ),
-          
-          if (invoice.status.value == InvoiceStatus.sent || 
+
+          if (invoice.status.value == InvoiceStatus.sent ||
               invoice.status.value == InvoiceStatus.viewed ||
               invoice.status.value == InvoiceStatus.partiallyPaid)
             _buildActionTile(
@@ -101,7 +101,7 @@ class InvoiceActionsSheet extends StatelessWidget {
                 onActionSelected?.call('mark_paid');
               },
             ),
-          
+
           if (invoice.status.value != InvoiceStatus.cancelled &&
               invoice.status.value != InvoiceStatus.voided)
             _buildActionTile(
@@ -114,9 +114,9 @@ class InvoiceActionsSheet extends StatelessWidget {
                 onActionSelected?.call('cancel');
               },
             ),
-          
+
           const Divider(),
-          
+
           // Payment and Sharing
           _buildActionTile(
             context,
@@ -142,9 +142,9 @@ class InvoiceActionsSheet extends StatelessWidget {
             subtitle: 'Save as PDF file',
             onTap: () => _showComingSoon(context, 'PDF generation'),
           ),
-          
+
           const Divider(),
-          
+
           // Danger Zone
           _buildActionTile(
             context,
@@ -157,7 +157,7 @@ class InvoiceActionsSheet extends StatelessWidget {
             },
             isDestructive: true,
           ),
-          
+
           const SizedBox(height: 16),
         ],
       ),
@@ -173,7 +173,7 @@ class InvoiceActionsSheet extends StatelessWidget {
     bool isDestructive = false,
   }) {
     final color = isDestructive ? Colors.red : Theme.of(context).primaryColor;
-    
+
     return ListTile(
       enabled: onTap != null,
       leading: Container(

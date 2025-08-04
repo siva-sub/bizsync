@@ -124,7 +124,7 @@ class MultiPaymentQRResult {
 }
 
 /// Multi-payment method service for SGQR
-/// 
+///
 /// This service handles the generation of SGQR codes that support multiple
 /// payment networks including PayNow, NETS, and international card networks.
 class MultiPaymentService {
@@ -157,11 +157,13 @@ class MultiPaymentService {
       final List<String> errors = [];
 
       // Validate that we have data for supported networks
-      if (config.supportedNetworks.contains(PaymentNetwork.payNow) && payNowData == null) {
+      if (config.supportedNetworks.contains(PaymentNetwork.payNow) &&
+          payNowData == null) {
         errors.add('PayNow data required for PayNow support');
       }
 
-      if (config.supportedNetworks.contains(PaymentNetwork.nets) && netsData == null) {
+      if (config.supportedNetworks.contains(PaymentNetwork.nets) &&
+          netsData == null) {
         errors.add('NETS data required for NETS support');
       }
 
@@ -194,7 +196,8 @@ class MultiPaymentService {
       final Map<PaymentNetwork, String> networkQRs = {};
 
       // Generate PayNow QR if supported
-      if (payNowData != null && config.supportedNetworks.contains(PaymentNetwork.payNow)) {
+      if (payNowData != null &&
+          config.supportedNetworks.contains(PaymentNetwork.payNow)) {
         final PayNowResult payNowResult = PayNowService.createPayNowQR(
           identifier: payNowData.identifier,
           amount: amount,
@@ -210,14 +213,14 @@ class MultiPaymentService {
         sgqrString: sgqrString,
         networkQRs: networkQRs,
         metadata: {
-          'supported_networks': config.supportedNetworks.map((n) => n.value).toList(),
+          'supported_networks':
+              config.supportedNetworks.map((n) => n.value).toList(),
           'primary_network': config.primaryNetwork.value,
           'amount': amount,
           'currency': currency.value,
           'generated_at': DateTime.now().toIso8601String(),
         },
       );
-
     } catch (e) {
       return Future.value(MultiPaymentQRResult.failure(
         errors: ['Failed to generate multi-payment QR: $e'],
@@ -317,7 +320,7 @@ class MultiPaymentService {
     // Calculate and add CRC16 checksum
     final String dataWithoutCrc = buffer.toString();
     final String crc = CRC16Calculator.calculate(dataWithoutCrc);
-    
+
     return dataWithoutCrc + crc;
   }
 
@@ -368,7 +371,8 @@ class MultiPaymentService {
   }
 
   /// Format card network merchant information
-  static String _formatCardMerchantInfo(CardPaymentData cardData, PaymentNetwork network) {
+  static String _formatCardMerchantInfo(
+      CardPaymentData cardData, PaymentNetwork network) {
     final buffer = StringBuffer();
 
     // Network GUID (Tag 00)
@@ -524,8 +528,10 @@ class MultiPaymentService {
   static List<PaymentNetwork> getSupportedNetworks(String sgqrString) {
     try {
       // Remove CRC and parse TLV
-      final String dataWithoutCrc = sgqrString.substring(0, sgqrString.length - 4);
-      final List<SGQRDataObject> objects = EMVCoFormatter.parseTLV(dataWithoutCrc);
+      final String dataWithoutCrc =
+          sgqrString.substring(0, sgqrString.length - 4);
+      final List<SGQRDataObject> objects =
+          EMVCoFormatter.parseTLV(dataWithoutCrc);
 
       final List<PaymentNetwork> networks = [];
 
@@ -552,4 +558,3 @@ class MultiPaymentService {
     return null;
   }
 }
-

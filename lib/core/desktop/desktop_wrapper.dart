@@ -6,7 +6,7 @@ import 'package:file_selector/file_selector.dart';
 import 'index.dart';
 
 /// Desktop Wrapper Widget
-/// 
+///
 /// Wraps the main application with desktop-specific functionality:
 /// - System tray integration
 /// - Window management
@@ -34,7 +34,7 @@ class _DesktopWrapperState extends State<DesktopWrapper> with WindowListener {
   @override
   void initState() {
     super.initState();
-    
+
     if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
       windowManager.addListener(this);
       _setupDesktopIntegration();
@@ -53,7 +53,7 @@ class _DesktopWrapperState extends State<DesktopWrapper> with WindowListener {
   void _setupDesktopIntegration() async {
     // Set up window management
     await _multiWindowService.setupMainWindowStateTracking();
-    
+
     // Show welcome notification
     await _desktopNotificationsService.showSystemNotification(
       title: 'BizSync Desktop',
@@ -144,7 +144,7 @@ class _DesktopWrapperState extends State<DesktopWrapper> with WindowListener {
         success: true,
         filePath: file.path,
       );
-      
+
       if (result.success) {
         await _desktopNotificationsService.showBusinessNotification(
           title: 'File Imported',
@@ -164,19 +164,26 @@ class _DesktopWrapperState extends State<DesktopWrapper> with WindowListener {
   Map<ShortcutActivator, Intent> _getDesktopShortcuts() {
     return {
       // Application shortcuts
-      const SingleActivator(LogicalKeyboardKey.keyN, control: true): NewInvoiceIntent(),
-      const SingleActivator(LogicalKeyboardKey.keyF, control: true): GlobalSearchIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyN, control: true):
+          NewInvoiceIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyF, control: true):
+          GlobalSearchIntent(),
       const SingleActivator(LogicalKeyboardKey.f1): ShowHelpIntent(),
-      const SingleActivator(LogicalKeyboardKey.comma, control: true): ShowSettingsIntent(),
-      
+      const SingleActivator(LogicalKeyboardKey.comma, control: true):
+          ShowSettingsIntent(),
+
       // Window management
       const SingleActivator(LogicalKeyboardKey.f11): ToggleFullscreenIntent(),
-      const SingleActivator(LogicalKeyboardKey.keyM, control: true, alt: true): MinimizeWindowIntent(),
-      
+      const SingleActivator(LogicalKeyboardKey.keyM, control: true, alt: true):
+          MinimizeWindowIntent(),
+
       // Navigation shortcuts
-      const SingleActivator(LogicalKeyboardKey.keyD, control: true, alt: true): GoToDashboardIntent(),
-      const SingleActivator(LogicalKeyboardKey.keyI, control: true, alt: true): GoToInvoicesIntent(),
-      const SingleActivator(LogicalKeyboardKey.keyC, control: true, alt: true): GoToCustomersIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyD, control: true, alt: true):
+          GoToDashboardIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyI, control: true, alt: true):
+          GoToInvoicesIntent(),
+      const SingleActivator(LogicalKeyboardKey.keyC, control: true, alt: true):
+          GoToCustomersIntent(),
     };
   }
 
@@ -239,13 +246,21 @@ class _DesktopWrapperState extends State<DesktopWrapper> with WindowListener {
 
 /// Desktop Intent Classes
 class NewInvoiceIntent extends Intent {}
+
 class GlobalSearchIntent extends Intent {}
+
 class ShowHelpIntent extends Intent {}
+
 class ShowSettingsIntent extends Intent {}
+
 class ToggleFullscreenIntent extends Intent {}
+
 class MinimizeWindowIntent extends Intent {}
+
 class GoToDashboardIntent extends Intent {}
+
 class GoToInvoicesIntent extends Intent {}
+
 class GoToCustomersIntent extends Intent {}
 
 /// Global Search Dialog
@@ -321,7 +336,7 @@ class _GlobalSearchDialogState extends State<GlobalSearchDialog> {
               ],
             ),
             const Divider(),
-            
+
             // Search results
             Expanded(
               child: _isSearching

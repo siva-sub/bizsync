@@ -7,7 +7,6 @@ import '../test_factories.dart';
 /// These tests validate the business logic without UI dependencies
 void main() {
   group('Core Business Logic Validation', () {
-    
     group('GST Calculation Tests', () {
       test('should calculate 9% GST correctly', () {
         final result = SingaporeGstService.calculateGst(
@@ -127,16 +126,17 @@ void main() {
     group('Invoice Calculation Tests', () {
       test('should validate invoice calculations', () {
         final invoiceData = TestFactories.createInvoiceData();
-        
+
         expect(TestValidators.validateInvoiceCalculations(invoiceData), isTrue);
-        
+
         // Test subtotal calculation
-        final lineItems = invoiceData['line_items'] as List<Map<String, dynamic>>;
+        final lineItems =
+            invoiceData['line_items'] as List<Map<String, dynamic>>;
         final expectedSubtotal = lineItems.fold<double>(
           0.0,
           (sum, item) => sum + (item['line_total'] as double),
         );
-        
+
         expect(invoiceData['subtotal'], equals(expectedSubtotal));
       });
 
@@ -146,11 +146,11 @@ void main() {
         );
 
         expect(TestValidators.validateInvoiceCalculations(invoiceData), isTrue);
-        
+
         final subtotal = invoiceData['subtotal'] as double;
         final discount = invoiceData['discount_amount'] as double;
         final expectedDiscount = subtotal * 0.10;
-        
+
         expect(discount, closeTo(expectedDiscount, 0.01));
       });
     });
@@ -165,7 +165,7 @@ void main() {
 
         for (final number in validNumbers) {
           expect(TestValidators.validateGstNumber(number), isTrue,
-            reason: '$number should be valid');
+              reason: '$number should be valid');
         }
 
         final invalidNumbers = [
@@ -176,7 +176,7 @@ void main() {
 
         for (final number in invalidNumbers) {
           expect(TestValidators.validateGstNumber(number), isFalse,
-            reason: '$number should be invalid');
+              reason: '$number should be invalid');
         }
       });
 
@@ -189,7 +189,7 @@ void main() {
 
         for (final email in validEmails) {
           expect(TestValidators.validateEmail(email), isTrue,
-            reason: '$email should be valid');
+              reason: '$email should be valid');
         }
 
         final invalidEmails = [
@@ -200,7 +200,7 @@ void main() {
 
         for (final email in invalidEmails) {
           expect(TestValidators.validateEmail(email), isFalse,
-            reason: '$email should be invalid');
+              reason: '$email should be invalid');
         }
       });
 
@@ -226,14 +226,16 @@ void main() {
 
         final outOfStockProduct = TestFactories.createOutOfStockProduct();
         expect(outOfStockProduct.isInStock, isFalse);
-        expect(outOfStockProduct.isLowStock, isFalse); // Not low stock, it's out of stock
+        expect(outOfStockProduct.isLowStock,
+            isFalse); // Not low stock, it's out of stock
       });
     });
 
     group('Business Rule Validation Tests', () {
       test('should identify export customers correctly', () {
         final localCustomer = TestFactories.createCustomer(countryCode: 'SG');
-        final exportCustomer = TestFactories.createExportCustomer(countryCode: 'US');
+        final exportCustomer =
+            TestFactories.createExportCustomer(countryCode: 'US');
 
         expect(localCustomer.isExportCustomer, isFalse);
         expect(exportCustomer.isExportCustomer, isTrue);
@@ -246,9 +248,11 @@ void main() {
 
         expect(gstCustomer.gstRegistered, isTrue);
         expect(gstCustomer.hasValidGstNumber, isTrue);
-        expect(gstCustomer.gstStatusDisplay, equals('GST Registered (200012345M)'));
+        expect(gstCustomer.gstStatusDisplay,
+            equals('GST Registered (200012345M)'));
 
-        final nonGstCustomer = TestFactories.createCustomer(gstRegistered: false);
+        final nonGstCustomer =
+            TestFactories.createCustomer(gstRegistered: false);
         expect(nonGstCustomer.gstStatusDisplay, equals('Not GST Registered'));
       });
 

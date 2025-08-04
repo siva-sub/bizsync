@@ -52,7 +52,7 @@ class AppRouter {
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
       ),
-      
+
       // Onboarding routes
       GoRoute(
         path: '/onboarding/welcome',
@@ -85,7 +85,7 @@ class AppRouter {
             path: '/dashboard',
             builder: (context, state) => const MainDashboardScreen(),
           ),
-          
+
           // Invoice routes
           GoRoute(
             path: '/invoices',
@@ -117,7 +117,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Payment routes
           GoRoute(
             path: '/payments',
@@ -129,7 +129,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Customer routes
           GoRoute(
             path: '/customers',
@@ -137,7 +137,8 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/create',
-                builder: (context, state) => const ProfessionalCustomerFormScreen(),
+                builder: (context, state) =>
+                    const ProfessionalCustomerFormScreen(),
               ),
               GoRoute(
                 path: '/edit/:id',
@@ -157,7 +158,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Employee routes
           GoRoute(
             path: '/employees',
@@ -187,13 +188,13 @@ class AppRouter {
               ),
             ],
           ),
-          
-          // Payroll routes  
+
+          // Payroll routes
           GoRoute(
             path: '/payroll',
             builder: (context, state) => const PayrollScreenWrapper(),
           ),
-          
+
           // Tax routes
           GoRoute(
             path: '/tax',
@@ -209,7 +210,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Reports routes
           GoRoute(
             path: '/reports',
@@ -229,11 +230,12 @@ class AppRouter {
               ),
               GoRoute(
                 path: '/forecasting',
-                builder: (context, state) => const ForecastingReportScreenWrapper(),
+                builder: (context, state) =>
+                    const ForecastingReportScreenWrapper(),
               ),
             ],
           ),
-          
+
           // Inventory routes
           GoRoute(
             path: '/inventory',
@@ -251,7 +253,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Vendor routes
           GoRoute(
             path: '/vendors',
@@ -269,25 +271,25 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Sync routes
           GoRoute(
             path: '/sync',
             builder: (context, state) => const DeviceDiscoveryScreen(),
           ),
-          
+
           // Backup routes
           GoRoute(
             path: '/backup',
             builder: (context, state) => const BackupScreen(),
           ),
-          
+
           // Notification routes
           GoRoute(
             path: '/notifications',
             builder: (context, state) => const NotificationCenterScreen(),
           ),
-          
+
           // Forecasting routes
           GoRoute(
             path: '/forecasting',
@@ -299,15 +301,18 @@ class AppRouter {
               ),
               GoRoute(
                 path: '/expenses',
-                builder: (context, state) => const RevenueForecastingScreen(), // Reuse for now
+                builder: (context, state) =>
+                    const RevenueForecastingScreen(), // Reuse for now
               ),
               GoRoute(
                 path: '/cashflow',
-                builder: (context, state) => const RevenueForecastingScreen(), // Reuse for now
+                builder: (context, state) =>
+                    const RevenueForecastingScreen(), // Reuse for now
               ),
               GoRoute(
                 path: '/inventory',
-                builder: (context, state) => const RevenueForecastingScreen(), // Reuse for now
+                builder: (context, state) =>
+                    const RevenueForecastingScreen(), // Reuse for now
               ),
               GoRoute(
                 path: '/reports',
@@ -315,7 +320,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Settings routes
           GoRoute(
             path: '/settings',
@@ -347,10 +352,12 @@ class FunctionalInvoiceListScreen extends StatefulWidget {
   const FunctionalInvoiceListScreen({super.key});
 
   @override
-  State<FunctionalInvoiceListScreen> createState() => _FunctionalInvoiceListScreenState();
+  State<FunctionalInvoiceListScreen> createState() =>
+      _FunctionalInvoiceListScreenState();
 }
 
-class _FunctionalInvoiceListScreenState extends State<FunctionalInvoiceListScreen> {
+class _FunctionalInvoiceListScreenState
+    extends State<FunctionalInvoiceListScreen> {
   List<EnhancedInvoice> _invoices = [];
   bool _isLoading = true;
   String _filter = 'all';
@@ -385,7 +392,9 @@ class _FunctionalInvoiceListScreenState extends State<FunctionalInvoiceListScree
 
   List<EnhancedInvoice> get _filteredInvoices {
     if (_filter == 'all') return _invoices;
-    return _invoices.where((inv) => inv.status.toString().contains(_filter)).toList();
+    return _invoices
+        .where((inv) => inv.status.toString().contains(_filter))
+        .toList();
   }
 
   @override
@@ -420,9 +429,11 @@ class _FunctionalInvoiceListScreenState extends State<FunctionalInvoiceListScree
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.receipt_long, size: 64, color: Colors.grey),
+                          Icon(Icons.receipt_long,
+                              size: 64, color: Colors.grey),
                           SizedBox(height: 16),
-                          Text('No invoices found', style: TextStyle(fontSize: 18)),
+                          Text('No invoices found',
+                              style: TextStyle(fontSize: 18)),
                           Text('Create your first invoice to get started'),
                         ],
                       ),
@@ -436,15 +447,18 @@ class _FunctionalInvoiceListScreenState extends State<FunctionalInvoiceListScree
                           margin: const EdgeInsets.only(bottom: 8),
                           child: ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: _getStatusColor(invoice.status).withOpacity(0.1),
-                              child: Icon(_getStatusIcon(invoice.status), color: _getStatusColor(invoice.status)),
+                              backgroundColor: _getStatusColor(invoice.status)
+                                  .withOpacity(0.1),
+                              child: Icon(_getStatusIcon(invoice.status),
+                                  color: _getStatusColor(invoice.status)),
                             ),
                             title: Text(invoice.invoiceNumber),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(invoice.customerName),
-                                Text('Due: ${invoice.dueDate.day}/${invoice.dueDate.month}/${invoice.dueDate.year}'),
+                                Text(
+                                    'Due: ${invoice.dueDate.day}/${invoice.dueDate.month}/${invoice.dueDate.year}'),
                               ],
                             ),
                             trailing: Column(
@@ -453,12 +467,16 @@ class _FunctionalInvoiceListScreenState extends State<FunctionalInvoiceListScree
                               children: [
                                 Text(
                                   '\$${invoice.total.toStringAsFixed(2)}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: _getStatusColor(invoice.status).withOpacity(0.1),
+                                    color: _getStatusColor(invoice.status)
+                                        .withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
@@ -472,7 +490,8 @@ class _FunctionalInvoiceListScreenState extends State<FunctionalInvoiceListScree
                                 ),
                               ],
                             ),
-                            onTap: () => context.go('/invoices/detail/${invoice.id}'),
+                            onTap: () =>
+                                context.go('/invoices/detail/${invoice.id}'),
                           ),
                         );
                       },
@@ -487,66 +506,102 @@ class _FunctionalInvoiceListScreenState extends State<FunctionalInvoiceListScree
 
   Color _getStatusColor(InvoiceStatus status) {
     switch (status) {
-      case InvoiceStatus.draft: return Colors.grey;
-      case InvoiceStatus.pending: return Colors.orange;
-      case InvoiceStatus.approved: return Colors.blue;
-      case InvoiceStatus.sent: return Colors.blue;
-      case InvoiceStatus.viewed: return Colors.cyan;
-      case InvoiceStatus.partiallyPaid: return Colors.amber;
-      case InvoiceStatus.paid: return Colors.green;
-      case InvoiceStatus.overdue: return Colors.red;
-      case InvoiceStatus.cancelled: return Colors.orange;
-      case InvoiceStatus.disputed: return Colors.purple;
-      case InvoiceStatus.voided: return Colors.grey[800]!;
-      case InvoiceStatus.refunded: return Colors.teal;
+      case InvoiceStatus.draft:
+        return Colors.grey;
+      case InvoiceStatus.pending:
+        return Colors.orange;
+      case InvoiceStatus.approved:
+        return Colors.blue;
+      case InvoiceStatus.sent:
+        return Colors.blue;
+      case InvoiceStatus.viewed:
+        return Colors.cyan;
+      case InvoiceStatus.partiallyPaid:
+        return Colors.amber;
+      case InvoiceStatus.paid:
+        return Colors.green;
+      case InvoiceStatus.overdue:
+        return Colors.red;
+      case InvoiceStatus.cancelled:
+        return Colors.orange;
+      case InvoiceStatus.disputed:
+        return Colors.purple;
+      case InvoiceStatus.voided:
+        return Colors.grey[800]!;
+      case InvoiceStatus.refunded:
+        return Colors.teal;
     }
   }
 
   IconData _getStatusIcon(InvoiceStatus status) {
     switch (status) {
-      case InvoiceStatus.draft: return Icons.drafts;
-      case InvoiceStatus.pending: return Icons.hourglass_empty;
-      case InvoiceStatus.approved: return Icons.check;
-      case InvoiceStatus.sent: return Icons.send;
-      case InvoiceStatus.viewed: return Icons.visibility;
-      case InvoiceStatus.partiallyPaid: return Icons.payments;
-      case InvoiceStatus.paid: return Icons.check_circle;
-      case InvoiceStatus.overdue: return Icons.warning;
-      case InvoiceStatus.cancelled: return Icons.cancel;
-      case InvoiceStatus.disputed: return Icons.report_problem;
-      case InvoiceStatus.voided: return Icons.block;
-      case InvoiceStatus.refunded: return Icons.undo;
+      case InvoiceStatus.draft:
+        return Icons.drafts;
+      case InvoiceStatus.pending:
+        return Icons.hourglass_empty;
+      case InvoiceStatus.approved:
+        return Icons.check;
+      case InvoiceStatus.sent:
+        return Icons.send;
+      case InvoiceStatus.viewed:
+        return Icons.visibility;
+      case InvoiceStatus.partiallyPaid:
+        return Icons.payments;
+      case InvoiceStatus.paid:
+        return Icons.check_circle;
+      case InvoiceStatus.overdue:
+        return Icons.warning;
+      case InvoiceStatus.cancelled:
+        return Icons.cancel;
+      case InvoiceStatus.disputed:
+        return Icons.report_problem;
+      case InvoiceStatus.voided:
+        return Icons.block;
+      case InvoiceStatus.refunded:
+        return Icons.undo;
     }
   }
 
   String _getStatusText(InvoiceStatus status) {
     switch (status) {
-      case InvoiceStatus.draft: return 'Draft';
-      case InvoiceStatus.pending: return 'Pending';
-      case InvoiceStatus.approved: return 'Approved';
-      case InvoiceStatus.sent: return 'Sent';
-      case InvoiceStatus.viewed: return 'Viewed';
-      case InvoiceStatus.partiallyPaid: return 'Partially Paid';
-      case InvoiceStatus.paid: return 'Paid';
-      case InvoiceStatus.overdue: return 'Overdue';
-      case InvoiceStatus.cancelled: return 'Cancelled';
-      case InvoiceStatus.disputed: return 'Disputed';
-      case InvoiceStatus.voided: return 'Voided';
-      case InvoiceStatus.refunded: return 'Refunded';
+      case InvoiceStatus.draft:
+        return 'Draft';
+      case InvoiceStatus.pending:
+        return 'Pending';
+      case InvoiceStatus.approved:
+        return 'Approved';
+      case InvoiceStatus.sent:
+        return 'Sent';
+      case InvoiceStatus.viewed:
+        return 'Viewed';
+      case InvoiceStatus.partiallyPaid:
+        return 'Partially Paid';
+      case InvoiceStatus.paid:
+        return 'Paid';
+      case InvoiceStatus.overdue:
+        return 'Overdue';
+      case InvoiceStatus.cancelled:
+        return 'Cancelled';
+      case InvoiceStatus.disputed:
+        return 'Disputed';
+      case InvoiceStatus.voided:
+        return 'Voided';
+      case InvoiceStatus.refunded:
+        return 'Refunded';
     }
   }
 }
 
 class InvoiceFormScreenWrapper extends StatelessWidget {
   final String? invoiceId;
-  
+
   const InvoiceFormScreenWrapper({super.key, this.invoiceId});
 
   @override
   Widget build(BuildContext context) {
     // Get prefilled data from navigation extra if available
     final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
-    
+
     return ProfessionalInvoiceFormScreen(
       // Pass any prefilled data to the form or the provided invoiceId
       invoiceId: invoiceId ?? extra?['invoice_id'],
@@ -556,7 +611,7 @@ class InvoiceFormScreenWrapper extends StatelessWidget {
 
 class InvoiceDetailScreenWrapper extends StatelessWidget {
   final String invoiceId;
-  
+
   const InvoiceDetailScreenWrapper({super.key, required this.invoiceId});
 
   @override
@@ -567,14 +622,16 @@ class InvoiceDetailScreenWrapper extends StatelessWidget {
 
 class FunctionalInvoiceDetailScreen extends StatefulWidget {
   final String invoiceId;
-  
+
   const FunctionalInvoiceDetailScreen({super.key, required this.invoiceId});
 
   @override
-  State<FunctionalInvoiceDetailScreen> createState() => _FunctionalInvoiceDetailScreenState();
+  State<FunctionalInvoiceDetailScreen> createState() =>
+      _FunctionalInvoiceDetailScreenState();
 }
 
-class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailScreen> {
+class _FunctionalInvoiceDetailScreenState
+    extends State<FunctionalInvoiceDetailScreen> {
   EnhancedInvoice? _invoice;
   bool _isLoading = true;
 
@@ -672,24 +729,31 @@ class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailS
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     _invoice!.invoiceNumber,
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
                                     decoration: BoxDecoration(
-                                      color: _getStatusColor(_invoice!.status).withOpacity(0.1),
+                                      color: _getStatusColor(_invoice!.status)
+                                          .withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Text(
                                       _getStatusText(_invoice!.status),
                                       style: TextStyle(
-                                        color: _getStatusColor(_invoice!.status),
+                                        color:
+                                            _getStatusColor(_invoice!.status),
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -701,19 +765,29 @@ class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailS
                                 children: [
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text('Invoice Date', style: Theme.of(context).textTheme.bodySmall),
-                                        Text('${_invoice!.invoiceDate.day}/${_invoice!.invoiceDate.month}/${_invoice!.invoiceDate.year}'),
+                                        Text('Invoice Date',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall),
+                                        Text(
+                                            '${_invoice!.invoiceDate.day}/${_invoice!.invoiceDate.month}/${_invoice!.invoiceDate.year}'),
                                       ],
                                     ),
                                   ),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text('Due Date', style: Theme.of(context).textTheme.bodySmall),
-                                        Text('${_invoice!.dueDate.day}/${_invoice!.dueDate.month}/${_invoice!.dueDate.year}'),
+                                        Text('Due Date',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall),
+                                        Text(
+                                            '${_invoice!.dueDate.day}/${_invoice!.dueDate.month}/${_invoice!.dueDate.year}'),
                                       ],
                                     ),
                                   ),
@@ -734,15 +808,23 @@ class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailS
                             children: [
                               Text(
                                 'Bill To',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               const SizedBox(height: 8),
-                              Text(_invoice!.customerName, style: const TextStyle(fontWeight: FontWeight.w500)),
-                              if (_invoice!.customerEmail?.isNotEmpty == true) Text(_invoice!.customerEmail!),
-                              if (_invoice!.customerAddress?.isNotEmpty == true) 
-                                Text(_invoice!.customerAddress!, style: Theme.of(context).textTheme.bodySmall),
+                              Text(_invoice!.customerName,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500)),
+                              if (_invoice!.customerEmail?.isNotEmpty == true)
+                                Text(_invoice!.customerEmail!),
+                              if (_invoice!.customerAddress?.isNotEmpty == true)
+                                Text(_invoice!.customerAddress!,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall),
                             ],
                           ),
                         ),
@@ -758,9 +840,12 @@ class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailS
                             children: [
                               Text(
                                 'Items',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               const SizedBox(height: 16),
                               // TODO: Implement line items display for CRDTInvoiceEnhanced
@@ -801,37 +886,48 @@ class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailS
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text('Subtotal'),
-                                  Text('\$${_invoice!.subtotal.toStringAsFixed(2)}'),
+                                  Text(
+                                      '\$${_invoice!.subtotal.toStringAsFixed(2)}'),
                                 ],
                               ),
                               if (_invoice!.gstAmount > 0) ...[
                                 const SizedBox(height: 8),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text('GST (9%)'),
-                                    Text('\$${_invoice!.gstAmount.toStringAsFixed(2)}'),
+                                    Text(
+                                        '\$${_invoice!.gstAmount.toStringAsFixed(2)}'),
                                   ],
                                 ),
                               ],
                               const Divider(),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Total',
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                   Text(
                                     '\$${_invoice!.total.toStringAsFixed(2)}',
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -850,9 +946,12 @@ class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailS
                               children: [
                                 Text(
                                   'Notes',
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(_invoice!.notes!),
@@ -869,35 +968,59 @@ class _FunctionalInvoiceDetailScreenState extends State<FunctionalInvoiceDetailS
 
   Color _getStatusColor(InvoiceStatus status) {
     switch (status) {
-      case InvoiceStatus.draft: return Colors.grey;
-      case InvoiceStatus.pending: return Colors.orange;
-      case InvoiceStatus.approved: return Colors.blue;
-      case InvoiceStatus.sent: return Colors.blue;
-      case InvoiceStatus.viewed: return Colors.cyan;
-      case InvoiceStatus.partiallyPaid: return Colors.amber;
-      case InvoiceStatus.paid: return Colors.green;
-      case InvoiceStatus.overdue: return Colors.red;
-      case InvoiceStatus.cancelled: return Colors.orange;
-      case InvoiceStatus.disputed: return Colors.purple;
-      case InvoiceStatus.voided: return Colors.grey[800]!;
-      case InvoiceStatus.refunded: return Colors.teal;
+      case InvoiceStatus.draft:
+        return Colors.grey;
+      case InvoiceStatus.pending:
+        return Colors.orange;
+      case InvoiceStatus.approved:
+        return Colors.blue;
+      case InvoiceStatus.sent:
+        return Colors.blue;
+      case InvoiceStatus.viewed:
+        return Colors.cyan;
+      case InvoiceStatus.partiallyPaid:
+        return Colors.amber;
+      case InvoiceStatus.paid:
+        return Colors.green;
+      case InvoiceStatus.overdue:
+        return Colors.red;
+      case InvoiceStatus.cancelled:
+        return Colors.orange;
+      case InvoiceStatus.disputed:
+        return Colors.purple;
+      case InvoiceStatus.voided:
+        return Colors.grey[800]!;
+      case InvoiceStatus.refunded:
+        return Colors.teal;
     }
   }
 
   String _getStatusText(InvoiceStatus status) {
     switch (status) {
-      case InvoiceStatus.draft: return 'Draft';
-      case InvoiceStatus.pending: return 'Pending';
-      case InvoiceStatus.approved: return 'Approved';
-      case InvoiceStatus.sent: return 'Sent';
-      case InvoiceStatus.viewed: return 'Viewed';
-      case InvoiceStatus.partiallyPaid: return 'Partially Paid';
-      case InvoiceStatus.paid: return 'Paid';
-      case InvoiceStatus.overdue: return 'Overdue';
-      case InvoiceStatus.cancelled: return 'Cancelled';
-      case InvoiceStatus.disputed: return 'Disputed';
-      case InvoiceStatus.voided: return 'Voided';
-      case InvoiceStatus.refunded: return 'Refunded';
+      case InvoiceStatus.draft:
+        return 'Draft';
+      case InvoiceStatus.pending:
+        return 'Pending';
+      case InvoiceStatus.approved:
+        return 'Approved';
+      case InvoiceStatus.sent:
+        return 'Sent';
+      case InvoiceStatus.viewed:
+        return 'Viewed';
+      case InvoiceStatus.partiallyPaid:
+        return 'Partially Paid';
+      case InvoiceStatus.paid:
+        return 'Paid';
+      case InvoiceStatus.overdue:
+        return 'Overdue';
+      case InvoiceStatus.cancelled:
+        return 'Cancelled';
+      case InvoiceStatus.disputed:
+        return 'Disputed';
+      case InvoiceStatus.voided:
+        return 'Voided';
+      case InvoiceStatus.refunded:
+        return 'Refunded';
     }
   }
 }
@@ -913,7 +1036,8 @@ class CustomersScreen extends StatelessWidget {
         children: [
           const Icon(Icons.people, size: 64, color: Colors.purple),
           const SizedBox(height: 16),
-          const Text('Customers', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text('Customers',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const Text('Manage your customers'),
           const SizedBox(height: 24),
           FilledButton(
@@ -928,7 +1052,7 @@ class CustomersScreen extends StatelessWidget {
 
 class CustomerFormScreen extends StatelessWidget {
   final String? customerId;
-  
+
   const CustomerFormScreen({super.key, this.customerId});
 
   @override
@@ -1066,9 +1190,12 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
             },
             itemBuilder: (context) => [
               const PopupMenuItem(value: 'name', child: Text('Sort by Name')),
-              const PopupMenuItem(value: 'position', child: Text('Sort by Position')),
-              const PopupMenuItem(value: 'salary', child: Text('Sort by Salary')),
-              const PopupMenuItem(value: 'joinDate', child: Text('Sort by Join Date')),
+              const PopupMenuItem(
+                  value: 'position', child: Text('Sort by Position')),
+              const PopupMenuItem(
+                  value: 'salary', child: Text('Sort by Salary')),
+              const PopupMenuItem(
+                  value: 'joinDate', child: Text('Sort by Join Date')),
             ],
           ),
         ],
@@ -1084,7 +1211,8 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                         children: [
                           Icon(Icons.badge, size: 64, color: Colors.grey),
                           SizedBox(height: 16),
-                          Text('No employees found', style: TextStyle(fontSize: 18)),
+                          Text('No employees found',
+                              style: TextStyle(fontSize: 18)),
                           Text('Add employees to get started'),
                         ],
                       ),
@@ -1098,11 +1226,18 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                           margin: const EdgeInsets.only(bottom: 8),
                           child: ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: _getWorkPassColor(employee.workPassType).withOpacity(0.1),
+                              backgroundColor:
+                                  _getWorkPassColor(employee.workPassType)
+                                      .withOpacity(0.1),
                               child: Text(
-                                employee.name.split(' ').map((n) => n[0]).take(2).join(),
+                                employee.name
+                                    .split(' ')
+                                    .map((n) => n[0])
+                                    .take(2)
+                                    .join(),
                                 style: TextStyle(
-                                  color: _getWorkPassColor(employee.workPassType),
+                                  color:
+                                      _getWorkPassColor(employee.workPassType),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -1112,9 +1247,13 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(employee.position),
-                                Text(employee.workPassDisplayName, style: Theme.of(context).textTheme.bodySmall),
-                                Text('Joined: ${employee.joinDate.day}/${employee.joinDate.month}/${employee.joinDate.year}',
-                                     style: Theme.of(context).textTheme.bodySmall),
+                                Text(employee.workPassDisplayName,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall),
+                                Text(
+                                    'Joined: ${employee.joinDate.day}/${employee.joinDate.month}/${employee.joinDate.year}',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall),
                               ],
                             ),
                             trailing: Column(
@@ -1123,22 +1262,29 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                               children: [
                                 Text(
                                   employee.formattedSalary,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
                                 ),
                                 Text(
                                   'CPF: ${employee.formattedCpf}',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: employee.isActive ? Colors.green.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                                    color: employee.isActive
+                                        ? Colors.green.withOpacity(0.1)
+                                        : Colors.grey.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
                                     employee.isActive ? 'Active' : 'Inactive',
                                     style: TextStyle(
-                                      color: employee.isActive ? Colors.green : Colors.grey,
+                                      color: employee.isActive
+                                          ? Colors.green
+                                          : Colors.grey,
                                       fontSize: 10,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -1146,7 +1292,8 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                                 ),
                               ],
                             ),
-                            onTap: () => _showEmployeeDetails(context, employee),
+                            onTap: () =>
+                                _showEmployeeDetails(context, employee),
                           ),
                         );
                       },
@@ -1197,7 +1344,8 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
               _DetailRow('NRIC/FIN', employee.nric),
               _DetailRow('Basic Salary', employee.formattedSalary),
               _DetailRow('CPF Contribution', employee.formattedCpf),
-              _DetailRow('Years of Service', '${employee.yearsOfService} years'),
+              _DetailRow(
+                  'Years of Service', '${employee.yearsOfService} years'),
               _DetailRow('Leave Balance', '${employee.leaveBalance} days'),
               _DetailRow('Status', employee.isActive ? 'Active' : 'Inactive'),
             ],
@@ -1252,7 +1400,8 @@ class PayrollScreen extends StatelessWidget {
         children: [
           const Icon(Icons.payments, size: 64, color: Colors.green),
           const SizedBox(height: 16),
-          const Text('Payroll', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text('Payroll',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const Text('Manage employee payroll'),
           const SizedBox(height: 24),
           FilledButton(
@@ -1276,7 +1425,8 @@ class LeaveManagementScreen extends StatelessWidget {
         children: [
           const Icon(Icons.calendar_today, size: 64, color: Colors.amber),
           const SizedBox(height: 16),
-          const Text('Leave Management', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text('Leave Management',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const Text('Manage employee leave'),
           const SizedBox(height: 24),
           FilledButton(
@@ -1313,13 +1463,14 @@ class TaxSettingsScreen extends StatelessWidget {
                     Text(
                       'GST Settings',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
                       title: const Text('GST Registered'),
-                      subtitle: const Text('Enable if your business is GST registered'),
+                      subtitle: const Text(
+                          'Enable if your business is GST registered'),
                       value: true, // This would come from settings
                       onChanged: (value) {
                         // Update GST registration status
@@ -1344,8 +1495,8 @@ class TaxSettingsScreen extends StatelessWidget {
                     Text(
                       'Tax Compliance',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 16),
                     const ListTile(
@@ -1355,7 +1506,8 @@ class TaxSettingsScreen extends StatelessWidget {
                       trailing: Icon(Icons.edit),
                     ),
                     const ListTile(
-                      leading: Icon(Icons.notification_important, color: Colors.blue),
+                      leading: Icon(Icons.notification_important,
+                          color: Colors.blue),
                       title: Text('Reminder Settings'),
                       subtitle: Text('Notify 7 days before due dates'),
                       trailing: Icon(Icons.edit),
@@ -1379,7 +1531,7 @@ class TaxCalculatorScreenWrapper extends StatelessWidget {
     // Get calculation parameters from navigation extra if available
     final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
     // TODO: Use extra parameters when implementing advanced tax calculations
-    
+
     return const TaxCalculatorScreen(
       calculatorType: CalculatorType.gst,
     );
@@ -1399,11 +1551,12 @@ class EmployeeListScreenWrapper extends StatelessWidget {
 
 class EmployeeFormScreenWrapper extends StatefulWidget {
   final String? employeeId;
-  
+
   const EmployeeFormScreenWrapper({super.key, this.employeeId});
 
   @override
-  State<EmployeeFormScreenWrapper> createState() => _EmployeeFormScreenWrapperState();
+  State<EmployeeFormScreenWrapper> createState() =>
+      _EmployeeFormScreenWrapperState();
 }
 
 class _EmployeeFormScreenWrapperState extends State<EmployeeFormScreenWrapper> {
@@ -1433,7 +1586,7 @@ class _EmployeeFormScreenWrapperState extends State<EmployeeFormScreenWrapper> {
         );
       }
     }
-    
+
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -1467,7 +1620,7 @@ class PayrollScreenWrapper extends StatelessWidget {
 // Placeholder wrapper classes for missing screens
 class CustomerDetailScreenWrapper extends StatelessWidget {
   final String customerId;
-  
+
   const CustomerDetailScreenWrapper({super.key, required this.customerId});
 
   @override
@@ -1483,10 +1636,13 @@ class CustomerDetailScreenWrapper extends StatelessWidget {
           children: [
             Icon(Icons.person, size: 64, color: Colors.purple.withOpacity(0.7)),
             const SizedBox(height: 16),
-            const Text('Customer Details', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            Text('Customer ID: $customerId', style: const TextStyle(fontSize: 16)),
+            const Text('Customer Details',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text('Customer ID: $customerId',
+                style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
-            const Text('Coming Soon', style: TextStyle(fontSize: 18, color: Colors.grey)),
+            const Text('Coming Soon',
+                style: TextStyle(fontSize: 18, color: Colors.grey)),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: () => context.go('/customers'),
@@ -1514,13 +1670,17 @@ class CpfCalculatorScreenWrapper extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.calculate, size: 64, color: Colors.blue.withOpacity(0.7)),
+            Icon(Icons.calculate,
+                size: 64, color: Colors.blue.withOpacity(0.7)),
             const SizedBox(height: 16),
-            const Text('CPF Calculator', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text('CPF Calculator',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            const Text('Calculate CPF contributions for employees', style: TextStyle(fontSize: 16)),
+            const Text('Calculate CPF contributions for employees',
+                style: TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
-            const Text('Coming Soon', style: TextStyle(fontSize: 18, color: Colors.grey)),
+            const Text('Coming Soon',
+                style: TextStyle(fontSize: 18, color: Colors.grey)),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: () => context.go('/employees'),
@@ -1548,13 +1708,17 @@ class ForecastingReportScreenWrapper extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.trending_up, size: 64, color: Colors.green.withOpacity(0.7)),
+            Icon(Icons.trending_up,
+                size: 64, color: Colors.green.withOpacity(0.7)),
             const SizedBox(height: 16),
-            const Text('Forecasting Reports', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text('Forecasting Reports',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            const Text('Advanced forecasting and trend analysis', style: TextStyle(fontSize: 16)),
+            const Text('Advanced forecasting and trend analysis',
+                style: TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
-            const Text('Coming Soon', style: TextStyle(fontSize: 18, color: Colors.grey)),
+            const Text('Coming Soon',
+                style: TextStyle(fontSize: 18, color: Colors.grey)),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: () => context.go('/reports'),

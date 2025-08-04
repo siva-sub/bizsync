@@ -165,7 +165,9 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
                 DataColumn(label: Text('Leave Balance'), numeric: true),
                 DataColumn(label: Text('Actions')),
               ],
-              rows: employees.map((employee) => _buildEmployeeRow(employee)).toList(),
+              rows: employees
+                  .map((employee) => _buildEmployeeRow(employee))
+                  .toList(),
             ),
           ),
         );
@@ -183,7 +185,8 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundColor: _getStatusColor(employee.employmentStatus.value),
+                backgroundColor:
+                    _getStatusColor(employee.employmentStatus.value),
                 child: Text(
                   employee.displayName.substring(0, 1).toUpperCase(),
                   style: const TextStyle(color: Colors.white, fontSize: 12),
@@ -194,8 +197,10 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(employee.fullName, style: const TextStyle(fontWeight: FontWeight.w500)),
-                  Text(employee.email.value, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(employee.fullName,
+                      style: const TextStyle(fontWeight: FontWeight.w500)),
+                  Text(employee.email.value,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 ],
               ),
             ],
@@ -270,7 +275,7 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            _hasActiveFilters() 
+            _hasActiveFilters()
                 ? 'Try adjusting your filters or search terms'
                 : 'Add your first employee to get started',
             style: const TextStyle(color: Colors.grey),
@@ -293,9 +298,15 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
     // Apply search filter
     if (_searchQuery.isNotEmpty) {
       employees = employees.where((employee) {
-        return employee.fullName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-               employee.employeeId.value.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-               employee.email.value.toLowerCase().contains(_searchQuery.toLowerCase());
+        return employee.fullName
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()) ||
+            employee.employeeId.value
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()) ||
+            employee.email.value
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase());
       }).toList();
     }
 
@@ -327,7 +338,9 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
   }
 
   bool _hasActiveFilters() {
-    return _statusFilter != null || _workPermitFilter != null || _departmentFilter != null;
+    return _statusFilter != null ||
+        _workPermitFilter != null ||
+        _departmentFilter != null;
   }
 
   Color _getStatusColor(String status) {
@@ -373,14 +386,16 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
             children: [
               DropdownButtonFormField<EmploymentStatus>(
                 value: _statusFilter,
-                decoration: const InputDecoration(labelText: 'Employment Status'),
+                decoration:
+                    const InputDecoration(labelText: 'Employment Status'),
                 items: EmploymentStatus.values.map((status) {
                   return DropdownMenuItem(
                     value: status,
                     child: Text(status.name),
                   );
                 }).toList(),
-                onChanged: (value) => setDialogState(() => _statusFilter = value),
+                onChanged: (value) =>
+                    setDialogState(() => _statusFilter = value),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<WorkPermitType>(
@@ -392,7 +407,8 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
                     child: Text(workPass.name.toUpperCase()),
                   );
                 }).toList(),
-                onChanged: (value) => setDialogState(() => _workPermitFilter = value),
+                onChanged: (value) =>
+                    setDialogState(() => _workPermitFilter = value),
               ),
             ],
           ),

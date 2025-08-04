@@ -10,13 +10,14 @@ class BackupCreationWizard extends ConsumerStatefulWidget {
   const BackupCreationWizard({super.key});
 
   @override
-  ConsumerState<BackupCreationWizard> createState() => _BackupCreationWizardState();
+  ConsumerState<BackupCreationWizard> createState() =>
+      _BackupCreationWizardState();
 }
 
 class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
-  
+
   // Configuration state
   BackupType _backupType = BackupType.full;
   BackupScope _backupScope = BackupScope.all;
@@ -29,10 +30,10 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
   DateTime? _fromDate;
   DateTime? _toDate;
   List<String> _excludedTables = [];
-  
+
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -58,7 +59,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
         children: [
           // Progress indicator
           _buildProgressIndicator(),
-          
+
           // Wizard pages
           Expanded(
             child: PageView(
@@ -73,7 +74,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
               ],
             ),
           ),
-          
+
           // Navigation buttons
           _buildNavigationButtons(),
         ],
@@ -88,7 +89,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
         children: List.generate(5, (index) {
           final isActive = index <= _currentStep;
           final isCompleted = index < _currentStep;
-          
+
           return Expanded(
             child: Container(
               height: 4,
@@ -120,33 +121,31 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
           _buildBackupTypeCard(
             type: BackupType.full,
             title: 'Full Backup',
-            description: 'Complete backup of all data. Recommended for first backup or when you want a complete copy.',
+            description:
+                'Complete backup of all data. Recommended for first backup or when you want a complete copy.',
             icon: Icons.backup,
           ),
-          
           const SizedBox(height: 16),
-          
           _buildBackupTypeCard(
             type: BackupType.incremental,
             title: 'Incremental Backup',
-            description: 'Only backs up data that has changed since the last backup. Faster and smaller.',
+            description:
+                'Only backs up data that has changed since the last backup. Faster and smaller.',
             icon: Icons.update,
           ),
-          
           const SizedBox(height: 16),
-          
           _buildBackupTypeCard(
             type: BackupType.differential,
             title: 'Differential Backup',
-            description: 'Backs up all changes since the last full backup. Balance between speed and completeness.',
+            description:
+                'Backs up all changes since the last full backup. Balance between speed and completeness.',
             icon: Icons.difference,
           ),
-          
-          if (_backupType == BackupType.incremental || _backupType == BackupType.differential)
+          if (_backupType == BackupType.incremental ||
+              _backupType == BackupType.differential)
             _buildDateRangeSelection(),
         ],
       ),
@@ -160,12 +159,10 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
     required IconData icon,
   }) {
     final isSelected = _backupType == type;
-    
+
     return Card(
       elevation: isSelected ? 4 : 1,
-      color: isSelected 
-          ? Theme.of(context).colorScheme.primaryContainer
-          : null,
+      color: isSelected ? Theme.of(context).colorScheme.primaryContainer : null,
       child: InkWell(
         onTap: () => setState(() => _backupType = type),
         borderRadius: BorderRadius.circular(12),
@@ -228,7 +225,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                         suffixIcon: Icon(Icons.calendar_today),
                       ),
                       child: Text(
-                        _fromDate != null 
+                        _fromDate != null
                             ? _formatDate(_fromDate!)
                             : 'Select start date',
                       ),
@@ -245,7 +242,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                         suffixIcon: Icon(Icons.calendar_today),
                       ),
                       child: Text(
-                        _toDate != null 
+                        _toDate != null
                             ? _formatDate(_toDate!)
                             : 'Select end date',
                       ),
@@ -271,7 +268,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
+
           // Backup scope
           Card(
             child: Padding(
@@ -284,21 +281,22 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-                  
-                  ...BackupScope.values.map((scope) => RadioListTile<BackupScope>(
-                    title: Text(_getScopeTitle(scope)),
-                    subtitle: Text(_getScopeDescription(scope)),
-                    value: scope,
-                    groupValue: _backupScope,
-                    onChanged: (value) => setState(() => _backupScope = value!),
-                  )),
+                  ...BackupScope.values
+                      .map((scope) => RadioListTile<BackupScope>(
+                            title: Text(_getScopeTitle(scope)),
+                            subtitle: Text(_getScopeDescription(scope)),
+                            value: scope,
+                            groupValue: _backupScope,
+                            onChanged: (value) =>
+                                setState(() => _backupScope = value!),
+                          )),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Additional options
           Card(
             child: Padding(
@@ -311,17 +309,18 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-                  
                   SwitchListTile(
                     title: const Text('Include Attachments'),
-                    subtitle: const Text('Include file attachments in the backup'),
+                    subtitle:
+                        const Text('Include file attachments in the backup'),
                     value: _includeAttachments,
-                    onChanged: (value) => setState(() => _includeAttachments = value),
+                    onChanged: (value) =>
+                        setState(() => _includeAttachments = value),
                   ),
-                  
                   ListTile(
                     title: const Text('Compression'),
-                    subtitle: Text('Algorithm: $_compressionAlgorithm, Level: $_compressionLevel'),
+                    subtitle: Text(
+                        'Algorithm: $_compressionAlgorithm, Level: $_compressionLevel'),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: _showCompressionOptions,
                   ),
@@ -336,7 +335,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
 
   Widget _buildEncryptionStep() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),  
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -345,7 +344,6 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -356,16 +354,17 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                     title: const Text('Enable Encryption'),
                     subtitle: const Text('Protect your backup with a password'),
                     value: _encryptionEnabled,
-                    onChanged: (value) => setState(() => _encryptionEnabled = value),
+                    onChanged: (value) =>
+                        setState(() => _encryptionEnabled = value),
                   ),
-                  
                   if (_encryptionEnabled) ...[
                     const SizedBox(height: 16),
                     TextField(
                       controller: _passwordController,
                       decoration: const InputDecoration(
                         labelText: 'Password',
-                        helperText: 'Choose a strong password to protect your backup',
+                        helperText:
+                            'Choose a strong password to protect your backup',
                         suffixIcon: Icon(Icons.lock),
                       ),
                       obscureText: true,
@@ -392,15 +391,22 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                         children: [
                           Icon(
                             Icons.info,
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               'Your backup will be encrypted using AES-256-GCM. Keep your password safe - it cannot be recovered if lost.',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
                             ),
                           ),
                         ],
@@ -427,7 +433,6 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -439,7 +444,6 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-                  
                   InkWell(
                     onTap: _selectOutputPath,
                     child: Container(
@@ -465,9 +469,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                       ),
                     ),
                   ),
-                  
                   const SizedBox(height: 16),
-                  
                   Text(
                     'The backup file will be saved with a timestamp in the filename. Make sure you have enough storage space.',
                     style: Theme.of(context).textTheme.bodySmall,
@@ -492,7 +494,6 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -501,9 +502,12 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                 children: [
                   _buildSummaryItem('Type', _backupType.name.toUpperCase()),
                   _buildSummaryItem('Scope', _getScopeTitle(_backupScope)),
-                  _buildSummaryItem('Encryption', _encryptionEnabled ? 'Enabled' : 'Disabled'),
-                  _buildSummaryItem('Attachments', _includeAttachments ? 'Included' : 'Excluded'),
-                  _buildSummaryItem('Compression', '$_compressionAlgorithm (Level $_compressionLevel)'),
+                  _buildSummaryItem('Encryption',
+                      _encryptionEnabled ? 'Enabled' : 'Disabled'),
+                  _buildSummaryItem('Attachments',
+                      _includeAttachments ? 'Included' : 'Excluded'),
+                  _buildSummaryItem('Compression',
+                      '$_compressionAlgorithm (Level $_compressionLevel)'),
                   if (_outputPath != null)
                     _buildSummaryItem('Location', _outputPath!),
                   if (_fromDate != null)
@@ -514,9 +518,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
               ),
             ),
           ),
-          
           const SizedBox(height: 24),
-          
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -534,8 +536,10 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                   child: Text(
                     'Review your settings and tap "Create Backup" to start the backup process.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
+                        ),
                   ),
                 ),
               ],
@@ -557,8 +561,8 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
             child: Text(
               label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
           Expanded(
@@ -599,7 +603,8 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
   bool _canProceed() {
     switch (_currentStep) {
       case 0:
-        if (_backupType == BackupType.incremental || _backupType == BackupType.differential) {
+        if (_backupType == BackupType.incremental ||
+            _backupType == BackupType.differential) {
           return _fromDate != null;
         }
         return true;
@@ -607,9 +612,9 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
         return true;
       case 2:
         if (_encryptionEnabled) {
-          return _password != null && 
-                 _password!.isNotEmpty && 
-                 _password == _confirmPasswordController.text;
+          return _password != null &&
+              _password!.isNotEmpty &&
+              _password == _confirmPasswordController.text;
         }
         return true;
       case 3:
@@ -646,7 +651,7 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
   Future<void> _createBackup() async {
     try {
       final backupService = ref.read(backupServiceProvider);
-      
+
       String backupPath;
       if (_backupType == BackupType.full) {
         backupPath = await backupService.createFullBackup(
@@ -664,11 +669,12 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
           includeAttachments: _includeAttachments,
         );
       }
-      
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup created: ${backupPath.split('/').last}')),
+          SnackBar(
+              content: Text('Backup created: ${backupPath.split('/').last}')),
         );
       }
     } catch (e) {
@@ -711,8 +717,8 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
   }
 
   String? _getPasswordError() {
-    if (_encryptionEnabled && 
-        _confirmPasswordController.text.isNotEmpty && 
+    if (_encryptionEnabled &&
+        _confirmPasswordController.text.isNotEmpty &&
         _password != _confirmPasswordController.text) {
       return 'Passwords do not match';
     }
@@ -726,7 +732,8 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
   Future<void> _selectFromDate(BuildContext context) async {
     final date = await showDatePicker(
       context: context,
-      initialDate: _fromDate ?? DateTime.now().subtract(const Duration(days: 7)),
+      initialDate:
+          _fromDate ?? DateTime.now().subtract(const Duration(days: 7)),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
@@ -771,23 +778,22 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
-              
               DropdownButtonFormField<String>(
                 value: _compressionAlgorithm,
                 decoration: const InputDecoration(labelText: 'Algorithm'),
                 items: const [
-                  DropdownMenuItem(value: 'zstd', child: Text('Zstandard (Recommended)')),
+                  DropdownMenuItem(
+                      value: 'zstd', child: Text('Zstandard (Recommended)')),
                   DropdownMenuItem(value: 'gzip', child: Text('Gzip')),
-                  DropdownMenuItem(value: 'none', child: Text('No Compression')),
+                  DropdownMenuItem(
+                      value: 'none', child: Text('No Compression')),
                 ],
                 onChanged: (value) {
                   setModalState(() => _compressionAlgorithm = value!);
                   setState(() => _compressionAlgorithm = value!);
                 },
               ),
-              
               const SizedBox(height: 16),
-              
               Text('Compression Level: $_compressionLevel'),
               Slider(
                 value: _compressionLevel.toDouble(),
@@ -795,14 +801,14 @@ class _BackupCreationWizardState extends ConsumerState<BackupCreationWizard> {
                 max: 9,
                 divisions: 8,
                 label: _compressionLevel.toString(),
-                onChanged: _compressionAlgorithm != 'none' ? (value) {
-                  setModalState(() => _compressionLevel = value.round());
-                  setState(() => _compressionLevel = value.round());
-                } : null,
+                onChanged: _compressionAlgorithm != 'none'
+                    ? (value) {
+                        setModalState(() => _compressionLevel = value.round());
+                        setState(() => _compressionLevel = value.round());
+                      }
+                    : null,
               ),
-              
               const SizedBox(height: 16),
-              
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

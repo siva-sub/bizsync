@@ -56,15 +56,15 @@ class InvoicePaymentsList extends StatelessWidget {
           Text(
             'No payments recorded',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Payments will appear here once recorded',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[500],
-            ),
+                  color: Colors.grey[500],
+                ),
           ),
         ],
       ),
@@ -77,9 +77,11 @@ class InvoicePaymentsList extends StatelessWidget {
       (sum, payment) => sum + payment.amount.value,
     );
 
-    final completedPayments = payments.where(
-      (payment) => payment.status.value == 'completed',
-    ).length;
+    final completedPayments = payments
+        .where(
+          (payment) => payment.status.value == 'completed',
+        )
+        .length;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -96,17 +98,17 @@ class InvoicePaymentsList extends StatelessWidget {
                 Text(
                   'Total Paid',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
-                  ),
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '$currency ${_formatAmount(totalPaid)}',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Colors.green[700],
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -117,16 +119,16 @@ class InvoicePaymentsList extends StatelessWidget {
               Text(
                 'Payments',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 '$completedPayments of ${payments.length}',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ],
           ),
@@ -173,20 +175,25 @@ class InvoicePaymentsList extends StatelessWidget {
                           children: [
                             Text(
                               '$currency ${_formatAmount(payment.amount.value)}',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: statusColor,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: statusColor,
+                                  ),
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: statusColor.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                _getPaymentStatusDisplayName(payment.status.value),
+                                _getPaymentStatusDisplayName(
+                                    payment.status.value),
                                 style: TextStyle(
                                   color: statusColor,
                                   fontSize: 12,
@@ -199,9 +206,10 @@ class InvoicePaymentsList extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           _formatDate(payment.paymentDate.value),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                         ),
                       ],
                     ),
@@ -219,7 +227,8 @@ class InvoicePaymentsList extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentDetails(BuildContext context, CRDTInvoicePayment payment) {
+  Widget _buildPaymentDetails(
+      BuildContext context, CRDTInvoicePayment payment) {
     return Column(
       children: [
         _buildDetailRow(
@@ -235,7 +244,8 @@ class InvoicePaymentsList extends StatelessWidget {
             payment.paymentReference.value,
             Icons.confirmation_number,
           ),
-        if (payment.transactionId.value != null && payment.transactionId.value!.isNotEmpty)
+        if (payment.transactionId.value != null &&
+            payment.transactionId.value!.isNotEmpty)
           _buildDetailRow(
             context,
             'Transaction ID',
@@ -253,7 +263,8 @@ class InvoicePaymentsList extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, String label, String value, IconData icon) {
+  Widget _buildDetailRow(
+      BuildContext context, String label, String value, IconData icon) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -267,9 +278,9 @@ class InvoicePaymentsList extends StatelessWidget {
           Text(
             '$label: ',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           Expanded(
             child: Text(
@@ -350,9 +361,11 @@ class InvoicePaymentsList extends StatelessWidget {
       case 'nets':
         return 'NETS';
       default:
-        return method.split('_').map((word) => 
-          word.substring(0, 1).toUpperCase() + word.substring(1)
-        ).join(' ');
+        return method
+            .split('_')
+            .map((word) =>
+                word.substring(0, 1).toUpperCase() + word.substring(1))
+            .join(' ');
     }
   }
 

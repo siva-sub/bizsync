@@ -19,16 +19,18 @@ class MovingAverageModel implements ForecastingModel {
   @override
   Future<void> train(List<TimeSeriesPoint> data) async {
     if (data.length < _windowSize) {
-      throw ArgumentError('Need at least $_windowSize data points for moving average');
+      throw ArgumentError(
+          'Need at least $_windowSize data points for moving average');
     }
 
     _trainingData = List.from(data);
-    _movingAverages = _calculateMovingAverages(data.map((p) => p.value).toList());
+    _movingAverages =
+        _calculateMovingAverages(data.map((p) => p.value).toList());
   }
 
   List<double> _calculateMovingAverages(List<double> values) {
     final movingAverages = <double>[];
-    
+
     for (int i = _windowSize - 1; i < values.length; i++) {
       double sum = 0.0;
       for (int j = i - _windowSize + 1; j <= i; j++) {
@@ -36,7 +38,7 @@ class MovingAverageModel implements ForecastingModel {
       }
       movingAverages.add(sum / _windowSize);
     }
-    
+
     return movingAverages;
   }
 
@@ -54,16 +56,16 @@ class MovingAverageModel implements ForecastingModel {
 
     // Calculate standard deviation for confidence intervals
     final standardDeviation = _calculateStandardDeviation();
-    
+
     for (int i = 1; i <= periods; i++) {
       final futureDate = _trainingData.last.date.add(Duration(days: i));
-      
+
       // Calculate moving average of last window
       final average = lastValues.reduce((a, b) => a + b) / lastValues.length;
-      
+
       // For confidence intervals, use standard deviation
       final margin = 1.96 * standardDeviation; // 95% confidence
-      
+
       results.add(ForecastResult(
         date: futureDate,
         predictedValue: average,
@@ -89,7 +91,8 @@ class MovingAverageModel implements ForecastingModel {
   double _calculateStandardDeviation() {
     if (_movingAverages.isEmpty) return 0.0;
 
-    final mean = _movingAverages.reduce((a, b) => a + b) / _movingAverages.length;
+    final mean =
+        _movingAverages.reduce((a, b) => a + b) / _movingAverages.length;
     double sumSquaredDifferences = 0.0;
 
     for (final value in _movingAverages) {
@@ -100,7 +103,8 @@ class MovingAverageModel implements ForecastingModel {
   }
 
   @override
-  Future<ForecastAccuracy> calculateAccuracy(List<TimeSeriesPoint> testData) async {
+  Future<ForecastAccuracy> calculateAccuracy(
+      List<TimeSeriesPoint> testData) async {
     if (_trainingData.isEmpty) {
       throw StateError('Model must be trained before calculating accuracy');
     }
@@ -123,13 +127,14 @@ class MovingAverageModel implements ForecastingModel {
         .toList();
 
     for (final point in testData) {
-      final predicted = predictorValues.reduce((a, b) => a + b) / predictorValues.length;
+      final predicted =
+          predictorValues.reduce((a, b) => a + b) / predictorValues.length;
       final actual = point.value;
-      
+
       if (actual != 0) {
         final absoluteError = (actual - predicted).abs();
         final percentageError = (absoluteError / actual.abs()) * 100;
-        
+
         sumAbsoluteError += absoluteError;
         sumAbsolutePercentageError += percentageError;
         sumSquaredError += (actual - predicted) * (actual - predicted);
@@ -155,7 +160,7 @@ class MovingAverageModel implements ForecastingModel {
     // Calculate R-squared for test data
     final meanActual = sumActual / validPoints;
     double ssTot = 0.0;
-    
+
     // Reset predictor values for R-squared calculation
     final predictorValuesR2 = _trainingData
         .skip(_trainingData.length - _windowSize)
@@ -218,7 +223,8 @@ class WeightedMovingAverageModel implements ForecastingModel {
   /// Creates a weighted moving average model with specified weights
   /// Weights should be in ascending order of importance (latest weight last)
   WeightedMovingAverageModel({List<double>? weights}) {
-    _weights = weights ?? [0.1, 0.3, 0.6]; // Default weights favoring recent data
+    _weights =
+        weights ?? [0.1, 0.3, 0.6]; // Default weights favoring recent data
     _normalizeWeights();
   }
 
@@ -232,7 +238,8 @@ class WeightedMovingAverageModel implements ForecastingModel {
   @override
   Future<void> train(List<TimeSeriesPoint> data) async {
     if (data.length < _weights.length) {
-      throw ArgumentError('Need at least ${_weights.length} data points for weighted moving average');
+      throw ArgumentError(
+          'Need at least ${_weights.length} data points for weighted moving average');
     }
 
     _trainingData = List.from(data);
@@ -252,19 +259,19 @@ class WeightedMovingAverageModel implements ForecastingModel {
 
     // Calculate standard deviation for confidence intervals
     final standardDeviation = _calculateStandardDeviation();
-    
+
     for (int i = 1; i <= periods; i++) {
       final futureDate = _trainingData.last.date.add(Duration(days: i));
-      
+
       // Calculate weighted average
       double weightedSum = 0.0;
       for (int j = 0; j < _weights.length; j++) {
         weightedSum += lastValues[j] * _weights[j];
       }
-      
+
       // For confidence intervals, use standard deviation
       final margin = 1.96 * standardDeviation; // 95% confidence
-      
+
       results.add(ForecastResult(
         date: futureDate,
         predictedValue: weightedSum,
@@ -302,7 +309,8 @@ class WeightedMovingAverageModel implements ForecastingModel {
   }
 
   @override
-  Future<ForecastAccuracy> calculateAccuracy(List<TimeSeriesPoint> testData) async {
+  Future<ForecastAccuracy> calculateAccuracy(
+      List<TimeSeriesPoint> testData) async {
     if (_trainingData.isEmpty) {
       throw StateError('Model must be trained before calculating accuracy');
     }
@@ -330,14 +338,14 @@ class WeightedMovingAverageModel implements ForecastingModel {
       for (int j = 0; j < _weights.length; j++) {
         weightedSum += predictorValues[j] * _weights[j];
       }
-      
+
       final predicted = weightedSum;
       final actual = point.value;
-      
+
       if (actual != 0) {
         final absoluteError = (actual - predicted).abs();
         final percentageError = (absoluteError / actual.abs()) * 100;
-        
+
         sumAbsoluteError += absoluteError;
         sumAbsolutePercentageError += percentageError;
         sumSquaredError += (actual - predicted) * (actual - predicted);

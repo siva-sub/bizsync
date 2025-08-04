@@ -13,24 +13,24 @@ class AnimationConstants {
   // Page Transition Durations
   static const Duration pageTransition = Duration(milliseconds: 300);
   static const Duration heroTransition = Duration(milliseconds: 400);
-  
+
   // Micro-interaction Durations
   static const Duration buttonPress = Duration(milliseconds: 100);
   static const Duration cardHover = Duration(milliseconds: 200);
   static const Duration ripple = Duration(milliseconds: 300);
-  
+
   // Loading Animation Durations
   static const Duration shimmerCycle = Duration(milliseconds: 1500);
   static const Duration spinnerRotation = Duration(milliseconds: 1000);
-  
+
   // Stagger Delays
   static const Duration staggerDelay = Duration(milliseconds: 100);
   static const Duration listItemStagger = Duration(milliseconds: 50);
-  
+
   // Chart Animation Durations
   static const Duration chartEntrance = Duration(milliseconds: 800);
   static const Duration numberCounter = Duration(milliseconds: 1200);
-  
+
   // Toast and Notification Durations
   static const Duration toastSlideIn = Duration(milliseconds: 300);
   static const Duration toastFadeOut = Duration(milliseconds: 200);
@@ -44,7 +44,7 @@ class AnimationConstants {
   static const elasticOut = Curves.elasticOut;
   static const fastOutSlowIn = Curves.fastOutSlowIn;
   static const decelerate = Curves.decelerate;
-  
+
   // Custom curves for specific use cases
   static const materialCurve = Curves.easeInOutCubicEmphasized;
   static const buttonCurve = Curves.easeOutCubic;

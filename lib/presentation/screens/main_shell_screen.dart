@@ -29,13 +29,16 @@ class _MainShellScreenState extends State<MainShellScreen> {
   Widget build(BuildContext context) {
     final bool isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
     final bool isMobile = ResponsiveBreakpoints.of(context).equals(MOBILE);
-    
+
     return CallbackShortcuts(
       bindings: {
         // Keyboard shortcuts
-        const SingleActivator(LogicalKeyboardKey.keyN, control: true): () => _handleQuickAction('invoice'),
-        const SingleActivator(LogicalKeyboardKey.keyK, control: true): () => _showGlobalSearch(),
-        const SingleActivator(LogicalKeyboardKey.keyB, control: true): () => _toggleDrawer(),
+        const SingleActivator(LogicalKeyboardKey.keyN, control: true): () =>
+            _handleQuickAction('invoice'),
+        const SingleActivator(LogicalKeyboardKey.keyK, control: true): () =>
+            _showGlobalSearch(),
+        const SingleActivator(LogicalKeyboardKey.keyB, control: true): () =>
+            _toggleDrawer(),
         const SingleActivator(LogicalKeyboardKey.escape): () => _handleEscape(),
       },
       child: Focus(
@@ -54,12 +57,13 @@ class _MainShellScreenState extends State<MainShellScreen> {
                   child: AppNavigationDrawer(
                     isDesktopMode: true,
                     isExpanded: _isDrawerExpanded,
-                    onToggle: () => setState(() => _isDrawerExpanded = !_isDrawerExpanded),
+                    onToggle: () =>
+                        setState(() => _isDrawerExpanded = !_isDrawerExpanded),
                   ),
                 ),
                 const VerticalDivider(width: 1, thickness: 1),
               ],
-              
+
               // Main content area
               Expanded(
                 child: Column(
@@ -68,7 +72,8 @@ class _MainShellScreenState extends State<MainShellScreen> {
                     if (isDesktop) ...[
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           border: Border(
@@ -78,11 +83,12 @@ class _MainShellScreenState extends State<MainShellScreen> {
                           ),
                         ),
                         child: BreadcrumbWidget(
-                          breadcrumbs: AppNavigationService().getBreadcrumbs(GoRouterState.of(context).uri.path),
+                          breadcrumbs: AppNavigationService().getBreadcrumbs(
+                              GoRouterState.of(context).uri.path),
                         ),
                       ),
                     ],
-                    
+
                     // Main content
                     Expanded(child: widget.child),
                   ],
@@ -162,9 +168,13 @@ class _MainShellScreenState extends State<MainShellScreen> {
                   bottom: -4,
                   right: -4,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.8),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
@@ -182,7 +192,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
           onPressed: _showGlobalSearch,
           tooltip: isDesktop ? 'Global Search (Ctrl+K)' : 'Search',
         ),
-        
+
         // Notifications
         IconButton(
           icon: Stack(
@@ -217,7 +227,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
           onPressed: () => context.go('/notifications'),
           tooltip: 'Notifications',
         ),
-        
+
         // Quick actions for desktop
         if (isDesktop) ...[
           const SizedBox(width: 8),
@@ -228,7 +238,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
           const SizedBox(width: 8),
         ],
-        
+
         // User profile menu
         PopupMenuButton<String>(
           icon: CircleAvatar(
@@ -297,9 +307,9 @@ class _MainShellScreenState extends State<MainShellScreen> {
   Widget? _buildFloatingActionButton(BuildContext context) {
     final currentLocation = GoRouterState.of(context).uri.path;
     final isMobile = ResponsiveBreakpoints.of(context).equals(MOBILE);
-    
+
     if (!isMobile) return null; // Only show FAB on mobile
-    
+
     // Show context-specific FAB
     if (currentLocation.startsWith('/invoices')) {
       return FloatingActionButton(
@@ -314,7 +324,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
         child: const Icon(Icons.person_add),
       );
     }
-    
+
     // Default FAB with quick actions
     return FloatingActionButton(
       onPressed: () => _showQuickActionMenu(context),
@@ -325,19 +335,21 @@ class _MainShellScreenState extends State<MainShellScreen> {
 
   void _showQuickActionMenu(BuildContext context) {
     final isDesktop = ResponsiveBreakpoints.of(context).largerThan(TABLET);
-    
+
     if (isDesktop) {
       // Show as dropdown menu for desktop
       final RenderBox button = context.findRenderObject() as RenderBox;
-      final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+      final RenderBox overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox;
       final RelativeRect position = RelativeRect.fromRect(
         Rect.fromPoints(
           button.localToGlobal(Offset.zero, ancestor: overlay),
-          button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+          button.localToGlobal(button.size.bottomRight(Offset.zero),
+              ancestor: overlay),
         ),
         Offset.zero & overlay.size,
       );
-      
+
       showMenu(
         context: context,
         position: position,
@@ -534,7 +546,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
+
   void _showProfileDialog() {
     showDialog(
       context: context,
@@ -589,7 +601,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
+
   Widget _buildProfileRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -600,7 +612,8 @@ class _MainShellScreenState extends State<MainShellScreen> {
             width: 100,
             child: Text(
               '$label:',
-              style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w500, color: Colors.grey),
             ),
           ),
           Expanded(
@@ -613,7 +626,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
+
   void _showHelpDialog() {
     showDialog(
       context: context,
@@ -627,8 +640,8 @@ class _MainShellScreenState extends State<MainShellScreen> {
               Text(
                 'BizSync Help Center',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 16),
               _buildHelpOption(
@@ -667,8 +680,8 @@ class _MainShellScreenState extends State<MainShellScreen> {
               Text(
                 'App Information',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 8),
               _buildInfoRow('Version', '1.0.0'),
@@ -686,8 +699,9 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
-  Widget _buildHelpOption(IconData icon, String title, String subtitle, VoidCallback onTap) {
+
+  Widget _buildHelpOption(
+      IconData icon, String title, String subtitle, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
@@ -697,7 +711,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       contentPadding: EdgeInsets.zero,
     );
   }
-  
+
   Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -710,7 +724,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
+
   void _openUserGuide() {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -721,7 +735,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
     );
     // Here you would typically open a URL or navigate to a guide screen
   }
-  
+
   void _openVideoTutorials() {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -731,7 +745,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
+
   void _openFAQs() {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -741,7 +755,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
+
   void _contactSupport() {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -751,7 +765,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
+
   void _reportIssue() {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -761,12 +775,12 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ),
     );
   }
-  
+
   void _performLogout() {
     // Clear any cached data, tokens, etc.
     // For now, just navigate back to splash screen or login
     context.go('/splash');
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Successfully signed out'),
@@ -895,12 +909,14 @@ class _GlobalSearchDelegate extends SearchDelegate<String> {
       _SearchSuggestion('Add Customer', Icons.person_add, '/customers/create'),
       _SearchSuggestion('Payment QR', Icons.qr_code, '/payments/sgqr'),
       _SearchSuggestion('Tax Calculator', Icons.calculate, '/tax/calculator'),
-      _SearchSuggestion('Employee Payroll', Icons.payments, '/employees/payroll'),
+      _SearchSuggestion(
+          'Employee Payroll', Icons.payments, '/employees/payroll'),
       _SearchSuggestion('Backup Settings', Icons.backup, '/backup'),
       _SearchSuggestion('Settings', Icons.settings, '/settings'),
-    ].where((suggestion) => 
-        suggestion.title.toLowerCase().contains(query.toLowerCase())
-    ).toList();
+    ]
+        .where((suggestion) =>
+            suggestion.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
 
     if (suggestions.isEmpty) {
       return Center(
@@ -914,7 +930,8 @@ class _GlobalSearchDelegate extends SearchDelegate<String> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
-            const Text('Try searching for invoices, customers, or other features'),
+            const Text(
+                'Try searching for invoices, customers, or other features'),
           ],
         ),
       );
@@ -1006,7 +1023,8 @@ class _GlobalSearchDelegate extends SearchDelegate<String> {
     );
   }
 
-  List<TextSpan> _highlightSearchTerm(String text, String searchTerm, BuildContext context) {
+  List<TextSpan> _highlightSearchTerm(
+      String text, String searchTerm, BuildContext context) {
     if (searchTerm.isEmpty) {
       return [TextSpan(text: text)];
     }
@@ -1032,7 +1050,8 @@ class _GlobalSearchDelegate extends SearchDelegate<String> {
       spans.add(TextSpan(
         text: text.substring(index, index + searchTerm.length),
         style: TextStyle(
-          backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          backgroundColor:
+              Theme.of(context).colorScheme.primary.withOpacity(0.3),
           color: Theme.of(context).colorScheme.primary,
           fontWeight: FontWeight.bold,
         ),

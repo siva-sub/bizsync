@@ -15,14 +15,14 @@ class UserProfileScreen extends ConsumerStatefulWidget {
 class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  
+
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   bool _isLoading = false;
-  
+
   // Form controllers
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -30,7 +30,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   final _phoneController = TextEditingController();
   final _titleController = TextEditingController();
   final _departmentController = TextEditingController();
-  
+
   String _selectedRole = '';
 
   @override
@@ -45,12 +45,12 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -58,7 +58,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
       parent: _fadeController,
       curve: Curves.easeOut,
     ));
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -66,7 +66,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
       parent: _slideController,
       curve: Curves.easeOutCubic,
     ));
-    
+
     _fadeController.forward();
     Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) {
@@ -131,7 +131,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                   label: 'Almost there! Let\'s set up your profile',
                 ),
               ),
-              
+
               // Form content
               Expanded(
                 child: SingleChildScrollView(
@@ -144,23 +144,23 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                         // Header
                         _buildHeader(),
                         const SizedBox(height: 32),
-                        
+
                         // Profile Avatar Placeholder
                         _buildAvatarSection(),
                         const SizedBox(height: 32),
-                        
+
                         // Personal Information
                         _buildPersonalInfoSection(),
                         const SizedBox(height: 24),
-                        
+
                         // Contact Information
                         _buildContactInfoSection(),
                         const SizedBox(height: 24),
-                        
+
                         // Professional Information
                         _buildProfessionalInfoSection(),
                         const SizedBox(height: 32),
-                        
+
                         // Why we need this info
                         _buildInfoCard(),
                       ],
@@ -168,7 +168,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                   ),
                 ),
               ),
-              
+
               // Navigation buttons
               _buildNavigationButtons(),
             ],
@@ -185,15 +185,16 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         Text(
           'Create Your Profile',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 8),
         Text(
           'Let\'s personalize your BizSync experience',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-          ),
+                color:
+                    Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+              ),
         ),
       ],
     );
@@ -201,7 +202,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
 
   Widget _buildAvatarSection() {
     final initials = _getInitials();
-    
+
     return Center(
       child: Column(
         children: [
@@ -263,11 +264,10 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         Text(
           'Personal Information',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
-        
         Row(
           children: [
             Expanded(
@@ -318,11 +318,10 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         Text(
           'Contact Information',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _emailController,
           decoration: const InputDecoration(
@@ -343,7 +342,6 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
           textInputAction: TextInputAction.next,
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _phoneController,
           decoration: const InputDecoration(
@@ -371,11 +369,10 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         Text(
           'Professional Information',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
-        
         DropdownButtonFormField<String>(
           value: _selectedRole.isEmpty ? null : _selectedRole,
           decoration: const InputDecoration(
@@ -401,7 +398,6 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
           },
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _titleController,
           decoration: const InputDecoration(
@@ -412,7 +408,6 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
           textInputAction: TextInputAction.next,
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _departmentController,
           decoration: const InputDecoration(
@@ -444,8 +439,8 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                 Text(
                   'Your Information is Safe',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -480,7 +475,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: _isLoading ? null : () => context.go('/onboarding/company-setup'),
+              onPressed: _isLoading
+                  ? null
+                  : () => context.go('/onboarding/company-setup'),
               child: const Text('Previous'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -511,7 +508,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   String _getInitials() {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
-    
+
     String initials = '';
     if (firstName.isNotEmpty) {
       initials += firstName[0].toUpperCase();
@@ -519,7 +516,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     if (lastName.isNotEmpty) {
       initials += lastName[0].toUpperCase();
     }
-    
+
     return initials.isEmpty ? 'U' : initials;
   }
 
@@ -539,8 +536,12 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
         role: _selectedRole,
-        title: _titleController.text.trim().isEmpty ? null : _titleController.text.trim(),
-        department: _departmentController.text.trim().isEmpty ? null : _departmentController.text.trim(),
+        title: _titleController.text.trim().isEmpty
+            ? null
+            : _titleController.text.trim(),
+        department: _departmentController.text.trim().isEmpty
+            ? null
+            : _departmentController.text.trim(),
       );
 
       final notifier = ref.read(onboardingStateProvider.notifier);

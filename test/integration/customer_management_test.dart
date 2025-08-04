@@ -50,12 +50,13 @@ void main() {
         // Assert
         expect(result, hasLength(1));
         final retrievedCustomer = Customer.fromDatabase(result.first);
-        
+
         expect(retrievedCustomer.id, equals(customer.id));
         expect(retrievedCustomer.name, equals('Test Customer Ltd'));
         expect(retrievedCustomer.email, equals('test@customer.com'));
         expect(retrievedCustomer.phone, equals('+65 91234567'));
-        expect(retrievedCustomer.address, equals('123 Business Street, Singapore 123456'));
+        expect(retrievedCustomer.address,
+            equals('123 Business Street, Singapore 123456'));
         expect(retrievedCustomer.isActive, isTrue);
       });
 
@@ -70,7 +71,7 @@ void main() {
         };
 
         final db = await databaseService.database;
-        
+
         expect(
           () async => await db.insert('customers', invalidCustomer),
           throwsException, // NOT NULL constraint violation
@@ -92,13 +93,13 @@ void main() {
         ];
 
         for (final email in validEmails) {
-          expect(TestValidators.validateEmail(email), isTrue, 
-            reason: '$email should be valid');
+          expect(TestValidators.validateEmail(email), isTrue,
+              reason: '$email should be valid');
         }
 
         for (final email in invalidEmails) {
           expect(TestValidators.validateEmail(email), isFalse,
-            reason: '$email should be invalid');
+              reason: '$email should be invalid');
         }
       });
 
@@ -119,12 +120,12 @@ void main() {
 
         for (final phone in validPhones) {
           expect(TestValidators.validateSingaporePhone(phone), isTrue,
-            reason: '$phone should be valid');
+              reason: '$phone should be valid');
         }
 
         for (final phone in invalidPhones) {
           expect(TestValidators.validateSingaporePhone(phone), isFalse,
-            reason: '$phone should be invalid');
+              reason: '$phone should be invalid');
         }
       });
     });
@@ -139,7 +140,8 @@ void main() {
         expect(gstCustomer.gstRegistered, isTrue);
         expect(gstCustomer.gstRegistrationNumber, equals('200012345M'));
         expect(gstCustomer.hasValidGstNumber, isTrue);
-        expect(gstCustomer.gstStatusDisplay, equals('GST Registered (200012345M)'));
+        expect(gstCustomer.gstStatusDisplay,
+            equals('GST Registered (200012345M)'));
       });
 
       test('should validate GST registration number format', () async {
@@ -160,12 +162,12 @@ void main() {
 
         for (final gstNumber in validGstNumbers) {
           expect(TestValidators.validateGstNumber(gstNumber), isTrue,
-            reason: '$gstNumber should be valid GST format');
+              reason: '$gstNumber should be valid GST format');
         }
 
         for (final gstNumber in invalidGstNumbers) {
           expect(TestValidators.validateGstNumber(gstNumber), isFalse,
-            reason: '$gstNumber should be invalid GST format');
+              reason: '$gstNumber should be invalid GST format');
         }
       });
 
@@ -177,7 +179,8 @@ void main() {
 
         expect(customer.gstRegistered, isTrue);
         expect(customer.hasValidGstNumber, isFalse);
-        expect(customer.gstStatusDisplay, equals('GST Registered (Invalid Number)'));
+        expect(customer.gstStatusDisplay,
+            equals('GST Registered (Invalid Number)'));
       });
 
       test('should handle non-GST registered customer', () async {
@@ -194,7 +197,7 @@ void main() {
         final localCustomer = TestFactories.createCustomer(
           countryCode: 'SG',
         );
-        
+
         final exportCustomers = [
           TestFactories.createExportCustomer(countryCode: 'US'),
           TestFactories.createExportCustomer(countryCode: 'MY'),
@@ -202,10 +205,11 @@ void main() {
         ];
 
         expect(localCustomer.isExportCustomer, isFalse);
-        
+
         for (final customer in exportCustomers) {
           expect(customer.isExportCustomer, isTrue,
-            reason: 'Customer from ${customer.countryCode} should be export customer');
+              reason:
+                  'Customer from ${customer.countryCode} should be export customer');
         }
       });
     });
@@ -275,7 +279,8 @@ void main() {
         final customers = [
           TestFactories.createSingaporeGstCustomer(name: 'GST Company 1'),
           TestFactories.createSingaporeGstCustomer(name: 'GST Company 2'),
-          TestFactories.createCustomer(name: 'Non-GST Company', gstRegistered: false),
+          TestFactories.createCustomer(
+              name: 'Non-GST Company', gstRegistered: false),
         ];
 
         final db = await databaseService.database;
@@ -351,7 +356,9 @@ void main() {
             'customer_id': customer.id,
             'total_amount': 1000.0,
             'status': 'paid',
-            'issue_date': DateTime.now().subtract(Duration(days: 30)).millisecondsSinceEpoch,
+            'issue_date': DateTime.now()
+                .subtract(Duration(days: 30))
+                .millisecondsSinceEpoch,
           },
           {
             'id': UuidGenerator.generateId(),
@@ -359,7 +366,9 @@ void main() {
             'customer_id': customer.id,
             'total_amount': 2500.0,
             'status': 'sent',
-            'issue_date': DateTime.now().subtract(Duration(days: 15)).millisecondsSinceEpoch,
+            'issue_date': DateTime.now()
+                .subtract(Duration(days: 15))
+                .millisecondsSinceEpoch,
           },
           {
             'id': UuidGenerator.generateId(),
@@ -367,7 +376,9 @@ void main() {
             'customer_id': customer.id,
             'total_amount': 750.0,
             'status': 'draft',
-            'issue_date': DateTime.now().subtract(Duration(days: 5)).millisecondsSinceEpoch,
+            'issue_date': DateTime.now()
+                .subtract(Duration(days: 5))
+                .millisecondsSinceEpoch,
           },
         ];
 
@@ -403,11 +414,12 @@ void main() {
         ''', [customer.id]);
 
         expect(transactionHistory, hasLength(3));
-        expect(transactionHistory.first['invoice_number'], equals('INV-003')); // Most recent
-        
+        expect(transactionHistory.first['invoice_number'],
+            equals('INV-003')); // Most recent
+
         // Calculate total transaction value
         final totalValue = transactionHistory.fold<double>(
-          0.0, 
+          0.0,
           (sum, invoice) => sum + (invoice['total_amount'] as double),
         );
         expect(totalValue, equals(4250.0)); // 1000 + 2500 + 750
@@ -420,20 +432,38 @@ void main() {
 
         // Create transaction history data
         final transactions = [
-          {'amount': 1000.0, 'status': 'paid', 'date': DateTime.now().subtract(Duration(days: 60))},
-          {'amount': 1500.0, 'status': 'paid', 'date': DateTime.now().subtract(Duration(days: 30))},
-          {'amount': 800.0, 'status': 'sent', 'date': DateTime.now().subtract(Duration(days: 15))},
-          {'amount': 2000.0, 'status': 'paid', 'date': DateTime.now().subtract(Duration(days: 5))},
+          {
+            'amount': 1000.0,
+            'status': 'paid',
+            'date': DateTime.now().subtract(Duration(days: 60))
+          },
+          {
+            'amount': 1500.0,
+            'status': 'paid',
+            'date': DateTime.now().subtract(Duration(days: 30))
+          },
+          {
+            'amount': 800.0,
+            'status': 'sent',
+            'date': DateTime.now().subtract(Duration(days: 15))
+          },
+          {
+            'amount': 2000.0,
+            'status': 'paid',
+            'date': DateTime.now().subtract(Duration(days: 5))
+          },
         ];
 
         // Calculate statistics
         final totalTransactions = transactions.length;
-        final paidTransactions = transactions.where((t) => t['status'] == 'paid').toList();
+        final paidTransactions =
+            transactions.where((t) => t['status'] == 'paid').toList();
         final totalPaidAmount = paidTransactions.fold<double>(
-          0.0, 
+          0.0,
           (sum, t) => sum + (t['amount'] as double),
         );
-        final averageTransactionValue = totalPaidAmount / paidTransactions.length;
+        final averageTransactionValue =
+            totalPaidAmount / paidTransactions.length;
         final outstandingAmount = transactions
             .where((t) => t['status'] != 'paid')
             .fold<double>(0.0, (sum, t) => sum + (t['amount'] as double));
@@ -472,14 +502,17 @@ void main() {
           return paymentDate.difference(invoiceDate).inDays;
         }).toList();
 
-        final averagePaymentDays = paymentDays.reduce((a, b) => a + b) / paymentDays.length;
-        
+        final averagePaymentDays =
+            paymentDays.reduce((a, b) => a + b) / paymentDays.length;
+
         // Check if payments are typically early/on-time/late
         final earlyPayments = paymentDays.where((days) => days < 25).length;
-        final onTimePayments = paymentDays.where((days) => days >= 25 && days <= 30).length;
+        final onTimePayments =
+            paymentDays.where((days) => days >= 25 && days <= 30).length;
         final latePayments = paymentDays.where((days) => days > 30).length;
 
-        expect(averagePaymentDays, closeTo(21.67, 0.1)); // Average of 5, 15, 45 days
+        expect(averagePaymentDays,
+            closeTo(21.67, 0.1)); // Average of 5, 15, 45 days
         expect(earlyPayments, equals(2));
         expect(onTimePayments, equals(0));
         expect(latePayments, equals(1));
@@ -525,7 +558,8 @@ void main() {
         expect(updatedCustomer.name, equals('Updated Company Name Pte Ltd'));
         expect(updatedCustomer.email, equals('new@email.com'));
         expect(updatedCustomer.phone, equals('+65 92222222'));
-        expect(updatedCustomer.address, equals('New Address, Singapore 654321'));
+        expect(
+            updatedCustomer.address, equals('New Address, Singapore 654321'));
       });
 
       test('should update GST registration status', () async {
@@ -601,13 +635,13 @@ void main() {
         final customer1 = TestFactories.createCustomer(
           email: 'duplicate@test.com',
         );
-        
+
         final customer2 = TestFactories.createCustomer(
           email: 'duplicate@test.com',
         );
 
         final db = await databaseService.database;
-        
+
         // Create unique constraint on email (would be done in schema)
         await db.execute('''
           CREATE UNIQUE INDEX IF NOT EXISTS idx_customers_email 
@@ -671,20 +705,21 @@ void main() {
         // This should be caught by business logic validation
         final inconsistentUpdate = {
           'gst_registered': false,
-          'gst_registration_number': '200012345M', // Still has number but not registered
+          'gst_registration_number':
+              '200012345M', // Still has number but not registered
         };
 
         // In a real application, this would be validated by business logic
         // For testing, we verify the data state would be inconsistent
         expect(inconsistentUpdate['gst_registered'], isFalse);
         expect(inconsistentUpdate['gst_registration_number'], isNotNull);
-        
+
         // Business logic should clear GST number when deregistering
         final correctedUpdate = {
           'gst_registered': false,
           'gst_registration_number': null,
         };
-        
+
         expect(correctedUpdate['gst_registered'], isFalse);
         expect(correctedUpdate['gst_registration_number'], isNull);
       });
@@ -694,9 +729,9 @@ void main() {
       test('should efficiently handle large customer datasets', () async {
         const customerCount = 500;
         final db = await databaseService.database;
-        
+
         final stopwatch = Stopwatch()..start();
-        
+
         // Bulk insert customers
         final batch = db.batch();
         for (int i = 0; i < customerCount; i++) {
@@ -708,24 +743,27 @@ void main() {
           batch.insert('customers', customer.toDatabase());
         }
         await batch.commit();
-        
+
         stopwatch.stop();
-        print('Bulk insert of $customerCount customers took: ${stopwatch.elapsedMilliseconds}ms');
-        expect(stopwatch.elapsedMilliseconds, lessThan(3000)); // Should be under 3 seconds
+        print(
+            'Bulk insert of $customerCount customers took: ${stopwatch.elapsedMilliseconds}ms');
+        expect(stopwatch.elapsedMilliseconds,
+            lessThan(3000)); // Should be under 3 seconds
 
         // Test search performance
         stopwatch.reset();
         stopwatch.start();
-        
+
         final searchResults = await db.query(
           'customers',
           where: 'name LIKE ? AND gst_registered = ?',
           whereArgs: ['%0100%', true],
         );
-        
+
         stopwatch.stop();
         print('Complex search query took: ${stopwatch.elapsedMilliseconds}ms');
-        expect(stopwatch.elapsedMilliseconds, lessThan(50)); // Should be under 50ms
+        expect(stopwatch.elapsedMilliseconds,
+            lessThan(50)); // Should be under 50ms
         expect(searchResults, isNotEmpty);
       });
     });

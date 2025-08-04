@@ -19,38 +19,40 @@ class IrasService {
   final IrasCorporateTaxService _corporateTaxService;
   final IrasEmploymentService _employmentService;
   final IrasAuditService _auditService;
-  
+
   static IrasService? _instance;
-  
+
   IrasService._({
     IrasAuthService? authService,
     IrasGstService? gstService,
     IrasCorporateTaxService? corporateTaxService,
     IrasEmploymentService? employmentService,
     IrasAuditService? auditService,
-  }) : _authService = authService ?? IrasAuthService.instance,
-       _gstService = gstService ?? IrasGstService.instance,
-       _corporateTaxService = corporateTaxService ?? IrasCorporateTaxService.instance,
-       _employmentService = employmentService ?? IrasEmploymentService.instance,
-       _auditService = auditService ?? IrasAuditService.instance;
-  
+  })  : _authService = authService ?? IrasAuthService.instance,
+        _gstService = gstService ?? IrasGstService.instance,
+        _corporateTaxService =
+            corporateTaxService ?? IrasCorporateTaxService.instance,
+        _employmentService =
+            employmentService ?? IrasEmploymentService.instance,
+        _auditService = auditService ?? IrasAuditService.instance;
+
   /// Singleton instance
   static IrasService get instance {
     _instance ??= IrasService._();
     return _instance!;
   }
-  
+
   // ==================== AUTHENTICATION ====================
-  
+
   /// Check if currently authenticated with IRAS
   bool get isAuthenticated => _authService.isAuthenticated;
-  
+
   /// Get current access token
   String? get accessToken => _authService.accessToken;
-  
+
   /// Time until token expires
   Duration? get timeUntilExpiry => _authService.timeUntilExpiry;
-  
+
   /// Initiate SingPass authentication
   Future<String> initiateAuthentication({
     required String callbackUrl,
@@ -58,14 +60,14 @@ class IrasService {
     String? state,
   }) async {
     scopes ??= IrasAuthService.commonScopes['full']!;
-    
+
     return await _authService.initiateSingPassAuth(
       callbackUrl: callbackUrl,
       scopes: scopes,
       state: state,
     );
   }
-  
+
   /// Complete authentication with authorization code
   Future<void> completeAuthentication({
     required String code,
@@ -74,7 +76,7 @@ class IrasService {
     List<String>? scopes,
   }) async {
     scopes ??= IrasAuthService.commonScopes['full']!;
-    
+
     await _authService.completeSingPassAuth(
       code: code,
       state: state,
@@ -82,56 +84,56 @@ class IrasService {
       scopes: scopes,
     );
   }
-  
+
   /// Logout and clear authentication
   void logout() {
     _authService.clearAuth();
   }
-  
+
   // ==================== GST SERVICES ====================
-  
+
   /// Submit GST F5 Return
   Future<GstF5SubmissionResponse> submitGstF5Return(
     GstF5SubmissionRequest request,
   ) async {
     return await _gstService.submitF5Return(request);
   }
-  
+
   /// Submit GST F8 Return (Annual Return)
   Future<Map<String, dynamic>> submitGstF8Return(
     Map<String, dynamic> request,
   ) async {
     return await _gstService.submitF8Return(request);
   }
-  
+
   /// Edit Past GST Return (F7)
   Future<Map<String, dynamic>> editPastGstReturn(
     Map<String, dynamic> request,
   ) async {
     return await _gstService.editPastGstReturn(request);
   }
-  
+
   /// Submit GST Transaction Listings
   Future<Map<String, dynamic>> submitGstTransactionListing(
     Map<String, dynamic> request,
   ) async {
     return await _gstService.submitGstTransactionListing(request);
   }
-  
+
   /// Check GST Registration Status
   Future<GstRegisterCheckResponse> checkGstRegister(String gstRegNo) async {
     return await _gstService.checkGstRegister(gstRegNo);
   }
-  
+
   // ==================== CORPORATE TAX SERVICES ====================
-  
+
   /// Convert accounting data to Form C-S
   Future<CitConversionResponse> convertToFormCS(
     CitConversionRequest request,
   ) async {
     return await _corporateTaxService.convertToFormCS(request);
   }
-  
+
   /// Generate tax computation
   Future<CitTaxComputation> generateTaxComputation(
     CitFinancialData financialData, {
@@ -144,7 +146,7 @@ class IrasService {
       clientId: clientId,
     );
   }
-  
+
   /// Generate profit & loss statement
   Future<CitProfitLossStatement> generateProfitLossStatement(
     CitFinancialData financialData, {
@@ -157,12 +159,12 @@ class IrasService {
       clientId: clientId,
     );
   }
-  
+
   /// Check eligibility for Form C-S
   Future<bool> checkFormCSEligibility(CitFinancialData financialData) async {
     return await _corporateTaxService.checkFormCSEligibility(financialData);
   }
-  
+
   /// Calculate estimated corporate tax
   Future<double> calculateEstimatedTax(
     CitFinancialData financialData, {
@@ -173,16 +175,16 @@ class IrasService {
       yearOfAssessment: yearOfAssessment,
     );
   }
-  
+
   // ==================== EMPLOYMENT SERVICES ====================
-  
+
   /// Submit employment income records
   Future<EmploymentIncomeSubmissionResponse> submitEmploymentRecords(
     EmploymentIncomeSubmissionRequest request,
   ) async {
     return await _employmentService.submitEmploymentRecords(request);
   }
-  
+
   /// Submit IR8A records (Employee income)
   Future<EmploymentIncomeSubmissionResponse> submitIr8aRecords(
     List<Ir8aFormData> records, {
@@ -193,7 +195,7 @@ class IrasService {
       validateOnly: validateOnly,
     );
   }
-  
+
   /// Submit IR8S records (Director/shareholder income)
   Future<EmploymentIncomeSubmissionResponse> submitIr8sRecords(
     List<Ir8sFormData> records, {
@@ -204,7 +206,7 @@ class IrasService {
       validateOnly: validateOnly,
     );
   }
-  
+
   /// Submit bulk employment records
   Future<EmploymentIncomeSubmissionResponse> submitBulkEmploymentRecords(
     BulkEmploymentRecords bulkRecords, {
@@ -215,16 +217,16 @@ class IrasService {
       validateOnly: validateOnly,
     );
   }
-  
+
   /// Validate employment records
   Future<EmploymentIncomeSubmissionResponse> validateEmploymentRecords(
     EmploymentIncomeSubmissionRequest request,
   ) async {
     return await _employmentService.validateEmploymentRecords(request);
   }
-  
+
   // ==================== AUDIT & COMPLIANCE ====================
-  
+
   /// Get audit logs
   Future<List<Map<String, dynamic>>> getAuditLogs({
     String? entityType,
@@ -243,7 +245,7 @@ class IrasService {
       limit: limit,
     );
   }
-  
+
   /// Get audit summary for compliance reporting
   Future<Map<String, dynamic>> getAuditSummary({
     DateTime? fromDate,
@@ -254,7 +256,7 @@ class IrasService {
       toDate: toDate,
     );
   }
-  
+
   /// Export audit logs for compliance
   Future<List<Map<String, dynamic>>> exportAuditLogs({
     DateTime? fromDate,
@@ -265,9 +267,9 @@ class IrasService {
       toDate: toDate,
     );
   }
-  
+
   // ==================== UTILITY METHODS ====================
-  
+
   /// Get IRAS service status
   Map<String, dynamic> getServiceStatus() {
     return {
@@ -288,7 +290,7 @@ class IrasService {
       },
     };
   }
-  
+
   /// Test IRAS connectivity
   Future<Map<String, dynamic>> testConnectivity() async {
     final results = <String, dynamic>{
@@ -296,7 +298,7 @@ class IrasService {
       'overall_status': 'unknown',
       'tests': <String, dynamic>{},
     };
-    
+
     try {
       // Test GST register check (no auth required)
       final testGstResult = await checkGstRegister('M12345678A');
@@ -310,7 +312,7 @@ class IrasService {
         'message': 'GST register check failed: $e',
       };
     }
-    
+
     // Test authentication if available
     if (isAuthenticated) {
       results['tests']['authentication'] = {
@@ -324,12 +326,14 @@ class IrasService {
         'message': 'Not authenticated - some services may not be available',
       };
     }
-    
+
     // Determine overall status
     final testResults = results['tests'] as Map<String, dynamic>;
-    final hasErrors = testResults.values.any((test) => test['status'] == 'error');
-    final hasWarnings = testResults.values.any((test) => test['status'] == 'warning');
-    
+    final hasErrors =
+        testResults.values.any((test) => test['status'] == 'error');
+    final hasWarnings =
+        testResults.values.any((test) => test['status'] == 'warning');
+
     if (hasErrors) {
       results['overall_status'] = 'error';
     } else if (hasWarnings) {
@@ -337,10 +341,10 @@ class IrasService {
     } else {
       results['overall_status'] = 'success';
     }
-    
+
     return results;
   }
-  
+
   /// Create sample data for testing
   Map<String, dynamic> createSampleData() {
     return {
@@ -349,7 +353,7 @@ class IrasService {
       'employment_records': IrasEmploymentService.createSampleRecords(),
     };
   }
-  
+
   /// Get integration guide
   Map<String, dynamic> getIntegrationGuide() {
     return {
@@ -366,7 +370,8 @@ class IrasService {
           'additional_features': ['Transaction listings', 'Register check'],
         },
         'corporate_tax': {
-          'description': 'Corporate Income Tax computation and Form C-S generation',
+          'description':
+              'Corporate Income Tax computation and Form C-S generation',
           'features': ['CIT conversion', 'Tax computation', 'P&L generation'],
         },
         'employment': {

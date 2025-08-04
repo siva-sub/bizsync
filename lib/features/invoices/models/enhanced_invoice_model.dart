@@ -10,19 +10,19 @@ import 'invoice_models.dart';
 class CRDTInvoiceEnhanced implements CRDTModel {
   @override
   final String id;
-  
+
   @override
   final String nodeId;
-  
+
   @override
   final HLCTimestamp createdAt;
-  
+
   @override
   HLCTimestamp updatedAt;
-  
+
   @override
   CRDTVectorClock version;
-  
+
   @override
   bool isDeleted;
 
@@ -33,21 +33,21 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   late LWWRegister<String?> customerEmail;
   late LWWRegister<String?> billingAddress;
   late LWWRegister<String?> shippingAddress;
-  
+
   // Dates and terms
   late LWWRegister<DateTime> issueDate;
   late LWWRegister<DateTime?> dueDate;
   late LWWRegister<PaymentTerm> paymentTerms;
   late LWWRegister<String?> poNumber;
   late LWWRegister<String?> reference;
-  
+
   // Status and workflow
   late LWWRegister<InvoiceStatus> status;
   late LWWRegister<DateTime?> sentDate;
   late LWWRegister<DateTime?> viewedDate;
   late LWWRegister<DateTime?> paidAt;
   late LWWRegister<DateTime?> lastPaymentDate;
-  
+
   // Financial fields
   late LWWRegister<double> subtotal;
   late LWWRegister<double> taxAmount;
@@ -56,37 +56,37 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   late LWWRegister<double> totalAmount;
   late LWWRegister<String> currency;
   late LWWRegister<double> exchangeRate;
-  
+
   // Payment tracking
   late PNCounter paymentsReceived; // in minor currency units (cents)
   late LWWRegister<DateTime?> lastReminderSent;
   late LWWRegister<int> reminderCount;
-  
+
   // Content and customization
   late LWWRegister<String?> notes;
   late LWWRegister<String?> termsAndConditions;
   late LWWRegister<String?> footerText;
   late LWWRegister<Map<String, dynamic>?> customFields;
-  
+
   // Document management
   late LWWRegister<String?> pdfUrl;
   late LWWRegister<String?> pdfHash;
   late LWWRegister<DateTime?> lastPdfGenerated;
-  
+
   // Related entities as OR-Sets
   late ORSet<String> itemIds;
   late ORSet<String> paymentIds;
   late ORSet<String> workflowEntryIds;
   late ORSet<String> attachmentIds;
   late ORSet<String> tags;
-  
+
   // Dispute and adjustment tracking
   late LWWRegister<bool> isDisputed;
   late LWWRegister<String?> disputeReason;
   late LWWRegister<DateTime?> disputeDate;
   late LWWRegister<double> adjustmentAmount;
   late LWWRegister<String?> adjustmentReason;
-  
+
   // Automation and settings
   late LWWRegister<bool> autoReminders;
   late LWWRegister<int?> reminderDaysBefore;
@@ -151,19 +151,19 @@ class CRDTInvoiceEnhanced implements CRDTModel {
     customerEmail = LWWRegister(customerEmailValue, createdAt);
     billingAddress = LWWRegister(billingAddr, createdAt);
     shippingAddress = LWWRegister(shippingAddr, createdAt);
-    
+
     issueDate = LWWRegister(issue, createdAt);
     dueDate = LWWRegister(due, createdAt);
     paymentTerms = LWWRegister(payment, createdAt);
     poNumber = LWWRegister(po, createdAt);
     reference = LWWRegister(ref, createdAt);
-    
+
     status = LWWRegister(invoiceStatus, createdAt);
     sentDate = LWWRegister(sent, createdAt);
     viewedDate = LWWRegister(viewed, createdAt);
     paidAt = LWWRegister(paid, createdAt);
     lastPaymentDate = LWWRegister(lastPayment, createdAt);
-    
+
     subtotal = LWWRegister(sub, createdAt);
     taxAmount = LWWRegister(tax, createdAt);
     discountAmount = LWWRegister(discount, createdAt);
@@ -171,33 +171,33 @@ class CRDTInvoiceEnhanced implements CRDTModel {
     totalAmount = LWWRegister(total, createdAt);
     currency = LWWRegister(curr, createdAt);
     exchangeRate = LWWRegister(exchange, createdAt);
-    
+
     paymentsReceived = PNCounter(nodeId);
     lastReminderSent = LWWRegister(lastReminder, createdAt);
     reminderCount = LWWRegister(reminders, createdAt);
-    
+
     notes = LWWRegister(invoiceNotes, createdAt);
     termsAndConditions = LWWRegister(terms, createdAt);
     footerText = LWWRegister(footer, createdAt);
     customFields = LWWRegister(custom, createdAt);
-    
+
     pdfUrl = LWWRegister(pdf, createdAt);
     pdfHash = LWWRegister(pdfHashValue, createdAt);
     lastPdfGenerated = LWWRegister(lastPdf, createdAt);
-    
+
     // Initialize OR-Sets
     itemIds = ORSet(nodeId);
     paymentIds = ORSet(nodeId);
     workflowEntryIds = ORSet(nodeId);
     attachmentIds = ORSet(nodeId);
     tags = ORSet(nodeId);
-    
+
     isDisputed = LWWRegister(disputed, createdAt);
     disputeReason = LWWRegister(disputeReasonValue, createdAt);
     disputeDate = LWWRegister(disputeDateValue, createdAt);
     adjustmentAmount = LWWRegister(adjustment, createdAt);
     adjustmentReason = LWWRegister(adjustmentReasonValue, createdAt);
-    
+
     autoReminders = LWWRegister(autoRem, createdAt);
     reminderDaysBefore = LWWRegister(reminderDays, createdAt);
     autoFollowUp = LWWRegister(autoFollow, createdAt);
@@ -206,35 +206,45 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   }
 
   /// Update invoice status with workflow tracking
-  void updateStatus(InvoiceStatus newStatus, HLCTimestamp timestamp, {
+  void updateStatus(
+    InvoiceStatus newStatus,
+    HLCTimestamp timestamp, {
     String? reason,
     String? triggeredBy,
     Map<String, dynamic>? context,
   }) {
     final oldStatus = status.value;
     status.setValue(newStatus, timestamp);
-    
+
     // Update related timestamps based on status
     switch (newStatus) {
       case InvoiceStatus.sent:
         if (sentDate.value == null) {
-          sentDate.setValue(DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
+          sentDate.setValue(
+              DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime),
+              timestamp);
         }
         break;
       case InvoiceStatus.viewed:
         if (viewedDate.value == null) {
-          viewedDate.setValue(DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
+          viewedDate.setValue(
+              DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime),
+              timestamp);
         }
         break;
       case InvoiceStatus.paid:
         if (paidAt.value == null) {
-          paidAt.setValue(DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
+          paidAt.setValue(
+              DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime),
+              timestamp);
         }
         break;
       case InvoiceStatus.disputed:
         if (!isDisputed.value) {
           isDisputed.setValue(true, timestamp);
-          disputeDate.setValue(DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
+          disputeDate.setValue(
+              DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime),
+              timestamp);
           if (reason != null) {
             disputeReason.setValue(reason, timestamp);
           }
@@ -243,7 +253,7 @@ class CRDTInvoiceEnhanced implements CRDTModel {
       default:
         break;
     }
-    
+
     _updateTimestamp(timestamp);
   }
 
@@ -251,7 +261,7 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   DateTime? calculateDueDate() {
     final issue = issueDate.value;
     final terms = paymentTerms.value;
-    
+
     if (terms == PaymentTerm.dueOnReceipt) {
       return issue;
     } else if (terms == PaymentTerm.custom) {
@@ -265,14 +275,14 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   bool get isOverdue {
     final due = calculateDueDate();
     if (due == null) return false;
-    
+
     final now = DateTime.now();
     final currentStatus = status.value;
-    
-    return now.isAfter(due) && 
-           currentStatus != InvoiceStatus.paid &&
-           currentStatus != InvoiceStatus.cancelled &&
-           currentStatus != InvoiceStatus.voided;
+
+    return now.isAfter(due) &&
+        currentStatus != InvoiceStatus.paid &&
+        currentStatus != InvoiceStatus.cancelled &&
+        currentStatus != InvoiceStatus.voided;
   }
 
   /// Get remaining balance in minor currency units (cents)
@@ -290,21 +300,25 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   bool get isFullyPaid => remainingBalanceCents <= 0;
 
   /// Check if invoice is partially paid
-  bool get isPartiallyPaid => paymentsReceived.value > 0 && remainingBalanceCents > 0;
+  bool get isPartiallyPaid =>
+      paymentsReceived.value > 0 && remainingBalanceCents > 0;
 
   /// Record payment
   void recordPayment(double amount, HLCTimestamp timestamp) {
     final amountCents = (amount * 100).round();
     paymentsReceived.increment(amountCents);
-    lastPaymentDate.setValue(DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
-    
+    lastPaymentDate.setValue(
+        DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
+
     // Update status based on payment
     if (isFullyPaid) {
-      updateStatus(InvoiceStatus.paid, timestamp, reason: 'Full payment received');
+      updateStatus(InvoiceStatus.paid, timestamp,
+          reason: 'Full payment received');
     } else if (isPartiallyPaid && status.value != InvoiceStatus.partiallyPaid) {
-      updateStatus(InvoiceStatus.partiallyPaid, timestamp, reason: 'Partial payment received');
+      updateStatus(InvoiceStatus.partiallyPaid, timestamp,
+          reason: 'Partial payment received');
     }
-    
+
     _updateTimestamp(timestamp);
   }
 
@@ -312,16 +326,18 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   void reversePayment(double amount, HLCTimestamp timestamp) {
     final amountCents = (amount * 100).round();
     paymentsReceived.decrement(amountCents);
-    
+
     // Update status if necessary
     if (status.value == InvoiceStatus.paid && !isFullyPaid) {
       if (isPartiallyPaid) {
-        updateStatus(InvoiceStatus.partiallyPaid, timestamp, reason: 'Payment reversed');
+        updateStatus(InvoiceStatus.partiallyPaid, timestamp,
+            reason: 'Payment reversed');
       } else {
-        updateStatus(InvoiceStatus.sent, timestamp, reason: 'Payment fully reversed');
+        updateStatus(InvoiceStatus.sent, timestamp,
+            reason: 'Payment fully reversed');
       }
     }
-    
+
     _updateTimestamp(timestamp);
   }
 
@@ -336,10 +352,12 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   }) {
     if (newSubtotal != null) subtotal.setValue(newSubtotal, timestamp);
     if (newTaxAmount != null) taxAmount.setValue(newTaxAmount, timestamp);
-    if (newDiscountAmount != null) discountAmount.setValue(newDiscountAmount, timestamp);
-    if (newShippingAmount != null) shippingAmount.setValue(newShippingAmount, timestamp);
+    if (newDiscountAmount != null)
+      discountAmount.setValue(newDiscountAmount, timestamp);
+    if (newShippingAmount != null)
+      shippingAmount.setValue(newShippingAmount, timestamp);
     if (newTotalAmount != null) totalAmount.setValue(newTotalAmount, timestamp);
-    
+
     _updateTimestamp(timestamp);
   }
 
@@ -375,7 +393,8 @@ class CRDTInvoiceEnhanced implements CRDTModel {
 
   /// Send reminder
   void sendReminder(HLCTimestamp timestamp) {
-    lastReminderSent.setValue(DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
+    lastReminderSent.setValue(
+        DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
     reminderCount.setValue(reminderCount.value + 1, timestamp);
     _updateTimestamp(timestamp);
   }
@@ -384,7 +403,8 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   void markDisputed(String reason, HLCTimestamp timestamp) {
     isDisputed.setValue(true, timestamp);
     disputeReason.setValue(reason, timestamp);
-    disputeDate.setValue(DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
+    disputeDate.setValue(
+        DateTime.fromMillisecondsSinceEpoch(timestamp.physicalTime), timestamp);
     updateStatus(InvoiceStatus.disputed, timestamp, reason: reason);
   }
 
@@ -392,11 +412,11 @@ class CRDTInvoiceEnhanced implements CRDTModel {
   void applyAdjustment(double amount, String reason, HLCTimestamp timestamp) {
     adjustmentAmount.setValue(amount, timestamp);
     adjustmentReason.setValue(reason, timestamp);
-    
+
     // Update total amount
     final newTotal = totalAmount.value + amount;
     totalAmount.setValue(newTotal, timestamp);
-    
+
     _updateTimestamp(timestamp);
   }
 
@@ -420,18 +440,18 @@ class CRDTInvoiceEnhanced implements CRDTModel {
     customerEmail.mergeWith(other.customerEmail);
     billingAddress.mergeWith(other.billingAddress);
     shippingAddress.mergeWith(other.shippingAddress);
-    
+
     issueDate.mergeWith(other.issueDate);
     dueDate.mergeWith(other.dueDate);
     paymentTerms.mergeWith(other.paymentTerms);
     poNumber.mergeWith(other.poNumber);
     reference.mergeWith(other.reference);
-    
+
     status.mergeWith(other.status);
     sentDate.mergeWith(other.sentDate);
     viewedDate.mergeWith(other.viewedDate);
     lastPaymentDate.mergeWith(other.lastPaymentDate);
-    
+
     subtotal.mergeWith(other.subtotal);
     taxAmount.mergeWith(other.taxAmount);
     discountAmount.mergeWith(other.discountAmount);
@@ -439,33 +459,33 @@ class CRDTInvoiceEnhanced implements CRDTModel {
     totalAmount.mergeWith(other.totalAmount);
     currency.mergeWith(other.currency);
     exchangeRate.mergeWith(other.exchangeRate);
-    
+
     paymentsReceived.mergeWith(other.paymentsReceived);
     lastReminderSent.mergeWith(other.lastReminderSent);
     reminderCount.mergeWith(other.reminderCount);
-    
+
     notes.mergeWith(other.notes);
     termsAndConditions.mergeWith(other.termsAndConditions);
     footerText.mergeWith(other.footerText);
     customFields.mergeWith(other.customFields);
-    
+
     pdfUrl.mergeWith(other.pdfUrl);
     pdfHash.mergeWith(other.pdfHash);
     lastPdfGenerated.mergeWith(other.lastPdfGenerated);
-    
+
     // Merge OR-Sets
     itemIds.mergeWith(other.itemIds);
     paymentIds.mergeWith(other.paymentIds);
     workflowEntryIds.mergeWith(other.workflowEntryIds);
     attachmentIds.mergeWith(other.attachmentIds);
     tags.mergeWith(other.tags);
-    
+
     isDisputed.mergeWith(other.isDisputed);
     disputeReason.mergeWith(other.disputeReason);
     disputeDate.mergeWith(other.disputeDate);
     adjustmentAmount.mergeWith(other.adjustmentAmount);
     adjustmentReason.mergeWith(other.adjustmentReason);
-    
+
     autoReminders.mergeWith(other.autoReminders);
     reminderDaysBefore.mergeWith(other.reminderDaysBefore);
     autoFollowUp.mergeWith(other.autoFollowUp);

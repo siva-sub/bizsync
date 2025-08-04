@@ -47,7 +47,8 @@ final databaseSeedingServiceProvider = Provider<DatabaseSeedingService>((ref) {
 // App state providers
 final isAppInitializedProvider = StateProvider<bool>((ref) => false);
 
-final themeProvider = StateProvider<bool>((ref) => false); // false = light, true = dark
+final themeProvider =
+    StateProvider<bool>((ref) => false); // false = light, true = dark
 
 // Initialize app services
 final appInitializationProvider = FutureProvider<void>((ref) async {
@@ -55,15 +56,15 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
   final basicDatabase = ref.read(basicDatabaseServiceProvider);
   final notifications = ref.read(notificationServiceProvider);
   final seeding = ref.read(databaseSeedingServiceProvider);
-  
+
   // Initialize core services
   await crdtDatabase.initialize(); // Initialize CRDT database
   await basicDatabase.database; // Initialize basic database
   await notifications.initialize();
-  
+
   // Seed database with initial data if needed
   await seeding.seedDatabase();
-  
+
   // Mark app as initialized
   ref.read(isAppInitializedProvider.notifier).state = true;
 });

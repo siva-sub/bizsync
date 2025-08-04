@@ -75,7 +75,7 @@ enum LineItemType {
 enum TaxCalculationMethod {
   exclusive('exclusive'), // Tax added to amount
   inclusive('inclusive'), // Tax included in amount
-  compound('compound');   // Tax on tax
+  compound('compound'); // Tax on tax
 
   const TaxCalculationMethod(this.value);
   final String value;
@@ -92,19 +92,19 @@ enum TaxCalculationMethod {
 class CRDTInvoiceItem implements CRDTModel {
   @override
   final String id;
-  
+
   @override
   final String nodeId;
-  
+
   @override
   final HLCTimestamp createdAt;
-  
+
   @override
   HLCTimestamp updatedAt;
-  
+
   @override
   CRDTVectorClock version;
-  
+
   @override
   bool isDeleted;
 
@@ -165,7 +165,7 @@ class CRDTInvoiceItem implements CRDTModel {
     final method = taxMethod.value;
 
     double subtotal = qty * price;
-    
+
     // Apply discount
     if (disc > 0) {
       if (disc <= 1.0) {
@@ -205,11 +205,11 @@ class CRDTInvoiceItem implements CRDTModel {
     if (newDiscount != null) discount.setValue(newDiscount, timestamp);
     if (newTaxRate != null) taxRate.setValue(newTaxRate, timestamp);
     if (newTaxMethod != null) taxMethod.setValue(newTaxMethod, timestamp);
-    
+
     // Recalculate and update line total
     final newTotal = calculateLineTotal();
     lineTotal.setValue(newTotal, timestamp);
-    
+
     _updateTimestamp(timestamp);
   }
 
@@ -301,19 +301,19 @@ class CRDTInvoiceItem implements CRDTModel {
 class CRDTInvoiceWorkflow implements CRDTModel {
   @override
   final String id;
-  
+
   @override
   final String nodeId;
-  
+
   @override
   final HLCTimestamp createdAt;
-  
+
   @override
   HLCTimestamp updatedAt;
-  
+
   @override
   CRDTVectorClock version;
-  
+
   @override
   bool isDeleted;
 
@@ -423,19 +423,19 @@ class CRDTInvoiceWorkflow implements CRDTModel {
 class CRDTInvoicePayment implements CRDTModel {
   @override
   final String id;
-  
+
   @override
   final String nodeId;
-  
+
   @override
   final HLCTimestamp createdAt;
-  
+
   @override
   HLCTimestamp updatedAt;
-  
+
   @override
   CRDTVectorClock version;
-  
+
   @override
   bool isDeleted;
 
@@ -444,7 +444,8 @@ class CRDTInvoicePayment implements CRDTModel {
   late LWWRegister<String> paymentReference;
   late LWWRegister<double> amount;
   late LWWRegister<DateTime> paymentDate;
-  late LWWRegister<String> paymentMethod; // cash, bank_transfer, credit_card, paynow, etc.
+  late LWWRegister<String>
+      paymentMethod; // cash, bank_transfer, credit_card, paynow, etc.
   late LWWRegister<String> status; // pending, completed, failed, reversed
   late LWWRegister<String?> transactionId;
   late LWWRegister<String?> notes;

@@ -113,7 +113,8 @@ class _ProfessionalInvoiceDetailScreenState
                   value: 'delete',
                   child: ListTile(
                     leading: Icon(Icons.delete, color: Colors.red),
-                    title: Text('Delete Invoice', style: TextStyle(color: Colors.red)),
+                    title: Text('Delete Invoice',
+                        style: TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -128,13 +129,14 @@ class _ProfessionalInvoiceDetailScreenState
           : _invoice == null
               ? _buildNotFoundState()
               : _buildInvoiceDetail(),
-      floatingActionButton: _invoice != null && _invoice!.status == InvoiceStatus.draft
-          ? FloatingActionButton.extended(
-              onPressed: _sendInvoice,
-              icon: const Icon(Icons.send),
-              label: const Text('Send Invoice'),
-            )
-          : null,
+      floatingActionButton:
+          _invoice != null && _invoice!.status == InvoiceStatus.draft
+              ? FloatingActionButton.extended(
+                  onPressed: _sendInvoice,
+                  icon: const Icon(Icons.send),
+                  label: const Text('Send Invoice'),
+                )
+              : null,
     );
   }
 
@@ -196,7 +198,10 @@ class _ProfessionalInvoiceDetailScreenState
                           children: [
                             Text(
                               _invoice!.invoiceNumber,
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
@@ -207,8 +212,12 @@ class _ProfessionalInvoiceDetailScreenState
                             ),
                             Text(
                               'Due Date: ${_invoice!.dueDate.day}/${_invoice!.dueDate.month}/${_invoice!.dueDate.year}',
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: _invoice!.dueDate.isBefore(DateTime.now())
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: _invoice!.dueDate
+                                            .isBefore(DateTime.now())
                                         ? Colors.red
                                         : null,
                                   ),
@@ -223,7 +232,10 @@ class _ProfessionalInvoiceDetailScreenState
                           const SizedBox(height: 8),
                           Text(
                             '\$${_invoice!.total.toStringAsFixed(2)}',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
@@ -327,7 +339,8 @@ class _ProfessionalInvoiceDetailScreenState
                             children: [
                               _tableCell(item.description),
                               _tableCell(item.quantity.toString()),
-                              _tableCell('\$${item.unitPrice.toStringAsFixed(2)}'),
+                              _tableCell(
+                                  '\$${item.unitPrice.toStringAsFixed(2)}'),
                               _tableCell('\$${item.total.toStringAsFixed(2)}'),
                             ],
                           )),
@@ -346,14 +359,17 @@ class _ProfessionalInvoiceDetailScreenState
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  _summaryRow('Subtotal', '\$${_invoice!.subtotal.toStringAsFixed(2)}'),
+                  _summaryRow(
+                      'Subtotal', '\$${_invoice!.subtotal.toStringAsFixed(2)}'),
                   if (_invoice!.gstAmount > 0) ...[
                     const SizedBox(height: 8),
-                    _summaryRow('GST (9%)', '\$${_invoice!.gstAmount.toStringAsFixed(2)}'),
+                    _summaryRow('GST (9%)',
+                        '\$${_invoice!.gstAmount.toStringAsFixed(2)}'),
                   ],
                   if (_invoice!.discountAmount > 0) ...[
                     const SizedBox(height: 8),
-                    _summaryRow('Discount', '-\$${_invoice!.discountAmount.toStringAsFixed(2)}'),
+                    _summaryRow('Discount',
+                        '-\$${_invoice!.discountAmount.toStringAsFixed(2)}'),
                   ],
                   const Divider(height: 24),
                   _summaryRow(
@@ -456,7 +472,7 @@ class _ProfessionalInvoiceDetailScreenState
 
   Future<void> _shareInvoice() async {
     if (_invoice == null) return;
-    
+
     try {
       // Create a simple text representation of the invoice
       final invoiceText = '''
@@ -469,7 +485,7 @@ Status: ${_getStatusText(_invoice!.status)}
 
 Generated by BizSync Business Management App
 ''';
-      
+
       await Share.share(
         invoiceText,
         subject: 'Invoice ${_invoice!.invoiceNumber}',
@@ -488,15 +504,16 @@ Generated by BizSync Business Management App
 
   Future<void> _printInvoice() async {
     if (_invoice == null) return;
-    
+
     try {
       // For mobile platforms, we'll generate a PDF and let the user handle printing
       await _exportAsPdf();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('PDF generated. Use your system\'s print dialog to print.'),
+            content: Text(
+                'PDF generated. Use your system\'s print dialog to print.'),
             backgroundColor: Colors.blue,
           ),
         );
@@ -515,22 +532,24 @@ Generated by BizSync Business Management App
 
   Future<void> _sendInvoice() async {
     if (_invoice == null) return;
-    
+
     try {
       // Generate PDF and share it via email or messaging
       final pdfPath = await _generatePdfFile();
-      
+
       await Share.shareXFiles(
         [XFile(pdfPath)],
         subject: 'Invoice ${_invoice!.invoiceNumber}',
-        text: 'Please find attached invoice ${_invoice!.invoiceNumber} for \$${_invoice!.total.toStringAsFixed(2)}.',
+        text:
+            'Please find attached invoice ${_invoice!.invoiceNumber} for \$${_invoice!.total.toStringAsFixed(2)}.',
       );
-      
+
       // Update invoice status to sent
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Invoice ${_invoice!.invoiceNumber} sent successfully'),
+            content:
+                Text('Invoice ${_invoice!.invoiceNumber} sent successfully'),
             backgroundColor: Colors.green,
           ),
         );
@@ -549,7 +568,7 @@ Generated by BizSync Business Management App
 
   void _duplicateInvoice() {
     if (_invoice == null) return;
-    
+
     // Navigate to create invoice form with pre-filled data
     context.go('/invoices/create', extra: {
       'duplicate_from': _invoice!.id,
@@ -561,7 +580,7 @@ Generated by BizSync Business Management App
         // Don't copy invoice number, dates, or payment info
       },
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Invoice duplicated. Redirecting to create form.'),
@@ -572,17 +591,17 @@ Generated by BizSync Business Management App
 
   Future<void> _exportAsPdf() async {
     if (_invoice == null) return;
-    
+
     try {
       final pdfPath = await _generatePdfFile();
-      
+
       // Share the PDF file
       await Share.shareXFiles(
         [XFile(pdfPath)],
         subject: 'Invoice ${_invoice!.invoiceNumber} - PDF',
         text: 'Invoice PDF exported successfully.',
       );
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -602,12 +621,12 @@ Generated by BizSync Business Management App
       }
     }
   }
-  
+
   Future<String> _generatePdfFile() async {
     if (_invoice == null) throw Exception('No invoice to export');
-    
+
     final pdf = pw.Document();
-    
+
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
@@ -635,14 +654,16 @@ Generated by BizSync Business Management App
                           fontWeight: pw.FontWeight.bold,
                         ),
                       ),
-                      pw.Text('Date: ${_invoice!.invoiceDate.day}/${_invoice!.invoiceDate.month}/${_invoice!.invoiceDate.year}'),
-                      pw.Text('Due: ${_invoice!.dueDate.day}/${_invoice!.dueDate.month}/${_invoice!.dueDate.year}'),
+                      pw.Text(
+                          'Date: ${_invoice!.invoiceDate.day}/${_invoice!.invoiceDate.month}/${_invoice!.invoiceDate.year}'),
+                      pw.Text(
+                          'Due: ${_invoice!.dueDate.day}/${_invoice!.dueDate.month}/${_invoice!.dueDate.year}'),
                     ],
                   ),
                 ],
               ),
               pw.SizedBox(height: 30),
-              
+
               // Bill To
               pw.Text(
                 'Bill To:',
@@ -657,9 +678,9 @@ Generated by BizSync Business Management App
                 pw.Text(_invoice!.customerEmail!),
               if (_invoice!.customerAddress?.isNotEmpty == true)
                 pw.Text(_invoice!.customerAddress!),
-              
+
               pw.SizedBox(height: 30),
-              
+
               // Items table placeholder
               pw.Text(
                 'Items:',
@@ -670,9 +691,9 @@ Generated by BizSync Business Management App
               ),
               pw.SizedBox(height: 10),
               pw.Text('Invoice items will be displayed here'),
-              
+
               pw.SizedBox(height: 30),
-              
+
               // Total
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.end,
@@ -680,9 +701,11 @@ Generated by BizSync Business Management App
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
-                      pw.Text('Subtotal: \$${_invoice!.subtotal.toStringAsFixed(2)}'),
+                      pw.Text(
+                          'Subtotal: \$${_invoice!.subtotal.toStringAsFixed(2)}'),
                       if (_invoice!.gstAmount > 0)
-                        pw.Text('GST (9%): \$${_invoice!.gstAmount.toStringAsFixed(2)}'),
+                        pw.Text(
+                            'GST (9%): \$${_invoice!.gstAmount.toStringAsFixed(2)}'),
                       pw.Divider(),
                       pw.Text(
                         'Total: \$${_invoice!.total.toStringAsFixed(2)}',
@@ -695,7 +718,7 @@ Generated by BizSync Business Management App
                   ),
                 ],
               ),
-              
+
               if (_invoice!.notes?.isNotEmpty == true) ...[
                 pw.SizedBox(height: 30),
                 pw.Text(
@@ -713,14 +736,15 @@ Generated by BizSync Business Management App
         },
       ),
     );
-    
+
     // Get the app directory to save the file
     final directory = await getTemporaryDirectory();
-    final file = File('${directory.path}/invoice_${_invoice!.invoiceNumber}.pdf');
-    
+    final file =
+        File('${directory.path}/invoice_${_invoice!.invoiceNumber}.pdf');
+
     // Save the PDF
     await file.writeAsBytes(await pdf.save());
-    
+
     return file.path;
   }
 
@@ -752,7 +776,8 @@ Generated by BizSync Business Management App
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Invoice'),
-        content: Text('Are you sure you want to delete invoice ${_invoice!.invoiceNumber}?'),
+        content: Text(
+            'Are you sure you want to delete invoice ${_invoice!.invoiceNumber}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

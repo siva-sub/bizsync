@@ -10,7 +10,8 @@ class BackupSettingsScreen extends ConsumerStatefulWidget {
   const BackupSettingsScreen({super.key});
 
   @override
-  ConsumerState<BackupSettingsScreen> createState() => _BackupSettingsScreenState();
+  ConsumerState<BackupSettingsScreen> createState() =>
+      _BackupSettingsScreenState();
 }
 
 class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
@@ -73,14 +74,13 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
             SwitchListTile(
               title: const Text('Enable Auto Backup'),
               subtitle: const Text('Automatically create backups on schedule'),
               value: _config.autoBackupEnabled,
-              onChanged: (value) => _updateConfig(_config.copyWith(autoBackupEnabled: value)),
+              onChanged: (value) =>
+                  _updateConfig(_config.copyWith(autoBackupEnabled: value)),
             ),
-            
             if (_config.autoBackupEnabled) ...[
               const SizedBox(height: 16),
               ListTile(
@@ -89,7 +89,6 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: _showIntervalPicker,
               ),
-              
               ListTile(
                 title: const Text('Default Backup Type'),
                 subtitle: Text(_config.defaultBackupType.name.toUpperCase()),
@@ -115,26 +114,25 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
             ListTile(
               title: const Text('Default Scope'),
               subtitle: Text(_getScopeTitle(_config.defaultScope)),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: _showScopePicker,
             ),
-            
             SwitchListTile(
               title: const Text('Encryption by Default'),
               subtitle: const Text('Enable encryption for new backups'),
               value: _config.encryptionEnabled,
-              onChanged: (value) => _updateConfig(_config.copyWith(encryptionEnabled: value)),
+              onChanged: (value) =>
+                  _updateConfig(_config.copyWith(encryptionEnabled: value)),
             ),
-            
             SwitchListTile(
               title: const Text('Include Attachments'),
               subtitle: const Text('Include file attachments in backups'),
               value: _config.includeAttachments,
-              onChanged: (value) => _updateConfig(_config.copyWith(includeAttachments: value)),
+              onChanged: (value) =>
+                  _updateConfig(_config.copyWith(includeAttachments: value)),
             ),
           ],
         ),
@@ -154,16 +152,14 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
             ListTile(
               title: const Text('Default Export Path'),
-              subtitle: Text(_config.defaultExportPath.isEmpty 
-                  ? 'Not set' 
+              subtitle: Text(_config.defaultExportPath.isEmpty
+                  ? 'Not set'
                   : _config.defaultExportPath),
               trailing: const Icon(Icons.folder_open),
               onTap: _selectDefaultExportPath,
             ),
-            
             ListTile(
               title: const Text('Maximum Backup History'),
               subtitle: Text('Keep up to ${_config.maxBackupHistory} backups'),
@@ -188,25 +184,22 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
             ListTile(
               title: const Text('Compression Algorithm'),
               subtitle: Text(_config.compressionAlgorithm),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: _showCompressionPicker,
             ),
-            
             ListTile(
               title: const Text('Compression Level'),
               subtitle: Text('Level ${_config.compressionLevel}'),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: _showCompressionLevelPicker,
             ),
-            
             ListTile(
               title: const Text('Excluded Tables'),
-              subtitle: Text(_config.excludedTables.isEmpty 
-                  ? 'None' 
+              subtitle: Text(_config.excludedTables.isEmpty
+                  ? 'None'
                   : '${_config.excludedTables.length} tables excluded'),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: _showExcludedTablesPicker,
@@ -242,7 +235,7 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
     try {
       await ref.read(backupServiceProvider).updateConfig(_config);
       setState(() => _hasUnsavedChanges = false);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Settings saved successfully')),
@@ -262,7 +255,8 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Unsaved Changes'),
-        content: const Text('You have unsaved changes. Do you want to save them before leaving?'),
+        content: const Text(
+            'You have unsaved changes. Do you want to save them before leaving?'),
         actions: [
           TextButton(
             onPressed: () {
@@ -314,7 +308,7 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
 
   Widget _buildIntervalOption(String label, Duration duration) {
     final isSelected = _config.autoBackupInterval == duration;
-    
+
     return ListTile(
       title: Text(label),
       leading: Radio<Duration>(
@@ -341,23 +335,26 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
         title: const Text('Default Backup Type'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: BackupType.values.map((type) => ListTile(
-            title: Text(type.name.toUpperCase()),
-            leading: Radio<BackupType>(
-              value: type,
-              groupValue: _config.defaultBackupType,
-              onChanged: (value) {
-                if (value != null) {
-                  _updateConfig(_config.copyWith(defaultBackupType: value));
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-            onTap: () {
-              _updateConfig(_config.copyWith(defaultBackupType: type));
-              Navigator.of(context).pop();
-            },
-          )).toList(),
+          children: BackupType.values
+              .map((type) => ListTile(
+                    title: Text(type.name.toUpperCase()),
+                    leading: Radio<BackupType>(
+                      value: type,
+                      groupValue: _config.defaultBackupType,
+                      onChanged: (value) {
+                        if (value != null) {
+                          _updateConfig(
+                              _config.copyWith(defaultBackupType: value));
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      _updateConfig(_config.copyWith(defaultBackupType: type));
+                      Navigator.of(context).pop();
+                    },
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -370,23 +367,25 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
         title: const Text('Default Backup Scope'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: BackupScope.values.map((scope) => ListTile(
-            title: Text(_getScopeTitle(scope)),
-            leading: Radio<BackupScope>(
-              value: scope,
-              groupValue: _config.defaultScope,
-              onChanged: (value) {
-                if (value != null) {
-                  _updateConfig(_config.copyWith(defaultScope: value));
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-            onTap: () {
-              _updateConfig(_config.copyWith(defaultScope: scope));
-              Navigator.of(context).pop();
-            },
-          )).toList(),
+          children: BackupScope.values
+              .map((scope) => ListTile(
+                    title: Text(_getScopeTitle(scope)),
+                    leading: Radio<BackupScope>(
+                      value: scope,
+                      groupValue: _config.defaultScope,
+                      onChanged: (value) {
+                        if (value != null) {
+                          _updateConfig(_config.copyWith(defaultScope: value));
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      _updateConfig(_config.copyWith(defaultScope: scope));
+                      Navigator.of(context).pop();
+                    },
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -394,30 +393,36 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
 
   void _showCompressionPicker() {
     final algorithms = ['zstd', 'gzip', 'none'];
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Compression Algorithm'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: algorithms.map((algorithm) => ListTile(
-            title: Text(algorithm == 'zstd' ? 'Zstandard (Recommended)' : algorithm),
-            leading: Radio<String>(
-              value: algorithm,
-              groupValue: _config.compressionAlgorithm,
-              onChanged: (value) {
-                if (value != null) {
-                  _updateConfig(_config.copyWith(compressionAlgorithm: value));
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-            onTap: () {
-              _updateConfig(_config.copyWith(compressionAlgorithm: algorithm));
-              Navigator.of(context).pop();
-            },
-          )).toList(),
+          children: algorithms
+              .map((algorithm) => ListTile(
+                    title: Text(algorithm == 'zstd'
+                        ? 'Zstandard (Recommended)'
+                        : algorithm),
+                    leading: Radio<String>(
+                      value: algorithm,
+                      groupValue: _config.compressionAlgorithm,
+                      onChanged: (value) {
+                        if (value != null) {
+                          _updateConfig(
+                              _config.copyWith(compressionAlgorithm: value));
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      _updateConfig(
+                          _config.copyWith(compressionAlgorithm: algorithm));
+                      Navigator.of(context).pop();
+                    },
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -440,7 +445,8 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
               divisions: 8,
               label: _config.compressionLevel.toString(),
               onChanged: (value) {
-                _updateConfig(_config.copyWith(compressionLevel: value.round()));
+                _updateConfig(
+                    _config.copyWith(compressionLevel: value.round()));
               },
             ),
             const SizedBox(height: 8),
@@ -459,30 +465,33 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
 
   void _showMaxHistoryPicker() {
     final options = [5, 10, 15, 20, 25, 50];
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Maximum Backup History'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: options.map((count) => ListTile(
-            title: Text('$count backups'),
-            leading: Radio<int>(
-              value: count,
-              groupValue: _config.maxBackupHistory,
-              onChanged: (value) {
-                if (value != null) {
-                  _updateConfig(_config.copyWith(maxBackupHistory: value));
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-            onTap: () {
-              _updateConfig(_config.copyWith(maxBackupHistory: count));
-              Navigator.of(context).pop();
-            },
-          )).toList(),
+          children: options
+              .map((count) => ListTile(
+                    title: Text('$count backups'),
+                    leading: Radio<int>(
+                      value: count,
+                      groupValue: _config.maxBackupHistory,
+                      onChanged: (value) {
+                        if (value != null) {
+                          _updateConfig(
+                              _config.copyWith(maxBackupHistory: value));
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      _updateConfig(_config.copyWith(maxBackupHistory: count));
+                      Navigator.of(context).pop();
+                    },
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -490,10 +499,17 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
 
   void _showExcludedTablesPicker() {
     final availableTables = [
-      'customers', 'products', 'categories', 'sales_transactions', 
-      'sales_items', 'user_settings', 'business_profile', 'sync_log', 'device_registry'
+      'customers',
+      'products',
+      'categories',
+      'sales_transactions',
+      'sales_items',
+      'user_settings',
+      'business_profile',
+      'sync_log',
+      'device_registry'
     ];
-    
+
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -503,20 +519,24 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
             width: double.maxFinite,
             child: ListView(
               shrinkWrap: true,
-              children: availableTables.map((table) => CheckboxListTile(
-                title: Text(table),
-                value: _config.excludedTables.contains(table),
-                onChanged: (value) {
-                  final newExcluded = List<String>.from(_config.excludedTables);
-                  if (value == true) {
-                    newExcluded.add(table);
-                  } else {
-                    newExcluded.remove(table);
-                  }
-                  _updateConfig(_config.copyWith(excludedTables: newExcluded));
-                  setDialogState(() {});
-                },
-              )).toList(),
+              children: availableTables
+                  .map((table) => CheckboxListTile(
+                        title: Text(table),
+                        value: _config.excludedTables.contains(table),
+                        onChanged: (value) {
+                          final newExcluded =
+                              List<String>.from(_config.excludedTables);
+                          if (value == true) {
+                            newExcluded.add(table);
+                          } else {
+                            newExcluded.remove(table);
+                          }
+                          _updateConfig(
+                              _config.copyWith(excludedTables: newExcluded));
+                          setDialogState(() {});
+                        },
+                      ))
+                  .toList(),
             ),
           ),
           actions: [
@@ -535,14 +555,15 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
       final directory = await FilePicker.platform.getDirectoryPath(
         dialogTitle: 'Select default backup location',
       );
-      
+
       if (directory != null) {
         _updateConfig(_config.copyWith(defaultExportPath: directory));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to select directory: ${e.toString()}')),
+          SnackBar(
+              content: Text('Failed to select directory: ${e.toString()}')),
         );
       }
     }

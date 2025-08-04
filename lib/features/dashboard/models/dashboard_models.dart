@@ -46,12 +46,7 @@ enum ChartType {
 }
 
 /// Enumeration for trend directions
-enum TrendDirection {
-  up,
-  down,
-  stable,
-  volatile
-}
+enum TrendDirection { up, down, stable, volatile }
 
 /// Data point for charts and analytics
 @JsonSerializable()
@@ -128,13 +123,13 @@ class KPI {
     String value = currentValue.toStringAsFixed(
       unit == '%' || unit == 'ratio' ? 2 : 0,
     );
-    
+
     String result = '';
     if (prefix != null) result += prefix!;
     result += value;
     if (suffix != null) result += suffix!;
     if (unit.isNotEmpty && suffix == null) result += ' $unit';
-    
+
     return result;
   }
 }

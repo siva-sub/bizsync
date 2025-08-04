@@ -8,10 +8,13 @@ import '../models/sync_models.dart';
 /// WiFi Direct transport implementation for P2P communication (STUB)
 /// This is a stub implementation since wifi_direct_flutter is not available
 class WiFiDirectTransport extends P2PTransport {
-  final StreamController<DeviceInfo> _discoveryController = StreamController<DeviceInfo>.broadcast();
-  final StreamController<P2PConnection> _connectionController = StreamController<P2PConnection>.broadcast();
-  final StreamController<P2PDataPacket> _dataController = StreamController<P2PDataPacket>.broadcast();
-  
+  final StreamController<DeviceInfo> _discoveryController =
+      StreamController<DeviceInfo>.broadcast();
+  final StreamController<P2PConnection> _connectionController =
+      StreamController<P2PConnection>.broadcast();
+  final StreamController<P2PDataPacket> _dataController =
+      StreamController<P2PDataPacket>.broadcast();
+
   @override
   TransportType get transportType => TransportType.wifiDirect;
 

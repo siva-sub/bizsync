@@ -8,12 +8,14 @@ class CustomerStatementsScreen extends StatefulWidget {
   const CustomerStatementsScreen({super.key});
 
   @override
-  State<CustomerStatementsScreen> createState() => _CustomerStatementsScreenState();
+  State<CustomerStatementsScreen> createState() =>
+      _CustomerStatementsScreenState();
 }
 
 class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
-  final CustomerStatementService _statementService = CustomerStatementService.instance;
-  
+  final CustomerStatementService _statementService =
+      CustomerStatementService.instance;
+
   List<CustomerBalanceSummary> _customerBalances = [];
   bool _isLoading = true;
   String _filter = 'all'; // all, outstanding, overdue
@@ -27,7 +29,7 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
 
   Future<void> _loadCustomerBalances() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final balances = await _statementService.getAllCustomerBalances();
       setState(() {
@@ -83,14 +85,16 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
 
       setState(() => _isLoading = true);
 
-      final statements = await _statementService.generateBulkStatements(options: options);
-      
+      final statements =
+          await _statementService.generateBulkStatements(options: options);
+
       setState(() => _isLoading = false);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Generated ${statements.length} statements successfully'),
+            content:
+                Text('Generated ${statements.length} statements successfully'),
             backgroundColor: Colors.green,
           ),
         );
@@ -128,8 +132,10 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
             },
             itemBuilder: (context) => [
               const PopupMenuItem(value: 'all', child: Text('All Customers')),
-              const PopupMenuItem(value: 'outstanding', child: Text('Outstanding Balances')),
-              const PopupMenuItem(value: 'overdue', child: Text('Overdue Only')),
+              const PopupMenuItem(
+                  value: 'outstanding', child: Text('Outstanding Balances')),
+              const PopupMenuItem(
+                  value: 'overdue', child: Text('Overdue Only')),
             ],
             child: const Icon(Icons.filter_list),
           ),
@@ -139,8 +145,10 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
             },
             itemBuilder: (context) => [
               const PopupMenuItem(value: 'name', child: Text('Sort by Name')),
-              const PopupMenuItem(value: 'balance', child: Text('Sort by Balance')),
-              const PopupMenuItem(value: 'overdue', child: Text('Sort by Overdue')),
+              const PopupMenuItem(
+                  value: 'balance', child: Text('Sort by Balance')),
+              const PopupMenuItem(
+                  value: 'overdue', child: Text('Sort by Overdue')),
             ],
             child: const Icon(Icons.sort),
           ),
@@ -191,7 +199,7 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
 
   Widget _buildCustomersList() {
     final filteredBalances = _filteredAndSortedBalances;
-    
+
     return Column(
       children: [
         _buildSummaryCards(),
@@ -210,10 +218,14 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
   }
 
   Widget _buildSummaryCards() {
-    final totalBalance = _customerBalances.fold(0.0, (sum, b) => sum + b.currentBalance);
-    final totalOverdue = _customerBalances.fold(0.0, (sum, b) => sum + b.overdueBalance);
-    final overdueCustomers = _customerBalances.where((b) => b.overdueBalance > 0).length;
-    final highRiskCustomers = _customerBalances.where((b) => b.isHighRisk).length;
+    final totalBalance =
+        _customerBalances.fold(0.0, (sum, b) => sum + b.currentBalance);
+    final totalOverdue =
+        _customerBalances.fold(0.0, (sum, b) => sum + b.overdueBalance);
+    final overdueCustomers =
+        _customerBalances.where((b) => b.overdueBalance > 0).length;
+    final highRiskCustomers =
+        _customerBalances.where((b) => b.isHighRisk).length;
 
     return Container(
       height: 120,
@@ -260,7 +272,8 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
     );
   }
 
-  Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
+  Widget _buildSummaryCard(
+      String title, String value, IconData icon, Color color) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -313,7 +326,8 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
             if (balance.overdueBalance > 0)
               Text(
                 'Overdue: ${currencyFormat.format(balance.overdueBalance)}',
-                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                    color: Colors.red, fontWeight: FontWeight.w500),
               ),
           ],
         ),
@@ -325,7 +339,8 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: _getRiskColor(balance.riskLevel).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -385,16 +400,21 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
               children: [
                 _buildDetailRow('Total Invoices', '${balance.totalInvoices}'),
                 _buildDetailRow('Unpaid Invoices', '${balance.unpaidInvoices}'),
-                _buildDetailRow('Last Invoice', dateFormat.format(balance.lastInvoiceDate)),
+                _buildDetailRow(
+                    'Last Invoice', dateFormat.format(balance.lastInvoiceDate)),
                 if (balance.lastPaymentDate != null)
-                  _buildDetailRow('Last Payment', dateFormat.format(balance.lastPaymentDate!))
+                  _buildDetailRow('Last Payment',
+                      dateFormat.format(balance.lastPaymentDate!))
                 else
                   _buildDetailRow('Last Payment', 'No payments recorded'),
                 if (balance.daysSinceLastPayment > 0)
-                  _buildDetailRow('Days Since Payment', '${balance.daysSinceLastPayment} days'),
+                  _buildDetailRow('Days Since Payment',
+                      '${balance.daysSinceLastPayment} days'),
                 if (balance.creditLimit > 0) ...[
-                  _buildDetailRow('Credit Limit', currencyFormat.format(balance.creditLimit)),
-                  _buildDetailRow('Credit Utilization', '${balance.creditUtilization.toStringAsFixed(1)}%'),
+                  _buildDetailRow('Credit Limit',
+                      currencyFormat.format(balance.creditLimit)),
+                  _buildDetailRow('Credit Utilization',
+                      '${balance.creditUtilization.toStringAsFixed(1)}%'),
                 ],
               ],
             ),
@@ -422,7 +442,8 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
     );
   }
 
-  Future<void> _generateCustomerStatement(CustomerBalanceSummary balance) async {
+  Future<void> _generateCustomerStatement(
+      CustomerBalanceSummary balance) async {
     try {
       final options = await _showStatementOptionsDialog();
       if (options == null) return;
@@ -436,7 +457,8 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
       if (mounted) {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => CustomerStatementDetailScreen(statement: statement),
+            builder: (context) =>
+                CustomerStatementDetailScreen(statement: statement),
           ),
         );
       }
@@ -531,7 +553,8 @@ class _StatementOptionsDialogState extends State<StatementOptionsDialog> {
                       final date = await showDatePicker(
                         context: context,
                         initialDate: _startDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365 * 2)),
+                        firstDate: DateTime.now()
+                            .subtract(const Duration(days: 365 * 2)),
                         lastDate: DateTime.now(),
                       );
                       if (date != null) {
@@ -573,7 +596,6 @@ class _StatementOptionsDialogState extends State<StatementOptionsDialog> {
               ],
             ),
             const SizedBox(height: 16),
-            
             Row(
               children: [
                 TextButton.icon(
@@ -600,23 +622,20 @@ class _StatementOptionsDialogState extends State<StatementOptionsDialog> {
                 ),
               ],
             ),
-            
             const SizedBox(height: 16),
-            
             CheckboxListTile(
               title: const Text('Include Zero Balance Customers'),
               value: _includeZeroBalance,
-              onChanged: (value) => setState(() => _includeZeroBalance = value!),
+              onChanged: (value) =>
+                  setState(() => _includeZeroBalance = value!),
             ),
-            
             CheckboxListTile(
               title: const Text('Include Paid Invoices'),
               value: _includePaidInvoices,
-              onChanged: (value) => setState(() => _includePaidInvoices = value!),
+              onChanged: (value) =>
+                  setState(() => _includePaidInvoices = value!),
             ),
-            
             const SizedBox(height: 16),
-            
             DropdownButtonFormField<StatementFormat>(
               value: _format,
               decoration: const InputDecoration(
@@ -724,8 +743,8 @@ class CustomerStatementDetailScreen extends StatelessWidget {
                     Text(
                       'Statement Summary',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -734,9 +753,12 @@ class CustomerStatementDetailScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Customer: ${statement.summary.customerName}'),
-                              Text('Statement Date: ${dateFormat.format(statement.summary.statementDate)}'),
-                              Text('Period: ${dateFormat.format(statement.summary.periodStart)} - ${dateFormat.format(statement.summary.periodEnd)}'),
+                              Text(
+                                  'Customer: ${statement.summary.customerName}'),
+                              Text(
+                                  'Statement Date: ${dateFormat.format(statement.summary.statementDate)}'),
+                              Text(
+                                  'Period: ${dateFormat.format(statement.summary.periodStart)} - ${dateFormat.format(statement.summary.periodEnd)}'),
                             ],
                           ),
                         ),
@@ -745,15 +767,17 @@ class CustomerStatementDetailScreen extends StatelessWidget {
                           children: [
                             Text(
                               'Current Balance',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              currencyFormat.format(statement.summary.currentBalance),
+                              currencyFormat
+                                  .format(statement.summary.currentBalance),
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: statement.summary.currentBalance > 0 
-                                    ? Colors.red 
+                                color: statement.summary.currentBalance > 0
+                                    ? Colors.red
                                     : Colors.green,
                               ),
                             ),
@@ -765,12 +789,12 @@ class CustomerStatementDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Aging analysis
-            if (statement.summary.overdue30Days > 0 || 
-                statement.summary.overdue60Days > 0 || 
+            if (statement.summary.overdue30Days > 0 ||
+                statement.summary.overdue60Days > 0 ||
                 statement.summary.overdue90Days > 0) ...[
               Card(
                 child: Padding(
@@ -780,18 +804,29 @@ class CustomerStatementDetailScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Aging Analysis',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          Expanded(child: _buildAgingCard('30 Days', statement.summary.overdue30Days, Colors.orange)),
+                          Expanded(
+                              child: _buildAgingCard(
+                                  '30 Days',
+                                  statement.summary.overdue30Days,
+                                  Colors.orange)),
                           const SizedBox(width: 8),
-                          Expanded(child: _buildAgingCard('60 Days', statement.summary.overdue60Days, Colors.deepOrange)),
+                          Expanded(
+                              child: _buildAgingCard(
+                                  '60 Days',
+                                  statement.summary.overdue60Days,
+                                  Colors.deepOrange)),
                           const SizedBox(width: 8),
-                          Expanded(child: _buildAgingCard('90+ Days', statement.summary.overdue90Days, Colors.red)),
+                          Expanded(
+                              child: _buildAgingCard('90+ Days',
+                                  statement.summary.overdue90Days, Colors.red)),
                         ],
                       ),
                     ],
@@ -800,7 +835,7 @@ class CustomerStatementDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
             ],
-            
+
             // Transactions
             Card(
               child: Padding(
@@ -811,12 +846,13 @@ class CustomerStatementDetailScreen extends StatelessWidget {
                     Text(
                       'Transaction History',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 12),
                     ...statement.transactions.map((transaction) {
-                      return _buildTransactionRow(transaction, currencyFormat, dateFormat);
+                      return _buildTransactionRow(
+                          transaction, currencyFormat, dateFormat);
                     }),
                   ],
                 ),
@@ -896,7 +932,7 @@ class CustomerStatementDetailScreen extends StatelessWidget {
           SizedBox(
             width: 80,
             child: Text(
-              transaction.debit > 0 
+              transaction.debit > 0
                   ? currencyFormat.format(transaction.debit)
                   : '',
               style: const TextStyle(color: Colors.red),
@@ -906,7 +942,7 @@ class CustomerStatementDetailScreen extends StatelessWidget {
           SizedBox(
             width: 80,
             child: Text(
-              transaction.credit > 0 
+              transaction.credit > 0
                   ? currencyFormat.format(transaction.credit)
                   : '',
               style: const TextStyle(color: Colors.green),

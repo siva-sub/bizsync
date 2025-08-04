@@ -9,8 +9,9 @@ import '../../../core/services/notification_service.dart';
 /// Service for managing recurring invoices
 class RecurringInvoiceService {
   static RecurringInvoiceService? _instance;
-  static RecurringInvoiceService get instance => _instance ??= RecurringInvoiceService._();
-  
+  static RecurringInvoiceService get instance =>
+      _instance ??= RecurringInvoiceService._();
+
   RecurringInvoiceService._();
 
   final CRDTDatabaseService _databaseService = CRDTDatabaseService();
@@ -25,10 +26,10 @@ class RecurringInvoiceService {
   Future<void> initialize() async {
     // Initialize dependent services
     _notificationService = NotificationService();
-    
+
     // InvoiceService requires more complex initialization
     // We'll create it on-demand in methods that need it
-    
+
     await _createTables();
     await _startRecurringInvoiceScheduler();
   }
@@ -116,7 +117,7 @@ class RecurringInvoiceService {
     );
 
     await _saveTemplate(template);
-    
+
     // Send notification
     await _notificationService.sendNotification(
       title: 'Recurring Invoice Created',
@@ -167,16 +168,17 @@ class RecurringInvoiceService {
     const sql = 'SELECT * FROM $_templatesTable ORDER BY created_at DESC';
     final db = await _databaseService.database;
     final results = await db.rawQuery(sql);
-    
+
     return results.map((row) => _templateFromRow(row)).toList();
   }
 
   /// Get active recurring invoice templates
   Future<List<RecurringInvoiceTemplate>> getActiveTemplates() async {
-    const sql = 'SELECT * FROM $_templatesTable WHERE is_active = 1 ORDER BY next_generation_date ASC';
+    const sql =
+        'SELECT * FROM $_templatesTable WHERE is_active = 1 ORDER BY next_generation_date ASC';
     final db = await _databaseService.database;
     final results = await db.rawQuery(sql);
-    
+
     return results.map((row) => _templateFromRow(row)).toList();
   }
 
@@ -190,7 +192,7 @@ class RecurringInvoiceService {
       AND (end_date IS NULL OR end_date > ?)
       ORDER BY next_generation_date ASC
     ''';
-    
+
     final db = await _databaseService.database;
     final results = await db.rawQuery(sql, [now, now]);
     return results.map((row) => _templateFromRow(row)).where((template) {
@@ -199,7 +201,8 @@ class RecurringInvoiceService {
   }
 
   /// Generate invoices for all due recurring templates
-  Future<RecurringInvoiceGenerationResult> generateDueRecurringInvoices() async {
+  Future<RecurringInvoiceGenerationResult>
+      generateDueRecurringInvoices() async {
     final dueTemplates = await getTemplatesDueForGeneration();
     final generatedIds = <String>[];
     final errors = <String>[];
@@ -208,7 +211,7 @@ class RecurringInvoiceService {
       try {
         final invoice = await _generateInvoiceFromTemplate(template);
         generatedIds.add(invoice.id);
-        
+
         // Update template with next generation date and count
         final updatedTemplate = template.copyWith(
           nextGenerationDate: template.calculateNextGenerationDate(),
@@ -216,12 +219,11 @@ class RecurringInvoiceService {
           generatedInvoiceIds: [...template.generatedInvoiceIds, invoice.id],
           updatedAt: DateTime.now(),
         );
-        
+
         await _saveTemplate(updatedTemplate);
-        
+
         // Log the generation
         await _logGeneration(template.id, invoice.id, true, null);
-        
       } catch (e) {
         errors.add('Template ${template.templateName}: $e');
         await _logGeneration(template.id, '', false, e.toString());
@@ -232,7 +234,8 @@ class RecurringInvoiceService {
     if (generatedIds.isNotEmpty) {
       await _notificationService.sendNotification(
         title: 'Recurring Invoices Generated',
-        message: '${generatedIds.length} recurring invoices were automatically created',
+        message:
+            '${generatedIds.length} recurring invoices were automatically created',
         data: {
           'type': 'recurring_invoices_generated',
           'count': generatedIds.length.toString(),
@@ -250,7 +253,8 @@ class RecurringInvoiceService {
   }
 
   /// Generate a single invoice from a recurring template
-  Future<EnhancedInvoice> _generateInvoiceFromTemplate(RecurringInvoiceTemplate template) async {
+  Future<EnhancedInvoice> _generateInvoiceFromTemplate(
+      RecurringInvoiceTemplate template) async {
     final now = DateTime.now();
     final invoiceTemplate = template.invoiceTemplate;
 
@@ -276,7 +280,7 @@ class RecurringInvoiceService {
     // Save the invoice using the invoice service
     // TODO: Implement invoice creation once InvoiceService is properly initialized
     // await _invoiceService.createInvoice(newInvoice);
-    
+
     return newInvoice;
   }
 
@@ -284,18 +288,20 @@ class RecurringInvoiceService {
   Future<String> _generateInvoiceNumber() async {
     final now = DateTime.now();
     final prefix = 'REC-${now.year}${now.month.toString().padLeft(2, '0')}';
-    
+
     // Get the count of invoices with this prefix
-    const sql = 'SELECT COUNT(*) as count FROM invoices WHERE invoice_number LIKE ?';
+    const sql =
+        'SELECT COUNT(*) as count FROM invoices WHERE invoice_number LIKE ?';
     final db = await _databaseService.database;
     final results = await db.rawQuery(sql, ['$prefix%']);
     final count = results.first['count'] as int;
-    
+
     return '$prefix-${(count + 1).toString().padLeft(4, '0')}';
   }
 
   /// Log invoice generation
-  Future<void> _logGeneration(String templateId, String invoiceId, bool success, String? errorMessage) async {
+  Future<void> _logGeneration(String templateId, String invoiceId, bool success,
+      String? errorMessage) async {
     const sql = '''
       INSERT INTO $_generationLogTable (id, template_id, invoice_id, generation_date, success, error_message)
       VALUES (?, ?, ?, ?, ?, ?)
@@ -313,7 +319,8 @@ class RecurringInvoiceService {
   }
 
   /// Update a recurring invoice template
-  Future<RecurringInvoiceTemplate> updateTemplate(RecurringInvoiceTemplate template) async {
+  Future<RecurringInvoiceTemplate> updateTemplate(
+      RecurringInvoiceTemplate template) async {
     final updatedTemplate = template.copyWith(updatedAt: DateTime.now());
     await _saveTemplate(updatedTemplate);
     return updatedTemplate;
@@ -321,10 +328,11 @@ class RecurringInvoiceService {
 
   /// Deactivate a recurring invoice template
   Future<void> deactivateTemplate(String templateId) async {
-    const sql = 'UPDATE $_templatesTable SET is_active = 0, updated_at = ? WHERE id = ?';
+    const sql =
+        'UPDATE $_templatesTable SET is_active = 0, updated_at = ? WHERE id = ?';
     final db = await _databaseService.database;
     await db.execute(sql, [DateTime.now().toIso8601String(), templateId]);
-    
+
     await _notificationService.sendNotification(
       title: 'Recurring Invoice Deactivated',
       message: 'Recurring invoice template has been deactivated',
@@ -343,13 +351,14 @@ class RecurringInvoiceService {
   }
 
   /// Get generation history for a template
-  Future<List<Map<String, dynamic>>> getGenerationHistory(String templateId) async {
+  Future<List<Map<String, dynamic>>> getGenerationHistory(
+      String templateId) async {
     const sql = '''
       SELECT * FROM $_generationLogTable 
       WHERE template_id = ? 
       ORDER BY generation_date DESC
     ''';
-    
+
     final db = await _databaseService.database;
     return await db.rawQuery(sql, [templateId]);
   }
@@ -373,12 +382,15 @@ class RecurringInvoiceService {
       invoiceTemplate: EnhancedInvoice.fromJson(row['invoice_template']),
       createdAt: DateTime.parse(row['created_at']),
       updatedAt: DateTime.parse(row['updated_at']),
-      nextGenerationDate: row['next_generation_date'] != null 
-          ? DateTime.parse(row['next_generation_date']) 
+      nextGenerationDate: row['next_generation_date'] != null
+          ? DateTime.parse(row['next_generation_date'])
           : null,
       generatedCount: row['generated_count'] ?? 0,
-      generatedInvoiceIds: row['generated_invoice_ids'] != null 
-          ? (row['generated_invoice_ids'] as String).split(',').where((id) => id.isNotEmpty).toList()
+      generatedInvoiceIds: row['generated_invoice_ids'] != null
+          ? (row['generated_invoice_ids'] as String)
+              .split(',')
+              .where((id) => id.isNotEmpty)
+              .toList()
           : [],
     );
   }

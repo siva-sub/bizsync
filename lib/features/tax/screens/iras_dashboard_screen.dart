@@ -9,7 +9,8 @@ class IrasDashboardScreen extends ConsumerStatefulWidget {
   const IrasDashboardScreen({super.key});
 
   @override
-  ConsumerState<IrasDashboardScreen> createState() => _IrasDashboardScreenState();
+  ConsumerState<IrasDashboardScreen> createState() =>
+      _IrasDashboardScreenState();
 }
 
 class _IrasDashboardScreenState extends ConsumerState<IrasDashboardScreen> {
@@ -60,11 +61,12 @@ class _IrasDashboardScreenState extends ConsumerState<IrasDashboardScreen> {
       final authUrl = await _irasService.initiateAuthentication(
         callbackUrl: 'https://bizsync.app/auth/callback',
       );
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Authentication URL generated: ${authUrl.substring(0, 50)}...'),
+            content: Text(
+                'Authentication URL generated: ${authUrl.substring(0, 50)}...'),
             backgroundColor: Colors.green,
           ),
         );
@@ -195,7 +197,8 @@ class _IrasDashboardScreenState extends ConsumerState<IrasDashboardScreen> {
   }
 
   Widget _buildAuthenticationCard() {
-    final isAuthenticated = _serviceStatus?['is_authenticated'] as bool? ?? false;
+    final isAuthenticated =
+        _serviceStatus?['is_authenticated'] as bool? ?? false;
 
     return Card(
       child: Padding(

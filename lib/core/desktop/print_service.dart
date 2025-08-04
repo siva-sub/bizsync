@@ -75,7 +75,7 @@ class PrintResult {
 }
 
 /// Print Service for Linux Desktop
-/// 
+///
 /// Provides comprehensive printing functionality:
 /// - Direct printing of invoices/reports
 /// - Print preview with zoom and navigation
@@ -101,7 +101,7 @@ class PrintService {
     try {
       // Discover available printers
       await _discoverPrinters();
-      
+
       _isInitialized = true;
       debugPrint('✅ Print service initialized successfully');
       debugPrint('Found ${_availablePrinters.length} printers');
@@ -114,7 +114,7 @@ class PrintService {
   Future<void> _discoverPrinters() async {
     try {
       _availablePrinters = await Printing.listPrinters();
-      
+
       // Find default printer
       try {
         _defaultPrinter = _availablePrinters.firstWhere(
@@ -126,10 +126,11 @@ class PrintService {
           _defaultPrinter = _availablePrinters.first;
         }
       }
-      
+
       debugPrint('Available printers:');
       for (final printer in _availablePrinters) {
-        debugPrint('  - ${printer.name} ${printer.isDefault ? '(default)' : ''}');
+        debugPrint(
+            '  - ${printer.name} ${printer.isDefault ? '(default)' : ''}');
       }
     } catch (e) {
       debugPrint('Failed to discover printers: $e');
@@ -172,7 +173,7 @@ class PrintService {
 
     try {
       final pdfBytes = await document.save();
-      
+
       final printer = config?.printerName != null
           ? _availablePrinters.firstWhere(
               (p) => p.name == config!.printerName,
@@ -213,12 +214,13 @@ class PrintService {
   }) async {
     try {
       final document = await _generateInvoicePdf(invoiceData, templateName);
-      
-      final printConfig = config ?? PrintConfig(
-        jobName: 'Invoice ${invoiceData['number'] ?? 'Unknown'}',
-        layout: PrintLayout.portrait,
-        paperSize: PrintPaperSize.a4,
-      );
+
+      final printConfig = config ??
+          PrintConfig(
+            jobName: 'Invoice ${invoiceData['number'] ?? 'Unknown'}',
+            layout: PrintLayout.portrait,
+            paperSize: PrintPaperSize.a4,
+          );
 
       return await printDocument(
         document: document,
@@ -241,12 +243,13 @@ class PrintService {
   }) async {
     try {
       final document = await _generateReportPdf(reportData, templateName);
-      
-      final printConfig = config ?? PrintConfig(
-        jobName: 'Report ${reportData['title'] ?? 'Unknown'}',
-        layout: PrintLayout.portrait,
-        paperSize: PrintPaperSize.a4,
-      );
+
+      final printConfig = config ??
+          PrintConfig(
+            jobName: 'Report ${reportData['title'] ?? 'Unknown'}',
+            layout: PrintLayout.portrait,
+            paperSize: PrintPaperSize.a4,
+          );
 
       return await printDocument(
         document: document,
@@ -268,12 +271,13 @@ class PrintService {
   }) async {
     try {
       final document = await _generateCustomerListPdf(customers);
-      
-      final printConfig = config ?? PrintConfig(
-        jobName: 'Customer List',
-        layout: PrintLayout.portrait,
-        paperSize: PrintPaperSize.a4,
-      );
+
+      final printConfig = config ??
+          PrintConfig(
+            jobName: 'Customer List',
+            layout: PrintLayout.portrait,
+            paperSize: PrintPaperSize.a4,
+          );
 
       return await printDocument(
         document: document,
@@ -295,12 +299,13 @@ class PrintService {
   }) async {
     try {
       final document = await _generateInventoryReportPdf(products);
-      
-      final printConfig = config ?? PrintConfig(
-        jobName: 'Inventory Report',
-        layout: PrintLayout.landscape,
-        paperSize: PrintPaperSize.a4,
-      );
+
+      final printConfig = config ??
+          PrintConfig(
+            jobName: 'Inventory Report',
+            layout: PrintLayout.landscape,
+            paperSize: PrintPaperSize.a4,
+          );
 
       return await printDocument(
         document: document,
@@ -325,10 +330,12 @@ class PrintService {
     // Load custom font if available
     pw.Font? regularFont;
     pw.Font? boldFont;
-    
+
     try {
-      final regularFontData = await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
-      final boldFontData = await rootBundle.load('assets/fonts/Roboto-Bold.ttf');
+      final regularFontData =
+          await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
+      final boldFontData =
+          await rootBundle.load('assets/fonts/Roboto-Bold.ttf');
       regularFont = pw.Font.ttf(regularFontData);
       boldFont = pw.Font.ttf(boldFontData);
     } catch (e) {
@@ -390,9 +397,9 @@ class PrintService {
                   ),
                 ],
               ),
-              
+
               pw.SizedBox(height: 32),
-              
+
               // Invoice details
               pw.Row(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -428,33 +435,43 @@ class PrintService {
                       ],
                     ),
                   ),
-                  
+
                   // Invoice info
                   pw.Expanded(
                     child: pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        _buildInfoRow('Date:', invoiceData['date'] ?? 'N/A', regularFont, boldFont),
-                        _buildInfoRow('Due Date:', invoiceData['dueDate'] ?? 'N/A', regularFont, boldFont),
-                        _buildInfoRow('Terms:', invoiceData['terms'] ?? 'Net 30', regularFont, boldFont),
+                        _buildInfoRow('Date:', invoiceData['date'] ?? 'N/A',
+                            regularFont, boldFont),
+                        _buildInfoRow(
+                            'Due Date:',
+                            invoiceData['dueDate'] ?? 'N/A',
+                            regularFont,
+                            boldFont),
+                        _buildInfoRow(
+                            'Terms:',
+                            invoiceData['terms'] ?? 'Net 30',
+                            regularFont,
+                            boldFont),
                       ],
                     ),
                   ),
                 ],
               ),
-              
+
               pw.SizedBox(height: 32),
-              
+
               // Line items table
-              _buildLineItemsTable(invoiceData['lineItems'] ?? [], regularFont, boldFont),
-              
+              _buildLineItemsTable(
+                  invoiceData['lineItems'] ?? [], regularFont, boldFont),
+
               pw.SizedBox(height: 32),
-              
+
               // Totals
               _buildTotalsSection(invoiceData, regularFont, boldFont),
-              
+
               pw.Spacer(),
-              
+
               // Footer
               pw.Text(
                 'Thank you for your business!',
@@ -505,7 +522,7 @@ class PrintService {
                 ),
               ),
               pw.SizedBox(height: 32),
-              
+
               // Report content would go here
               pw.Text(
                 reportData['content'] ?? 'Report content not available',
@@ -521,7 +538,8 @@ class PrintService {
   }
 
   /// Generate customer list PDF
-  Future<pw.Document> _generateCustomerListPdf(List<Map<String, dynamic>> customers) async {
+  Future<pw.Document> _generateCustomerListPdf(
+      List<Map<String, dynamic>> customers) async {
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -541,16 +559,18 @@ class PrintService {
               ),
             ),
             pw.SizedBox(height: 16),
-            
+
             // Customer table
             pw.Table.fromTextArray(
               headers: ['Name', 'Email', 'Phone', 'Company'],
-              data: customers.map((customer) => [
-                customer['name'] ?? 'N/A',
-                customer['email'] ?? 'N/A',
-                customer['phone'] ?? 'N/A',
-                customer['company'] ?? 'N/A',
-              ]).toList(),
+              data: customers
+                  .map((customer) => [
+                        customer['name'] ?? 'N/A',
+                        customer['email'] ?? 'N/A',
+                        customer['phone'] ?? 'N/A',
+                        customer['company'] ?? 'N/A',
+                      ])
+                  .toList(),
               headerStyle: pw.TextStyle(
                 fontWeight: pw.FontWeight.bold,
               ),
@@ -569,7 +589,8 @@ class PrintService {
   }
 
   /// Generate inventory report PDF
-  Future<pw.Document> _generateInventoryReportPdf(List<Map<String, dynamic>> products) async {
+  Future<pw.Document> _generateInventoryReportPdf(
+      List<Map<String, dynamic>> products) async {
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -589,18 +610,27 @@ class PrintService {
               ),
             ),
             pw.SizedBox(height: 16),
-            
+
             // Inventory table
             pw.Table.fromTextArray(
-              headers: ['SKU', 'Name', 'Category', 'Stock', 'Unit Price', 'Total Value'],
-              data: products.map((product) => [
-                product['sku'] ?? 'N/A',
-                product['name'] ?? 'N/A',
-                product['category'] ?? 'N/A',
-                product['stock']?.toString() ?? '0',
-                '\$${product['price']?.toStringAsFixed(2) ?? '0.00'}',
-                '\$${((product['stock'] ?? 0) * (product['price'] ?? 0)).toStringAsFixed(2)}',
-              ]).toList(),
+              headers: [
+                'SKU',
+                'Name',
+                'Category',
+                'Stock',
+                'Unit Price',
+                'Total Value'
+              ],
+              data: products
+                  .map((product) => [
+                        product['sku'] ?? 'N/A',
+                        product['name'] ?? 'N/A',
+                        product['category'] ?? 'N/A',
+                        product['stock']?.toString() ?? '0',
+                        '\$${product['price']?.toStringAsFixed(2) ?? '0.00'}',
+                        '\$${((product['stock'] ?? 0) * (product['price'] ?? 0)).toStringAsFixed(2)}',
+                      ])
+                  .toList(),
               headerStyle: pw.TextStyle(
                 fontWeight: pw.FontWeight.bold,
               ),
@@ -619,7 +649,8 @@ class PrintService {
   }
 
   /// Build info row for invoice
-  pw.Widget _buildInfoRow(String label, String value, pw.Font? regularFont, pw.Font? boldFont) {
+  pw.Widget _buildInfoRow(
+      String label, String value, pw.Font? regularFont, pw.Font? boldFont) {
     return pw.Padding(
       padding: const pw.EdgeInsets.only(bottom: 4),
       child: pw.Row(
@@ -645,15 +676,18 @@ class PrintService {
   }
 
   /// Build line items table
-  pw.Widget _buildLineItemsTable(List<dynamic> lineItems, pw.Font? regularFont, pw.Font? boldFont) {
+  pw.Widget _buildLineItemsTable(
+      List<dynamic> lineItems, pw.Font? regularFont, pw.Font? boldFont) {
     return pw.Table.fromTextArray(
       headers: ['Description', 'Qty', 'Unit Price', 'Total'],
-      data: lineItems.map((item) => [
-        item['description'] ?? 'N/A',
-        item['quantity']?.toString() ?? '0',
-        '\$${item['unitPrice']?.toStringAsFixed(2) ?? '0.00'}',
-        '\$${((item['quantity'] ?? 0) * (item['unitPrice'] ?? 0)).toStringAsFixed(2)}',
-      ]).toList(),
+      data: lineItems
+          .map((item) => [
+                item['description'] ?? 'N/A',
+                item['quantity']?.toString() ?? '0',
+                '\$${item['unitPrice']?.toStringAsFixed(2) ?? '0.00'}',
+                '\$${((item['quantity'] ?? 0) * (item['unitPrice'] ?? 0)).toStringAsFixed(2)}',
+              ])
+          .toList(),
       headerStyle: pw.TextStyle(
         font: boldFont,
         fontSize: 12,
@@ -670,20 +704,37 @@ class PrintService {
   }
 
   /// Build totals section
-  pw.Widget _buildTotalsSection(Map<String, dynamic> invoiceData, pw.Font? regularFont, pw.Font? boldFont) {
+  pw.Widget _buildTotalsSection(Map<String, dynamic> invoiceData,
+      pw.Font? regularFont, pw.Font? boldFont) {
     return pw.Align(
       alignment: pw.Alignment.centerRight,
       child: pw.Container(
         width: 200,
         child: pw.Column(
           children: [
-            _buildTotalRow('Subtotal:', '\$${invoiceData['subtotal']?.toStringAsFixed(2) ?? '0.00'}', regularFont, boldFont),
+            _buildTotalRow(
+                'Subtotal:',
+                '\$${invoiceData['subtotal']?.toStringAsFixed(2) ?? '0.00'}',
+                regularFont,
+                boldFont),
             if (invoiceData['tax'] != null && invoiceData['tax'] > 0)
-              _buildTotalRow('Tax:', '\$${invoiceData['tax']?.toStringAsFixed(2) ?? '0.00'}', regularFont, boldFont),
+              _buildTotalRow(
+                  'Tax:',
+                  '\$${invoiceData['tax']?.toStringAsFixed(2) ?? '0.00'}',
+                  regularFont,
+                  boldFont),
             if (invoiceData['discount'] != null && invoiceData['discount'] > 0)
-              _buildTotalRow('Discount:', '-\$${invoiceData['discount']?.toStringAsFixed(2) ?? '0.00'}', regularFont, boldFont),
+              _buildTotalRow(
+                  'Discount:',
+                  '-\$${invoiceData['discount']?.toStringAsFixed(2) ?? '0.00'}',
+                  regularFont,
+                  boldFont),
             pw.Divider(),
-            _buildTotalRow('Total:', '\$${invoiceData['total']?.toStringAsFixed(2) ?? '0.00'}', boldFont, boldFont),
+            _buildTotalRow(
+                'Total:',
+                '\$${invoiceData['total']?.toStringAsFixed(2) ?? '0.00'}',
+                boldFont,
+                boldFont),
           ],
         ),
       ),
@@ -691,7 +742,8 @@ class PrintService {
   }
 
   /// Build total row
-  pw.Widget _buildTotalRow(String label, String value, pw.Font? labelFont, pw.Font? valueFont) {
+  pw.Widget _buildTotalRow(
+      String label, String value, pw.Font? labelFont, pw.Font? valueFont) {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(

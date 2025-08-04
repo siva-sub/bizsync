@@ -9,11 +9,12 @@ class NotificationCenterScreen extends ConsumerStatefulWidget {
   const NotificationCenterScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<NotificationCenterScreen> createState() => 
+  ConsumerState<NotificationCenterScreen> createState() =>
       _NotificationCenterScreenState();
 }
 
-class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScreen>
+class _NotificationCenterScreenState
+    extends ConsumerState<NotificationCenterScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
@@ -36,7 +37,7 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final unreadCount = ref.watch(unreadNotificationsCountProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: _showSearch ? _buildSearchField() : const Text('Notifications'),
@@ -48,7 +49,8 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
             ),
             IconButton(
               icon: const Icon(Icons.settings),
-              onPressed: () => Navigator.of(context).pushNamed('/notifications/settings'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed('/notifications/settings'),
             ),
           ] else
             IconButton(
@@ -72,7 +74,8 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
                   if (unreadCount > 0) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.error,
                         borderRadius: BorderRadius.circular(12),
@@ -99,10 +102,10 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
         children: [
           // Quick actions
           const NotificationQuickActions(),
-          
+
           // Statistics (collapsible)
           const NotificationStatistics(),
-          
+
           // Tab content
           Expanded(
             child: TabBarView(
@@ -148,8 +151,7 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
     return Consumer(
       builder: (context, ref, child) {
         final notifications = ref.watch(activeNotificationsProvider);
-        final sortedNotifications = [...notifications]
-          ..sort((a, b) {
+        final sortedNotifications = [...notifications]..sort((a, b) {
             // Unread first, then by creation time
             if (a.isRead != b.isRead) {
               return a.isRead ? 1 : -1;
@@ -173,15 +175,17 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
   Widget _buildCategoryTab(NotificationCategory category) {
     return Consumer(
       builder: (context, ref, child) {
-        final notifications = ref.watch(notificationsByCategoryProvider(category));
-        
+        final notifications =
+            ref.watch(notificationsByCategoryProvider(category));
+
         return RefreshIndicator(
           onRefresh: () async {
             ref.read(activeNotificationsProvider.notifier).refresh();
           },
           child: NotificationList(
             notifications: notifications,
-            emptyMessage: 'No ${category.displayName.toLowerCase()} notifications',
+            emptyMessage:
+                'No ${category.displayName.toLowerCase()} notifications',
           ),
         );
       },
@@ -192,7 +196,7 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
     return Consumer(
       builder: (context, ref, child) {
         final searchState = ref.watch(notificationSearchProvider);
-        
+
         if (searchState.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -200,7 +204,7 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
         return Column(
           children: [
             // Search filters
-            if (searchState.categoryFilters.isNotEmpty || 
+            if (searchState.categoryFilters.isNotEmpty ||
                 searchState.priorityFilters.isNotEmpty)
               Container(
                 padding: const EdgeInsets.all(16),
@@ -215,17 +219,19 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
                     Wrap(
                       spacing: 8,
                       children: [
-                        ...searchState.categoryFilters.map((category) =>
-                          Chip(
+                        ...searchState.categoryFilters.map(
+                          (category) => Chip(
                             label: Text(category.displayName),
-                            onDeleted: () => ref.read(notificationSearchProvider.notifier)
+                            onDeleted: () => ref
+                                .read(notificationSearchProvider.notifier)
                                 .removeCategoryFilter(category),
                           ),
                         ),
-                        ...searchState.priorityFilters.map((priority) =>
-                          Chip(
+                        ...searchState.priorityFilters.map(
+                          (priority) => Chip(
                             label: Text(priority.name.toUpperCase()),
-                            onDeleted: () => ref.read(notificationSearchProvider.notifier)
+                            onDeleted: () => ref
+                                .read(notificationSearchProvider.notifier)
                                 .removePriorityFilter(priority),
                           ),
                         ),
@@ -234,12 +240,12 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
                   ],
                 ),
               ),
-            
+
             // Search results
             Expanded(
               child: NotificationList(
                 notifications: searchState.results,
-                emptyMessage: searchState.query.isEmpty 
+                emptyMessage: searchState.query.isEmpty
                     ? 'Start typing to search notifications'
                     : 'No notifications found matching "${searchState.query}"',
                 showSearch: false,
@@ -331,7 +337,7 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
     NotificationCategory category,
   ) async {
     final notificationService = ref.read(notificationServiceProvider);
-    
+
     await notificationService.showNotification(
       title: title,
       body: body,
@@ -367,7 +373,8 @@ class NotificationDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notifications = ref.watch(activeNotificationsProvider);
-    final notification = notifications.where((n) => n.id == notificationId).firstOrNull;
+    final notification =
+        notifications.where((n) => n.id == notificationId).firstOrNull;
 
     if (notification == null) {
       return Scaffold(
@@ -381,7 +388,9 @@ class NotificationDetailScreen extends ConsumerWidget {
     // Mark as read when viewing
     if (!notification.isRead) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(activeNotificationsProvider.notifier).markAsRead(notificationId);
+        ref
+            .read(activeNotificationsProvider.notifier)
+            .markAsRead(notificationId);
       });
     }
 
@@ -394,7 +403,8 @@ class NotificationDetailScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              ref.read(activeNotificationsProvider.notifier)
+              ref
+                  .read(activeNotificationsProvider.notifier)
                   .dismissNotification(notificationId);
               Navigator.of(context).pop();
             },
@@ -412,7 +422,7 @@ class NotificationDetailScreen extends ConsumerWidget {
               style: theme.textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
-            
+
             // Metadata
             Row(
               children: [
@@ -444,12 +454,13 @@ class NotificationDetailScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Priority indicator
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: _getPriorityColor(notification.priority).withValues(alpha: 0.1),
+                color: _getPriorityColor(notification.priority)
+                    .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -472,13 +483,13 @@ class NotificationDetailScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Body
             Text(
               notification.body,
               style: theme.textTheme.bodyLarge,
             ),
-            
+
             // Big text if available
             if (notification.bigText != null) ...[
               const SizedBox(height: 16),
@@ -494,7 +505,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                 ),
               ),
             ],
-            
+
             // Progress indicator if available
             if (notification.hasProgress) ...[
               const SizedBox(height: 24),
@@ -504,8 +515,8 @@ class NotificationDetailScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               LinearProgressIndicator(
-                value: notification.indeterminate 
-                    ? null 
+                value: notification.indeterminate
+                    ? null
                     : (notification.progress! / notification.maxProgress!),
               ),
               if (!notification.indeterminate) ...[
@@ -516,7 +527,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                 ),
               ],
             ],
-            
+
             // Actions
             if (notification.hasActions) ...[
               const SizedBox(height: 24),
@@ -525,21 +536,23 @@ class NotificationDetailScreen extends ConsumerWidget {
                 style: theme.textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              ...notification.actions!.map((action) => 
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () => _handleAction(context, ref, action),
-                      icon: Icon(_getActionIcon(action.type)),
-                      label: Text(action.title),
+              ...notification.actions!
+                  .map(
+                    (action) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () => _handleAction(context, ref, action),
+                          icon: Icon(_getActionIcon(action.type)),
+                          label: Text(action.title),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ).toList(),
+                  )
+                  .toList(),
             ],
-            
+
             // Payload information (debug)
             if (notification.payload != null) ...[
               const SizedBox(height: 24),
@@ -645,11 +658,12 @@ class NotificationDetailScreen extends ConsumerWidget {
 
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} '
-           '${dateTime.hour.toString().padLeft(2, '0')}:'
-           '${dateTime.minute.toString().padLeft(2, '0')}';
+        '${dateTime.hour.toString().padLeft(2, '0')}:'
+        '${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
-  void _handleAction(BuildContext context, WidgetRef ref, NotificationAction action) {
+  void _handleAction(
+      BuildContext context, WidgetRef ref, NotificationAction action) {
     // Handle the action (similar to widget implementation)
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

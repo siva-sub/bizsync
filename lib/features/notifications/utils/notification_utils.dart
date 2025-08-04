@@ -19,7 +19,7 @@ class NotificationUtils {
     if (!settings.enabled) return requestedTime;
 
     final now = DateTime.now();
-    
+
     // Don't schedule in the past
     if (requestedTime.isBefore(now)) {
       return now.add(const Duration(minutes: 1));
@@ -57,14 +57,16 @@ class NotificationUtils {
     }
 
     // Increase delay if user has been dismissing notifications frequently
-    if (context.recentActions.where((action) => action == 'dismiss').length > 3) {
+    if (context.recentActions.where((action) => action == 'dismiss').length >
+        3) {
       delay = Duration(milliseconds: (delay.inMilliseconds * 2).round());
     }
 
     // Adjust based on screen usage patterns
     if (context.currentScreen != null) {
       final screenUsage = context.screenUsage[context.currentScreen!] ?? 0;
-      if (screenUsage > 300) { // User spends a lot of time on this screen
+      if (screenUsage > 300) {
+        // User spends a lot of time on this screen
         delay = Duration(milliseconds: (delay.inMilliseconds * 0.7).round());
       }
     }
@@ -81,9 +83,8 @@ class NotificationUtils {
     if (!settings.enabled) return false;
     if (settings.neverBatchCategories.contains(category)) return false;
 
-    final categoryNotifications = pendingNotifications
-        .where((n) => n.category == category)
-        .toList();
+    final categoryNotifications =
+        pendingNotifications.where((n) => n.category == category).toList();
 
     final threshold = settings.categoryThresholds[category] ?? 2;
     return categoryNotifications.length >= threshold;
@@ -101,7 +102,7 @@ class NotificationUtils {
 
     final category = notifications.first.category;
     final limitedNotifications = notifications.take(maxNotifications).toList();
-    
+
     String title;
     String summary;
 
@@ -120,7 +121,8 @@ class NotificationUtils {
         break;
       default:
         title = category.displayName;
-        summary = '${limitedNotifications.length} ${category.displayName.toLowerCase()}';
+        summary =
+            '${limitedNotifications.length} ${category.displayName.toLowerCase()}';
     }
 
     return NotificationBatch(
@@ -205,15 +207,15 @@ class NotificationUtils {
     notifications.sort((a, b) {
       final scoreA = calculatePriorityScore(a);
       final scoreB = calculatePriorityScore(b);
-      
+
       // Higher score first
       final scoreDiff = scoreB.compareTo(scoreA);
       if (scoreDiff != 0) return scoreDiff;
-      
+
       // Then by creation time (newer first)
       return b.createdAt.compareTo(a.createdAt);
     });
-    
+
     return notifications;
   }
 
@@ -224,30 +226,31 @@ class NotificationUtils {
     DateTime? currentTime,
   }) {
     final now = currentTime ?? DateTime.now();
-    
+
     return notifications.where((notification) {
       // Global enabled check
       if (!settings.globalEnabled) return false;
-      
+
       // Category enabled check
       final categorySettings = settings.categorySettings[notification.category];
       if (categorySettings == null || !categorySettings.enabled) return false;
-      
+
       // Priority check
-      final priorityIndex = NotificationPriority.values.indexOf(notification.priority);
-      final minPriorityIndex = NotificationPriority.values
-          .indexOf(categorySettings.minimumPriority);
+      final priorityIndex =
+          NotificationPriority.values.indexOf(notification.priority);
+      final minPriorityIndex =
+          NotificationPriority.values.indexOf(categorySettings.minimumPriority);
       if (priorityIndex < minPriorityIndex) return false;
-      
+
       // Do not disturb check
-      if (settings.doNotDisturb.isActive(now) && 
+      if (settings.doNotDisturb.isActive(now) &&
           !settings.doNotDisturb.shouldBypass(notification.priority)) {
         return false;
       }
-      
+
       // Expiry check
       if (notification.isExpired) return false;
-      
+
       return true;
     }).toList();
   }
@@ -260,7 +263,7 @@ class NotificationUtils {
     List<String>? recentActions,
   }) {
     final now = DateTime.now();
-    
+
     return UserActivityContext(
       timestamp: now,
       isAppActive: isAppActive,
@@ -284,27 +287,28 @@ class NotificationUtils {
   }
 
   /// Validate notification data
-  static ValidationResult validateNotification(BizSyncNotification notification) {
+  static ValidationResult validateNotification(
+      BizSyncNotification notification) {
     final errors = <String>[];
-    
+
     if (notification.title.trim().isEmpty) {
       errors.add('Title cannot be empty');
     }
-    
+
     if (notification.body.trim().isEmpty) {
       errors.add('Body cannot be empty');
     }
-    
-    if (notification.scheduledFor != null && 
+
+    if (notification.scheduledFor != null &&
         notification.scheduledFor!.isBefore(DateTime.now())) {
       errors.add('Scheduled time cannot be in the past');
     }
-    
-    if (notification.expiresAt != null && 
+
+    if (notification.expiresAt != null &&
         notification.expiresAt!.isBefore(DateTime.now())) {
       errors.add('Expiry time cannot be in the past');
     }
-    
+
     if (notification.progress != null && notification.maxProgress != null) {
       if (notification.progress! > notification.maxProgress!) {
         errors.add('Progress cannot exceed max progress');
@@ -313,7 +317,7 @@ class NotificationUtils {
         errors.add('Progress cannot be negative');
       }
     }
-    
+
     return ValidationResult(
       isValid: errors.isEmpty,
       errors: errors,
@@ -323,40 +327,40 @@ class NotificationUtils {
   /// Calculate notification engagement score
   static double calculateEngagementScore(NotificationMetrics metrics) {
     double score = 0.0;
-    
+
     // Base score for delivery
     score += 0.1;
-    
+
     // Score for being seen
     if (metrics.firstSeenAt != null) {
       score += 0.2;
     }
-    
+
     // Score for being opened
     if (metrics.wasOpened) {
       score += 0.4;
-      
+
       // Bonus for quick opening
       if (metrics.timeToOpen != null && metrics.timeToOpen!.inMinutes < 5) {
         score += 0.1;
       }
     }
-    
+
     // Score for taking action
     if (metrics.hadAction) {
       score += 0.3;
-      
+
       // Bonus for quick action
       if (metrics.timeToAction != null && metrics.timeToAction!.inMinutes < 2) {
         score += 0.1;
       }
     }
-    
+
     // Penalty for dismissal
     if (metrics.wasDismissed) {
       score -= 0.2;
     }
-    
+
     return score.clamp(0.0, 1.0);
   }
 
@@ -375,40 +379,44 @@ class NotificationUtils {
         averageTimeToAction: Duration.zero,
       );
     }
-    
+
     final totalCount = metrics.length;
     final openedCount = metrics.where((m) => m.wasOpened).length;
     final actionCount = metrics.where((m) => m.hadAction).length;
     final dismissedCount = metrics.where((m) => m.wasDismissed).length;
-    
+
     final openTimes = metrics
         .where((m) => m.timeToOpen != null)
         .map((m) => m.timeToOpen!.inSeconds)
         .toList();
-    
+
     final actionTimes = metrics
         .where((m) => m.timeToAction != null)
         .map((m) => m.timeToAction!.inSeconds)
         .toList();
-    
-    final engagementScores = metrics
-        .map((m) => calculateEngagementScore(m))
-        .toList();
-    
+
+    final engagementScores =
+        metrics.map((m) => calculateEngagementScore(m)).toList();
+
     return NotificationAnalyticsSummary(
       totalNotifications: totalCount,
       openRate: openedCount / totalCount,
       actionRate: actionCount / totalCount,
       dismissalRate: dismissedCount / totalCount,
-      averageEngagement: engagementScores.isEmpty 
-          ? 0.0 
+      averageEngagement: engagementScores.isEmpty
+          ? 0.0
           : engagementScores.reduce((a, b) => a + b) / engagementScores.length,
       averageTimeToOpen: openTimes.isEmpty
           ? Duration.zero
-          : Duration(seconds: (openTimes.reduce((a, b) => a + b) / openTimes.length).round()),
+          : Duration(
+              seconds: (openTimes.reduce((a, b) => a + b) / openTimes.length)
+                  .round()),
       averageTimeToAction: actionTimes.isEmpty
           ? Duration.zero
-          : Duration(seconds: (actionTimes.reduce((a, b) => a + b) / actionTimes.length).round()),
+          : Duration(
+              seconds:
+                  (actionTimes.reduce((a, b) => a + b) / actionTimes.length)
+                      .round()),
     );
   }
 
@@ -420,28 +428,28 @@ class NotificationUtils {
   /// Create deep link from notification payload
   static String? createDeepLink(Map<String, dynamic>? payload) {
     if (payload == null) return null;
-    
+
     final actionType = payload['actionType'] as String?;
     if (actionType == null) return null;
-    
+
     switch (actionType) {
       case 'view_invoice':
         final invoiceId = payload['invoiceId'] as String?;
         return invoiceId != null ? '/invoices/$invoiceId' : null;
-      
+
       case 'view_payment':
         final paymentId = payload['paymentId'] as String?;
         return paymentId != null ? '/payments/$paymentId' : null;
-      
+
       case 'open_tax_calculator':
         return '/tax/calculator';
-      
+
       case 'view_backup_details':
         return '/backup/history';
-      
+
       case 'view_analytics':
         return '/dashboard/analytics';
-      
+
       default:
         return null;
     }
@@ -467,7 +475,7 @@ class NotificationUtils {
   static String _formatRelativeTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inSeconds < 60) {
       return 'Just now';
     } else if (difference.inMinutes < 60) {

@@ -17,7 +17,8 @@ class BackgroundTaskService {
   static const String _taskBackupReminders = 'backup_reminders';
   static const String _taskTaxDeadlines = 'tax_deadlines';
 
-  static final BackgroundTaskService _instance = BackgroundTaskService._internal();
+  static final BackgroundTaskService _instance =
+      BackgroundTaskService._internal();
   factory BackgroundTaskService() => _instance;
   BackgroundTaskService._internal();
 

@@ -70,16 +70,17 @@ class TaxSettingsService {
   }
 
   /// Update company GST registration status
-  Future<void> updateCompanyGstRegistrationStatus(bool isRegistered, {
+  Future<void> updateCompanyGstRegistrationStatus(
+    bool isRegistered, {
     String? gstNumber,
     DateTime? registrationDate,
   }) async {
     try {
       final db = await _databaseService.database;
-      
+
       // Check if profile exists
       final existingProfile = await db.query('company_tax_profile', limit: 1);
-      
+
       final data = {
         'is_gst_registered': isRegistered ? 1 : 0,
         'gst_number': gstNumber,
@@ -105,9 +106,10 @@ class TaxSettingsService {
           'residency_status': 'resident',
           'industry_classification': 'services',
           'incorporation_date': DateTime.now().millisecondsSinceEpoch,
-          'financial_year_end': DateTime(DateTime.now().year, 12, 31).millisecondsSinceEpoch,
+          'financial_year_end':
+              DateTime(DateTime.now().year, 12, 31).millisecondsSinceEpoch,
         });
-        
+
         await db.insert('company_tax_profile', data);
       }
 
@@ -122,7 +124,7 @@ class TaxSettingsService {
   /// Get current GST rate based on date
   double getCurrentGstRate([DateTime? date]) {
     date ??= DateTime.now();
-    
+
     // Singapore GST rates based on effective dates
     if (date.year >= 2024) {
       return 0.09; // 9% from Jan 2024
@@ -136,14 +138,15 @@ class TaxSettingsService {
   /// Check if GST is applicable for a transaction
   Future<bool> isGstApplicable(GstTransactionContext context) async {
     final companyGstRegistered = await getCompanyGstRegistrationStatus();
-    
+
     // Company must be GST registered to charge GST
     if (!companyGstRegistered) {
       return false;
     }
 
-    final customerGstRegistered = await getCustomerGstRegistrationStatus(context.customerId);
-    
+    final customerGstRegistered =
+        await getCustomerGstRegistrationStatus(context.customerId);
+
     // Apply business logic for GST applicability
     switch (context.transactionType) {
       case GstTransactionType.localSupply:
@@ -153,7 +156,8 @@ class TaxSettingsService {
       case GstTransactionType.import:
         return customerGstRegistered; // GST on imports if customer is registered
       case GstTransactionType.digitalService:
-        return context.customerCountryCode == 'SG'; // GST on digital services to SG customers
+        return context.customerCountryCode ==
+            'SG'; // GST on digital services to SG customers
     }
   }
 
@@ -167,7 +171,7 @@ class TaxSettingsService {
       'medical_services',
       'education_services',
     };
-    
+
     return exemptCategories.contains(itemCategory.toLowerCase());
   }
 
@@ -178,17 +182,24 @@ class TaxSettingsService {
       registrationNumber: data['registration_number'] as String,
       companyType: _parseCompanyType(data['company_type'] as String),
       status: _parseCompanyStatus(data['status'] as String),
-      residencyStatus: _parseResidencyStatus(data['residency_status'] as String),
-      industryClassification: _parseIndustryClassification(data['industry_classification'] as String),
-      incorporationDate: DateTime.fromMillisecondsSinceEpoch(data['incorporation_date'] as int),
-      financialYearEnd: DateTime.fromMillisecondsSinceEpoch(data['financial_year_end'] as int),
+      residencyStatus:
+          _parseResidencyStatus(data['residency_status'] as String),
+      industryClassification: _parseIndustryClassification(
+          data['industry_classification'] as String),
+      incorporationDate: DateTime.fromMillisecondsSinceEpoch(
+          data['incorporation_date'] as int),
+      financialYearEnd: DateTime.fromMillisecondsSinceEpoch(
+          data['financial_year_end'] as int),
       isGstRegistered: (data['is_gst_registered'] as int? ?? 0) == 1,
       gstNumber: data['gst_number'] as String?,
       gstRegistrationDate: data['gst_registration_date'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(data['gst_registration_date'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(
+              data['gst_registration_date'] as int)
           : null,
-      gstTurnoverThreshold: (data['gst_turnover_threshold'] as num?)?.toDouble(),
-      lastUpdated: DateTime.fromMillisecondsSinceEpoch(data['last_updated'] as int),
+      gstTurnoverThreshold:
+          (data['gst_turnover_threshold'] as num?)?.toDouble(),
+      lastUpdated:
+          DateTime.fromMillisecondsSinceEpoch(data['last_updated'] as int),
     );
   }
 
@@ -210,59 +221,97 @@ class TaxSettingsService {
 
   CompanyType _parseCompanyType(String type) {
     switch (type.toLowerCase()) {
-      case 'private_limited': return CompanyType.privateLimited;
-      case 'public_limited': return CompanyType.publicLimited;
-      case 'charity': return CompanyType.charity;
-      case 'startup': return CompanyType.startup;
-      case 'branch': return CompanyType.branch;
-      case 'representative_office': return CompanyType.representativeOffice;
-      default: return CompanyType.privateLimited;
+      case 'private_limited':
+        return CompanyType.privateLimited;
+      case 'public_limited':
+        return CompanyType.publicLimited;
+      case 'charity':
+        return CompanyType.charity;
+      case 'startup':
+        return CompanyType.startup;
+      case 'branch':
+        return CompanyType.branch;
+      case 'representative_office':
+        return CompanyType.representativeOffice;
+      default:
+        return CompanyType.privateLimited;
     }
   }
 
   CompanyStatus _parseCompanyStatus(String status) {
     switch (status.toLowerCase()) {
-      case 'active': return CompanyStatus.active;
-      case 'dormant': return CompanyStatus.dormant;
-      case 'striking': return CompanyStatus.striking;
-      case 'wound': return CompanyStatus.wound;
-      case 'dissolved': return CompanyStatus.dissolved;
-      default: return CompanyStatus.active;
+      case 'active':
+        return CompanyStatus.active;
+      case 'dormant':
+        return CompanyStatus.dormant;
+      case 'striking':
+        return CompanyStatus.striking;
+      case 'wound':
+        return CompanyStatus.wound;
+      case 'dissolved':
+        return CompanyStatus.dissolved;
+      default:
+        return CompanyStatus.active;
     }
   }
 
   ResidencyStatus _parseResidencyStatus(String status) {
     switch (status.toLowerCase()) {
-      case 'resident': return ResidencyStatus.resident;
-      case 'non_resident': return ResidencyStatus.nonResident;
-      case 'deemed_resident': return ResidencyStatus.deemedResident;
-      default: return ResidencyStatus.resident;
+      case 'resident':
+        return ResidencyStatus.resident;
+      case 'non_resident':
+        return ResidencyStatus.nonResident;
+      case 'deemed_resident':
+        return ResidencyStatus.deemedResident;
+      default:
+        return ResidencyStatus.resident;
     }
   }
 
   IndustryClassification _parseIndustryClassification(String classification) {
     switch (classification.toLowerCase()) {
-      case 'manufacturing': return IndustryClassification.manufacturing;
-      case 'trading': return IndustryClassification.trading;
-      case 'services': return IndustryClassification.services;
-      case 'financial': return IndustryClassification.financial;
-      case 'real_estate': return IndustryClassification.real_estate;
-      case 'construction': return IndustryClassification.construction;
-      case 'technology': return IndustryClassification.technology;
-      case 'healthcare': return IndustryClassification.healthcare;
-      case 'education': return IndustryClassification.education;
-      case 'transport': return IndustryClassification.transport;
-      case 'hospitality': return IndustryClassification.hospitality;
-      case 'retail': return IndustryClassification.retail;
-      case 'agriculture': return IndustryClassification.agriculture;
-      case 'mining': return IndustryClassification.mining;
-      case 'utilities': return IndustryClassification.utilities;
-      case 'telecommunications': return IndustryClassification.telecommunications;
-      case 'media': return IndustryClassification.media;
-      case 'professional_services': return IndustryClassification.professional_services;
-      case 'consulting': return IndustryClassification.consulting;
-      case 'research_development': return IndustryClassification.research_development;
-      default: return IndustryClassification.services;
+      case 'manufacturing':
+        return IndustryClassification.manufacturing;
+      case 'trading':
+        return IndustryClassification.trading;
+      case 'services':
+        return IndustryClassification.services;
+      case 'financial':
+        return IndustryClassification.financial;
+      case 'real_estate':
+        return IndustryClassification.real_estate;
+      case 'construction':
+        return IndustryClassification.construction;
+      case 'technology':
+        return IndustryClassification.technology;
+      case 'healthcare':
+        return IndustryClassification.healthcare;
+      case 'education':
+        return IndustryClassification.education;
+      case 'transport':
+        return IndustryClassification.transport;
+      case 'hospitality':
+        return IndustryClassification.hospitality;
+      case 'retail':
+        return IndustryClassification.retail;
+      case 'agriculture':
+        return IndustryClassification.agriculture;
+      case 'mining':
+        return IndustryClassification.mining;
+      case 'utilities':
+        return IndustryClassification.utilities;
+      case 'telecommunications':
+        return IndustryClassification.telecommunications;
+      case 'media':
+        return IndustryClassification.media;
+      case 'professional_services':
+        return IndustryClassification.professional_services;
+      case 'consulting':
+        return IndustryClassification.consulting;
+      case 'research_development':
+        return IndustryClassification.research_development;
+      default:
+        return IndustryClassification.services;
     }
   }
 }
@@ -288,4 +337,3 @@ enum GstTransactionType {
   import,
   digitalService,
 }
-

@@ -30,7 +30,7 @@ class InvoiceTimeline extends StatelessWidget {
       itemBuilder: (context, index) {
         final entry = sortedWorkflow[index];
         final isLast = index == sortedWorkflow.length - 1;
-        
+
         return _buildTimelineItem(context, entry, isLast);
       },
     );
@@ -50,15 +50,15 @@ class InvoiceTimeline extends StatelessWidget {
           Text(
             'No timeline data available',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Timeline will appear as actions are taken on this invoice',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[500],
-            ),
+                  color: Colors.grey[500],
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -66,10 +66,11 @@ class InvoiceTimeline extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineItem(BuildContext context, CRDTInvoiceWorkflow entry, bool isLast) {
+  Widget _buildTimelineItem(
+      BuildContext context, CRDTInvoiceWorkflow entry, bool isLast) {
     final statusIcon = _getStatusIcon(entry.toStatus.value);
     final statusColor = _getStatusColor(entry.toStatus.value);
-    
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -115,13 +116,17 @@ class InvoiceTimeline extends StatelessWidget {
                         Expanded(
                           child: Text(
                             _getTimelineTitle(entry),
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: statusColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
@@ -141,10 +146,11 @@ class InvoiceTimeline extends StatelessWidget {
                     Text(
                       _formatDateTime(entry.timestamp.value),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
-                    if (entry.reason.value != null && entry.reason.value!.isNotEmpty) ...[
+                    if (entry.reason.value != null &&
+                        entry.reason.value!.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
                         entry.reason.value!,
@@ -163,15 +169,17 @@ class InvoiceTimeline extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             'by ${_getTriggeredByDisplayName(entry.triggeredBy.value!)}',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                              fontStyle: FontStyle.italic,
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey[600],
+                                      fontStyle: FontStyle.italic,
+                                    ),
                           ),
                         ],
                       ),
                     ],
-                    if (entry.context.value != null && entry.context.value!.isNotEmpty)
+                    if (entry.context.value != null &&
+                        entry.context.value!.isNotEmpty)
                       _buildContextDetails(context, entry.context.value!),
                   ],
                 ),
@@ -183,7 +191,8 @@ class InvoiceTimeline extends StatelessWidget {
     );
   }
 
-  Widget _buildContextDetails(BuildContext context, Map<String, dynamic> contextData) {
+  Widget _buildContextDetails(
+      BuildContext context, Map<String, dynamic> contextData) {
     return ExpansionTile(
       title: const Text(
         'Additional Details',
@@ -227,7 +236,7 @@ class InvoiceTimeline extends StatelessWidget {
   String _getTimelineTitle(CRDTInvoiceWorkflow entry) {
     final fromStatus = entry.fromStatus.value;
     final toStatus = entry.toStatus.value;
-    
+
     if (fromStatus == toStatus) {
       return _getActionTitle(toStatus);
     } else {
@@ -378,7 +387,7 @@ class InvoiceTimeline extends StatelessWidget {
   String _formatDateTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
         if (difference.inMinutes == 0) {

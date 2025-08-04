@@ -87,7 +87,8 @@ class ForecastExportService {
                 children: [
                   pw.Text(
                     'Forecast Chart ${i + 1}',
-                    style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+                    style: pw.TextStyle(
+                        fontSize: 18, fontWeight: pw.FontWeight.bold),
                   ),
                   pw.SizedBox(height: 20),
                   pw.Container(
@@ -111,10 +112,12 @@ class ForecastExportService {
             children: [
               pw.Text(
                 'Historical Data',
-                style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+                style:
+                    pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 15),
-              _buildHistoricalDataTable(session.historicalData, numberFormatter, dateFormatter),
+              _buildHistoricalDataTable(
+                  session.historicalData, numberFormatter, dateFormatter),
             ],
           );
         },
@@ -123,7 +126,8 @@ class ForecastExportService {
 
     // Save to file
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/forecast_${session.name.replaceAll(RegExp(r'[^\w\s-]'), '')}_${DateTime.now().millisecondsSinceEpoch}.pdf');
+    final file = File(
+        '${directory.path}/forecast_${session.name.replaceAll(RegExp(r'[^\w\s-]'), '')}_${DateTime.now().millisecondsSinceEpoch}.pdf');
     await file.writeAsBytes(await pdf.save());
 
     return file;
@@ -173,16 +177,20 @@ class ForecastExportService {
           pw.SizedBox(height: 10),
           if (bestScenario != null) ...[
             pw.Text('Best Performing Model: ${bestScenario['scenario'].name}'),
-            pw.Text('R² Score: ${(bestScenario['accuracy'].r2 * 100).toStringAsFixed(1)}%'),
-            pw.Text('MAPE: ${bestScenario['accuracy'].mape.toStringAsFixed(1)}%'),
+            pw.Text(
+                'R² Score: ${(bestScenario['accuracy'].r2 * 100).toStringAsFixed(1)}%'),
+            pw.Text(
+                'MAPE: ${bestScenario['accuracy'].mape.toStringAsFixed(1)}%'),
           ],
           if (avgForecast != null) ...[
             pw.SizedBox(height: 10),
-            pw.Text('Average Next Period Forecast: ${numberFormatter.format(avgForecast)}'),
+            pw.Text(
+                'Average Next Period Forecast: ${numberFormatter.format(avgForecast)}'),
           ],
           pw.SizedBox(height: 10),
           pw.Text('Historical Data Points: ${session.historicalData.length}'),
-          pw.Text('Forecast Period: ${session.scenarios.isNotEmpty ? session.scenarios.first.forecastHorizon : 0} periods'),
+          pw.Text(
+              'Forecast Period: ${session.scenarios.isNotEmpty ? session.scenarios.first.forecastHorizon : 0} periods'),
         ],
       ),
     );
@@ -213,7 +221,7 @@ class ForecastExportService {
 
   double? _getAverageForecast(ForecastSession session) {
     final allFirstForecasts = <double>[];
-    
+
     for (final results in session.results.values) {
       if (results.isNotEmpty) {
         allFirstForecasts.add(results.first.predictedValue);
@@ -246,28 +254,33 @@ class ForecastExportService {
                 children: [
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(5),
-                    child: pw.Text('Model', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('Model',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(5),
-                    child: pw.Text('R²', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('R²',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(5),
-                    child: pw.Text('MAPE (%)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('MAPE (%)',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(5),
-                    child: pw.Text('RMSE', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('RMSE',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                 ],
               ),
               ...session.accuracyMetrics.entries.map((entry) {
                 final scenarioName = session.scenarios
-                    .firstWhere((s) => s.id == entry.key, orElse: () => session.scenarios.first)
+                    .firstWhere((s) => s.id == entry.key,
+                        orElse: () => session.scenarios.first)
                     .name;
                 final accuracy = entry.value;
-                
+
                 return pw.TableRow(
                   children: [
                     pw.Padding(
@@ -308,7 +321,8 @@ class ForecastExportService {
           pw.Text(scenario.description),
           pw.Text('Method: ${scenario.method.displayName}'),
           pw.Text('Forecast Horizon: ${scenario.forecastHorizon} periods'),
-          pw.Text('Confidence Level: ${(scenario.confidenceLevel * 100).toInt()}%'),
+          pw.Text(
+              'Confidence Level: ${(scenario.confidenceLevel * 100).toInt()}%'),
         ],
       ),
     );
@@ -326,25 +340,29 @@ class ForecastExportService {
         children: [
           pw.Column(
             children: [
-              pw.Text('R²', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.Text('R²',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               pw.Text((accuracy.r2 * 100).toStringAsFixed(1) + '%'),
             ],
           ),
           pw.Column(
             children: [
-              pw.Text('MAPE', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.Text('MAPE',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               pw.Text(accuracy.mape.toStringAsFixed(1) + '%'),
             ],
           ),
           pw.Column(
             children: [
-              pw.Text('RMSE', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.Text('RMSE',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               pw.Text(accuracy.rmse.toStringAsFixed(2)),
             ],
           ),
           pw.Column(
             children: [
-              pw.Text('MAE', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.Text('MAE',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               pw.Text(accuracy.mae.toStringAsFixed(2)),
             ],
           ),
@@ -369,42 +387,46 @@ class ForecastExportService {
           children: [
             pw.Padding(
               padding: const pw.EdgeInsets.all(5),
-              child: pw.Text('Date', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Date',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(5),
-              child: pw.Text('Forecast', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Forecast',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(5),
-              child: pw.Text('Lower Bound', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Lower Bound',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(5),
-              child: pw.Text('Upper Bound', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Upper Bound',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
           ],
         ),
         ...results.take(20).map((result) => pw.TableRow(
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(dateFormatter.format(result.date)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(numberFormatter.format(result.predictedValue)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(numberFormatter.format(result.lowerBound)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(numberFormatter.format(result.upperBound)),
-            ),
-          ],
-        )),
+              children: [
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Text(dateFormatter.format(result.date)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Text(numberFormatter.format(result.predictedValue)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Text(numberFormatter.format(result.lowerBound)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Text(numberFormatter.format(result.upperBound)),
+                ),
+              ],
+            )),
       ],
     );
   }
@@ -421,26 +443,28 @@ class ForecastExportService {
           children: [
             pw.Padding(
               padding: const pw.EdgeInsets.all(5),
-              child: pw.Text('Date', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Date',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(5),
-              child: pw.Text('Value', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text('Value',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             ),
           ],
         ),
         ...data.take(50).map((point) => pw.TableRow(
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(dateFormatter.format(point.date)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(numberFormatter.format(point.value)),
-            ),
-          ],
-        )),
+              children: [
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Text(dateFormatter.format(point.date)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Text(numberFormatter.format(point.value)),
+                ),
+              ],
+            )),
       ],
     );
   }
@@ -459,16 +483,20 @@ class ForecastExportService {
 
     // Create historical data sheet
     final historicalSheet = excel['Historical Data'];
-    _addHistoricalDataSheet(historicalSheet, session.historicalData, dateFormatter);
+    _addHistoricalDataSheet(
+        historicalSheet, session.historicalData, dateFormatter);
 
     // Create sheets for each scenario
     for (final scenario in session.scenarios) {
       final results = session.results[scenario.id] ?? [];
       final accuracy = session.accuracyMetrics[scenario.id];
-      
-      final sheetName = scenario.name.replaceAll(RegExp(r'[^\w\s-]'), '').substring(0, 31.clamp(0, scenario.name.length));
+
+      final sheetName = scenario.name
+          .replaceAll(RegExp(r'[^\w\s-]'), '')
+          .substring(0, 31.clamp(0, scenario.name.length));
       final scenarioSheet = excel[sheetName];
-      _addScenarioSheet(scenarioSheet, scenario, results, accuracy, dateFormatter);
+      _addScenarioSheet(
+          scenarioSheet, scenario, results, accuracy, dateFormatter);
     }
 
     // Create accuracy comparison sheet
@@ -477,40 +505,55 @@ class ForecastExportService {
 
     // Save to file
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/forecast_${session.name.replaceAll(RegExp(r'[^\w\s-]'), '')}_${DateTime.now().millisecondsSinceEpoch}.xlsx');
+    final file = File(
+        '${directory.path}/forecast_${session.name.replaceAll(RegExp(r'[^\w\s-]'), '')}_${DateTime.now().millisecondsSinceEpoch}.xlsx');
     await file.writeAsBytes(excel.encode()!);
 
     return file;
   }
 
-  void _addSummarySheet(Sheet sheet, ForecastSession session, DateFormat dateFormatter) {
+  void _addSummarySheet(
+      Sheet sheet, ForecastSession session, DateFormat dateFormatter) {
     // Header
-    sheet.cell(CellIndex.indexByString('A1')).value = TextCellValue('BizSync Forecast Report');
-    sheet.cell(CellIndex.indexByString('A2')).value = TextCellValue(session.name);
-    sheet.cell(CellIndex.indexByString('A3')).value = TextCellValue('Data Source: ${session.dataSource.toUpperCase()}');
-    sheet.cell(CellIndex.indexByString('A4')).value = TextCellValue('Generated: ${dateFormatter.format(DateTime.now())}');
-    sheet.cell(CellIndex.indexByString('A5')).value = TextCellValue('Scenarios: ${session.scenarios.length}');
+    sheet.cell(CellIndex.indexByString('A1')).value =
+        TextCellValue('BizSync Forecast Report');
+    sheet.cell(CellIndex.indexByString('A2')).value =
+        TextCellValue(session.name);
+    sheet.cell(CellIndex.indexByString('A3')).value =
+        TextCellValue('Data Source: ${session.dataSource.toUpperCase()}');
+    sheet.cell(CellIndex.indexByString('A4')).value =
+        TextCellValue('Generated: ${dateFormatter.format(DateTime.now())}');
+    sheet.cell(CellIndex.indexByString('A5')).value =
+        TextCellValue('Scenarios: ${session.scenarios.length}');
 
     // Best scenario info
     final bestScenario = _getBestScenario(session);
     if (bestScenario != null) {
-      sheet.cell(CellIndex.indexByString('A7')).value = TextCellValue('Best Performing Model:');
-      sheet.cell(CellIndex.indexByString('B7')).value = TextCellValue(bestScenario['scenario'].name);
-      sheet.cell(CellIndex.indexByString('A8')).value = TextCellValue('R² Score:');
-      sheet.cell(CellIndex.indexByString('B8')).value = DoubleCellValue(bestScenario['accuracy'].r2);
+      sheet.cell(CellIndex.indexByString('A7')).value =
+          TextCellValue('Best Performing Model:');
+      sheet.cell(CellIndex.indexByString('B7')).value =
+          TextCellValue(bestScenario['scenario'].name);
+      sheet.cell(CellIndex.indexByString('A8')).value =
+          TextCellValue('R² Score:');
+      sheet.cell(CellIndex.indexByString('B8')).value =
+          DoubleCellValue(bestScenario['accuracy'].r2);
       sheet.cell(CellIndex.indexByString('A9')).value = TextCellValue('MAPE:');
-      sheet.cell(CellIndex.indexByString('B9')).value = DoubleCellValue(bestScenario['accuracy'].mape);
+      sheet.cell(CellIndex.indexByString('B9')).value =
+          DoubleCellValue(bestScenario['accuracy'].mape);
     }
 
     // Average forecast
     final avgForecast = _getAverageForecast(session);
     if (avgForecast != null) {
-      sheet.cell(CellIndex.indexByString('A11')).value = TextCellValue('Average Next Period Forecast:');
-      sheet.cell(CellIndex.indexByString('B11')).value = DoubleCellValue(avgForecast);
+      sheet.cell(CellIndex.indexByString('A11')).value =
+          TextCellValue('Average Next Period Forecast:');
+      sheet.cell(CellIndex.indexByString('B11')).value =
+          DoubleCellValue(avgForecast);
     }
   }
 
-  void _addHistoricalDataSheet(Sheet sheet, List<TimeSeriesPoint> data, DateFormat dateFormatter) {
+  void _addHistoricalDataSheet(
+      Sheet sheet, List<TimeSeriesPoint> data, DateFormat dateFormatter) {
     // Headers
     sheet.cell(CellIndex.indexByString('A1')).value = TextCellValue('Date');
     sheet.cell(CellIndex.indexByString('B1')).value = TextCellValue('Value');
@@ -518,8 +561,10 @@ class ForecastExportService {
     // Data
     for (int i = 0; i < data.length; i++) {
       final point = data[i];
-      sheet.cell(CellIndex.indexByString('A${i + 2}')).value = TextCellValue(dateFormatter.format(point.date));
-      sheet.cell(CellIndex.indexByString('B${i + 2}')).value = DoubleCellValue(point.value);
+      sheet.cell(CellIndex.indexByString('A${i + 2}')).value =
+          TextCellValue(dateFormatter.format(point.date));
+      sheet.cell(CellIndex.indexByString('B${i + 2}')).value =
+          DoubleCellValue(point.value);
     }
   }
 
@@ -531,40 +576,59 @@ class ForecastExportService {
     DateFormat dateFormatter,
   ) {
     // Scenario info
-    sheet.cell(CellIndex.indexByString('A1')).value = TextCellValue('Scenario: ${scenario.name}');
-    sheet.cell(CellIndex.indexByString('A2')).value = TextCellValue('Method: ${scenario.method.displayName}');
-    sheet.cell(CellIndex.indexByString('A3')).value = TextCellValue('Description: ${scenario.description}');
+    sheet.cell(CellIndex.indexByString('A1')).value =
+        TextCellValue('Scenario: ${scenario.name}');
+    sheet.cell(CellIndex.indexByString('A2')).value =
+        TextCellValue('Method: ${scenario.method.displayName}');
+    sheet.cell(CellIndex.indexByString('A3')).value =
+        TextCellValue('Description: ${scenario.description}');
 
     // Accuracy metrics
     if (accuracy != null) {
-      sheet.cell(CellIndex.indexByString('A5')).value = TextCellValue('Accuracy Metrics:');
-      sheet.cell(CellIndex.indexByString('A6')).value = TextCellValue('R² Score:');
-      sheet.cell(CellIndex.indexByString('B6')).value = DoubleCellValue(accuracy.r2);
+      sheet.cell(CellIndex.indexByString('A5')).value =
+          TextCellValue('Accuracy Metrics:');
+      sheet.cell(CellIndex.indexByString('A6')).value =
+          TextCellValue('R² Score:');
+      sheet.cell(CellIndex.indexByString('B6')).value =
+          DoubleCellValue(accuracy.r2);
       sheet.cell(CellIndex.indexByString('A7')).value = TextCellValue('MAPE:');
-      sheet.cell(CellIndex.indexByString('B7')).value = DoubleCellValue(accuracy.mape);
+      sheet.cell(CellIndex.indexByString('B7')).value =
+          DoubleCellValue(accuracy.mape);
       sheet.cell(CellIndex.indexByString('A8')).value = TextCellValue('RMSE:');
-      sheet.cell(CellIndex.indexByString('B8')).value = DoubleCellValue(accuracy.rmse);
+      sheet.cell(CellIndex.indexByString('B8')).value =
+          DoubleCellValue(accuracy.rmse);
       sheet.cell(CellIndex.indexByString('A9')).value = TextCellValue('MAE:');
-      sheet.cell(CellIndex.indexByString('B9')).value = DoubleCellValue(accuracy.mae);
+      sheet.cell(CellIndex.indexByString('B9')).value =
+          DoubleCellValue(accuracy.mae);
     }
 
     // Forecast results headers
     final startRow = 11;
-    sheet.cell(CellIndex.indexByString('A$startRow')).value = TextCellValue('Date');
-    sheet.cell(CellIndex.indexByString('B$startRow')).value = TextCellValue('Forecast');
-    sheet.cell(CellIndex.indexByString('C$startRow')).value = TextCellValue('Lower Bound');
-    sheet.cell(CellIndex.indexByString('D$startRow')).value = TextCellValue('Upper Bound');
-    sheet.cell(CellIndex.indexByString('E$startRow')).value = TextCellValue('Confidence');
+    sheet.cell(CellIndex.indexByString('A$startRow')).value =
+        TextCellValue('Date');
+    sheet.cell(CellIndex.indexByString('B$startRow')).value =
+        TextCellValue('Forecast');
+    sheet.cell(CellIndex.indexByString('C$startRow')).value =
+        TextCellValue('Lower Bound');
+    sheet.cell(CellIndex.indexByString('D$startRow')).value =
+        TextCellValue('Upper Bound');
+    sheet.cell(CellIndex.indexByString('E$startRow')).value =
+        TextCellValue('Confidence');
 
     // Forecast results data
     for (int i = 0; i < results.length; i++) {
       final result = results[i];
       final row = startRow + 1 + i;
-      sheet.cell(CellIndex.indexByString('A$row')).value = TextCellValue(dateFormatter.format(result.date));
-      sheet.cell(CellIndex.indexByString('B$row')).value = DoubleCellValue(result.predictedValue);
-      sheet.cell(CellIndex.indexByString('C$row')).value = DoubleCellValue(result.lowerBound);
-      sheet.cell(CellIndex.indexByString('D$row')).value = DoubleCellValue(result.upperBound);
-      sheet.cell(CellIndex.indexByString('E$row')).value = DoubleCellValue(result.confidence);
+      sheet.cell(CellIndex.indexByString('A$row')).value =
+          TextCellValue(dateFormatter.format(result.date));
+      sheet.cell(CellIndex.indexByString('B$row')).value =
+          DoubleCellValue(result.predictedValue);
+      sheet.cell(CellIndex.indexByString('C$row')).value =
+          DoubleCellValue(result.lowerBound);
+      sheet.cell(CellIndex.indexByString('D$row')).value =
+          DoubleCellValue(result.upperBound);
+      sheet.cell(CellIndex.indexByString('E$row')).value =
+          DoubleCellValue(result.confidence);
     }
   }
 
@@ -582,17 +646,25 @@ class ForecastExportService {
     int row = 2;
     for (final entry in session.accuracyMetrics.entries) {
       final scenarioName = session.scenarios
-          .firstWhere((s) => s.id == entry.key, orElse: () => session.scenarios.first)
+          .firstWhere((s) => s.id == entry.key,
+              orElse: () => session.scenarios.first)
           .name;
       final accuracy = entry.value;
 
-      sheet.cell(CellIndex.indexByString('A$row')).value = TextCellValue(scenarioName);
-      sheet.cell(CellIndex.indexByString('B$row')).value = DoubleCellValue(accuracy.r2);
-      sheet.cell(CellIndex.indexByString('C$row')).value = DoubleCellValue(accuracy.mape);
-      sheet.cell(CellIndex.indexByString('D$row')).value = DoubleCellValue(accuracy.rmse);
-      sheet.cell(CellIndex.indexByString('E$row')).value = DoubleCellValue(accuracy.mae);
-      sheet.cell(CellIndex.indexByString('F$row')).value = DoubleCellValue(accuracy.aic);
-      sheet.cell(CellIndex.indexByString('G$row')).value = DoubleCellValue(accuracy.bic);
+      sheet.cell(CellIndex.indexByString('A$row')).value =
+          TextCellValue(scenarioName);
+      sheet.cell(CellIndex.indexByString('B$row')).value =
+          DoubleCellValue(accuracy.r2);
+      sheet.cell(CellIndex.indexByString('C$row')).value =
+          DoubleCellValue(accuracy.mape);
+      sheet.cell(CellIndex.indexByString('D$row')).value =
+          DoubleCellValue(accuracy.rmse);
+      sheet.cell(CellIndex.indexByString('E$row')).value =
+          DoubleCellValue(accuracy.mae);
+      sheet.cell(CellIndex.indexByString('F$row')).value =
+          DoubleCellValue(accuracy.aic);
+      sheet.cell(CellIndex.indexByString('G$row')).value =
+          DoubleCellValue(accuracy.bic);
       row++;
     }
   }
@@ -603,12 +675,13 @@ class ForecastExportService {
     double pixelRatio = 3.0,
   }) async {
     try {
-      final RenderRepaintBoundary boundary = 
+      final RenderRepaintBoundary boundary =
           key.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      
+
       final ui.Image image = await boundary.toImage(pixelRatio: pixelRatio);
-      final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      
+      final ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+
       return byteData!.buffer.asUint8List();
     } catch (e) {
       throw Exception('Failed to capture widget as image: $e');

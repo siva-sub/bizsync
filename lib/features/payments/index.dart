@@ -1,9 +1,9 @@
 /// SGQR/PayNow Payment Module for BizSync
-/// 
+///
 /// This module provides comprehensive support for Singapore's SGQR and PayNow
 /// payment systems, including QR code generation, multi-payment method support,
 /// and customizable UI components.
-/// 
+///
 /// Features:
 /// - SGQR/PayNow QR code generation (static and dynamic)
 /// - Support for mobile numbers, UEN, and NRIC identifiers
@@ -13,7 +13,7 @@
 /// - Customizable QR code styling and branding
 /// - QR code sharing and saving functionality
 /// - Comprehensive validation and error handling
-/// 
+///
 /// The implementation follows Singapore's SGQR specification and EMVCo standards
 /// for QR code payment systems, ensuring compatibility with the local payment
 /// ecosystem while supporting offline-first operations.

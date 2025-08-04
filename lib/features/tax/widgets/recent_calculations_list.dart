@@ -65,8 +65,8 @@ class RecentCalculationsList extends StatelessWidget {
             Text(
               _formatDate(item.calculationDate),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
           ],
         ),
@@ -77,15 +77,15 @@ class RecentCalculationsList extends StatelessWidget {
             Text(
               item.formattedTaxAmount,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: _getTaxTypeColor(item.taxType),
-                fontWeight: FontWeight.bold,
-              ),
+                    color: _getTaxTypeColor(item.taxType),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             Text(
               '${(item.taxRate * 100).toStringAsFixed(2)}%',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
           ],
         ),
@@ -108,15 +108,15 @@ class RecentCalculationsList extends StatelessWidget {
           Text(
             'No Recent Calculations',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Your recent tax calculations will appear here',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[500],
-            ),
+                  color: Colors.grey[500],
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -202,7 +202,8 @@ class RecentCalculationsList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDetailRow('Amount', item.formattedAmount),
-            _buildDetailRow('Tax Rate', '${(item.taxRate * 100).toStringAsFixed(2)}%'),
+            _buildDetailRow(
+                'Tax Rate', '${(item.taxRate * 100).toStringAsFixed(2)}%'),
             _buildDetailRow('Tax Amount', item.formattedTaxAmount),
             _buildDetailRow('Net Amount', item.formattedNetAmount),
             _buildDetailRow('Date', _formatDate(item.calculationDate)),

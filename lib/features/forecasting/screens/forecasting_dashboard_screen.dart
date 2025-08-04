@@ -15,13 +15,15 @@ class ForecastingDashboardScreen extends ConsumerStatefulWidget {
   const ForecastingDashboardScreen({super.key});
 
   @override
-  ConsumerState<ForecastingDashboardScreen> createState() => _ForecastingDashboardScreenState();
+  ConsumerState<ForecastingDashboardScreen> createState() =>
+      _ForecastingDashboardScreenState();
 }
 
-class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboardScreen> {
+class _ForecastingDashboardScreenState
+    extends ConsumerState<ForecastingDashboardScreen> {
   late ForecastingService _forecastingService;
   late ForecastExportService _exportService;
-  
+
   List<ForecastSession> _recentSessions = [];
   bool _isLoading = true;
   String? _error;
@@ -54,10 +56,10 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
 
       // Load recent sessions
       _recentSessions = await _forecastingService.getAllForecastSessions();
-      
+
       // Load latest forecasts for each data source
       await _loadLatestForecasts();
-      
+
       // Load historical data for overview charts
       await _loadHistoricalOverview();
 
@@ -72,20 +74,21 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
 
   Future<void> _loadLatestForecasts() async {
     final dataSources = ['revenue', 'expenses', 'cashflow', 'inventory'];
-    
+
     for (final source in dataSources) {
-      final sessions = await _forecastingService.getForecastSessionsByDataSource(source);
+      final sessions =
+          await _forecastingService.getForecastSessionsByDataSource(source);
       if (sessions.isNotEmpty) {
         final latestSession = sessions.first;
-        
+
         // Get the best performing scenario's next forecast
         double? bestForecast;
         double bestScore = -1;
-        
+
         for (final scenario in latestSession.scenarios) {
           final accuracy = latestSession.accuracyMetrics[scenario.id];
           final results = latestSession.results[scenario.id];
-          
+
           if (accuracy != null && results != null && results.isNotEmpty) {
             final score = accuracy.r2;
             if (score > bestScore) {
@@ -94,7 +97,7 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
             }
           }
         }
-        
+
         if (bestForecast != null) {
           _lastForecasts[source] = bestForecast;
         }
@@ -104,7 +107,7 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
 
   Future<void> _loadHistoricalOverview() async {
     final dataSources = ['revenue', 'expenses', 'cashflow'];
-    
+
     for (final source in dataSources) {
       try {
         final data = await _forecastingService.getHistoricalData(
@@ -269,10 +272,11 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
   double? _calculateTrend(String dataSource) {
     final data = _historicalData[dataSource];
     if (data == null || data.length < 2) return null;
-    
-    final recent = data.length >= 2 ? data.skip(data.length - 2).toList() : data;
+
+    final recent =
+        data.length >= 2 ? data.skip(data.length - 2).toList() : data;
     if (recent.length < 2) return null;
-    
+
     final change = recent.last.value - recent.first.value;
     return recent.first.value != 0 ? (change / recent.first.value) * 100 : 0;
   }
@@ -330,8 +334,10 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
                         },
                       ),
                     ),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                   ),
                   borderData: FlBorderData(show: true),
                   lineBarsData: _buildLineChartData(),
@@ -348,14 +354,14 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
 
   List<LineChartBarData> _buildLineChartData() {
     final lines = <LineChartBarData>[];
-    
+
     final colors = [Colors.green, Colors.red, Colors.blue];
     final dataSourceOrder = ['revenue', 'expenses', 'cashflow'];
-    
+
     for (int i = 0; i < dataSourceOrder.length; i++) {
       final source = dataSourceOrder[i];
       final data = _historicalData[source];
-      
+
       if (data != null && data.isNotEmpty) {
         lines.add(
           LineChartBarData(
@@ -371,7 +377,7 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
         );
       }
     }
-    
+
     return lines;
   }
 
@@ -425,8 +431,8 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
               Text(
                 'Create your first forecast to see it here',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -563,7 +569,8 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
             ListTile(
               leading: const Icon(Icons.refresh),
               title: const Text('Refresh Data Cache'),
-              subtitle: const Text('Update historical data from latest transactions'),
+              subtitle:
+                  const Text('Update historical data from latest transactions'),
               onTap: () async {
                 Navigator.of(context).pop();
                 _showLoadingDialog('Refreshing data cache...');
@@ -611,8 +618,10 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
       return;
     }
 
-    final avgR2 = allAccuracies.map((a) => a.r2).reduce((a, b) => a + b) / allAccuracies.length;
-    final avgMape = allAccuracies.map((a) => a.mape).reduce((a, b) => a + b) / allAccuracies.length;
+    final avgR2 = allAccuracies.map((a) => a.r2).reduce((a, b) => a + b) /
+        allAccuracies.length;
+    final avgMape = allAccuracies.map((a) => a.mape).reduce((a, b) => a + b) /
+        allAccuracies.length;
 
     showDialog(
       context: context,
@@ -652,10 +661,10 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
   Future<void> _exportSession(ForecastSession session) async {
     try {
       _showLoadingDialog('Exporting forecast session...');
-      
+
       final file = await _exportService.exportToPdf(session);
       Navigator.of(context).pop();
-      
+
       await _exportService.shareFile(file, 'Forecast Report: ${session.name}');
       _showSuccessSnackBar('Forecast exported successfully');
     } catch (e) {
@@ -669,7 +678,8 @@ class _ForecastingDashboardScreenState extends ConsumerState<ForecastingDashboar
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Forecast Session'),
-        content: Text('Are you sure you want to delete "${session.name}"? This action cannot be undone.'),
+        content: Text(
+            'Are you sure you want to delete "${session.name}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),

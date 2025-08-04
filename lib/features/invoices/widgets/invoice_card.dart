@@ -55,15 +55,15 @@ class InvoiceCard extends StatelessWidget {
               Text(
                 invoice.invoiceNumber.value,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Issued: ${_formatDate(invoice.issueDate.value)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
             ],
           ),
@@ -203,18 +203,18 @@ class InvoiceCard extends StatelessWidget {
               Text(
                 '${invoice.currency.value} ${_formatAmount(invoice.totalAmount.value)}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
               ),
               if (invoice.isPartiallyPaid) ...[
                 const SizedBox(height: 4),
                 Text(
                   'Remaining: ${invoice.currency.value} ${_formatAmount(invoice.remainingBalance)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.orange[700],
-                    fontWeight: FontWeight.w500,
-                  ),
+                        color: Colors.orange[700],
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ],
             ],
@@ -227,15 +227,15 @@ class InvoiceCard extends StatelessWidget {
               Text(
                 'Due Date',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
               Text(
                 _formatDate(invoice.calculateDueDate()!),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: invoice.isOverdue ? Colors.red[600] : null,
-                ),
+                      fontWeight: FontWeight.w500,
+                      color: invoice.isOverdue ? Colors.red[600] : null,
+                    ),
               ),
             ],
           ),
@@ -259,15 +259,15 @@ class InvoiceCard extends StatelessWidget {
                 Text(
                   invoice.tags.elements.take(2).join(', '),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
                 if (invoice.tags.elements.length > 2)
                   Text(
                     ' +${invoice.tags.elements.length - 2}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                          color: Colors.grey[600],
+                        ),
                   ),
               ],
             ],
@@ -285,7 +285,8 @@ class InvoiceCard extends StatelessWidget {
     if (invoice.status.value == InvoiceStatus.draft) {
       actions.add(
         IconButton(
-          onPressed: () => onStatusChanged?.call(invoice.id, InvoiceStatus.sent),
+          onPressed: () =>
+              onStatusChanged?.call(invoice.id, InvoiceStatus.sent),
           icon: const Icon(Icons.send, size: 20),
           tooltip: 'Send Invoice',
           visualDensity: VisualDensity.compact,
@@ -345,7 +346,8 @@ class InvoiceCard extends StatelessWidget {
               value: 'cancel',
               child: ListTile(
                 leading: Icon(Icons.cancel, color: Colors.red),
-                title: Text('Cancel Invoice', style: TextStyle(color: Colors.red)),
+                title:
+                    Text('Cancel Invoice', style: TextStyle(color: Colors.red)),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
               ),
@@ -381,13 +383,14 @@ class InvoiceCard extends StatelessWidget {
             Text(
               'Outstanding: ${invoice.currency.value} ${_formatAmount(invoice.remainingBalance)}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 labelText: 'Payment Amount',
                 prefixText: '${invoice.currency.value} ',

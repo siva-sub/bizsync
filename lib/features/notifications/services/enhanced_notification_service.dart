@@ -18,12 +18,12 @@ import 'background_task_service.dart';
 
 /// Enhanced notification service with comprehensive business features
 class EnhancedNotificationService {
-  static final EnhancedNotificationService _instance = 
+  static final EnhancedNotificationService _instance =
       EnhancedNotificationService._internal();
   factory EnhancedNotificationService() => _instance;
   EnhancedNotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notifications = 
+  final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
   final NotificationScheduler _scheduler = NotificationScheduler();
   final BackgroundTaskService _backgroundTaskService = BackgroundTaskService();
@@ -34,17 +34,18 @@ class EnhancedNotificationService {
   final Map<String, BizSyncNotification> _activeNotifications = {};
   final Map<String, NotificationBatch> _activeBatches = {};
   final List<NotificationMetrics> _metrics = [];
-  
+
   // Notification ID counter for unique IDs
   int _notificationIdCounter = 1000;
 
   /// Stream controllers for real-time updates
-  final StreamController<BizSyncNotification> _notificationStream = 
+  final StreamController<BizSyncNotification> _notificationStream =
       StreamController<BizSyncNotification>.broadcast();
-  final StreamController<NotificationMetrics> _metricsStream = 
+  final StreamController<NotificationMetrics> _metricsStream =
       StreamController<NotificationMetrics>.broadcast();
 
-  Stream<BizSyncNotification> get notificationStream => _notificationStream.stream;
+  Stream<BizSyncNotification> get notificationStream =>
+      _notificationStream.stream;
   Stream<NotificationMetrics> get metricsStream => _metricsStream.stream;
 
   /// Initialize the enhanced notification service
@@ -77,7 +78,6 @@ class EnhancedNotificationService {
 
       // Schedule any pending notifications
       await _schedulePendingNotifications();
-
     } catch (e) {
       throw Exception('Failed to initialize enhanced notification service: $e');
     }
@@ -108,7 +108,8 @@ class EnhancedNotificationService {
     const LinuxInitializationSettings initializationSettingsLinux =
         LinuxInitializationSettings(defaultActionName: 'Open BizSync');
 
-    const InitializationSettings initializationSettings = InitializationSettings(
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       linux: initializationSettingsLinux,
     );
@@ -116,20 +117,21 @@ class EnhancedNotificationService {
     await _notifications.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: _onNotificationResponse,
-      onDidReceiveBackgroundNotificationResponse: _onBackgroundNotificationResponse,
+      onDidReceiveBackgroundNotificationResponse:
+          _onBackgroundNotificationResponse,
     );
   }
 
   Future<void> _createNotificationChannels() async {
-    final androidPlugin = _notifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _notifications.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
 
     if (androidPlugin == null) return;
 
     // Create channels for each notification channel type
     for (final channel in NotificationChannel.values) {
       final config = _getChannelConfig(channel);
-      
+
       await androidPlugin.createNotificationChannel(
         AndroidNotificationChannel(
           channel.name,
@@ -139,12 +141,11 @@ class EnhancedNotificationService {
           enableVibration: config.enableVibration,
           enableLights: config.enableLights,
           playSound: config.enableSound,
-          sound: config.soundUri != null 
+          sound: config.soundUri != null
               ? RawResourceAndroidNotificationSound(config.soundUri!)
               : null,
-          ledColor: config.lightColor != null 
-              ? Color(config.lightColor!) 
-              : null,
+          ledColor:
+              config.lightColor != null ? Color(config.lightColor!) : null,
           vibrationPattern: config.vibrationPattern != null
               ? Int64List.fromList(config.vibrationPattern!)
               : null,
@@ -160,12 +161,13 @@ class EnhancedNotificationService {
         return const NotificationChannelConfig(
           channel: NotificationChannel.urgent,
           name: 'Urgent Notifications',
-          description: 'Critical business notifications requiring immediate attention',
+          description:
+              'Critical business notifications requiring immediate attention',
           defaultPriority: NotificationPriority.critical,
           bypassDnd: true,
           lightColor: 0xFFFF0000,
         );
-      
+
       case NotificationChannel.business:
         return const NotificationChannelConfig(
           channel: NotificationChannel.business,
@@ -218,7 +220,7 @@ class EnhancedNotificationService {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     final settingsJson = prefs.getString('notification_settings');
-    
+
     if (settingsJson != null) {
       try {
         final settingsMap = jsonDecode(settingsJson) as Map<String, dynamic>;
@@ -234,7 +236,7 @@ class EnhancedNotificationService {
 
   Future<void> _saveSettings() async {
     if (_settings == null) return;
-    
+
     final prefs = await SharedPreferences.getInstance();
     final settingsJson = jsonEncode(_settings!.toJson());
     await prefs.setString('notification_settings', settingsJson);
@@ -395,7 +397,7 @@ class EnhancedNotificationService {
 
   bool _shouldShowNotification(BizSyncNotification notification) {
     if (_settings == null) return true;
-    
+
     return _settings!.shouldShowNotification(
       notification.category,
       notification.priority,
@@ -405,32 +407,34 @@ class EnhancedNotificationService {
 
   DateTime? _getOptimalDeliveryTime(BizSyncNotification notification) {
     if (_settings?.intelligent.enabled != true) return null;
-    
+
     final now = DateTime.now();
     return _settings!.intelligent.getOptimalDeliveryTime(now);
   }
 
   bool _shouldBatchNotification(BizSyncNotification notification) {
     if (_settings?.batching.enabled != true) return false;
-    
+
     final pendingCount = _activeNotifications.values
-        .where((n) => n.category == notification.category && 
-                      n.status == NotificationStatus.pending)
+        .where((n) =>
+            n.category == notification.category &&
+            n.status == NotificationStatus.pending)
         .length;
-    
+
     return _settings!.batching.shouldBatch(notification.category, pendingCount);
   }
 
   Future<void> _addToBatch(BizSyncNotification notification) async {
     final batchKey = '${notification.category.name}_batch';
-    
+
     if (_activeBatches.containsKey(batchKey)) {
       // Add to existing batch
       final batch = _activeBatches[batchKey]!;
       final updatedBatch = NotificationBatch(
         id: batch.id,
         title: batch.title,
-        summary: '${batch.notificationCount + 1} ${notification.category.displayName}',
+        summary:
+            '${batch.notificationCount + 1} ${notification.category.displayName}',
         notificationIds: [...batch.notificationIds, notification.id],
         category: batch.category,
         createdAt: batch.createdAt,
@@ -459,8 +463,9 @@ class EnhancedNotificationService {
   }
 
   Future<void> _scheduleBatchDelivery(String batchKey) async {
-    final delay = _settings?.batching.batchWindow ?? const Duration(minutes: 15);
-    
+    final delay =
+        _settings?.batching.batchWindow ?? const Duration(minutes: 15);
+
     Timer(delay, () async {
       await _deliverBatch(batchKey);
     });
@@ -527,7 +532,6 @@ class EnhancedNotificationService {
       );
       _metrics.add(metrics);
       _metricsStream.add(metrics);
-
     } catch (e) {
       // Update notification status to failed
       final failedNotification = notification.copyWith(
@@ -582,7 +586,7 @@ class EnhancedNotificationService {
           contentTitle: notification.title,
           htmlFormatContentTitle: true,
         );
-      
+
       case NotificationStyle.inbox:
         // For batched notifications
         final lines = <String>[];
@@ -603,7 +607,7 @@ class EnhancedNotificationService {
           summaryText: notification.body,
           htmlFormatSummaryText: true,
         );
-      
+
       case NotificationStyle.bigPicture:
         if (notification.imageUrl != null) {
           return BigPictureStyleInformation(
@@ -613,7 +617,7 @@ class EnhancedNotificationService {
           );
         }
         return null;
-      
+
       default:
         return null;
     }
@@ -624,17 +628,23 @@ class EnhancedNotificationService {
   ) {
     if (actions == null || actions.isEmpty) return null;
 
-    return actions.map((action) => AndroidNotificationAction(
-      action.id,
-      action.title,
-      icon: action.icon != null ? FilePathAndroidBitmap(action.icon!) : null,
-      inputs: action.type == NotificationActionType.custom &&
-              action.payload?['requiresInput'] == true
-          ? [const AndroidNotificationActionInput(
-              label: 'Enter text',
-            )]
-          : [],
-    )).toList();
+    return actions
+        .map((action) => AndroidNotificationAction(
+              action.id,
+              action.title,
+              icon: action.icon != null
+                  ? FilePathAndroidBitmap(action.icon!)
+                  : null,
+              inputs: action.type == NotificationActionType.custom &&
+                      action.payload?['requiresInput'] == true
+                  ? [
+                      const AndroidNotificationActionInput(
+                        label: 'Enter text',
+                      )
+                    ]
+                  : [],
+            ))
+        .toList();
   }
 
   Color? _getNotificationColor(NotificationCategory category) {
@@ -688,7 +698,7 @@ class EnhancedNotificationService {
     try {
       final payloadData = jsonDecode(payload) as Map<String, dynamic>;
       final notificationId = payloadData['notificationId'] as String?;
-      
+
       if (notificationId != null) {
         final notification = _activeNotifications[notificationId];
         if (notification != null) {
@@ -770,10 +780,10 @@ class EnhancedNotificationService {
 
   Future<void> _cleanupOldData() async {
     final cutoffDate = DateTime.now().subtract(const Duration(days: 30));
-    
+
     // Remove old notifications
     _activeNotifications.removeWhere(
-      (key, notification) => 
+      (key, notification) =>
           notification.createdAt.isBefore(cutoffDate) &&
           notification.status != NotificationStatus.pending &&
           notification.status != NotificationStatus.scheduled,
@@ -817,7 +827,7 @@ class EnhancedNotificationService {
   }
 
   /// Public API methods
-  
+
   Future<void> updateSettings(NotificationSettings settings) async {
     _settings = settings;
     await _saveSettings();
@@ -829,7 +839,8 @@ class EnhancedNotificationService {
     return _activeNotifications.values.toList();
   }
 
-  List<BizSyncNotification> getNotificationsByCategory(NotificationCategory category) {
+  List<BizSyncNotification> getNotificationsByCategory(
+      NotificationCategory category) {
     return _activeNotifications.values
         .where((notification) => notification.category == category)
         .toList();
@@ -856,7 +867,7 @@ class EnhancedNotificationService {
 
   Future<void> cancelAllNotifications() async {
     await _notifications.cancelAll();
-    
+
     // Update all active notifications
     for (final entry in _activeNotifications.entries) {
       final cancelled = entry.value.copyWith(

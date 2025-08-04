@@ -8,15 +8,17 @@ class FinancialReportScreen extends ConsumerStatefulWidget {
   const FinancialReportScreen({super.key});
 
   @override
-  ConsumerState<FinancialReportScreen> createState() => _FinancialReportScreenState();
+  ConsumerState<FinancialReportScreen> createState() =>
+      _FinancialReportScreenState();
 }
 
-class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> with SingleTickerProviderStateMixin {
+class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen>
+    with SingleTickerProviderStateMixin {
   FinancialReportData? _reportData;
   bool _isLoading = false;
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 365));
   DateTime _endDate = DateTime.now();
-  
+
   late TabController _tabController;
 
   @override
@@ -34,10 +36,11 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
 
   Future<void> _generateReport() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final reportService = ref.read(reportServiceProvider);
-      _reportData = await reportService.generateFinancialReport(_startDate, _endDate);
+      _reportData =
+          await reportService.generateFinancialReport(_startDate, _endDate);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -45,7 +48,7 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -120,7 +123,7 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                   children: [
                     // Financial Overview
                     _buildFinancialOverview(),
-                    
+
                     // Tabbed Content
                     Expanded(
                       child: TabBarView(
@@ -139,7 +142,7 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
 
   Widget _buildFinancialOverview() {
     if (_reportData == null) return const SizedBox();
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       color: Theme.of(context).colorScheme.surface,
@@ -153,15 +156,15 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
               Text(
                 'Financial Overview',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const Spacer(),
               Text(
                 'Period: ${_formatDate(_startDate)} - ${_formatDate(_endDate)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
             ],
           ),
@@ -180,7 +183,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
               Expanded(
                 child: _FinancialMetricCard(
                   title: 'Total Liabilities',
-                  value: '\$${_reportData!.totalLiabilities.toStringAsFixed(0)}',
+                  value:
+                      '\$${_reportData!.totalLiabilities.toStringAsFixed(0)}',
                   icon: Icons.trending_down,
                   color: Colors.red,
                 ),
@@ -212,7 +216,7 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
 
   Widget _buildProfitAndLossTab() {
     if (_reportData == null) return const SizedBox();
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -221,8 +225,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
           Text(
             'Profit & Loss Statement',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           Card(
@@ -267,58 +271,64 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                     ),
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // Income Statement Items
                   ..._reportData!.incomeStatement.map((item) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 12),
-                        Expanded(
-                          flex: 3,
-                          child: Text(
-                            item.category,
-                            style: TextStyle(
-                              fontWeight: item.category.contains('Profit') || item.category.contains('Income') 
-                                  ? FontWeight.bold 
-                                  : FontWeight.normal,
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                item.category,
+                                style: TextStyle(
+                                  fontWeight:
+                                      item.category.contains('Profit') ||
+                                              item.category.contains('Income')
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            '\$${item.amount.toStringAsFixed(0)}',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: item.amount >= 0 ? Colors.green : Colors.red,
-                              fontWeight: item.category.contains('Profit') || item.category.contains('Income') 
-                                  ? FontWeight.bold 
-                                  : FontWeight.normal,
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                '\$${item.amount.toStringAsFixed(0)}',
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  color: item.amount >= 0
+                                      ? Colors.green
+                                      : Colors.red,
+                                  fontWeight:
+                                      item.category.contains('Profit') ||
+                                              item.category.contains('Income')
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            '${item.percentage.toStringAsFixed(0)}%',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 12,
+                            Expanded(
+                              child: Text(
+                                '${item.percentage.toStringAsFixed(0)}%',
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                      ],
-                    ),
-                  )),
+                      )),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Visual Chart
           Card(
             child: Padding(
@@ -343,7 +353,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.bar_chart, size: 48, color: Colors.grey[400]),
+                          Icon(Icons.bar_chart,
+                              size: 48, color: Colors.grey[400]),
                           const SizedBox(height: 8),
                           Text(
                             'P&L Chart Visualization',
@@ -351,7 +362,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                           ),
                           Text(
                             'Would integrate with fl_chart package',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                            style: TextStyle(
+                                color: Colors.grey[500], fontSize: 12),
                           ),
                         ],
                       ),
@@ -368,10 +380,12 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
 
   Widget _buildBalanceSheetTab() {
     if (_reportData == null) return const SizedBox();
-    
-    final assets = _reportData!.balanceSheet.where((item) => item.isAsset).toList();
-    final liabilities = _reportData!.balanceSheet.where((item) => !item.isAsset).toList();
-    
+
+    final assets =
+        _reportData!.balanceSheet.where((item) => item.isAsset).toList();
+    final liabilities =
+        _reportData!.balanceSheet.where((item) => !item.isAsset).toList();
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -380,11 +394,11 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
           Text(
             'Balance Sheet',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
+
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -398,7 +412,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.account_balance_wallet, color: Colors.green),
+                            const Icon(Icons.account_balance_wallet,
+                                color: Colors.green),
                             const SizedBox(width: 8),
                             const Text(
                               'Assets',
@@ -411,20 +426,20 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                         ),
                         const SizedBox(height: 16),
                         ...assets.map((asset) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: Row(
-                            children: [
-                              Expanded(child: Text(asset.category)),
-                              Text(
-                                '\$${asset.amount.toStringAsFixed(0)}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.green,
-                                ),
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              child: Row(
+                                children: [
+                                  Expanded(child: Text(asset.category)),
+                                  Text(
+                                    '\$${asset.amount.toStringAsFixed(0)}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        )),
+                            )),
                         const Divider(),
                         Row(
                           children: [
@@ -449,9 +464,9 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                   ),
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Liabilities Column
               Expanded(
                 child: Card(
@@ -475,20 +490,20 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                         ),
                         const SizedBox(height: 16),
                         ...liabilities.map((liability) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: Row(
-                            children: [
-                              Expanded(child: Text(liability.category)),
-                              Text(
-                                '\$${liability.amount.toStringAsFixed(0)}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.red,
-                                ),
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              child: Row(
+                                children: [
+                                  Expanded(child: Text(liability.category)),
+                                  Text(
+                                    '\$${liability.amount.toStringAsFixed(0)}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        )),
+                            )),
                         const Divider(),
                         Row(
                           children: [
@@ -544,9 +559,9 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Asset Allocation Chart
           Card(
             child: Padding(
@@ -571,7 +586,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.pie_chart, size: 48, color: Colors.grey[400]),
+                          Icon(Icons.pie_chart,
+                              size: 48, color: Colors.grey[400]),
                           const SizedBox(height: 8),
                           Text(
                             'Asset Allocation Chart',
@@ -579,7 +595,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                           ),
                           Text(
                             'Would show asset distribution',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                            style: TextStyle(
+                                color: Colors.grey[500], fontSize: 12),
                           ),
                         ],
                       ),
@@ -596,7 +613,7 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
 
   Widget _buildCashFlowTab() {
     if (_reportData == null) return const SizedBox();
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -605,18 +622,19 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
           Text(
             'Cash Flow Statement',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
+
           // Cash Flow Summary
           Row(
             children: [
               Expanded(
                 child: _CashFlowSummaryCard(
                   title: 'Total Inflow',
-                  value: _reportData!.cashFlowStatement.fold(0.0, (sum, item) => sum + item.inflow),
+                  value: _reportData!.cashFlowStatement
+                      .fold(0.0, (sum, item) => sum + item.inflow),
                   color: Colors.green,
                   icon: Icons.arrow_downward,
                 ),
@@ -625,7 +643,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
               Expanded(
                 child: _CashFlowSummaryCard(
                   title: 'Total Outflow',
-                  value: _reportData!.cashFlowStatement.fold(0.0, (sum, item) => sum + item.outflow),
+                  value: _reportData!.cashFlowStatement
+                      .fold(0.0, (sum, item) => sum + item.outflow),
                   color: Colors.red,
                   icon: Icons.arrow_upward,
                 ),
@@ -635,15 +654,16 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                 child: _CashFlowSummaryCard(
                   title: 'Net Cash Flow',
                   value: _reportData!.cashFlow,
-                  color: _reportData!.cashFlow >= 0 ? Colors.blue : Colors.orange,
+                  color:
+                      _reportData!.cashFlow >= 0 ? Colors.blue : Colors.orange,
                   icon: Icons.water_drop,
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Cash Flow Chart
           Card(
             child: Padding(
@@ -672,7 +692,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.timeline, size: 48, color: Colors.grey[400]),
+                          Icon(Icons.timeline,
+                              size: 48, color: Colors.grey[400]),
                           const SizedBox(height: 8),
                           Text(
                             'Cash Flow Timeline Chart',
@@ -680,7 +701,8 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                           ),
                           Text(
                             'Would integrate with fl_chart package',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                            style: TextStyle(
+                                color: Colors.grey[500], fontSize: 12),
                           ),
                         ],
                       ),
@@ -690,9 +712,9 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Detailed Cash Flow List
           Card(
             child: Padding(
@@ -714,51 +736,66 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
                     child: const Row(
                       children: [
                         SizedBox(width: 12),
-                        Expanded(child: Text('Date', style: TextStyle(fontWeight: FontWeight.bold))),
-                        Expanded(child: Text('Inflow', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.right)),
-                        Expanded(child: Text('Outflow', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.right)),
-                        Expanded(child: Text('Net', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.right)),
+                        Expanded(
+                            child: Text('Date',
+                                style: TextStyle(fontWeight: FontWeight.bold))),
+                        Expanded(
+                            child: Text('Inflow',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.right)),
+                        Expanded(
+                            child: Text('Outflow',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.right)),
+                        Expanded(
+                            child: Text('Net',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.right)),
                         SizedBox(width: 12),
                       ],
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ..._reportData!.cashFlowStatement.take(10).map((item) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(_formatDate(item.date)),
-                        ),
-                        Expanded(
-                          child: Text(
-                            '\$${item.inflow.toStringAsFixed(0)}',
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(color: Colors.green),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            '\$${item.outflow.toStringAsFixed(0)}',
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            '\$${item.netFlow.toStringAsFixed(0)}',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: item.netFlow >= 0 ? Colors.blue : Colors.orange,
-                              fontWeight: FontWeight.w500,
+                  ..._reportData!.cashFlowStatement
+                      .take(10)
+                      .map((item) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(_formatDate(item.date)),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    '\$${item.inflow.toStringAsFixed(0)}',
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(color: Colors.green),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    '\$${item.outflow.toStringAsFixed(0)}',
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    '\$${item.netFlow.toStringAsFixed(0)}',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: item.netFlow >= 0
+                                          ? Colors.blue
+                                          : Colors.orange,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                              ],
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
-                    ),
-                  )),
+                          )),
                 ],
               ),
             ),
@@ -796,7 +833,7 @@ class _FinancialReportScreenState extends ConsumerState<FinancialReportScreen> w
       lastDate: DateTime.now(),
       initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
     );
-    
+
     if (picked != null) {
       setState(() {
         _startDate = picked.start;
@@ -910,15 +947,15 @@ class _CashFlowSummaryCard extends StatelessWidget {
             Text(
               '\$${value.abs().toStringAsFixed(0)}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
             ),
             Text(
               title,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
           ],
         ),

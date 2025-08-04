@@ -35,11 +35,15 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
   late TabController _tabController;
 
   // Form controllers
-  final TextEditingController _invoiceNumberController = TextEditingController();
+  final TextEditingController _invoiceNumberController =
+      TextEditingController();
   final TextEditingController _customerNameController = TextEditingController();
-  final TextEditingController _customerEmailController = TextEditingController();
-  final TextEditingController _billingAddressController = TextEditingController();
-  final TextEditingController _shippingAddressController = TextEditingController();
+  final TextEditingController _customerEmailController =
+      TextEditingController();
+  final TextEditingController _billingAddressController =
+      TextEditingController();
+  final TextEditingController _shippingAddressController =
+      TextEditingController();
   final TextEditingController _poNumberController = TextEditingController();
   final TextEditingController _referenceController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
@@ -64,7 +68,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
 
   // Line items
   List<Map<String, dynamic>> _lineItems = [];
-  
+
   // Calculated totals
   double _subtotal = 0.0;
   double _taxAmount = 0.0;
@@ -86,13 +90,13 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
     super.initState();
     _tabController = TabController(length: _stepTitles.length, vsync: this);
     _isEditing = widget.invoiceId != null;
-    
+
     if (_isEditing && widget.existingInvoice != null) {
       _populateFormFromExisting();
     } else {
       _addEmptyLineItem();
     }
-    
+
     _calculateDueDate();
     _loadCustomers();
   }
@@ -130,7 +134,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
 
   void _populateFormFromExisting() {
     final invoice = widget.existingInvoice!;
-    
+
     _invoiceNumberController.text = invoice.invoiceNumber.value;
     _selectedCustomerId = invoice.customerId.value;
     _customerNameController.text = invoice.customerName.value ?? '';
@@ -152,7 +156,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
     _autoReminders = invoice.autoReminders.value;
     _reminderDaysBefore = invoice.reminderDaysBefore.value ?? 3;
     _autoFollowUp = invoice.autoFollowUp.value;
-    
+
     // Load line items would require separate API call
     _loadExistingLineItems();
   }
@@ -182,14 +186,16 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
                 children: [
                   CircleAvatar(
                     radius: 12,
-                    backgroundColor: index <= _currentStep 
+                    backgroundColor: index <= _currentStep
                         ? Theme.of(context).primaryColor
                         : Colors.grey[300],
                     child: Text(
                       '${index + 1}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: index <= _currentStep ? Colors.white : Colors.grey[600],
+                        color: index <= _currentStep
+                            ? Colors.white
+                            : Colors.grey[600],
                       ),
                     ),
                   ),
@@ -228,8 +234,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           Text(
             'Invoice Details',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 24),
           TextFormField(
@@ -249,7 +255,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
             children: [
               Expanded(
                 child: InkWell(
-                  onTap: () => _selectDate(context, _issueDate, 'Issue Date', (date) {
+                  onTap: () =>
+                      _selectDate(context, _issueDate, 'Issue Date', (date) {
                     setState(() {
                       _issueDate = date;
                       _calculateDueDate();
@@ -267,7 +274,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
               const SizedBox(width: 16),
               Expanded(
                 child: InkWell(
-                  onTap: () => _selectDate(context, _dueDate ?? _issueDate, 'Due Date', (date) {
+                  onTap: () => _selectDate(
+                      context, _dueDate ?? _issueDate, 'Due Date', (date) {
                     setState(() {
                       _dueDate = date;
                     });
@@ -277,7 +285,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
                       labelText: 'Due Date',
                       border: OutlineInputBorder(),
                     ),
-                    child: Text(_dueDate != null ? _formatDate(_dueDate!) : 'Select date'),
+                    child: Text(_dueDate != null
+                        ? _formatDate(_dueDate!)
+                        : 'Select date'),
                   ),
                 ),
               ),
@@ -343,8 +353,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           Text(
             'Customer Information',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 24),
           InkWell(
@@ -361,8 +371,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      _selectedCustomerId != null 
-                          ? 'Customer selected' 
+                      _selectedCustomerId != null
+                          ? 'Customer selected'
                           : 'Select existing customer or create new',
                     ),
                   ),
@@ -394,7 +404,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
             ),
             validator: (value) {
               if (value != null && value.isNotEmpty) {
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                    .hasMatch(value)) {
                   return 'Enter a valid email address';
                 }
               }
@@ -414,11 +425,13 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           Row(
             children: [
               Checkbox(
-                value: _shippingAddressController.text == _billingAddressController.text,
+                value: _shippingAddressController.text ==
+                    _billingAddressController.text,
                 onChanged: (value) {
                   if (value == true) {
                     setState(() {
-                      _shippingAddressController.text = _billingAddressController.text;
+                      _shippingAddressController.text =
+                          _billingAddressController.text;
                     });
                   }
                 },
@@ -451,8 +464,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
                 child: Text(
                   'Line Items',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
               ElevatedButton.icon(
@@ -476,9 +489,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
                     _calculateTotals();
                   });
                 },
-                onRemove: _lineItems.length > 1 
-                    ? () => _removeLineItem(index)
-                    : null,
+                onRemove:
+                    _lineItems.length > 1 ? () => _removeLineItem(index) : null,
               );
             },
           ),
@@ -507,7 +519,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
                     prefixText: '\$ ',
                     border: OutlineInputBorder(),
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (value) {
                     _calculateTotals();
                   },
@@ -522,7 +535,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
                     prefixText: '\$ ',
                     border: OutlineInputBorder(),
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (value) {
                     _calculateTotals();
                   },
@@ -553,7 +567,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
       final category = item['gst_category'] ?? 'standard';
       final rate = item['effective_gst_rate'] ?? 9.0;
       final key = '$category-${rate.toStringAsFixed(1)}';
-      
+
       if (!taxGroups.containsKey(key)) {
         taxGroups[key] = [];
       }
@@ -569,14 +583,14 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
       final category = parts[0];
       final rate = double.parse(parts[1]);
       final items = entry.value;
-      
+
       double categoryTaxAmount = 0.0;
       for (final item in items) {
         categoryTaxAmount += item['gst_amount'] ?? 0.0;
       }
-      
+
       totalTax += categoryTaxAmount;
-      
+
       if (categoryTaxAmount > 0.0) {
         String taxLabel;
         switch (category) {
@@ -592,7 +606,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           default:
             taxLabel = 'Tax (${rate.toStringAsFixed(1)}%)';
         }
-        
+
         taxRows.add(_buildTotalRow(taxLabel, categoryTaxAmount));
 
         // Add reasoning if available
@@ -604,9 +618,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
               child: Text(
                 reasoning,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,
-                ),
+                      color: Colors.grey[600],
+                      fontStyle: FontStyle.italic,
+                    ),
               ),
             ),
           );
@@ -615,9 +629,11 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
     }
 
     return Column(
-      children: taxRows.isNotEmpty ? taxRows : [
-        _buildTotalRow('Tax', totalTax),
-      ],
+      children: taxRows.isNotEmpty
+          ? taxRows
+          : [
+              _buildTotalRow('Tax', totalTax),
+            ],
     );
   }
 
@@ -630,17 +646,17 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              fontSize: isTotal ? 16 : 14,
-            ),
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                  fontSize: isTotal ? 16 : 14,
+                ),
           ),
           Text(
             '$_currency ${_formatAmount(amount)}',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              fontSize: isTotal ? 16 : 14,
-              color: isTotal ? Theme.of(context).primaryColor : null,
-            ),
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                  fontSize: isTotal ? 16 : 14,
+                  color: isTotal ? Theme.of(context).primaryColor : null,
+                ),
           ),
         ],
       ),
@@ -656,8 +672,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           Text(
             'Invoice Settings',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 24),
           Row(
@@ -692,7 +708,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
                     labelText: 'Exchange Rate',
                     border: OutlineInputBorder(),
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (value) {
                     final rate = double.tryParse(value);
                     if (rate != null) {
@@ -709,8 +726,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           Text(
             'Automation Settings',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 16),
           SwitchListTile(
@@ -798,8 +815,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           Text(
             'Review Invoice',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 24),
           _buildReviewSection('Invoice Details', [
@@ -807,22 +824,28 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
             'Issue Date: ${_formatDate(_issueDate)}',
             'Due Date: ${_dueDate != null ? _formatDate(_dueDate!) : 'Not set'}',
             'Payment Terms: ${_getPaymentTermDisplayName(_paymentTerms)}',
-            if (_poNumberController.text.isNotEmpty) 'PO Number: ${_poNumberController.text}',
-            if (_referenceController.text.isNotEmpty) 'Reference: ${_referenceController.text}',
+            if (_poNumberController.text.isNotEmpty)
+              'PO Number: ${_poNumberController.text}',
+            if (_referenceController.text.isNotEmpty)
+              'Reference: ${_referenceController.text}',
           ]),
           const SizedBox(height: 16),
           _buildReviewSection('Customer', [
             'Name: ${_customerNameController.text}',
-            if (_customerEmailController.text.isNotEmpty) 'Email: ${_customerEmailController.text}',
-            if (_billingAddressController.text.isNotEmpty) 'Billing: ${_billingAddressController.text}',
-            if (_shippingAddressController.text.isNotEmpty) 'Shipping: ${_shippingAddressController.text}',
+            if (_customerEmailController.text.isNotEmpty)
+              'Email: ${_customerEmailController.text}',
+            if (_billingAddressController.text.isNotEmpty)
+              'Billing: ${_billingAddressController.text}',
+            if (_shippingAddressController.text.isNotEmpty)
+              'Shipping: ${_shippingAddressController.text}',
           ]),
           const SizedBox(height: 16),
-          _buildReviewSection('Line Items (${_lineItems.length})', 
-            _lineItems.map((item) => 
-              '${item['description'] ?? 'Untitled'} - Qty: ${item['quantity'] ?? 1} @ $_currency ${_formatAmount(item['unit_price'] ?? 0)}'
-            ).toList()
-          ),
+          _buildReviewSection(
+              'Line Items (${_lineItems.length})',
+              _lineItems
+                  .map((item) =>
+                      '${item['description'] ?? 'Untitled'} - Qty: ${item['quantity'] ?? 1} @ $_currency ${_formatAmount(item['unit_price'] ?? 0)}')
+                  .toList()),
           const SizedBox(height: 16),
           _buildReviewSection('Totals', [
             'Subtotal: $_currency ${_formatAmount(_subtotal)}',
@@ -863,14 +886,14 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
             Text(
               title,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const SizedBox(height: 12),
             ...items.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(item),
-            )),
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(item),
+                )),
           ],
         ),
       ),
@@ -895,12 +918,12 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
           if (_currentStep > 0) const SizedBox(width: 16),
           Expanded(
             child: ElevatedButton(
-              onPressed: _currentStep < _stepTitles.length - 1 
-                  ? _nextStep 
+              onPressed: _currentStep < _stepTitles.length - 1
+                  ? _nextStep
                   : _saveInvoice,
               child: Text(
-                _currentStep < _stepTitles.length - 1 
-                    ? 'Next' 
+                _currentStep < _stepTitles.length - 1
+                    ? 'Next'
                     : (_isEditing ? 'Update' : 'Create'),
               ),
             ),
@@ -956,8 +979,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
         }
         return true;
       case 2: // Line Items
-        if (_lineItems.isEmpty || _lineItems.every((item) => 
-            (item['description'] ?? '').isEmpty && (item['unit_price'] ?? 0) == 0)) {
+        if (_lineItems.isEmpty ||
+            _lineItems.every((item) =>
+                (item['description'] ?? '').isEmpty &&
+                (item['unit_price'] ?? 0) == 0)) {
           _showError('At least one line item is required');
           return false;
         }
@@ -1065,7 +1090,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
     );
   }
 
-  void _selectDate(BuildContext context, DateTime initialDate, String title, Function(DateTime) onDateSelected) {
+  void _selectDate(BuildContext context, DateTime initialDate, String title,
+      Function(DateTime) onDateSelected) {
     showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -1076,8 +1102,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
     ).then((date) {
       if (date != null) {
         // Additional validation for issue date - should not be more than 6 months in the future (reasonable business practice)
-        if (title == 'Issue Date' && date.isAfter(DateTime.now().add(const Duration(days: 180)))) {
-          _showError('Invoice issue date cannot be more than 6 months in the future');
+        if (title == 'Issue Date' &&
+            date.isAfter(DateTime.now().add(const Duration(days: 180)))) {
+          _showError(
+              'Invoice issue date cannot be more than 6 months in the future');
           return;
         }
         onDateSelected(date);
@@ -1095,12 +1123,14 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
     });
 
     try {
-      final result = _isEditing 
+      final result = _isEditing
           ? await _updateExistingInvoice()
           : await _createNewInvoice();
 
       if (result.success) {
-        _showSuccess(_isEditing ? 'Invoice updated successfully' : 'Invoice created successfully');
+        _showSuccess(_isEditing
+            ? 'Invoice updated successfully'
+            : 'Invoice created successfully');
         Navigator.of(context).pop(result.data);
       } else {
         _showError(result.errorMessage ?? 'Failed to save invoice');
@@ -1114,45 +1144,68 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
     }
   }
 
-  Future<InvoiceOperationResult<CRDTInvoiceEnhanced>> _createNewInvoice() async {
+  Future<InvoiceOperationResult<CRDTInvoiceEnhanced>>
+      _createNewInvoice() async {
     return await widget.invoiceService.createInvoice(
       customerId: _selectedCustomerId ?? 'temp',
       customerName: _customerNameController.text,
-      customerEmail: _customerEmailController.text.isNotEmpty ? _customerEmailController.text : null,
-      billingAddress: _billingAddressController.text.isNotEmpty ? _billingAddressController.text : null,
-      shippingAddress: _shippingAddressController.text.isNotEmpty ? _shippingAddressController.text : null,
+      customerEmail: _customerEmailController.text.isNotEmpty
+          ? _customerEmailController.text
+          : null,
+      billingAddress: _billingAddressController.text.isNotEmpty
+          ? _billingAddressController.text
+          : null,
+      shippingAddress: _shippingAddressController.text.isNotEmpty
+          ? _shippingAddressController.text
+          : null,
       issueDate: _issueDate,
       dueDate: _dueDate,
       paymentTerms: _paymentTerms,
-      poNumber: _poNumberController.text.isNotEmpty ? _poNumberController.text : null,
-      reference: _referenceController.text.isNotEmpty ? _referenceController.text : null,
+      poNumber:
+          _poNumberController.text.isNotEmpty ? _poNumberController.text : null,
+      reference: _referenceController.text.isNotEmpty
+          ? _referenceController.text
+          : null,
       notes: _notesController.text.isNotEmpty ? _notesController.text : null,
-      termsAndConditions: _termsController.text.isNotEmpty ? _termsController.text : null,
+      termsAndConditions:
+          _termsController.text.isNotEmpty ? _termsController.text : null,
       lineItems: _lineItems,
       currency: _currency,
       exchangeRate: _exchangeRate,
     );
   }
 
-  Future<InvoiceOperationResult<CRDTInvoiceEnhanced>> _updateExistingInvoice() async {
+  Future<InvoiceOperationResult<CRDTInvoiceEnhanced>>
+      _updateExistingInvoice() async {
     final updates = <String, dynamic>{
       'customer_name': _customerNameController.text,
-      'customer_email': _customerEmailController.text.isNotEmpty ? _customerEmailController.text : null,
-      'billing_address': _billingAddressController.text.isNotEmpty ? _billingAddressController.text : null,
-      'shipping_address': _shippingAddressController.text.isNotEmpty ? _shippingAddressController.text : null,
+      'customer_email': _customerEmailController.text.isNotEmpty
+          ? _customerEmailController.text
+          : null,
+      'billing_address': _billingAddressController.text.isNotEmpty
+          ? _billingAddressController.text
+          : null,
+      'shipping_address': _shippingAddressController.text.isNotEmpty
+          ? _shippingAddressController.text
+          : null,
       'issue_date': _issueDate.millisecondsSinceEpoch,
       'due_date': _dueDate?.millisecondsSinceEpoch,
-      'po_number': _poNumberController.text.isNotEmpty ? _poNumberController.text : null,
-      'reference': _referenceController.text.isNotEmpty ? _referenceController.text : null,
+      'po_number':
+          _poNumberController.text.isNotEmpty ? _poNumberController.text : null,
+      'reference': _referenceController.text.isNotEmpty
+          ? _referenceController.text
+          : null,
       'notes': _notesController.text.isNotEmpty ? _notesController.text : null,
-      'terms_and_conditions': _termsController.text.isNotEmpty ? _termsController.text : null,
+      'terms_and_conditions':
+          _termsController.text.isNotEmpty ? _termsController.text : null,
       'currency': _currency,
       'exchange_rate': _exchangeRate,
       'discount_amount': _discountAmount,
       'shipping_amount': _shippingAmount,
     };
 
-    return await widget.invoiceService.updateInvoice(widget.invoiceId!, updates);
+    return await widget.invoiceService
+        .updateInvoice(widget.invoiceId!, updates);
   }
 
   void _showError(String message) {
@@ -1169,7 +1222,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.green,
-      ),  
+      ),
     );
   }
 

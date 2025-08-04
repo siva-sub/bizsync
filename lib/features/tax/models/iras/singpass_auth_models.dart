@@ -22,16 +22,16 @@ class SingPassAuthRequest {
       _$SingPassAuthRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$SingPassAuthRequestToJson(this);
-  
+
   /// Convert to query parameters for GET request
   Map<String, String> toQueryParams() {
     final params = <String, String>{
       'callback_url': callbackUrl,
     };
-    
+
     if (scope != null) params['scope'] = scope!;
     if (state != null) params['state'] = state!;
-    
+
     return params;
   }
 }

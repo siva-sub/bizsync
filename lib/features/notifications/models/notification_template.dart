@@ -95,7 +95,8 @@ class NotificationTemplate {
 
   List<String> getMissingVariables(Map<String, dynamic> variables) {
     return requiredVariables
-        .where((required) => !variables.containsKey(required) || variables[required] == null)
+        .where((required) =>
+            !variables.containsKey(required) || variables[required] == null)
         .toList();
   }
 }
@@ -105,32 +106,39 @@ class NotificationTemplates {
   static final List<NotificationTemplate> defaultTemplates = [
     // Invoice Templates
     NotificationTemplate(
-      id: 'invoice_due_reminder',
-      name: 'Invoice Due Reminder',
-      description: 'Reminds about upcoming invoice due date',
-      type: BusinessNotificationType.invoiceDue,
-      category: NotificationCategory.invoice,
-      priority: NotificationPriority.high,
-      channel: NotificationChannel.business,
-      titleTemplate: 'Invoice {{invoiceNumber}} Due Soon',
-      bodyTemplate: 'Invoice {{invoiceNumber}} for {{customerName}} is due on {{dueDate}}. Amount: {{amount}}',
-      bigTextTemplate: 'Invoice Details:\nNumber: {{invoiceNumber}}\nCustomer: {{customerName}}\nAmount: {{amount}}\nDue Date: {{dueDate}}\n\nTap to view details or send reminder.',
-      style: NotificationStyle.bigText,
-      requiredVariables: ['invoiceNumber', 'customerName', 'dueDate', 'amount'],
-      actions: [
-        NotificationAction(
-          id: 'view_invoice',
-          title: 'View Invoice',
-          type: NotificationActionType.view,
+        id: 'invoice_due_reminder',
+        name: 'Invoice Due Reminder',
+        description: 'Reminds about upcoming invoice due date',
+        type: BusinessNotificationType.invoiceDue,
+        category: NotificationCategory.invoice,
+        priority: NotificationPriority.high,
+        channel: NotificationChannel.business,
+        titleTemplate: 'Invoice {{invoiceNumber}} Due Soon',
+        bodyTemplate:
+            'Invoice {{invoiceNumber}} for {{customerName}} is due on {{dueDate}}. Amount: {{amount}}',
+        bigTextTemplate:
+            'Invoice Details:\nNumber: {{invoiceNumber}}\nCustomer: {{customerName}}\nAmount: {{amount}}\nDue Date: {{dueDate}}\n\nTap to view details or send reminder.',
+        style: NotificationStyle.bigText,
+        requiredVariables: [
+          'invoiceNumber',
+          'customerName',
+          'dueDate',
+          'amount'
+        ],
+        actions: [
+          NotificationAction(
+            id: 'view_invoice',
+            title: 'View Invoice',
+            type: NotificationActionType.view,
+          ),
+          NotificationAction(
+            id: 'send_reminder',
+            title: 'Send Reminder',
+            type: NotificationActionType.custom,
+          ),
+        ],
+        createdAt: DateTime.now() // Default creation time
         ),
-        NotificationAction(
-          id: 'send_reminder',
-          title: 'Send Reminder',
-          type: NotificationActionType.custom,
-        ),
-      ],
-      createdAt: DateTime.now() // Default creation time
-    ),
 
     NotificationTemplate(
       id: 'invoice_overdue',
@@ -141,11 +149,19 @@ class NotificationTemplates {
       priority: NotificationPriority.critical,
       channel: NotificationChannel.urgent,
       titleTemplate: 'OVERDUE: Invoice {{invoiceNumber}}',
-      bodyTemplate: 'Invoice {{invoiceNumber}} is {{daysPastDue}} days overdue. Amount: {{amount}}',
-      bigTextTemplate: 'Overdue Invoice Alert:\nNumber: {{invoiceNumber}}\nCustomer: {{customerName}}\nAmount: {{amount}}\nDays Overdue: {{daysPastDue}}\nOriginal Due Date: {{originalDueDate}}\n\nImmediate action required!',
+      bodyTemplate:
+          'Invoice {{invoiceNumber}} is {{daysPastDue}} days overdue. Amount: {{amount}}',
+      bigTextTemplate:
+          'Overdue Invoice Alert:\nNumber: {{invoiceNumber}}\nCustomer: {{customerName}}\nAmount: {{amount}}\nDays Overdue: {{daysPastDue}}\nOriginal Due Date: {{originalDueDate}}\n\nImmediate action required!',
       style: NotificationStyle.bigText,
       persistent: true,
-      requiredVariables: ['invoiceNumber', 'customerName', 'amount', 'daysPastDue', 'originalDueDate'],
+      requiredVariables: [
+        'invoiceNumber',
+        'customerName',
+        'amount',
+        'daysPastDue',
+        'originalDueDate'
+      ],
       actions: [
         NotificationAction(
           id: 'view_invoice',
@@ -171,10 +187,18 @@ class NotificationTemplates {
       priority: NotificationPriority.low,
       channel: NotificationChannel.business,
       titleTemplate: 'Payment Received - {{amount}}',
-      bodyTemplate: 'Received {{amount}} from {{customerName}} for invoice {{invoiceNumber}}',
-      bigTextTemplate: 'Payment Details:\nAmount: {{amount}}\nFrom: {{customerName}}\nInvoice: {{invoiceNumber}}\nPayment Method: {{paymentMethod}}\nReceived: {{receivedDate}}',
+      bodyTemplate:
+          'Received {{amount}} from {{customerName}} for invoice {{invoiceNumber}}',
+      bigTextTemplate:
+          'Payment Details:\nAmount: {{amount}}\nFrom: {{customerName}}\nInvoice: {{invoiceNumber}}\nPayment Method: {{paymentMethod}}\nReceived: {{receivedDate}}',
       style: NotificationStyle.bigText,
-      requiredVariables: ['amount', 'customerName', 'invoiceNumber', 'paymentMethod', 'receivedDate'],
+      requiredVariables: [
+        'amount',
+        'customerName',
+        'invoiceNumber',
+        'paymentMethod',
+        'receivedDate'
+      ],
       actions: [
         NotificationAction(
           id: 'view_payment',
@@ -195,8 +219,10 @@ class NotificationTemplates {
       priority: NotificationPriority.high,
       channel: NotificationChannel.business,
       titleTemplate: 'Tax Deadline: {{taxType}}',
-      bodyTemplate: '{{taxType}} filing deadline is {{daysUntilDeadline}} days away ({{deadlineDate}})',
-      bigTextTemplate: 'Tax Filing Reminder:\nType: {{taxType}}\nDeadline: {{deadlineDate}}\nDays Remaining: {{daysUntilDeadline}}\nEstimated Amount: {{estimatedAmount}}\n\nPrepare your documents now!',
+      bodyTemplate:
+          '{{taxType}} filing deadline is {{daysUntilDeadline}} days away ({{deadlineDate}})',
+      bigTextTemplate:
+          'Tax Filing Reminder:\nType: {{taxType}}\nDeadline: {{deadlineDate}}\nDays Remaining: {{daysUntilDeadline}}\nEstimated Amount: {{estimatedAmount}}\n\nPrepare your documents now!',
       style: NotificationStyle.bigText,
       requiredVariables: ['taxType', 'deadlineDate', 'daysUntilDeadline'],
       actions: [
@@ -224,8 +250,10 @@ class NotificationTemplates {
       priority: NotificationPriority.low,
       channel: NotificationChannel.system,
       titleTemplate: 'Backup Completed Successfully',
-      bodyTemplate: 'Your data backup finished at {{completedTime}}. {{itemCount}} items backed up.',
-      bigTextTemplate: 'Backup Summary:\nCompleted: {{completedTime}}\nItems Backed Up: {{itemCount}}\nBackup Size: {{backupSize}}\nLocation: {{backupLocation}}\nNext Scheduled: {{nextBackup}}',
+      bodyTemplate:
+          'Your data backup finished at {{completedTime}}. {{itemCount}} items backed up.',
+      bigTextTemplate:
+          'Backup Summary:\nCompleted: {{completedTime}}\nItems Backed Up: {{itemCount}}\nBackup Size: {{backupSize}}\nLocation: {{backupLocation}}\nNext Scheduled: {{nextBackup}}',
       style: NotificationStyle.bigText,
       requiredVariables: ['completedTime', 'itemCount'],
       actions: [
@@ -247,8 +275,10 @@ class NotificationTemplates {
       priority: NotificationPriority.critical,
       channel: NotificationChannel.urgent,
       titleTemplate: 'Backup Failed',
-      bodyTemplate: 'Data backup failed at {{failedTime}}. Error: {{errorMessage}}',
-      bigTextTemplate: 'Backup Failure Details:\nFailed At: {{failedTime}}\nError: {{errorMessage}}\nLast Successful Backup: {{lastSuccessfulBackup}}\n\nImmediate attention required!',
+      bodyTemplate:
+          'Data backup failed at {{failedTime}}. Error: {{errorMessage}}',
+      bigTextTemplate:
+          'Backup Failure Details:\nFailed At: {{failedTime}}\nError: {{errorMessage}}\nLast Successful Backup: {{lastSuccessfulBackup}}\n\nImmediate attention required!',
       style: NotificationStyle.bigText,
       persistent: true,
       requiredVariables: ['failedTime', 'errorMessage'],
@@ -277,10 +307,17 @@ class NotificationTemplates {
       priority: NotificationPriority.low,
       channel: NotificationChannel.insights,
       titleTemplate: 'Congratulations! {{milestoneType}} Achieved',
-      bodyTemplate: 'You\'ve reached {{milestoneValue}} in {{period}}. {{percentageIncrease}}% increase!',
-      bigTextTemplate: 'Sales Milestone Celebration:\n{{milestoneType}}: {{milestoneValue}}\nPeriod: {{period}}\nIncrease: {{percentageIncrease}}%\nPrevious: {{previousValue}}\n\nKeep up the great work!',
+      bodyTemplate:
+          'You\'ve reached {{milestoneValue}} in {{period}}. {{percentageIncrease}}% increase!',
+      bigTextTemplate:
+          'Sales Milestone Celebration:\n{{milestoneType}}: {{milestoneValue}}\nPeriod: {{period}}\nIncrease: {{percentageIncrease}}%\nPrevious: {{previousValue}}\n\nKeep up the great work!',
       style: NotificationStyle.bigText,
-      requiredVariables: ['milestoneType', 'milestoneValue', 'period', 'percentageIncrease'],
+      requiredVariables: [
+        'milestoneType',
+        'milestoneValue',
+        'period',
+        'percentageIncrease'
+      ],
       actions: [
         NotificationAction(
           id: 'view_analytics',
@@ -302,7 +339,8 @@ class NotificationTemplates {
       channel: NotificationChannel.reminders,
       titleTemplate: 'Task Reminder: {{taskTitle}}',
       bodyTemplate: '{{taskTitle}} is due {{dueTime}}. Priority: {{priority}}',
-      bigTextTemplate: 'Task Details:\nTitle: {{taskTitle}}\nDue: {{dueTime}}\nPriority: {{priority}}\nDescription: {{taskDescription}}\n\nTap to mark as complete or snooze.',
+      bigTextTemplate:
+          'Task Details:\nTitle: {{taskTitle}}\nDue: {{dueTime}}\nPriority: {{priority}}\nDescription: {{taskDescription}}\n\nTap to mark as complete or snooze.',
       style: NotificationStyle.bigText,
       requiredVariables: ['taskTitle', 'dueTime', 'priority'],
       actions: [
@@ -329,11 +367,15 @@ class NotificationTemplates {
     }
   }
 
-  static List<NotificationTemplate> getTemplatesByCategory(NotificationCategory category) {
-    return defaultTemplates.where((template) => template.category == category).toList();
+  static List<NotificationTemplate> getTemplatesByCategory(
+      NotificationCategory category) {
+    return defaultTemplates
+        .where((template) => template.category == category)
+        .toList();
   }
 
-  static List<NotificationTemplate> getTemplatesByType(BusinessNotificationType type) {
+  static List<NotificationTemplate> getTemplatesByType(
+      BusinessNotificationType type) {
     return defaultTemplates.where((template) => template.type == type).toList();
   }
 }

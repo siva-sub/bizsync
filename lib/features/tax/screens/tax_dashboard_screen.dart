@@ -110,7 +110,7 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
             ],
           ),
           const SizedBox(height: 16),
-          
+
           Row(
             children: [
               Expanded(
@@ -136,9 +136,9 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Tax Rate History Chart
           Card(
             child: Padding(
@@ -165,9 +165,9 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Recent Calculations
           Card(
             child: Padding(
@@ -262,12 +262,12 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
           child: ListTile(
             leading: const Icon(Icons.business),
             title: const Text('Company Tax Profile'),
-            subtitle: const Text('Configure company tax settings and classifications'),
+            subtitle: const Text(
+                'Configure company tax settings and classifications'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () => context.go('/settings'),
           ),
         ),
-        
         Card(
           child: ListTile(
             leading: const Icon(Icons.percent),
@@ -277,17 +277,16 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
             onTap: () => context.go('/tax/calculator'),
           ),
         ),
-        
         Card(
           child: ListTile(
             leading: const Icon(Icons.savings),
             title: const Text('Tax Reliefs & Exemptions'),
-            subtitle: const Text('Configure available tax reliefs and exemptions'),
+            subtitle:
+                const Text('Configure available tax reliefs and exemptions'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () => context.go('/settings'),
           ),
         ),
-        
         Card(
           child: ListTile(
             leading: const Icon(Icons.currency_exchange),
@@ -297,32 +296,32 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
             onTap: () => context.go('/settings'),
           ),
         ),
-        
         Card(
           child: ListTile(
             leading: const Icon(Icons.public),
             title: const Text('International Tax Treaties'),
-            subtitle: const Text('Configure tax treaties and withholding rates'),
+            subtitle:
+                const Text('Configure tax treaties and withholding rates'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () => context.go('/settings'),
           ),
         ),
-        
         Card(
           child: ListTile(
             leading: const Icon(Icons.local_shipping),
             title: const Text('Trade Duty Configuration'),
-            subtitle: const Text('Configure import/export duty rates and classifications'),
+            subtitle: const Text(
+                'Configure import/export duty rates and classifications'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () => context.go('/settings'),
           ),
         ),
-        
         Card(
           child: ListTile(
             leading: const Icon(Icons.backup),
             title: const Text('Data Import/Export'),
-            subtitle: const Text('Import tax data from IRAS or export for compliance'),
+            subtitle: const Text(
+                'Import tax data from IRAS or export for compliance'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () => context.go('/backup'),
           ),
@@ -346,7 +345,8 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
                   children: [
                     Icon(Icons.verified, color: Colors.green),
                     const SizedBox(width: 8),
-                    Text('Compliance Status', style: Theme.of(context).textTheme.titleLarge),
+                    Text('Compliance Status',
+                        style: Theme.of(context).textTheme.titleLarge),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -361,9 +361,9 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Filing Requirements
         Card(
           child: ExpansionTile(
@@ -374,22 +374,28 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
               ListTile(
                 title: const Text('GST F5 Return'),
                 subtitle: Text('Due: 30 Jan ${DateTime.now().year}'),
-                trailing: Chip(label: Text('Due Soon'), backgroundColor: Colors.orange[100]),
+                trailing: Chip(
+                    label: Text('Due Soon'),
+                    backgroundColor: Colors.orange[100]),
               ),
               ListTile(
                 title: const Text('Corporate Tax Return (Form C-S)'),
                 subtitle: const Text('Due: 30 Nov 2024'),
-                trailing: Chip(label: Text('Completed'), backgroundColor: Colors.green[100]),
+                trailing: Chip(
+                    label: Text('Completed'),
+                    backgroundColor: Colors.green[100]),
               ),
               ListTile(
                 title: const Text('Estimated Chargeable Income'),
                 subtitle: const Text('Due: 30 Nov 2024'),
-                trailing: Chip(label: Text('Pending'), backgroundColor: Colors.yellow[100]),
+                trailing: Chip(
+                    label: Text('Pending'),
+                    backgroundColor: Colors.yellow[100]),
               ),
             ],
           ),
         ),
-        
+
         // Audit Trail
         Card(
           child: ListTile(
@@ -400,7 +406,7 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
             onTap: () => context.go('/reports'),
           ),
         ),
-        
+
         // IRAS Integration
         Card(
           child: ListTile(
@@ -411,24 +417,26 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
             onTap: () => context.go('/sync'),
           ),
         ),
-        
+
         // Compliance Reports
         Card(
           child: ListTile(
             leading: const Icon(Icons.assessment),
             title: const Text('Compliance Reports'),
-            subtitle: const Text('Generate tax compliance and analysis reports'),
+            subtitle:
+                const Text('Generate tax compliance and analysis reports'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () => context.go('/reports/tax'),
           ),
         ),
-        
+
         // Document Management
         Card(
           child: ListTile(
             leading: const Icon(Icons.folder),
             title: const Text('Document Management'),
-            subtitle: const Text('Manage tax-related documents and certificates'),
+            subtitle:
+                const Text('Manage tax-related documents and certificates'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () => context.go('/backup'),
           ),
@@ -535,7 +543,7 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
 
   void _showQuickGstCalculator(BuildContext context) {
     final amountController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -565,14 +573,14 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
               final amount = double.tryParse(amountController.text) ?? 0;
               final gst = amount * 0.09;
               final total = amount + gst;
-              
+
               Navigator.pop(context);
-              
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Amount: S\$${amount.toStringAsFixed(2)}\n'
-                              'GST (9%): S\$${gst.toStringAsFixed(2)}\n'
-                              'Total: S\$${total.toStringAsFixed(2)}'),
+                      'GST (9%): S\$${gst.toStringAsFixed(2)}\n'
+                      'Total: S\$${total.toStringAsFixed(2)}'),
                   duration: const Duration(seconds: 5),
                 ),
               );
@@ -586,7 +594,7 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
 
   void _showDateRateQuery(BuildContext context) {
     DateTime selectedDate = DateTime.now();
-    
+
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -596,7 +604,8 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text('Selected Date: ${selectedDate.toString().split(' ')[0]}'),
+                title: Text(
+                    'Selected Date: ${selectedDate.toString().split(' ')[0]}'),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: () async {
                   final date = await showDatePicker(

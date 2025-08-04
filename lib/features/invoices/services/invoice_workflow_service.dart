@@ -41,7 +41,6 @@ class WorkflowTransitionResult {
 
 /// Invoice workflow validation rules
 class InvoiceWorkflowValidator {
-  
   /// Check if a status transition is valid
   static bool isValidTransition(InvoiceStatus from, InvoiceStatus to) {
     switch (from) {
@@ -134,7 +133,7 @@ class InvoiceWorkflowValidator {
 
       case InvoiceStatus.voided:
         return false; // No transitions from voided state
-      
+
       case InvoiceStatus.refunded:
         return false; // No transitions from refunded state
     }
@@ -147,7 +146,8 @@ class InvoiceWorkflowValidator {
   ) {
     switch (to) {
       case InvoiceStatus.sent:
-        if (invoice.customerId.value == null || invoice.customerId.value!.isEmpty) {
+        if (invoice.customerId.value == null ||
+            invoice.customerId.value!.isEmpty) {
           return 'Customer is required to send invoice';
         }
         if (invoice.itemIds.elements.isEmpty) {
@@ -203,12 +203,11 @@ class InvoiceWorkflowValidator {
 
 /// Invoice workflow automation rules
 class InvoiceWorkflowAutomation {
-  
   /// Check if invoice should be automatically marked as overdue
   static bool shouldMarkOverdue(CRDTInvoiceEnhanced invoice) {
     final status = invoice.status.value;
-    if (status == InvoiceStatus.paid || 
-        status == InvoiceStatus.cancelled || 
+    if (status == InvoiceStatus.paid ||
+        status == InvoiceStatus.cancelled ||
         status == InvoiceStatus.voided) {
       return false;
     }
@@ -219,24 +218,23 @@ class InvoiceWorkflowAutomation {
   /// Check if reminder should be sent
   static bool shouldSendReminder(CRDTInvoiceEnhanced invoice) {
     if (!invoice.autoReminders.value) return false;
-    
+
     final dueDate = invoice.calculateDueDate();
     if (dueDate == null) return false;
-    
+
     final reminderDays = invoice.reminderDaysBefore.value ?? 3;
     final reminderDate = dueDate.subtract(Duration(days: reminderDays));
     final now = DateTime.now();
-    
+
     final lastReminder = invoice.lastReminderSent.value;
-    final daysSinceLastReminder = lastReminder != null 
-        ? now.difference(lastReminder).inDays 
-        : 999;
-    
-    return now.isAfter(reminderDate) && 
-           daysSinceLastReminder >= 1 && // Don't spam daily
-           invoice.status.value != InvoiceStatus.paid &&
-           invoice.status.value != InvoiceStatus.cancelled &&
-           invoice.status.value != InvoiceStatus.voided;
+    final daysSinceLastReminder =
+        lastReminder != null ? now.difference(lastReminder).inDays : 999;
+
+    return now.isAfter(reminderDate) &&
+        daysSinceLastReminder >= 1 && // Don't spam daily
+        invoice.status.value != InvoiceStatus.paid &&
+        invoice.status.value != InvoiceStatus.cancelled &&
+        invoice.status.value != InvoiceStatus.voided;
   }
 
   /// Get automated follow-up actions for a status
@@ -259,7 +257,7 @@ class InvoiceWorkflowAutomation {
 /// Main invoice workflow service
 class InvoiceWorkflowService {
   final String _nodeId = 'default-node';
-  
+
   InvoiceWorkflowService();
 
   /// Attempt to transition invoice to new status
@@ -272,9 +270,10 @@ class InvoiceWorkflowService {
     bool skipValidation = false,
   }) async {
     final currentStatus = invoice.status.value;
-    
+
     // Check if transition is valid
-    if (!skipValidation && !InvoiceWorkflowValidator.isValidTransition(currentStatus, newStatus)) {
+    if (!skipValidation &&
+        !InvoiceWorkflowValidator.isValidTransition(currentStatus, newStatus)) {
       return WorkflowTransitionResult.failure(
         'Invalid transition from ${currentStatus.value} to ${newStatus.value}',
       );
@@ -282,7 +281,8 @@ class InvoiceWorkflowService {
 
     // Validate invoice data for this transition
     if (!skipValidation) {
-      final validationError = InvoiceWorkflowValidator.validateTransitionData(invoice, newStatus);
+      final validationError =
+          InvoiceWorkflowValidator.validateTransitionData(invoice, newStatus);
       if (validationError != null) {
         return WorkflowTransitionResult.failure(validationError);
       }
@@ -322,7 +322,10 @@ class InvoiceWorkflowService {
           InvoiceStatus.overdue,
           reason: 'Automatic overdue detection',
           triggeredBy: 'system',
-          context: {'automated': true, 'overdue_date': DateTime.now().toIso8601String()},
+          context: {
+            'automated': true,
+            'overdue_date': DateTime.now().toIso8601String()
+          },
           skipValidation: true,
         );
         results.add(result);
@@ -342,7 +345,7 @@ class InvoiceWorkflowService {
   List<InvoiceStatus> getAvailableTransitions(CRDTInvoiceEnhanced invoice) {
     final currentStatus = invoice.status.value;
     final allStatuses = InvoiceStatus.values;
-    
+
     return allStatuses.where((status) {
       if (status == currentStatus) return false;
       return InvoiceWorkflowValidator.isValidTransition(currentStatus, status);
@@ -350,16 +353,18 @@ class InvoiceWorkflowService {
   }
 
   /// Get workflow history for an invoice
-  Future<List<Map<String, dynamic>>> getWorkflowHistory(String invoiceId) async {
+  Future<List<Map<String, dynamic>>> getWorkflowHistory(
+      String invoiceId) async {
     // This would typically query the workflow entries from the database
     // For now, return empty list - implementation would depend on repository
     return [];
   }
 
   /// Validate invoice can be transitioned to status
-  String? validateTransition(CRDTInvoiceEnhanced invoice, InvoiceStatus newStatus) {
+  String? validateTransition(
+      CRDTInvoiceEnhanced invoice, InvoiceStatus newStatus) {
     final currentStatus = invoice.status.value;
-    
+
     if (!InvoiceWorkflowValidator.isValidTransition(currentStatus, newStatus)) {
       return 'Cannot transition from ${currentStatus.value} to ${newStatus.value}';
     }
@@ -392,7 +397,7 @@ class InvoiceWorkflowService {
     Map<String, dynamic>? context,
   ) async {
     final actions = InvoiceWorkflowAutomation.getAutomatedActions(status);
-    
+
     for (final action in actions) {
       switch (action) {
         case 'schedule_reminder':
@@ -426,7 +431,8 @@ class InvoiceWorkflowService {
   /// Track invoice delivery
   Future<void> _trackDelivery(CRDTInvoiceEnhanced invoice) async {
     // Implementation would set up delivery tracking
-    print('Setting up delivery tracking for invoice ${invoice.invoiceNumber.value}');
+    print(
+        'Setting up delivery tracking for invoice ${invoice.invoiceNumber.value}');
   }
 
   /// Schedule follow-up for viewed invoice
@@ -450,11 +456,13 @@ class InvoiceWorkflowService {
   /// Send balance reminder for partially paid invoice
   Future<void> _sendBalanceReminder(CRDTInvoiceEnhanced invoice) async {
     // Implementation would send balance reminder
-    print('Sending balance reminder for invoice ${invoice.invoiceNumber.value}');
+    print(
+        'Sending balance reminder for invoice ${invoice.invoiceNumber.value}');
   }
 
   /// Get workflow statistics
-  Map<String, dynamic> getWorkflowStatistics(List<CRDTInvoiceEnhanced> invoices) {
+  Map<String, dynamic> getWorkflowStatistics(
+      List<CRDTInvoiceEnhanced> invoices) {
     final statusCounts = <String, int>{};
     final overdueCount = invoices.where((i) => i.isOverdue).length;
     final disputedCount = invoices.where((i) => i.isDisputed.value).length;
@@ -475,9 +483,10 @@ class InvoiceWorkflowService {
       'disputed_count': disputedCount,
       'partially_paid_count': partiallyPaidCount,
       'total_paid_amount': totalPaid,
-      'average_invoice_value': invoices.isEmpty 
-          ? 0.0 
-          : invoices.fold(0.0, (sum, i) => sum + i.totalAmount.value) / invoices.length,
+      'average_invoice_value': invoices.isEmpty
+          ? 0.0
+          : invoices.fold(0.0, (sum, i) => sum + i.totalAmount.value) /
+              invoices.length,
     };
   }
 }

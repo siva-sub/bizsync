@@ -13,7 +13,7 @@ class Product {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int syncStatus;
-  
+
   const Product({
     required this.id,
     required this.name,
@@ -30,7 +30,7 @@ class Product {
     required this.updatedAt,
     this.syncStatus = 0,
   });
-  
+
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       id: json['id'] as String,
@@ -49,7 +49,7 @@ class Product {
       syncStatus: json['sync_status'] as int? ?? 0,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -68,7 +68,7 @@ class Product {
       'sync_status': syncStatus,
     };
   }
-  
+
   factory Product.fromDatabase(Map<String, dynamic> map) {
     return Product(
       id: map['id'] as String,
@@ -87,7 +87,7 @@ class Product {
       syncStatus: map['sync_status'] as int? ?? 0,
     );
   }
-  
+
   Map<String, dynamic> toDatabase() {
     return {
       'id': id,
@@ -106,7 +106,7 @@ class Product {
       'sync_status': syncStatus,
     };
   }
-  
+
   Product copyWith({
     String? id,
     String? name,
@@ -140,28 +140,28 @@ class Product {
       syncStatus: syncStatus ?? this.syncStatus,
     );
   }
-  
+
   /// Calculate profit margin percentage
   double get profitMarginPercentage {
     if (cost == null || cost == 0) return 0.0;
     return ((price - cost!) / cost!) * 100;
   }
-  
+
   /// Calculate profit amount
   double get profitAmount {
     if (cost == null) return price;
     return price - cost!;
   }
-  
+
   /// Check if product is in stock
   bool get isInStock => stockQuantity > 0;
-  
+
   /// Check if product is low stock (less than 10 units)
   bool get isLowStock => stockQuantity > 0 && stockQuantity < 10;
-  
+
   /// Alias for stockQuantity for compatibility
   int get stockLevel => stockQuantity;
-  
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -174,11 +174,8 @@ class Product {
 
   @override
   int get hashCode =>
-      id.hashCode ^
-      name.hashCode ^
-      price.hashCode ^
-      barcode.hashCode;
-  
+      id.hashCode ^ name.hashCode ^ price.hashCode ^ barcode.hashCode;
+
   @override
   String toString() {
     return 'Product(id: $id, name: $name, price: $price, stock: $stockQuantity)';

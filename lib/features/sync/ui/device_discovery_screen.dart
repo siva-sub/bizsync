@@ -13,24 +13,27 @@ class DeviceDiscoveryScreen extends ConsumerStatefulWidget {
   const DeviceDiscoveryScreen({super.key});
 
   @override
-  ConsumerState<DeviceDiscoveryScreen> createState() => _DeviceDiscoveryScreenState();
+  ConsumerState<DeviceDiscoveryScreen> createState() =>
+      _DeviceDiscoveryScreenState();
 }
 
 class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
     with TickerProviderStateMixin {
-  
   final P2PSyncService _syncService = P2PSyncService();
-  
+
   late AnimationController _scanAnimationController;
   late AnimationController _fadeAnimationController;
   late Animation<double> _scanAnimation;
   late Animation<double> _fadeAnimation;
-  
+
   final List<sync.DeviceInfo> _discoveredDevices = [];
   final List<sync.P2PConnection> _activeConnections = [];
   final List<PairedDevice> _pairedDevices = [];
-  final Set<sync.TransportType> _selectedTransports = {sync.TransportType.bluetooth, sync.TransportType.mdns};
-  
+  final Set<sync.TransportType> _selectedTransports = {
+    sync.TransportType.bluetooth,
+    sync.TransportType.mdns
+  };
+
   bool _isScanning = false;
   bool _isAdvertising = false;
   String? _errorMessage;
@@ -40,26 +43,28 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize animations
     _scanAnimationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    
+
     _fadeAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
+
     _scanAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _scanAnimationController, curve: Curves.easeInOut),
+      CurvedAnimation(
+          parent: _scanAnimationController, curve: Curves.easeInOut),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeAnimationController, curve: Curves.easeInOut),
+      CurvedAnimation(
+          parent: _fadeAnimationController, curve: Curves.easeInOut),
     );
-    
+
     _initializeService();
   }
 
@@ -77,15 +82,16 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
     try {
       await _syncService.initialize();
       await _loadPairedDevices();
-      
+
       // Set up listeners
-      _discoverySubscription = _syncService.discoveredDevices.listen(_onDeviceDiscovered);
-      _connectionSubscription = _syncService.connectionStateChanges.listen(_onConnectionStateChanged);
-      
+      _discoverySubscription =
+          _syncService.discoveredDevices.listen(_onDeviceDiscovered);
+      _connectionSubscription =
+          _syncService.connectionStateChanges.listen(_onConnectionStateChanged);
+
       setState(() {
         _errorMessage = null;
       });
-      
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to initialize sync service: $e';
@@ -114,7 +120,7 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
       // Sort by last seen (most recent first)
       _discoveredDevices.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
     });
-    
+
     _fadeAnimationController.forward().then((_) {
       _fadeAnimationController.reset();
     });
@@ -123,25 +129,27 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
   void _onConnectionStateChanged(sync.P2PConnection connection) {
     setState(() {
       if (connection.state == sync.ConnectionState.connected) {
-        _activeConnections.removeWhere((c) => c.connectionId == connection.connectionId);
+        _activeConnections
+            .removeWhere((c) => c.connectionId == connection.connectionId);
         _activeConnections.add(connection);
       } else if (connection.state == sync.ConnectionState.disconnected) {
-        _activeConnections.removeWhere((c) => c.connectionId == connection.connectionId);
+        _activeConnections
+            .removeWhere((c) => c.connectionId == connection.connectionId);
       }
     });
   }
 
   Future<void> _startDiscovery() async {
     if (_isScanning) return;
-    
+
     setState(() {
       _isScanning = true;
       _errorMessage = null;
       _discoveredDevices.clear();
     });
-    
+
     _scanAnimationController.repeat();
-    
+
     try {
       await _syncService.startDiscovery(
         transportTypes: _selectedTransports.toList(),
@@ -158,14 +166,14 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
 
   Future<void> _stopDiscovery() async {
     if (!_isScanning) return;
-    
+
     setState(() {
       _isScanning = false;
     });
-    
+
     _scanAnimationController.stop();
     _scanAnimationController.reset();
-    
+
     try {
       await _syncService.stopDiscovery();
     } catch (e) {
@@ -206,7 +214,7 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
           syncService: _syncService,
         ),
       );
-      
+
       if (result == true) {
         await _loadPairedDevices();
         _showSnackBar('Successfully paired with ${device.deviceName}');
@@ -239,22 +247,24 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
       _showSnackBar('No connected devices available for sync');
       return;
     }
-    
+
     try {
       final configuration = await showDialog<sync.SyncConfiguration>(
         context: context,
         builder: (context) => const SyncSettingsDialog(),
       );
-      
+
       if (configuration != null) {
         final deviceIds = _activeConnections
             .map((conn) => conn.remoteDevice.deviceId)
             .toList();
-        
-        final session = await _syncService.startSyncSession(deviceIds, configuration);
-        
+
+        final session =
+            await _syncService.startSyncSession(deviceIds, configuration);
+
         if (mounted) {
-          _showSnackBar('Started sync session with ${deviceIds.length} devices');
+          _showSnackBar(
+              'Started sync session with ${deviceIds.length} devices');
           Navigator.pop(context, session);
         }
       }
@@ -281,7 +291,8 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
         title: const Text('Device Discovery'),
         actions: [
           IconButton(
-            icon: Icon(_isAdvertising ? Icons.visibility : Icons.visibility_off),
+            icon:
+                Icon(_isAdvertising ? Icons.visibility : Icons.visibility_off),
             onPressed: _toggleAdvertising,
             tooltip: _isAdvertising ? 'Stop advertising' : 'Start advertising',
           ),
@@ -327,12 +338,16 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
                 Row(
                   children: [
                     Icon(
-                      _isAdvertising ? Icons.wifi_tethering : Icons.wifi_tethering_off,
+                      _isAdvertising
+                          ? Icons.wifi_tethering
+                          : Icons.wifi_tethering_off,
                       color: _isAdvertising ? Colors.green : Colors.grey,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      _isAdvertising ? 'Device is visible to others' : 'Device is not advertising',
+                      _isAdvertising
+                          ? 'Device is visible to others'
+                          : 'Device is not advertising',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -353,7 +368,7 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
               ],
             ),
           ),
-          
+
           // Error message
           if (_errorMessage != null)
             Container(
@@ -386,7 +401,7 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
                 ],
               ),
             ),
-          
+
           // Content
           Expanded(
             child: DefaultTabController(
@@ -458,7 +473,7 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
         ),
       );
     }
-    
+
     if (_discoveredDevices.isEmpty && _isScanning) {
       return const Center(
         child: Column(
@@ -471,7 +486,7 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
         ),
       );
     }
-    
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: ListView.builder(
@@ -479,9 +494,11 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
         itemCount: _discoveredDevices.length,
         itemBuilder: (context, index) {
           final device = _discoveredDevices[index];
-          final isPaired = _pairedDevices.any((p) => p.deviceId == device.deviceId);
-          final isConnected = _activeConnections.any((c) => c.remoteDevice.deviceId == device.deviceId);
-          
+          final isPaired =
+              _pairedDevices.any((p) => p.deviceId == device.deviceId);
+          final isConnected = _activeConnections
+              .any((c) => c.remoteDevice.deviceId == device.deviceId);
+
           return Card(
             child: ListTile(
               leading: CircleAvatar(
@@ -543,14 +560,15 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _pairedDevices.length,
       itemBuilder: (context, index) {
         final device = _pairedDevices[index];
-        final isConnected = _activeConnections.any((c) => c.remoteDevice.deviceId == device.deviceId);
-        
+        final isConnected = _activeConnections
+            .any((c) => c.remoteDevice.deviceId == device.deviceId);
+
         return Card(
           child: ListTile(
             leading: CircleAvatar(
@@ -574,7 +592,7 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
                       final discoveredDevice = _discoveredDevices
                           .where((d) => d.deviceId == device.deviceId)
                           .firstOrNull;
-                      
+
                       if (discoveredDevice != null) {
                         _connectToDevice(discoveredDevice);
                       } else {
@@ -604,13 +622,13 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _activeConnections.length,
       itemBuilder: (context, index) {
         final connection = _activeConnections[index];
-        
+
         return Card(
           child: ListTile(
             leading: CircleAvatar(
@@ -628,7 +646,8 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
             ),
             trailing: IconButton(
               icon: const Icon(Icons.close),
-              onPressed: () => _disconnectFromDevice(connection.remoteDevice.deviceId),
+              onPressed: () =>
+                  _disconnectFromDevice(connection.remoteDevice.deviceId),
               tooltip: 'Disconnect',
             ),
             isThreeLine: true,
@@ -688,7 +707,7 @@ class _DeviceDiscoveryScreenState extends ConsumerState<DeviceDiscoveryScreen>
   String _formatLastSeen(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inSeconds < 60) {
       return 'Just now';
     } else if (difference.inMinutes < 60) {

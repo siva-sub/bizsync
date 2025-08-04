@@ -17,13 +17,13 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
     with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _pageController = PageController();
-  
+
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-  
+
   int _currentPage = 0;
   bool _isLoading = false;
-  
+
   // Form controllers
   final _companyNameController = TextEditingController();
   final _businessTypeController = TextEditingController();
@@ -34,7 +34,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
   final _websiteController = TextEditingController();
   final _gstNumberController = TextEditingController();
   final _uenController = TextEditingController();
-  
+
   String _selectedBusinessType = '';
   String _selectedIndustry = '';
   String _selectedCurrency = 'SGD';
@@ -53,7 +53,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -61,7 +61,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
       parent: _fadeController,
       curve: Curves.easeOut,
     ));
-    
+
     _fadeController.forward();
   }
 
@@ -129,7 +129,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
                 label: 'Company Setup - Step ${_currentPage + 1} of 3',
               ),
             ),
-            
+
             // Form content
             Expanded(
               child: Form(
@@ -149,7 +149,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
                 ),
               ),
             ),
-            
+
             // Navigation buttons
             _buildNavigationButtons(),
           ],
@@ -167,18 +167,20 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
           Text(
             'Basic Information',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Tell us about your business',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-            ),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.7),
+                ),
           ),
           const SizedBox(height: 32),
-          
           TextFormField(
             controller: _companyNameController,
             decoration: const InputDecoration(
@@ -195,7 +197,6 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
-          
           DropdownButtonFormField<String>(
             value: _selectedBusinessType.isEmpty ? null : _selectedBusinessType,
             decoration: const InputDecoration(
@@ -222,7 +223,6 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             },
           ),
           const SizedBox(height: 16),
-          
           DropdownButtonFormField<String>(
             value: _selectedIndustry.isEmpty ? null : _selectedIndustry,
             decoration: const InputDecoration(
@@ -249,7 +249,6 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             },
           ),
           const SizedBox(height: 16),
-          
           TextFormField(
             controller: _addressController,
             decoration: const InputDecoration(
@@ -280,18 +279,20 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
           Text(
             'Contact Information',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'How can customers reach you?',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-            ),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.7),
+                ),
           ),
           const SizedBox(height: 32),
-          
           TextFormField(
             controller: _phoneController,
             decoration: const InputDecoration(
@@ -309,7 +310,6 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
-          
           TextFormField(
             controller: _emailController,
             decoration: const InputDecoration(
@@ -322,7 +322,8 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
               if (value == null || value.trim().isEmpty) {
                 return 'Please enter your email address';
               }
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                  .hasMatch(value)) {
                 return 'Please enter a valid email address';
               }
               return null;
@@ -330,7 +331,6 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
-          
           TextFormField(
             controller: _websiteController,
             decoration: const InputDecoration(
@@ -342,15 +342,13 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 32),
-          
           Text(
             'Localization',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
           DropdownButtonFormField<String>(
             value: _selectedCurrency,
             decoration: const InputDecoration(
@@ -358,11 +356,14 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
               prefixIcon: Icon(Icons.attach_money),
             ),
             items: const [
-              DropdownMenuItem(value: 'SGD', child: Text('SGD - Singapore Dollar')),
+              DropdownMenuItem(
+                  value: 'SGD', child: Text('SGD - Singapore Dollar')),
               DropdownMenuItem(value: 'USD', child: Text('USD - US Dollar')),
               DropdownMenuItem(value: 'EUR', child: Text('EUR - Euro')),
-              DropdownMenuItem(value: 'GBP', child: Text('GBP - British Pound')),
-              DropdownMenuItem(value: 'MYR', child: Text('MYR - Malaysian Ringgit')),
+              DropdownMenuItem(
+                  value: 'GBP', child: Text('GBP - British Pound')),
+              DropdownMenuItem(
+                  value: 'MYR', child: Text('MYR - Malaysian Ringgit')),
             ],
             onChanged: (value) {
               setState(() {
@@ -371,7 +372,6 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             },
           ),
           const SizedBox(height: 16),
-          
           DropdownButtonFormField<String>(
             value: _selectedTimezone,
             decoration: const InputDecoration(
@@ -379,9 +379,13 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
               prefixIcon: Icon(Icons.schedule),
             ),
             items: const [
-              DropdownMenuItem(value: 'Asia/Singapore', child: Text('Singapore (GMT+8)')),
-              DropdownMenuItem(value: 'Asia/Kuala_Lumpur', child: Text('Kuala Lumpur (GMT+8)')),
-              DropdownMenuItem(value: 'Asia/Jakarta', child: Text('Jakarta (GMT+7)')),
+              DropdownMenuItem(
+                  value: 'Asia/Singapore', child: Text('Singapore (GMT+8)')),
+              DropdownMenuItem(
+                  value: 'Asia/Kuala_Lumpur',
+                  child: Text('Kuala Lumpur (GMT+8)')),
+              DropdownMenuItem(
+                  value: 'Asia/Jakarta', child: Text('Jakarta (GMT+7)')),
               DropdownMenuItem(value: 'UTC', child: Text('UTC (GMT+0)')),
             ],
             onChanged: (value) {
@@ -404,18 +408,20 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
           Text(
             'Tax & Compliance',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Singapore tax and regulatory information',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-            ),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.7),
+                ),
           ),
           const SizedBox(height: 32),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -424,7 +430,8 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
                 children: [
                   SwitchListTile(
                     title: const Text('GST Registered'),
-                    subtitle: const Text('Is your business registered for GST?'),
+                    subtitle:
+                        const Text('Is your business registered for GST?'),
                     value: _isGstRegistered,
                     onChanged: (value) {
                       setState(() {
@@ -450,7 +457,8 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter your GST number';
                               }
-                              if (!RegExp(r'^\d{9}[A-Z]$').hasMatch(value.trim())) {
+                              if (!RegExp(r'^\d{9}[A-Z]$')
+                                  .hasMatch(value.trim())) {
                                 return 'Please enter a valid GST number (e.g. 200012345M)';
                               }
                               return null;
@@ -464,7 +472,6 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             ),
           ),
           const SizedBox(height: 16),
-          
           TextFormField(
             controller: _uenController,
             decoration: const InputDecoration(
@@ -484,9 +491,9 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
             textInputAction: TextInputAction.done,
           ),
           const SizedBox(height: 24),
-          
           Card(
-            color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+            color:
+                Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -502,8 +509,8 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
                       Text(
                         'Why do we need this?',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ],
                   ),
@@ -596,13 +603,14 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
     switch (_currentPage) {
       case 0:
         return _companyNameController.text.isNotEmpty &&
-               _selectedBusinessType.isNotEmpty &&
-               _selectedIndustry.isNotEmpty &&
-               _addressController.text.isNotEmpty;
+            _selectedBusinessType.isNotEmpty &&
+            _selectedIndustry.isNotEmpty &&
+            _addressController.text.isNotEmpty;
       case 1:
         return _phoneController.text.isNotEmpty &&
-               _emailController.text.isNotEmpty &&
-               RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text);
+            _emailController.text.isNotEmpty &&
+            RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                .hasMatch(_emailController.text);
       case 2:
         if (_isGstRegistered && _gstNumberController.text.isEmpty) {
           return false;
@@ -630,10 +638,14 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
         address: _addressController.text.trim(),
         phone: _phoneController.text.trim(),
         email: _emailController.text.trim(),
-        website: _websiteController.text.trim().isEmpty ? null : _websiteController.text.trim(),
+        website: _websiteController.text.trim().isEmpty
+            ? null
+            : _websiteController.text.trim(),
         isGstRegistered: _isGstRegistered,
         gstNumber: _isGstRegistered ? _gstNumberController.text.trim() : null,
-        uen: _uenController.text.trim().isEmpty ? null : _uenController.text.trim(),
+        uen: _uenController.text.trim().isEmpty
+            ? null
+            : _uenController.text.trim(),
         currency: _selectedCurrency,
         timezone: _selectedTimezone,
       );

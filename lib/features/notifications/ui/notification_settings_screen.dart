@@ -10,17 +10,16 @@ class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<NotificationSettingsScreen> createState() => 
+  ConsumerState<NotificationSettingsScreen> createState() =>
       _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState 
+class _NotificationSettingsScreenState
     extends ConsumerState<NotificationSettingsScreen> {
-  
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(notificationSettingsProvider);
-    
+
     if (settings == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Notification Settings')),
@@ -43,27 +42,27 @@ class _NotificationSettingsScreenState
         children: [
           // Global settings
           _buildGlobalSettings(settings),
-          
+
           const Divider(),
-          
+
           // Category settings
           _buildCategorySettings(settings),
-          
+
           const Divider(),
-          
+
           // Do Not Disturb settings
           _buildDoNotDisturbSettings(settings),
-          
+
           const Divider(),
-          
+
           // Batching settings
           _buildBatchingSettings(settings),
-          
+
           const Divider(),
-          
+
           // Intelligent settings
           _buildIntelligentSettings(settings),
-          
+
           const SizedBox(height: 20),
         ],
       ),
@@ -83,13 +82,13 @@ class _NotificationSettingsScreenState
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
             SwitchListTile(
               title: const Text('Enable Notifications'),
               subtitle: const Text('Master switch for all notifications'),
               value: settings.globalEnabled,
               onChanged: (value) {
-                ref.read(notificationSettingsProvider.notifier)
+                ref
+                    .read(notificationSettingsProvider.notifier)
                     .updateGlobalEnabled(value);
               },
             ),
@@ -115,20 +114,19 @@ class _NotificationSettingsScreenState
             Text(
               'Configure notification settings for each category',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
             const SizedBox(height: 16),
-            
             ...NotificationCategory.values.map((category) {
               final categorySettings = settings.categorySettings[category] ??
                   CategorySettings.defaultForCategory(category);
-              
+
               return ExpansionTile(
                 leading: Icon(_getCategoryIcon(category)),
                 title: Text(category.displayName),
                 subtitle: Text(
-                  categorySettings.enabled 
+                  categorySettings.enabled
                       ? 'Enabled • ${categorySettings.minimumPriority.name}'
                       : 'Disabled',
                 ),
@@ -145,30 +143,31 @@ class _NotificationSettingsScreenState
                             categorySettings.copyWith(enabled: value),
                           ),
                         ),
-                        
                         if (categorySettings.enabled) ...[
                           ListTile(
                             title: const Text('Minimum Priority'),
                             subtitle: DropdownButton<NotificationPriority>(
                               value: categorySettings.minimumPriority,
                               isExpanded: true,
-                              items: NotificationPriority.values.map((priority) =>
-                                DropdownMenuItem(
-                                  value: priority,
-                                  child: Text(priority.name.toUpperCase()),
-                                ),
-                              ).toList(),
+                              items: NotificationPriority.values
+                                  .map(
+                                    (priority) => DropdownMenuItem(
+                                      value: priority,
+                                      child: Text(priority.name.toUpperCase()),
+                                    ),
+                                  )
+                                  .toList(),
                               onChanged: (priority) {
                                 if (priority != null) {
                                   _updateCategorySettings(
                                     category,
-                                    categorySettings.copyWith(minimumPriority: priority),
+                                    categorySettings.copyWith(
+                                        minimumPriority: priority),
                                   );
                                 }
                               },
                             ),
                           ),
-                          
                           SwitchListTile(
                             title: const Text('Sound'),
                             value: categorySettings.soundEnabled,
@@ -177,16 +176,15 @@ class _NotificationSettingsScreenState
                               categorySettings.copyWith(soundEnabled: value),
                             ),
                           ),
-                          
                           SwitchListTile(
                             title: const Text('Vibration'),
                             value: categorySettings.vibrationEnabled,
                             onChanged: (value) => _updateCategorySettings(
                               category,
-                              categorySettings.copyWith(vibrationEnabled: value),
+                              categorySettings.copyWith(
+                                  vibrationEnabled: value),
                             ),
                           ),
-                          
                           SwitchListTile(
                             title: const Text('Show Preview'),
                             subtitle: const Text('Show notification content'),
@@ -196,7 +194,6 @@ class _NotificationSettingsScreenState
                               categorySettings.copyWith(showPreview: value),
                             ),
                           ),
-                          
                           ListTile(
                             title: const Text('Max per Hour'),
                             subtitle: Slider(
@@ -207,7 +204,8 @@ class _NotificationSettingsScreenState
                               label: categorySettings.maxPerHour.toString(),
                               onChanged: (value) => _updateCategorySettings(
                                 category,
-                                categorySettings.copyWith(maxPerHour: value.round()),
+                                categorySettings.copyWith(
+                                    maxPerHour: value.round()),
                               ),
                             ),
                           ),
@@ -240,11 +238,10 @@ class _NotificationSettingsScreenState
             Text(
               'Quiet hours when notifications are limited',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
             const SizedBox(height: 16),
-            
             SwitchListTile(
               title: const Text('Enable Do Not Disturb'),
               value: settings.doNotDisturb.enabled,
@@ -252,7 +249,6 @@ class _NotificationSettingsScreenState
                 settings.doNotDisturb.copyWith(enabled: value),
               ),
             ),
-            
             if (settings.doNotDisturb.enabled) ...[
               ListTile(
                 title: const Text('Start Time'),
@@ -265,7 +261,6 @@ class _NotificationSettingsScreenState
                   ),
                 ),
               ),
-              
               ListTile(
                 title: const Text('End Time'),
                 subtitle: Text(settings.doNotDisturb.endTime.format12Hour()),
@@ -277,46 +272,52 @@ class _NotificationSettingsScreenState
                   ),
                 ),
               ),
-              
               ExpansionTile(
                 title: const Text('Days of Week'),
-                subtitle: Text('${settings.doNotDisturb.daysOfWeek.length} days selected'),
+                subtitle: Text(
+                    '${settings.doNotDisturb.daysOfWeek.length} days selected'),
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
-                      children: _buildDayOfWeekCheckboxes(settings.doNotDisturb),
+                      children:
+                          _buildDayOfWeekCheckboxes(settings.doNotDisturb),
                     ),
                   ),
                 ],
               ),
-              
               ExpansionTile(
                 title: const Text('Allowed Priorities'),
-                subtitle: Text('${settings.doNotDisturb.allowedPriorities.length} priorities'),
+                subtitle: Text(
+                    '${settings.doNotDisturb.allowedPriorities.length} priorities'),
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
-                      children: NotificationPriority.values.map((priority) =>
-                        CheckboxListTile(
-                          title: Text(priority.name.toUpperCase()),
-                          value: settings.doNotDisturb.allowedPriorities.contains(priority),
-                          onChanged: (value) {
-                            final priorities = List<NotificationPriority>.from(
-                              settings.doNotDisturb.allowedPriorities,
-                            );
-                            if (value == true) {
-                              priorities.add(priority);
-                            } else {
-                              priorities.remove(priority);
-                            }
-                            _updateDoNotDisturbSettings(
-                              settings.doNotDisturb.copyWith(allowedPriorities: priorities),
-                            );
-                          },
-                        ),
-                      ).toList(),
+                      children: NotificationPriority.values
+                          .map(
+                            (priority) => CheckboxListTile(
+                              title: Text(priority.name.toUpperCase()),
+                              value: settings.doNotDisturb.allowedPriorities
+                                  .contains(priority),
+                              onChanged: (value) {
+                                final priorities =
+                                    List<NotificationPriority>.from(
+                                  settings.doNotDisturb.allowedPriorities,
+                                );
+                                if (value == true) {
+                                  priorities.add(priority);
+                                } else {
+                                  priorities.remove(priority);
+                                }
+                                _updateDoNotDisturbSettings(
+                                  settings.doNotDisturb
+                                      .copyWith(allowedPriorities: priorities),
+                                );
+                              },
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 ],
@@ -330,10 +331,15 @@ class _NotificationSettingsScreenState
 
   List<Widget> _buildDayOfWeekCheckboxes(DoNotDisturbSettings dndSettings) {
     final days = [
-      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 
-      'Friday', 'Saturday', 'Sunday'
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
     ];
-    
+
     return List.generate(7, (index) {
       final dayNumber = index + 1;
       return CheckboxListTile(
@@ -370,11 +376,10 @@ class _NotificationSettingsScreenState
             Text(
               'Group similar notifications together',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
             const SizedBox(height: 16),
-            
             SwitchListTile(
               title: const Text('Enable Batching'),
               value: settings.batching.enabled,
@@ -382,11 +387,11 @@ class _NotificationSettingsScreenState
                 settings.batching.copyWith(enabled: value),
               ),
             ),
-            
             if (settings.batching.enabled) ...[
               ListTile(
                 title: const Text('Batch Window'),
-                subtitle: Text('${settings.batching.batchWindow.inMinutes} minutes'),
+                subtitle:
+                    Text('${settings.batching.batchWindow.inMinutes} minutes'),
                 trailing: Slider(
                   value: settings.batching.batchWindow.inMinutes.toDouble(),
                   min: 1,
@@ -400,10 +405,10 @@ class _NotificationSettingsScreenState
                   ),
                 ),
               ),
-              
               ListTile(
                 title: const Text('Max Batch Size'),
-                subtitle: Text('${settings.batching.maxBatchSize} notifications'),
+                subtitle:
+                    Text('${settings.batching.maxBatchSize} notifications'),
                 trailing: Slider(
                   value: settings.batching.maxBatchSize.toDouble(),
                   min: 2,
@@ -415,7 +420,6 @@ class _NotificationSettingsScreenState
                   ),
                 ),
               ),
-              
               SwitchListTile(
                 title: const Text('Intelligent Batching'),
                 subtitle: const Text('Use AI to determine optimal batching'),
@@ -447,11 +451,10 @@ class _NotificationSettingsScreenState
             Text(
               'Smart timing and personalization features',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
             const SizedBox(height: 16),
-            
             SwitchListTile(
               title: const Text('Enable Intelligent Features'),
               value: settings.intelligent.enabled,
@@ -459,7 +462,6 @@ class _NotificationSettingsScreenState
                 settings.intelligent.copyWith(enabled: value),
               ),
             ),
-            
             if (settings.intelligent.enabled) ...[
               SwitchListTile(
                 title: const Text('Adapt to User Behavior'),
@@ -469,16 +471,15 @@ class _NotificationSettingsScreenState
                   settings.intelligent.copyWith(adaptToUserBehavior: value),
                 ),
               ),
-              
               SwitchListTile(
                 title: const Text('Consider App Usage'),
-                subtitle: const Text('Delay notifications when app is inactive'),
+                subtitle:
+                    const Text('Delay notifications when app is inactive'),
                 value: settings.intelligent.considerAppUsage,
                 onChanged: (value) => _updateIntelligentSettings(
                   settings.intelligent.copyWith(considerAppUsage: value),
                 ),
               ),
-              
               SwitchListTile(
                 title: const Text('Respect Business Hours'),
                 value: settings.intelligent.respectBusinessHours,
@@ -486,11 +487,11 @@ class _NotificationSettingsScreenState
                   settings.intelligent.copyWith(respectBusinessHours: value),
                 ),
               ),
-              
               if (settings.intelligent.respectBusinessHours) ...[
                 ListTile(
                   title: const Text('Business Hours Start'),
-                  subtitle: Text(settings.intelligent.businessHoursStart.format12Hour()),
+                  subtitle: Text(
+                      settings.intelligent.businessHoursStart.format12Hour()),
                   onTap: () => _selectTime(
                     context,
                     settings.intelligent.businessHoursStart,
@@ -499,10 +500,10 @@ class _NotificationSettingsScreenState
                     ),
                   ),
                 ),
-                
                 ListTile(
                   title: const Text('Business Hours End'),
-                  subtitle: Text(settings.intelligent.businessHoursEnd.format12Hour()),
+                  subtitle: Text(
+                      settings.intelligent.businessHoursEnd.format12Hour()),
                   onTap: () => _selectTime(
                     context,
                     settings.intelligent.businessHoursEnd,
@@ -511,12 +512,12 @@ class _NotificationSettingsScreenState
                     ),
                   ),
                 ),
-                
                 SwitchListTile(
                   title: const Text('Weekends are Business Days'),
                   value: settings.intelligent.weekendsAreBusinessDays,
                   onChanged: (value) => _updateIntelligentSettings(
-                    settings.intelligent.copyWith(weekendsAreBusinessDays: value),
+                    settings.intelligent
+                        .copyWith(weekendsAreBusinessDays: value),
                   ),
                 ),
               ],
@@ -531,22 +532,26 @@ class _NotificationSettingsScreenState
     NotificationCategory category,
     CategorySettings newSettings,
   ) {
-    ref.read(notificationSettingsProvider.notifier)
+    ref
+        .read(notificationSettingsProvider.notifier)
         .updateCategorySettings(category, newSettings);
   }
 
   void _updateDoNotDisturbSettings(DoNotDisturbSettings newSettings) {
-    ref.read(notificationSettingsProvider.notifier)
+    ref
+        .read(notificationSettingsProvider.notifier)
         .updateDoNotDisturbSettings(newSettings);
   }
 
   void _updateBatchingSettings(BatchingSettings newSettings) {
-    ref.read(notificationSettingsProvider.notifier)
+    ref
+        .read(notificationSettingsProvider.notifier)
         .updateBatchingSettings(newSettings);
   }
 
   void _updateIntelligentSettings(IntelligentSettings newSettings) {
-    ref.read(notificationSettingsProvider.notifier)
+    ref
+        .read(notificationSettingsProvider.notifier)
         .updateIntelligentSettings(newSettings);
   }
 
@@ -562,9 +567,10 @@ class _NotificationSettingsScreenState
         minute: currentTime.minute,
       ),
     );
-    
+
     if (time != null) {
-      onTimeSelected(NotificationTimeOfDay(hour: time.hour, minute: time.minute));
+      onTimeSelected(
+          NotificationTimeOfDay(hour: time.hour, minute: time.minute));
     }
   }
 
@@ -585,7 +591,8 @@ class _NotificationSettingsScreenState
           TextButton(
             onPressed: () {
               final defaultSettings = NotificationSettings.defaultSettings();
-              ref.read(notificationSettingsProvider.notifier)
+              ref
+                  .read(notificationSettingsProvider.notifier)
                   .updateSettings(defaultSettings);
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
@@ -722,7 +729,8 @@ extension IntelligentSettingsExtension on IntelligentSettings {
       respectBusinessHours: respectBusinessHours ?? this.respectBusinessHours,
       businessHoursStart: businessHoursStart ?? this.businessHoursStart,
       businessHoursEnd: businessHoursEnd ?? this.businessHoursEnd,
-      weekendsAreBusinessDays: weekendsAreBusinessDays ?? this.weekendsAreBusinessDays,
+      weekendsAreBusinessDays:
+          weekendsAreBusinessDays ?? this.weekendsAreBusinessDays,
       optimalDelay: optimalDelay ?? this.optimalDelay,
       learnFromDismissals: learnFromDismissals ?? this.learnFromDismissals,
       engagementThreshold: engagementThreshold ?? this.engagementThreshold,

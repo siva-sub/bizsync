@@ -138,7 +138,8 @@ class BizSyncNotification {
 
   bool get isRead => readAt != null;
   bool get isExpired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
-  bool get isScheduled => scheduledFor != null && DateTime.now().isBefore(scheduledFor!);
+  bool get isScheduled =>
+      scheduledFor != null && DateTime.now().isBefore(scheduledFor!);
   bool get isDelivered => deliveredAt != null;
   bool get hasActions => actions != null && actions!.isNotEmpty;
   bool get hasProgress => progress != null || indeterminate;
@@ -178,7 +179,7 @@ class NotificationRecurrenceRule {
 
   DateTime? getNextOccurrence(DateTime from) {
     if (endDate != null && from.isAfter(endDate!)) return null;
-    
+
     switch (frequency) {
       case NotificationFrequency.daily:
         return from.add(Duration(days: interval));
@@ -228,7 +229,7 @@ class NotificationSchedule {
 
   bool shouldTrigger(DateTime now, Map<String, dynamic>? context) {
     if (!enabled) return false;
-    
+
     // Check if conditions are met
     if (conditions != null && context != null) {
       // Implement condition checking logic
@@ -238,7 +239,7 @@ class NotificationSchedule {
         }
       }
     }
-    
+
     // Check trigger type specific logic
     switch (triggerType) {
       case NotificationTrigger.immediate:
@@ -247,16 +248,16 @@ class NotificationSchedule {
         return scheduledTime != null && now.isAfter(scheduledTime!);
       case NotificationTrigger.recurring:
         if (recurrenceRule == null) return false;
-        final nextOccurrence = recurrenceRule!.getNextOccurrence(
-          lastTriggered ?? createdAt
-        );
+        final nextOccurrence =
+            recurrenceRule!.getNextOccurrence(lastTriggered ?? createdAt);
         return nextOccurrence != null && now.isAfter(nextOccurrence);
       default:
         return false;
     }
   }
 
-  bool _evaluateCondition(String key, dynamic value, Map<String, dynamic> context) {
+  bool _evaluateCondition(
+      String key, dynamic value, Map<String, dynamic> context) {
     // Simple condition evaluation - can be extended
     return context.containsKey(key) && context[key] == value;
   }

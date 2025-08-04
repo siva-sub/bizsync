@@ -75,8 +75,8 @@ class BusinessNotification {
       body: json['body'],
       priority: NotificationPriority.values[json['priority'] ?? 1],
       scheduledTime: DateTime.fromMillisecondsSinceEpoch(json['scheduledTime']),
-      payload: json['payload'] != null 
-          ? Map<String, dynamic>.from(json['payload']) 
+      payload: json['payload'] != null
+          ? Map<String, dynamic>.from(json['payload'])
           : null,
       recurring: json['recurring'] ?? false,
       recurringInterval: json['recurringIntervalMinutes'] != null
@@ -129,11 +129,16 @@ class NotificationSettings {
   }) {
     return NotificationSettings(
       enabled: enabled ?? this.enabled,
-      enablePaymentReminders: enablePaymentReminders ?? this.enablePaymentReminders,
-      enableInvoiceDueAlerts: enableInvoiceDueAlerts ?? this.enableInvoiceDueAlerts,
-      enableInventoryAlerts: enableInventoryAlerts ?? this.enableInventoryAlerts,
-      enableReportNotifications: enableReportNotifications ?? this.enableReportNotifications,
-      enableSyncNotifications: enableSyncNotifications ?? this.enableSyncNotifications,
+      enablePaymentReminders:
+          enablePaymentReminders ?? this.enablePaymentReminders,
+      enableInvoiceDueAlerts:
+          enableInvoiceDueAlerts ?? this.enableInvoiceDueAlerts,
+      enableInventoryAlerts:
+          enableInventoryAlerts ?? this.enableInventoryAlerts,
+      enableReportNotifications:
+          enableReportNotifications ?? this.enableReportNotifications,
+      enableSyncNotifications:
+          enableSyncNotifications ?? this.enableSyncNotifications,
       enableTaxDeadlines: enableTaxDeadlines ?? this.enableTaxDeadlines,
       enableQuietHours: enableQuietHours ?? this.enableQuietHours,
       quietHoursStart: quietHoursStart ?? this.quietHoursStart,
@@ -152,7 +157,8 @@ class NotificationSettings {
       'enableSyncNotifications': enableSyncNotifications,
       'enableTaxDeadlines': enableTaxDeadlines,
       'enableQuietHours': enableQuietHours,
-      'quietHoursStartMinutes': quietHoursStart.hour * 60 + quietHoursStart.minute,
+      'quietHoursStartMinutes':
+          quietHoursStart.hour * 60 + quietHoursStart.minute,
       'quietHoursEndMinutes': quietHoursEnd.hour * 60 + quietHoursEnd.minute,
       'minimumPriority': minimumPriority.index,
     };
@@ -161,7 +167,7 @@ class NotificationSettings {
   static NotificationSettings fromJson(Map<String, dynamic> json) {
     final quietStartMinutes = json['quietHoursStartMinutes'] ?? (22 * 60);
     final quietEndMinutes = json['quietHoursEndMinutes'] ?? (8 * 60);
-    
+
     return NotificationSettings(
       enabled: json['enabled'] ?? true,
       enablePaymentReminders: json['enablePaymentReminders'] ?? true,
@@ -172,14 +178,15 @@ class NotificationSettings {
       enableTaxDeadlines: json['enableTaxDeadlines'] ?? true,
       enableQuietHours: json['enableQuietHours'] ?? true,
       quietHoursStart: TimeOfDay(
-        hour: quietStartMinutes ~/ 60, 
+        hour: quietStartMinutes ~/ 60,
         minute: quietStartMinutes % 60,
       ),
       quietHoursEnd: TimeOfDay(
-        hour: quietEndMinutes ~/ 60, 
+        hour: quietEndMinutes ~/ 60,
         minute: quietEndMinutes % 60,
       ),
-      minimumPriority: NotificationPriority.values[json['minimumPriority'] ?? 1],
+      minimumPriority:
+          NotificationPriority.values[json['minimumPriority'] ?? 1],
     );
   }
 }
@@ -191,14 +198,14 @@ class EnhancedPushNotificationService extends ChangeNotifier {
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  
+
   NotificationSettings _settings = const NotificationSettings();
   final List<BusinessNotification> _scheduledNotifications = [];
   SharedPreferences? _prefs;
   bool _initialized = false;
 
   NotificationSettings get settings => _settings;
-  List<BusinessNotification> get scheduledNotifications => 
+  List<BusinessNotification> get scheduledNotifications =>
       List.unmodifiable(_scheduledNotifications);
   bool get isInitialized => _initialized;
 
@@ -209,13 +216,14 @@ class EnhancedPushNotificationService extends ChangeNotifier {
     await _loadSettings();
     await _loadScheduledNotifications();
     await _initializeNotificationPlugin();
-    
+
     _initialized = true;
     debugPrint('Enhanced Push Notification Service initialized');
   }
 
   Future<void> _initializeNotificationPlugin() async {
-    const androidInitSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidInitSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInitSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -287,8 +295,9 @@ class EnhancedPushNotificationService extends ChangeNotifier {
   Future<void> _loadScheduledNotifications() async {
     if (_prefs == null) return;
 
-    final notificationsJson = _prefs!.getStringList(_scheduledNotificationsKey) ?? [];
-    
+    final notificationsJson =
+        _prefs!.getStringList(_scheduledNotificationsKey) ?? [];
+
     for (final notificationJson in notificationsJson) {
       try {
         final data = _parseJson(notificationJson);
@@ -306,7 +315,7 @@ class EnhancedPushNotificationService extends ChangeNotifier {
     final notificationsJson = _scheduledNotifications
         .map((notification) => _stringifyJson(notification.toJson()))
         .toList();
-    
+
     await _prefs!.setStringList(_scheduledNotificationsKey, notificationsJson);
   }
 
@@ -366,8 +375,10 @@ class EnhancedPushNotificationService extends ChangeNotifier {
 
   bool _isInQuietHours(TimeOfDay time) {
     final nowMinutes = time.hour * 60 + time.minute;
-    final startMinutes = _settings.quietHoursStart.hour * 60 + _settings.quietHoursStart.minute;
-    final endMinutes = _settings.quietHoursEnd.hour * 60 + _settings.quietHoursEnd.minute;
+    final startMinutes =
+        _settings.quietHoursStart.hour * 60 + _settings.quietHoursStart.minute;
+    final endMinutes =
+        _settings.quietHoursEnd.hour * 60 + _settings.quietHoursEnd.minute;
 
     if (startMinutes < endMinutes) {
       // Same day range (e.g., 10 PM - 8 AM next day)
@@ -386,7 +397,7 @@ class EnhancedPushNotificationService extends ChangeNotifier {
     }
 
     final notificationDetails = _getNotificationDetails(notification);
-    
+
     try {
       if (notification.recurring && notification.recurringInterval != null) {
         // Schedule recurring notification
@@ -406,7 +417,7 @@ class EnhancedPushNotificationService extends ChangeNotifier {
 
       _scheduledNotifications.add(notification);
       await _saveScheduledNotifications();
-      
+
       debugPrint('Scheduled notification: ${notification.title}');
       notifyListeners();
     } catch (e) {
@@ -420,7 +431,8 @@ class EnhancedPushNotificationService extends ChangeNotifier {
   ) async {
     // Schedule multiple instances of recurring notification
     var nextScheduleTime = notification.scheduledTime;
-    final endTime = notification.scheduledTime.add(const Duration(days: 365)); // Limit to 1 year
+    final endTime = notification.scheduledTime
+        .add(const Duration(days: 365)); // Limit to 1 year
 
     int instanceCount = 0;
     while (nextScheduleTime.isBefore(endTime) && instanceCount < 100) {
@@ -439,7 +451,8 @@ class EnhancedPushNotificationService extends ChangeNotifier {
     }
   }
 
-  NotificationDetails _getNotificationDetails(BusinessNotification notification) {
+  NotificationDetails _getNotificationDetails(
+      BusinessNotification notification) {
     final importance = _getAndroidImportance(notification.priority);
     final priority = _getAndroidPriority(notification.priority);
 
@@ -490,20 +503,20 @@ class EnhancedPushNotificationService extends ChangeNotifier {
   // Cancel a scheduled notification
   Future<void> cancelNotification(String notificationId) async {
     await _flutterLocalNotificationsPlugin.cancel(notificationId.hashCode);
-    
+
     _scheduledNotifications.removeWhere((n) => n.id == notificationId);
     await _saveScheduledNotifications();
-    
+
     notifyListeners();
   }
 
   // Cancel all notifications
   Future<void> cancelAllNotifications() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
-    
+
     _scheduledNotifications.clear();
     await _saveScheduledNotifications();
-    
+
     notifyListeners();
   }
 
@@ -518,7 +531,8 @@ class EnhancedPushNotificationService extends ChangeNotifier {
       id: 'payment_reminder_$invoiceId',
       type: BusinessNotificationType.paymentReminder,
       title: 'Payment Reminder',
-      body: 'Payment of \$${amount.toStringAsFixed(2)} from $customerName is due today',
+      body:
+          'Payment of \$${amount.toStringAsFixed(2)} from $customerName is due today',
       priority: NotificationPriority.high,
       scheduledTime: dueDate,
       payload: {
@@ -542,7 +556,8 @@ class EnhancedPushNotificationService extends ChangeNotifier {
       id: 'low_inventory_$productId',
       type: BusinessNotificationType.lowInventory,
       title: 'Low Inventory Alert',
-      body: '$productName is running low (${currentStock} left, minimum: $minStock)',
+      body:
+          '$productName is running low (${currentStock} left, minimum: $minStock)',
       priority: NotificationPriority.normal,
       scheduledTime: DateTime.now().add(const Duration(minutes: 1)),
       payload: {
@@ -559,7 +574,8 @@ class EnhancedPushNotificationService extends ChangeNotifier {
 
   Future<void> scheduleDailyReport() async {
     final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final reportTime = DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 9, 0);
+    final reportTime =
+        DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 9, 0);
 
     final notification = BusinessNotification(
       id: 'daily_report_${DateTime.now().day}',
@@ -582,16 +598,16 @@ class EnhancedPushNotificationService extends ChangeNotifier {
   // Simple JSON parsing methods
   Map<String, dynamic> _parseJson(String jsonString) {
     final Map<String, dynamic> result = {};
-    
+
     final content = jsonString.replaceAll(RegExp(r'[{}"]'), '');
     final pairs = content.split(',');
-    
+
     for (final pair in pairs) {
       final keyValue = pair.split(':');
       if (keyValue.length == 2) {
         final key = keyValue[0].trim();
         final value = keyValue[1].trim();
-        
+
         if (value == 'true') {
           result[key] = true;
         } else if (value == 'false') {
@@ -607,13 +623,13 @@ class EnhancedPushNotificationService extends ChangeNotifier {
         }
       }
     }
-    
+
     return result;
   }
 
   String _stringifyJson(Map<String, dynamic> data) {
     final List<String> pairs = [];
-    
+
     data.forEach((key, value) {
       String valueStr;
       if (value == null) {
@@ -627,19 +643,22 @@ class EnhancedPushNotificationService extends ChangeNotifier {
       }
       pairs.add('"$key":$valueStr');
     });
-    
+
     return '{${pairs.join(',')}}';
   }
 }
 
 // Riverpod providers
-final enhancedPushNotificationServiceProvider = Provider<EnhancedPushNotificationService>((ref) {
+final enhancedPushNotificationServiceProvider =
+    Provider<EnhancedPushNotificationService>((ref) {
   final service = EnhancedPushNotificationService();
   service.initialize();
   return service;
 });
 
-final notificationSettingsProvider = StateNotifierProvider<NotificationSettingsNotifier, NotificationSettings>((ref) {
+final notificationSettingsProvider =
+    StateNotifierProvider<NotificationSettingsNotifier, NotificationSettings>(
+        (ref) {
   final service = ref.watch(enhancedPushNotificationServiceProvider);
   return NotificationSettingsNotifier(service);
 });

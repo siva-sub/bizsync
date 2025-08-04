@@ -9,10 +9,10 @@ import '../database/platform_database_factory.dart';
 class DatabaseService {
   static Database? _database;
   static final DatabaseService _instance = DatabaseService._internal();
-  
+
   factory DatabaseService() => _instance;
   DatabaseService._internal();
-  
+
   Future<Database> get database async {
     if (_database == null) {
       _database = await _initDatabase();
@@ -20,12 +20,12 @@ class DatabaseService {
     }
     return _database!;
   }
-  
+
   Future<Database> _initDatabase() async {
     try {
       final documentsDirectory = await getApplicationDocumentsDirectory();
       final path = join(documentsDirectory.path, AppConstants.databaseName);
-      
+
       // Use platform-aware database factory
       return await PlatformDatabaseFactory.openDatabase(
         path,
@@ -39,42 +39,41 @@ class DatabaseService {
       // Get database info for better error reporting
       final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
       throw app_exceptions.DatabaseException(
-        'Failed to initialize database: $e\n'
-        'Platform: ${dbInfo['platform']}\n'
-        'Database type: ${dbInfo['database_type']}\n'
-        'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}'
-      );
+          'Failed to initialize database: $e\n'
+          'Platform: ${dbInfo['platform']}\n'
+          'Database type: ${dbInfo['database_type']}\n'
+          'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}');
     }
   }
-  
+
   Future<void> _onCreate(Database db, int version) async {
     try {
       print('🔧 Creating database tables (version $version)...');
-      
+
       // Create core business tables
       await _createBusinessTables(db);
       await _createUserTables(db);
       await _createSyncTables(db);
-      
+
       print('✅ Database tables created successfully');
     } catch (e) {
       print('❌ Failed to create database tables: $e');
       rethrow;
     }
   }
-  
+
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle database migrations
     for (int version = oldVersion + 1; version <= newVersion; version++) {
       await _migrateToVersion(db, version);
     }
   }
-  
+
   Future<void> _onOpen(Database db) async {
     // Enable foreign keys
     await db.execute('PRAGMA foreign_keys = ON');
   }
-  
+
   Future<void> _createBusinessTables(Database db) async {
     // Customers table
     await db.execute('''
@@ -89,7 +88,7 @@ class DatabaseService {
         sync_status INTEGER DEFAULT 0
       )
     ''');
-    
+
     // Products table
     await db.execute('''
       CREATE TABLE products (
@@ -106,7 +105,7 @@ class DatabaseService {
         sync_status INTEGER DEFAULT 0
       )
     ''');
-    
+
     // Invoices table
     await db.execute('''
       CREATE TABLE invoices (
@@ -132,7 +131,7 @@ class DatabaseService {
         FOREIGN KEY (customer_id) REFERENCES customers (id)
       )
     ''');
-    
+
     // Invoice items table
     await db.execute('''
       CREATE TABLE invoice_items (
@@ -151,7 +150,7 @@ class DatabaseService {
         FOREIGN KEY (product_id) REFERENCES products (id)
       )
     ''');
-    
+
     // Categories table
     await db.execute('''
       CREATE TABLE categories (
@@ -164,7 +163,7 @@ class DatabaseService {
         sync_status INTEGER DEFAULT 0
       )
     ''');
-    
+
     // Vendors table
     await db.execute('''
       CREATE TABLE vendors (
@@ -180,7 +179,7 @@ class DatabaseService {
         sync_status INTEGER DEFAULT 0
       )
     ''');
-    
+
     // Employees table
     await db.execute('''
       CREATE TABLE employees (
@@ -198,7 +197,7 @@ class DatabaseService {
         sync_status INTEGER DEFAULT 0
       )
     ''');
-    
+
     // Sales transactions table
     await db.execute('''
       CREATE TABLE sales_transactions (
@@ -216,7 +215,7 @@ class DatabaseService {
         FOREIGN KEY (customer_id) REFERENCES customers (id)
       )
     ''');
-    
+
     // Sales items table
     await db.execute('''
       CREATE TABLE sales_items (
@@ -233,7 +232,7 @@ class DatabaseService {
         FOREIGN KEY (product_id) REFERENCES products (id)
       )
     ''');
-    
+
     // Inventory adjustments table
     await db.execute('''
       CREATE TABLE inventory_adjustments (
@@ -248,7 +247,7 @@ class DatabaseService {
       )
     ''');
   }
-  
+
   Future<void> _createUserTables(Database db) async {
     // User settings table
     await db.execute('''
@@ -259,7 +258,7 @@ class DatabaseService {
         updated_at INTEGER NOT NULL
       )
     ''');
-    
+
     // Business profile table
     await db.execute('''
       CREATE TABLE business_profile (
@@ -277,7 +276,7 @@ class DatabaseService {
       )
     ''');
   }
-  
+
   Future<void> _createSyncTables(Database db) async {
     // P2P sync log table
     await db.execute('''
@@ -292,7 +291,7 @@ class DatabaseService {
         error_message TEXT
       )
     ''');
-    
+
     // Device registry table
     await db.execute('''
       CREATE TABLE device_registry (
@@ -305,7 +304,7 @@ class DatabaseService {
       )
     ''');
   }
-  
+
   Future<void> _migrateToVersion(Database db, int version) async {
     // Handle specific version migrations
     switch (version) {
@@ -316,24 +315,23 @@ class DatabaseService {
       // Add more migration cases as needed
     }
   }
-  
+
   Future<void> closeDatabase() async {
     if (_database != null) {
       await _database!.close();
       _database = null;
     }
   }
-  
+
   /// Verify that required tables exist, create them if missing
   Future<void> _verifyTablesExist() async {
     if (_database == null) return;
-    
+
     try {
       // Check if customers table exists
       final tables = await _database!.rawQuery(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='customers'"
-      );
-      
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='customers'");
+
       if (tables.isEmpty) {
         print('⚠️  Customers table missing, creating it...');
         await _createBusinessTables(_database!);
@@ -347,12 +345,12 @@ class DatabaseService {
       await _createBusinessTables(_database!);
     }
   }
-  
+
   /// Force creation of missing tables
   Future<void> forceCreateTables() async {
     final db = await database;
     print('🔧 Force creating all required database tables...');
-    
+
     try {
       await _createBusinessTables(db);
       await _createUserTables(db);
@@ -367,11 +365,11 @@ class DatabaseService {
   Future<void> deleteDatabase() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentsDirectory.path, AppConstants.databaseName);
-    
+
     if (await File(path).exists()) {
       await File(path).delete();
     }
-    
+
     if (_database != null) {
       _database = null;
     }

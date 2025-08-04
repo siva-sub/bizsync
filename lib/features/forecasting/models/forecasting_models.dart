@@ -183,19 +183,19 @@ enum Periodicity {
 abstract class ForecastingModel {
   String get name;
   ForecastingMethod get method;
-  
+
   /// Train the model with historical data
   Future<void> train(List<TimeSeriesPoint> data);
-  
+
   /// Generate forecasts for the specified number of periods
   Future<List<ForecastResult>> forecast(int periods);
-  
+
   /// Calculate accuracy metrics against test data
   Future<ForecastAccuracy> calculateAccuracy(List<TimeSeriesPoint> testData);
-  
+
   /// Get model parameters and configuration
   Map<String, dynamic> getParameters();
-  
+
   /// Set model parameters
   void setParameters(Map<String, dynamic> parameters);
 }
@@ -287,13 +287,13 @@ class ForecastSession {
       'last_modified': lastModified?.toIso8601String(),
       'scenarios': scenarios.map((s) => s.toJson()).toList(),
       'results': results.map((key, value) => MapEntry(
-        key,
-        value.map((r) => r.toJson()).toList(),
-      )),
+            key,
+            value.map((r) => r.toJson()).toList(),
+          )),
       'accuracy_metrics': accuracyMetrics.map((key, value) => MapEntry(
-        key,
-        value.toJson(),
-      )),
+            key,
+            value.toJson(),
+          )),
       'historical_data': historicalData.map((d) => d.toJson()).toList(),
       'data_source': dataSource,
     };
@@ -304,23 +304,25 @@ class ForecastSession {
       id: json['id'],
       name: json['name'],
       createdAt: DateTime.parse(json['created_at']),
-      lastModified: json['last_modified'] != null 
-        ? DateTime.parse(json['last_modified'])
-        : null,
+      lastModified: json['last_modified'] != null
+          ? DateTime.parse(json['last_modified'])
+          : null,
       scenarios: (json['scenarios'] as List)
-        .map((s) => ForecastScenario.fromJson(s))
-        .toList(),
-      results: (json['results'] as Map<String, dynamic>).map((key, value) => MapEntry(
-        key,
-        (value as List).map((r) => ForecastResult.fromJson(r)).toList(),
-      )),
-      accuracyMetrics: (json['accuracy_metrics'] as Map<String, dynamic>).map((key, value) => MapEntry(
-        key,
-        ForecastAccuracy.fromJson(value),
-      )),
+          .map((s) => ForecastScenario.fromJson(s))
+          .toList(),
+      results: (json['results'] as Map<String, dynamic>)
+          .map((key, value) => MapEntry(
+                key,
+                (value as List).map((r) => ForecastResult.fromJson(r)).toList(),
+              )),
+      accuracyMetrics: (json['accuracy_metrics'] as Map<String, dynamic>)
+          .map((key, value) => MapEntry(
+                key,
+                ForecastAccuracy.fromJson(value),
+              )),
       historicalData: (json['historical_data'] as List)
-        .map((d) => TimeSeriesPoint.fromJson(d))
-        .toList(),
+          .map((d) => TimeSeriesPoint.fromJson(d))
+          .toList(),
       dataSource: json['data_source'],
     );
   }

@@ -13,15 +13,14 @@ class EncryptionService {
   static const String _kdfInfo = 'BizSync P2P Encryption';
 
   final pc.SecureRandom _secureRandom;
-  
+
   EncryptionService() : _secureRandom = _initSecureRandom();
 
   /// Initialize secure random number generator
   static pc.SecureRandom _initSecureRandom() {
     final secureRandom = pc.SecureRandom('Fortuna')
       ..seed(pc.KeyParameter(Uint8List.fromList(
-        List.generate(32, (i) => Random.secure().nextInt(256))
-      )));
+          List.generate(32, (i) => Random.secure().nextInt(256)))));
     return secureRandom;
   }
 
@@ -30,7 +29,7 @@ class EncryptionService {
   KeyPair generateKeyPair() {
     final privateKey = _generateRandomBytes(_keySize);
     final publicKey = _generateRandomBytes(_keySize);
-    
+
     return KeyPair(
       privateKey: privateKey,
       publicKey: publicKey,
@@ -45,22 +44,24 @@ class EncryptionService {
   }
 
   /// Derive keys using HKDF (HMAC-based Key Derivation Function)
-  HKDFResult deriveKeys(Uint8List sharedSecret, {
+  HKDFResult deriveKeys(
+    Uint8List sharedSecret, {
     Uint8List? salt,
     String? info,
   }) {
     salt ??= Uint8List(_keySize);
     info ??= _kdfInfo;
-    
+
     // HKDF Extract phase
     final hmacSha256 = Hmac(sha256, salt);
     final prk = Uint8List.fromList(hmacSha256.convert(sharedSecret).bytes);
-    
+
     // HKDF Expand phase to derive multiple keys
     final encryptionKey = _hkdfExpand(prk, '${info}_encryption', _keySize);
-    final authenticationKey = _hkdfExpand(prk, '${info}_authentication', _keySize);
+    final authenticationKey =
+        _hkdfExpand(prk, '${info}_authentication', _keySize);
     final nextChainKey = _hkdfExpand(prk, '${info}_chain', _keySize);
-    
+
     return HKDFResult(
       encryptionKey: encryptionKey,
       authenticationKey: authenticationKey,
@@ -73,29 +74,29 @@ class EncryptionService {
     final infoBytes = utf8.encode(info);
     final hmac = Hmac(sha256, prk);
     final output = <int>[];
-    
+
     var t = <int>[];
     var counter = 1;
-    
+
     while (output.length < length) {
       final input = [...t, ...infoBytes, counter];
       t = hmac.convert(input).bytes;
       output.addAll(t);
       counter++;
     }
-    
+
     return Uint8List.fromList(output.take(length).toList());
   }
 
   /// Encrypt data using AES-256-GCM with additional authenticated data
   EncryptionResult encrypt(
-    Uint8List data, 
+    Uint8List data,
     Uint8List key, {
     Uint8List? aad,
   }) {
     // Generate random nonce
     final nonce = _generateRandomBytes(_nonceSize);
-    
+
     // Create AES-GCM cipher
     final cipher = pc.GCMBlockCipher(pc.AESEngine());
     final params = pc.AEADParameters(
@@ -104,17 +105,17 @@ class EncryptionService {
       nonce,
       aad ?? Uint8List(0),
     );
-    
+
     cipher.init(true, params);
-    
+
     // Encrypt data
     final ciphertext = Uint8List(data.length);
     var offset = cipher.processBytes(data, 0, data.length, ciphertext, 0);
-    
+
     // Get authentication tag
     final tag = Uint8List(_tagSize);
     cipher.doFinal(tag, 0);
-    
+
     return EncryptionResult(
       ciphertext: ciphertext,
       nonce: nonce,
@@ -133,28 +134,27 @@ class EncryptionService {
       encryptionResult.nonce,
       encryptionResult.aad ?? Uint8List(0),
     );
-    
+
     cipher.init(false, params);
-    
+
     // Combine ciphertext and tag for decryption
     final input = Uint8List.fromList([
       ...encryptionResult.ciphertext,
       ...encryptionResult.tag,
     ]);
-    
+
     // Decrypt and verify
     final plaintext = Uint8List(encryptionResult.ciphertext.length);
-    final bytesDecrypted = cipher.processBytes(
-      input, 0, input.length, plaintext, 0
-    );
-    
+    final bytesDecrypted =
+        cipher.processBytes(input, 0, input.length, plaintext, 0);
+
     // Verify authentication tag
     try {
       cipher.doFinal(Uint8List(0), 0);
     } catch (e) {
       throw Exception('Authentication verification failed: $e');
     }
-    
+
     return plaintext.sublist(0, bytesDecrypted);
   }
 
@@ -183,12 +183,12 @@ class EncryptionService {
   /// Constant-time comparison to prevent timing attacks
   bool _constantTimeEquals(Uint8List a, Uint8List b) {
     if (a.length != b.length) return false;
-    
+
     var result = 0;
     for (var i = 0; i < a.length; i++) {
       result |= a[i] ^ b[i];
     }
-    
+
     return result == 0;
   }
 

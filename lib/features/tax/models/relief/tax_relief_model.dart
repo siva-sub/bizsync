@@ -88,27 +88,27 @@ class TaxRelief {
   bool isApplicableTo(CompanyTaxProfile profile, DateTime date) {
     // Check date validity
     if (!_isValidOnDate(date)) return false;
-    
+
     // Check company type eligibility
-    if (applicableCompanyTypes.isNotEmpty && 
+    if (applicableCompanyTypes.isNotEmpty &&
         !applicableCompanyTypes.contains(profile.companyType)) {
       return false;
     }
-    
+
     // Check industry eligibility
-    if (applicableIndustries != null && 
+    if (applicableIndustries != null &&
         applicableIndustries!.isNotEmpty &&
         !applicableIndustries!.contains(profile.industryClassification)) {
       return false;
     }
-    
+
     // Check specific eligibility criteria
     return _meetsEligibilityCriteria(profile);
   }
 
   bool _isValidOnDate(DateTime date) {
-    final isAfterStart = date.isAfter(effectiveFrom) || 
-                        date.isAtSameMomentAs(effectiveFrom);
+    final isAfterStart =
+        date.isAfter(effectiveFrom) || date.isAtSameMomentAs(effectiveFrom);
     final isBeforeEnd = effectiveTo == null || date.isBefore(effectiveTo!);
     return isAfterStart && isBeforeEnd;
   }
@@ -117,32 +117,34 @@ class TaxRelief {
     switch (reliefType) {
       case ReliefType.startupExemption:
         return profile.isEligibleForStartupExemption();
-      
+
       case ReliefType.partialExemption:
         return profile.isQualifiedForPartialExemption();
-      
+
       case ReliefType.charitableDonationRelief:
-        return profile.companyType != CompanyType.charity; // Companies can claim donation relief
-      
+        return profile.companyType !=
+            CompanyType.charity; // Companies can claim donation relief
+
       default:
         return true; // Default to eligible, specific checks can be added
     }
   }
 
-  double calculateReliefAmount(double taxableAmount, Map<String, dynamic> context) {
+  double calculateReliefAmount(
+      double taxableAmount, Map<String, dynamic> context) {
     switch (reliefType) {
       case ReliefType.startupExemption:
         return _calculateStartupExemption(taxableAmount);
-      
+
       case ReliefType.partialExemption:
         return _calculatePartialExemption(taxableAmount);
-      
+
       case ReliefType.doubleDeductionRelief:
         return _calculateDoubleDeduction(taxableAmount, context);
-      
+
       case ReliefType.foreignTaxCredit:
         return _calculateForeignTaxCredit(taxableAmount, context);
-      
+
       default:
         return reliefRate != null ? taxableAmount * reliefRate! : reliefAmount;
     }
@@ -156,7 +158,7 @@ class TaxRelief {
   double _calculatePartialExemption(double taxableIncome) {
     const exemptAmount = 10000; // First S$10,000 exempt at 0%
     const partialAmount = 190000; // Next S$190,000 at 8.5%
-    
+
     if (taxableIncome <= exemptAmount) {
       return taxableIncome; // Full exemption
     } else if (taxableIncome <= exemptAmount + partialAmount) {
@@ -169,24 +171,27 @@ class TaxRelief {
     }
   }
 
-  double _calculateDoubleDeduction(double expenseAmount, Map<String, dynamic> context) {
+  double _calculateDoubleDeduction(
+      double expenseAmount, Map<String, dynamic> context) {
     final deductionRate = calculationParameters['deductionMultiplier'] ?? 2.0;
     final maxDeduction = maximumRelief ?? double.infinity;
-    
-    final calculatedRelief = expenseAmount * (deductionRate - 1.0); // Additional deduction
+
+    final calculatedRelief =
+        expenseAmount * (deductionRate - 1.0); // Additional deduction
     return calculatedRelief > maxDeduction ? maxDeduction : calculatedRelief;
   }
 
-  double _calculateForeignTaxCredit(double taxableAmount, Map<String, dynamic> context) {
+  double _calculateForeignTaxCredit(
+      double taxableAmount, Map<String, dynamic> context) {
     final foreignTaxPaid = context['foreignTaxPaid'] ?? 0.0;
     final singaporeTaxRate = context['singaporeTaxRate'] ?? 0.17;
     final foreignSourceIncome = context['foreignSourceIncome'] ?? taxableAmount;
-    
+
     // Credit limited to Singapore tax on foreign income
     final singaporeTaxOnForeignIncome = foreignSourceIncome * singaporeTaxRate;
-    
-    return foreignTaxPaid < singaporeTaxOnForeignIncome 
-        ? foreignTaxPaid 
+
+    return foreignTaxPaid < singaporeTaxOnForeignIncome
+        ? foreignTaxPaid
         : singaporeTaxOnForeignIncome;
   }
 }
@@ -276,7 +281,10 @@ class SingaporeTaxReliefs {
       ],
       calculationParameters: {
         'firstTier': {'amount': 10000, 'rate': 0.0}, // First S$10,000 at 0%
-        'secondTier': {'amount': 190000, 'rate': 0.085}, // Next S$190,000 at 8.5%
+        'secondTier': {
+          'amount': 190000,
+          'rate': 0.085
+        }, // Next S$190,000 at 8.5%
       },
       legislation: 'Income Tax Act Section 43B',
       administrationAuthority: 'IRAS',
@@ -315,13 +323,15 @@ class SingaporeTaxReliefs {
       id: 'pic_scheme_2024',
       name: 'Productivity and Innovation Credit',
       reliefType: ReliefType.productivityInnovationCredit,
-      description: 'Enhanced deductions/allowances for productivity improvements',
+      description:
+          'Enhanced deductions/allowances for productivity improvements',
       reliefAmount: 0,
       reliefRate: 3.0, // 300% deduction or 60% cash payout
       maximumRelief: 600000, // S$600,000 per year
       applicableTaxType: TaxType.corporateTax,
       effectiveFrom: DateTime(2024, 1, 1),
-      effectiveTo: DateTime(DateTime.now().year, 12, 31), // Check current validity
+      effectiveTo:
+          DateTime(DateTime.now().year, 12, 31), // Check current validity
       applicableCompanyTypes: [
         CompanyType.privateLimited,
         CompanyType.publicLimited,
@@ -417,7 +427,7 @@ class SingaporeTaxReliefs {
     DateTime date,
   ) {
     List<TaxRelief> allReliefs;
-    
+
     switch (taxType) {
       case TaxType.corporateTax:
         allReliefs = corporateTaxReliefs;
@@ -428,7 +438,7 @@ class SingaporeTaxReliefs {
       default:
         return [];
     }
-    
+
     return allReliefs
         .where((relief) => relief.isApplicableTo(profile, date))
         .toList();
@@ -440,18 +450,19 @@ class SingaporeTaxReliefs {
     Map<String, dynamic> context,
   ) {
     double totalRelief = 0;
-    
+
     for (final relief in reliefs) {
       final reliefAmount = relief.calculateReliefAmount(taxableAmount, context);
       totalRelief += reliefAmount;
-      
+
       // Update context for subsequent calculations
-      context['appliedReliefs'] = (context['appliedReliefs'] ?? [])..add({
-        'reliefId': relief.id,
-        'amount': reliefAmount,
-      });
+      context['appliedReliefs'] = (context['appliedReliefs'] ?? [])
+        ..add({
+          'reliefId': relief.id,
+          'amount': reliefAmount,
+        });
     }
-    
+
     return totalRelief;
   }
 }

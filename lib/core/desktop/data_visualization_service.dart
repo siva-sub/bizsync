@@ -126,14 +126,14 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
   @override
   void initState() {
     super.initState();
-    
+
     _tooltipBehavior = TooltipBehavior(
       enable: widget.config.showTooltips,
       canShowMarker: true,
       header: '',
       format: 'point.x : point.y',
     );
-    
+
     _zoomPanBehavior = ZoomPanBehavior(
       enablePinching: widget.config.enableZoom,
       enablePanning: widget.config.enablePan,
@@ -141,7 +141,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
       enableMouseWheelZooming: widget.config.enableZoom,
       enableSelectionZooming: widget.config.enableZoom,
     );
-    
+
     _selectionBehavior = SelectionBehavior(
       enable: true,
       toggleSelection: true,
@@ -186,23 +186,26 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         title: AxisTitle(text: widget.config.yAxisLabel),
         majorGridLines: MajorGridLines(width: widget.config.showGrid ? 1 : 0),
       ),
-      series: widget.series.map((series) => LineSeries<ChartDataPoint, dynamic>(
-        name: series.name,
-        dataSource: series.dataPoints,
-        xValueMapper: (ChartDataPoint data, _) => data.x,
-        yValueMapper: (ChartDataPoint data, _) => data.y,
-        color: series.color ?? widget.config.primaryColor,
-        markerSettings: const MarkerSettings(isVisible: true),
-        enableTooltip: widget.config.showTooltips,
-        selectionBehavior: _selectionBehavior,
-        onPointTap: (pointInteractionDetails) {
-          if (widget.onDataPointTapped != null) {
-            final dataPoint = widget.series[pointInteractionDetails.seriesIndex!]
-                .dataPoints[pointInteractionDetails.pointIndex!];
-            widget.onDataPointTapped!(dataPoint);
-          }
-        },
-      )).toList(),
+      series: widget.series
+          .map((series) => LineSeries<ChartDataPoint, dynamic>(
+                name: series.name,
+                dataSource: series.dataPoints,
+                xValueMapper: (ChartDataPoint data, _) => data.x,
+                yValueMapper: (ChartDataPoint data, _) => data.y,
+                color: series.color ?? widget.config.primaryColor,
+                markerSettings: const MarkerSettings(isVisible: true),
+                enableTooltip: widget.config.showTooltips,
+                selectionBehavior: _selectionBehavior,
+                onPointTap: (pointInteractionDetails) {
+                  if (widget.onDataPointTapped != null) {
+                    final dataPoint = widget
+                        .series[pointInteractionDetails.seriesIndex!]
+                        .dataPoints[pointInteractionDetails.pointIndex!];
+                    widget.onDataPointTapped!(dataPoint);
+                  }
+                },
+              ))
+          .toList(),
     );
   }
 
@@ -218,15 +221,17 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
       primaryYAxis: NumericAxis(
         title: AxisTitle(text: widget.config.yAxisLabel),
       ),
-      series: widget.series.map((series) => BarSeries<ChartDataPoint, dynamic>(
-        name: series.name,
-        dataSource: series.dataPoints,
-        xValueMapper: (ChartDataPoint data, _) => data.x,
-        yValueMapper: (ChartDataPoint data, _) => data.y,
-        color: series.color ?? widget.config.primaryColor,
-        enableTooltip: widget.config.showTooltips,
-        selectionBehavior: _selectionBehavior,
-      )).toList(),
+      series: widget.series
+          .map((series) => BarSeries<ChartDataPoint, dynamic>(
+                name: series.name,
+                dataSource: series.dataPoints,
+                xValueMapper: (ChartDataPoint data, _) => data.x,
+                yValueMapper: (ChartDataPoint data, _) => data.y,
+                color: series.color ?? widget.config.primaryColor,
+                enableTooltip: widget.config.showTooltips,
+                selectionBehavior: _selectionBehavior,
+              ))
+          .toList(),
     );
   }
 
@@ -242,7 +247,8 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
           dataSource: firstSeries.dataPoints,
           xValueMapper: (ChartDataPoint data, _) => data.x.toString(),
           yValueMapper: (ChartDataPoint data, _) => data.y,
-          dataLabelMapper: (ChartDataPoint data, _) => data.label ?? data.x.toString(),
+          dataLabelMapper: (ChartDataPoint data, _) =>
+              data.label ?? data.x.toString(),
           dataLabelSettings: const DataLabelSettings(isVisible: true),
           enableTooltip: widget.config.showTooltips,
           selectionBehavior: _selectionBehavior,
@@ -263,15 +269,17 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
       primaryYAxis: NumericAxis(
         title: AxisTitle(text: widget.config.yAxisLabel),
       ),
-      series: widget.series.map((series) => AreaSeries<ChartDataPoint, dynamic>(
-        name: series.name,
-        dataSource: series.dataPoints,
-        xValueMapper: (ChartDataPoint data, _) => data.x,
-        yValueMapper: (ChartDataPoint data, _) => data.y,
-        color: series.color ?? widget.config.primaryColor,
-        enableTooltip: widget.config.showTooltips,
-        selectionBehavior: _selectionBehavior,
-      )).toList(),
+      series: widget.series
+          .map((series) => AreaSeries<ChartDataPoint, dynamic>(
+                name: series.name,
+                dataSource: series.dataPoints,
+                xValueMapper: (ChartDataPoint data, _) => data.x,
+                yValueMapper: (ChartDataPoint data, _) => data.y,
+                color: series.color ?? widget.config.primaryColor,
+                enableTooltip: widget.config.showTooltips,
+                selectionBehavior: _selectionBehavior,
+              ))
+          .toList(),
     );
   }
 
@@ -287,15 +295,17 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
       primaryYAxis: NumericAxis(
         title: AxisTitle(text: widget.config.yAxisLabel),
       ),
-      series: widget.series.map((series) => ColumnSeries<ChartDataPoint, dynamic>(
-        name: series.name,
-        dataSource: series.dataPoints,
-        xValueMapper: (ChartDataPoint data, _) => data.x,
-        yValueMapper: (ChartDataPoint data, _) => data.y,
-        color: series.color ?? widget.config.primaryColor,
-        enableTooltip: widget.config.showTooltips,
-        selectionBehavior: _selectionBehavior,
-      )).toList(),
+      series: widget.series
+          .map((series) => ColumnSeries<ChartDataPoint, dynamic>(
+                name: series.name,
+                dataSource: series.dataPoints,
+                xValueMapper: (ChartDataPoint data, _) => data.x,
+                yValueMapper: (ChartDataPoint data, _) => data.y,
+                color: series.color ?? widget.config.primaryColor,
+                enableTooltip: widget.config.showTooltips,
+                selectionBehavior: _selectionBehavior,
+              ))
+          .toList(),
     );
   }
 
@@ -311,26 +321,28 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
       primaryYAxis: NumericAxis(
         title: AxisTitle(text: widget.config.yAxisLabel),
       ),
-      series: widget.series.map((series) => ScatterSeries<ChartDataPoint, dynamic>(
-        name: series.name,
-        dataSource: series.dataPoints,
-        xValueMapper: (ChartDataPoint data, _) => data.x,
-        yValueMapper: (ChartDataPoint data, _) => data.y,
-        color: series.color ?? widget.config.primaryColor,
-        markerSettings: const MarkerSettings(
-          height: 8,
-          width: 8,
-          shape: DataMarkerType.circle,
-        ),
-        enableTooltip: widget.config.showTooltips,
-        selectionBehavior: _selectionBehavior,
-      )).toList(),
+      series: widget.series
+          .map((series) => ScatterSeries<ChartDataPoint, dynamic>(
+                name: series.name,
+                dataSource: series.dataPoints,
+                xValueMapper: (ChartDataPoint data, _) => data.x,
+                yValueMapper: (ChartDataPoint data, _) => data.y,
+                color: series.color ?? widget.config.primaryColor,
+                markerSettings: const MarkerSettings(
+                  height: 8,
+                  width: 8,
+                  shape: DataMarkerType.circle,
+                ),
+                enableTooltip: widget.config.showTooltips,
+                selectionBehavior: _selectionBehavior,
+              ))
+          .toList(),
     );
   }
 }
 
 /// Enhanced Data Visualization Service for Linux Desktop
-/// 
+///
 /// Provides advanced data visualization capabilities:
 /// - Interactive charts with zoom/pan
 /// - Export charts as images
@@ -338,7 +350,8 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
 /// - Multiple chart types
 /// - Custom styling and themes
 class DataVisualizationService {
-  static final DataVisualizationService _instance = DataVisualizationService._internal();
+  static final DataVisualizationService _instance =
+      DataVisualizationService._internal();
   factory DataVisualizationService() => _instance;
   DataVisualizationService._internal();
 
@@ -376,20 +389,23 @@ class DataVisualizationService {
   }) {
     final series = ChartSeries(
       name: 'Revenue',
-      dataPoints: revenueData.map((data) => ChartDataPoint(
-        x: data['month'] ?? data['date'],
-        y: data['revenue'] ?? data['amount'],
-        label: data['label'],
-      )).toList(),
+      dataPoints: revenueData
+          .map((data) => ChartDataPoint(
+                x: data['month'] ?? data['date'],
+                y: data['revenue'] ?? data['amount'],
+                label: data['label'],
+              ))
+          .toList(),
       color: Colors.green,
     );
 
-    final chartConfig = config ?? ChartConfig(
-      title: 'Revenue Over Time',
-      xAxisLabel: 'Time Period',
-      yAxisLabel: 'Revenue (\$)',
-      type: ChartType.line,
-    );
+    final chartConfig = config ??
+        ChartConfig(
+          title: 'Revenue Over Time',
+          xAxisLabel: 'Time Period',
+          yAxisLabel: 'Revenue (\$)',
+          type: ChartType.line,
+        );
 
     return InteractiveChartWidget(
       series: [series],
@@ -404,20 +420,23 @@ class DataVisualizationService {
   }) {
     final series = ChartSeries(
       name: 'Sales',
-      dataPoints: salesData.map((data) => ChartDataPoint(
-        x: data['product'] ?? data['category'],
-        y: data['sales'] ?? data['count'],
-        label: data['label'],
-      )).toList(),
+      dataPoints: salesData
+          .map((data) => ChartDataPoint(
+                x: data['product'] ?? data['category'],
+                y: data['sales'] ?? data['count'],
+                label: data['label'],
+              ))
+          .toList(),
       color: Colors.blue,
     );
 
-    final chartConfig = config ?? ChartConfig(
-      title: 'Sales by Product',
-      xAxisLabel: 'Products',
-      yAxisLabel: 'Sales Count',
-      type: ChartType.column,
-    );
+    final chartConfig = config ??
+        ChartConfig(
+          title: 'Sales by Product',
+          xAxisLabel: 'Products',
+          yAxisLabel: 'Sales Count',
+          type: ChartType.column,
+        );
 
     return InteractiveChartWidget(
       series: [series],
@@ -432,19 +451,22 @@ class DataVisualizationService {
   }) {
     final series = ChartSeries(
       name: 'Customers',
-      dataPoints: customerData.map((data) => ChartDataPoint(
-        x: data['region'] ?? data['category'],
-        y: data['count'] ?? data['customers'],
-        label: data['label'],
-      )).toList(),
+      dataPoints: customerData
+          .map((data) => ChartDataPoint(
+                x: data['region'] ?? data['category'],
+                y: data['count'] ?? data['customers'],
+                label: data['label'],
+              ))
+          .toList(),
     );
 
-    final chartConfig = config ?? ChartConfig(
-      title: 'Customer Distribution',
-      xAxisLabel: 'Region',
-      yAxisLabel: 'Customer Count',
-      type: ChartType.pie,
-    );
+    final chartConfig = config ??
+        ChartConfig(
+          title: 'Customer Distribution',
+          xAxisLabel: 'Region',
+          yAxisLabel: 'Customer Count',
+          type: ChartType.pie,
+        );
 
     return InteractiveChartWidget(
       series: [series],
@@ -459,22 +481,25 @@ class DataVisualizationService {
   }) {
     final series = ChartSeries(
       name: 'Stock Levels',
-      dataPoints: inventoryData.map((data) => ChartDataPoint(
-        x: data['product'] ?? data['sku'],
-        y: data['stock'] ?? data['quantity'],
-        label: data['label'],
-        color: (data['stock'] ?? 0) < (data['minStock'] ?? 10) 
-            ? Colors.red 
-            : Colors.green,
-      )).toList(),
+      dataPoints: inventoryData
+          .map((data) => ChartDataPoint(
+                x: data['product'] ?? data['sku'],
+                y: data['stock'] ?? data['quantity'],
+                label: data['label'],
+                color: (data['stock'] ?? 0) < (data['minStock'] ?? 10)
+                    ? Colors.red
+                    : Colors.green,
+              ))
+          .toList(),
     );
 
-    final chartConfig = config ?? ChartConfig(
-      title: 'Inventory Levels',
-      xAxisLabel: 'Products',
-      yAxisLabel: 'Stock Quantity',
-      type: ChartType.bar,
-    );
+    final chartConfig = config ??
+        ChartConfig(
+          title: 'Inventory Levels',
+          xAxisLabel: 'Products',
+          yAxisLabel: 'Stock Quantity',
+          type: ChartType.bar,
+        );
 
     return InteractiveChartWidget(
       series: [series],
@@ -489,19 +514,22 @@ class DataVisualizationService {
   }) {
     final series = ChartSeries(
       name: 'Expenses',
-      dataPoints: expenseData.map((data) => ChartDataPoint(
-        x: data['category'] ?? data['type'],
-        y: data['amount'] ?? data['expense'],
-        label: data['label'],
-      )).toList(),
+      dataPoints: expenseData
+          .map((data) => ChartDataPoint(
+                x: data['category'] ?? data['type'],
+                y: data['amount'] ?? data['expense'],
+                label: data['label'],
+              ))
+          .toList(),
     );
 
-    final chartConfig = config ?? ChartConfig(
-      title: 'Expense Breakdown',
-      xAxisLabel: 'Categories',
-      yAxisLabel: 'Amount (\$)',
-      type: ChartType.doughnut,
-    );
+    final chartConfig = config ??
+        ChartConfig(
+          title: 'Expense Breakdown',
+          xAxisLabel: 'Categories',
+          yAxisLabel: 'Amount (\$)',
+          type: ChartType.doughnut,
+        );
 
     return InteractiveChartWidget(
       series: [series],
@@ -556,7 +584,8 @@ class DataVisualizationService {
       );
 
       // Render the widget to get the image
-      final renderObject = _chartKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final renderObject = _chartKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
       if (renderObject == null) {
         debugPrint('Could not find render object for chart');
         return null;
@@ -564,7 +593,7 @@ class DataVisualizationService {
 
       final image = await renderObject.toImage(pixelRatio: 2.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      
+
       if (byteData == null) {
         debugPrint('Failed to convert chart to image data');
         return null;
@@ -574,7 +603,7 @@ class DataVisualizationService {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final extension = format.toString().split('.').last;
       final filename = fileName ?? 'chart_$timestamp.$extension';
-      
+
       final outputDirectory = directory ?? Directory.current.path;
       final filePath = path.join(outputDirectory, filename);
 
@@ -751,7 +780,8 @@ class DataVisualizationService {
   }
 
   /// Get default color palette
-  List<Color> get defaultColorPalette => List.unmodifiable(_defaultColorPalette);
+  List<Color> get defaultColorPalette =>
+      List.unmodifiable(_defaultColorPalette);
 
   /// Check if service is initialized
   bool get isInitialized => _isInitialized;

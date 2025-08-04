@@ -39,7 +39,8 @@ class NotificationTimeOfDay {
   }
 
   @override
-  String toString() => '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+  String toString() =>
+      '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 }
 
 /// User preferences for notifications
@@ -92,13 +93,13 @@ class NotificationSettings {
     DateTime now,
   ) {
     if (!globalEnabled) return false;
-    
+
     final categoryConfig = categorySettings[category];
     if (categoryConfig == null || !categoryConfig.enabled) return false;
-    
-    if (doNotDisturb.isActive(now) && 
-        !doNotDisturb.shouldBypass(priority)) return false;
-    
+
+    if (doNotDisturb.isActive(now) && !doNotDisturb.shouldBypass(priority))
+      return false;
+
     return true;
   }
 
@@ -164,7 +165,7 @@ class CategorySettings {
           maxPerHour: 20,
           smartTiming: true,
         );
-      
+
       case NotificationCategory.backup:
       case NotificationCategory.system:
         return const CategorySettings(
@@ -173,7 +174,7 @@ class CategorySettings {
           soundEnabled: false,
           maxPerHour: 5,
         );
-      
+
       case NotificationCategory.insight:
         return const CategorySettings(
           enabled: true,
@@ -181,14 +182,14 @@ class CategorySettings {
           maxPerHour: 3,
           smartTiming: true,
         );
-      
+
       case NotificationCategory.reminder:
         return const CategorySettings(
           enabled: true,
           minimumPriority: NotificationPriority.medium,
           maxPerHour: 15,
         );
-      
+
       case NotificationCategory.custom:
         return const CategorySettings(
           enabled: true,
@@ -229,12 +230,12 @@ class DoNotDisturbSettings {
 
   bool isActive(DateTime now) {
     if (!enabled) return false;
-    
+
     final weekday = now.weekday;
     if (!daysOfWeek.contains(weekday)) return false;
-    
+
     final currentTime = NotificationTimeOfDay.fromDateTime(now);
-    
+
     if (startTime.hour < endTime.hour) {
       // Same day range (e.g., 10 PM to 8 AM next day)
       return currentTime.isAfter(startTime) || currentTime.isBefore(endTime);
@@ -252,7 +253,6 @@ class DoNotDisturbSettings {
     return allowedCategories.contains(category);
   }
 }
-
 
 /// Notification batching settings
 @JsonSerializable()
@@ -281,7 +281,7 @@ class BatchingSettings {
   bool shouldBatch(NotificationCategory category, int pendingCount) {
     if (!enabled) return false;
     if (neverBatchCategories.contains(category)) return false;
-    
+
     final threshold = categoryThresholds[category] ?? 2;
     return pendingCount >= threshold;
   }
@@ -328,21 +328,21 @@ class ChannelSettings {
           bypassDnd: true,
           lightColor: 0xFFFF0000, // Red
         );
-      
+
       case NotificationChannel.business:
         return const ChannelSettings(
           enabled: true,
           minimumPriority: NotificationPriority.medium,
           lightColor: 0xFF0000FF, // Blue
         );
-      
+
       case NotificationChannel.reminders:
         return const ChannelSettings(
           enabled: true,
           minimumPriority: NotificationPriority.medium,
           lightColor: 0xFF00FF00, // Green
         );
-      
+
       case NotificationChannel.insights:
         return const ChannelSettings(
           enabled: true,
@@ -350,7 +350,7 @@ class ChannelSettings {
           soundEnabled: false,
           lightColor: 0xFFFFFF00, // Yellow
         );
-      
+
       case NotificationChannel.system:
         return const ChannelSettings(
           enabled: true,
@@ -358,7 +358,7 @@ class ChannelSettings {
           soundEnabled: false,
           vibrationEnabled: false,
         );
-      
+
       case NotificationChannel.marketing:
         return const ChannelSettings(
           enabled: false,
@@ -403,30 +403,30 @@ class IntelligentSettings {
 
   bool isBusinessHours(DateTime dateTime) {
     if (!respectBusinessHours) return true;
-    
-    final isWeekend = dateTime.weekday == DateTime.saturday || 
-                     dateTime.weekday == DateTime.sunday;
-    
+
+    final isWeekend = dateTime.weekday == DateTime.saturday ||
+        dateTime.weekday == DateTime.sunday;
+
     if (isWeekend && !weekendsAreBusinessDays) return false;
-    
+
     final currentTime = NotificationTimeOfDay.fromDateTime(dateTime);
-    return currentTime.isAfter(businessHoursStart) && 
-           currentTime.isBefore(businessHoursEnd);
+    return currentTime.isAfter(businessHoursStart) &&
+        currentTime.isBefore(businessHoursEnd);
   }
 
   DateTime? getOptimalDeliveryTime(DateTime requestedTime) {
     if (!enabled) return requestedTime;
-    
+
     if (isBusinessHours(requestedTime)) {
       return requestedTime.add(optimalDelay);
     }
-    
+
     // Schedule for next business day
     DateTime nextBusinessDay = requestedTime;
     while (!isBusinessHours(nextBusinessDay)) {
       nextBusinessDay = nextBusinessDay.add(const Duration(hours: 1));
     }
-    
+
     return DateTime(
       nextBusinessDay.year,
       nextBusinessDay.month,

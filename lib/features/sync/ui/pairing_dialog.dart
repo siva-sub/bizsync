@@ -24,9 +24,8 @@ class PairingDialog extends StatefulWidget {
 
 class _PairingDialogState extends State<PairingDialog>
     with SingleTickerProviderStateMixin {
-  
   late TabController _tabController;
-  
+
   DevicePairing? _currentPairing;
   String? _errorMessage;
   bool _isLoading = false;
@@ -36,7 +35,7 @@ class _PairingDialogState extends State<PairingDialog>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    
+
     // Listen to pairing events
     // TODO: Fix authService implementation
     // _pairingSubscription = widget.syncService._authService.pairingEvents.listen(
@@ -56,12 +55,12 @@ class _PairingDialogState extends State<PairingDialog>
       setState(() {
         _currentPairing = pairing;
         _isLoading = false;
-        
+
         if (pairing.state == PairingState.completed) {
           // Pairing successful
           Navigator.of(context).pop(true);
-        } else if (pairing.state == PairingState.failed || 
-                   pairing.state == PairingState.expired) {
+        } else if (pairing.state == PairingState.failed ||
+            pairing.state == PairingState.expired) {
           _errorMessage = 'Pairing failed or expired';
         }
       });
@@ -105,9 +104,9 @@ class _PairingDialogState extends State<PairingDialog>
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Error message
             if (_errorMessage != null)
               Container(
@@ -135,9 +134,9 @@ class _PairingDialogState extends State<PairingDialog>
                   ],
                 ),
               ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Tab bar
             TabBar(
               controller: _tabController,
@@ -147,7 +146,7 @@ class _PairingDialogState extends State<PairingDialog>
                 Tab(text: 'PIN Code', icon: Icon(Icons.pin)),
               ],
             ),
-            
+
             // Tab content
             Expanded(
               child: TabBarView(
@@ -175,9 +174,7 @@ class _PairingDialogState extends State<PairingDialog>
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
-          
           const SizedBox(height: 20),
-          
           if (_currentPairing?.qrCode != null) ...[
             // QR Code display
             Expanded(
@@ -204,9 +201,9 @@ class _PairingDialogState extends State<PairingDialog>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Pairing status
             if (_currentPairing!.state == PairingState.codeGenerated)
               const Row(
@@ -226,7 +223,6 @@ class _PairingDialogState extends State<PairingDialog>
                   Text('QR code scanned! Completing pairing...'),
                 ],
               ),
-              
           ] else ...[
             // Generate QR button
             Expanded(
@@ -241,9 +237,7 @@ class _PairingDialogState extends State<PairingDialog>
               ),
             ),
           ],
-          
           const SizedBox(height: 16),
-          
           Text(
             'QR code expires in 5 minutes',
             style: Theme.of(context).textTheme.bodySmall,
@@ -264,9 +258,9 @@ class _PairingDialogState extends State<PairingDialog>
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Camera view
           Expanded(
             child: Container(
@@ -291,9 +285,9 @@ class _PairingDialogState extends State<PairingDialog>
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           const Text(
             'Position the QR code within the frame',
             style: TextStyle(fontSize: 14),
@@ -314,9 +308,9 @@ class _PairingDialogState extends State<PairingDialog>
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           if (_currentPairing?.pairingCode != null) ...[
             // Show generated PIN
             Container(
@@ -346,9 +340,11 @@ class _PairingDialogState extends State<PairingDialog>
                   const SizedBox(height: 12),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(text: _currentPairing!.pairingCode!));
+                      Clipboard.setData(
+                          ClipboardData(text: _currentPairing!.pairingCode!));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('PIN copied to clipboard')),
+                        const SnackBar(
+                            content: Text('PIN copied to clipboard')),
                       );
                     },
                     icon: const Icon(Icons.copy),
@@ -357,9 +353,9 @@ class _PairingDialogState extends State<PairingDialog>
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             if (_currentPairing!.state == PairingState.codeGenerated)
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -369,7 +365,6 @@ class _PairingDialogState extends State<PairingDialog>
                   Text('Waiting for PIN entry...'),
                 ],
               ),
-              
           ] else ...[
             // Generate PIN button
             Expanded(
@@ -384,20 +379,20 @@ class _PairingDialogState extends State<PairingDialog>
               ),
             ),
           ],
-          
+
           const SizedBox(height: 20),
-          
+
           // PIN entry section
           const Divider(),
           const SizedBox(height: 16),
-          
+
           const Text(
             'Or enter PIN from other device:',
             style: TextStyle(fontSize: 14),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           Row(
             children: [
               Expanded(
@@ -427,17 +422,16 @@ class _PairingDialogState extends State<PairingDialog>
       _isLoading = true;
       _errorMessage = null;
     });
-    
+
     try {
       final pairing = await widget.syncService.initiatePairingWithQR(
         widget.device.deviceId,
       );
-      
+
       setState(() {
         _currentPairing = pairing;
         _isLoading = false;
       });
-      
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to generate QR code: $e';
@@ -451,17 +445,16 @@ class _PairingDialogState extends State<PairingDialog>
       _isLoading = true;
       _errorMessage = null;
     });
-    
+
     try {
       final pairing = await widget.syncService.initiatePairingWithPIN(
         widget.device.deviceId,
       );
-      
+
       setState(() {
         _currentPairing = pairing;
         _isLoading = false;
       });
-      
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to generate PIN code: $e';
@@ -472,7 +465,7 @@ class _PairingDialogState extends State<PairingDialog>
 
   void _onQRCodeDetected(BarcodeCapture capture) {
     final List<Barcode> barcodes = capture.barcodes;
-    
+
     if (barcodes.isNotEmpty) {
       final qrData = barcodes.first.rawValue;
       if (qrData != null) {
@@ -486,15 +479,14 @@ class _PairingDialogState extends State<PairingDialog>
       _isLoading = true;
       _errorMessage = null;
     });
-    
+
     try {
       final pairing = await widget.syncService.processScannedQR(qrData);
-      
+
       setState(() {
         _currentPairing = pairing;
         _isLoading = false;
       });
-      
     } catch (e) {
       setState(() {
         _errorMessage = 'Invalid QR code: $e';
@@ -510,19 +502,18 @@ class _PairingDialogState extends State<PairingDialog>
       });
       return;
     }
-    
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
-    
+
     try {
       // TODO: Fix authService implementation
       // await widget.syncService._authService.processPinCode(
       //   _currentPairing!.pairingId,
       //   pinCode,
       // );
-      
     } catch (e) {
       setState(() {
         _errorMessage = 'Invalid PIN code: $e';

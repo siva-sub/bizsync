@@ -25,14 +25,16 @@ class QRDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final QRStylingOptions effectiveStyling = styling ?? const QRStylingOptions();
-    
+    final QRStylingOptions effectiveStyling =
+        styling ?? const QRStylingOptions();
+
     Widget qrWidget = Container(
       padding: effectiveStyling.padding,
       decoration: BoxDecoration(
         color: effectiveStyling.backgroundColor,
         borderRadius: effectiveStyling.borderRadius,
-        boxShadow: effectiveStyling.shadow != null ? [effectiveStyling.shadow!] : null,
+        boxShadow:
+            effectiveStyling.shadow != null ? [effectiveStyling.shadow!] : null,
         gradient: effectiveStyling.gradient,
       ),
       child: Column(
@@ -42,7 +44,8 @@ class QRDisplayWidget extends StatelessWidget {
           if (branding?.title != null) ...[
             Text(
               branding!.title!,
-              style: branding!.titleStyle ?? Theme.of(context).textTheme.headlineSmall,
+              style: branding!.titleStyle ??
+                  Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -52,7 +55,8 @@ class QRDisplayWidget extends StatelessWidget {
           if (branding?.subtitle != null) ...[
             Text(
               branding!.subtitle!,
-              style: branding!.subtitleStyle ?? Theme.of(context).textTheme.bodyLarge,
+              style: branding!.subtitleStyle ??
+                  Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -71,11 +75,11 @@ class QRDisplayWidget extends StatelessWidget {
                 errorCorrectionLevel: effectiveStyling.errorCorrectionLevel,
                 padding: EdgeInsets.zero,
               ),
-              
+
               // Logo overlay
               if (branding?.logo?.hasLogo == true)
                 _buildLogoOverlay(branding!.logo!),
-              
+
               // Custom overlay
               if (overlay != null) overlay!,
             ],
@@ -86,7 +90,8 @@ class QRDisplayWidget extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               branding!.footer!,
-              style: branding!.footerStyle ?? Theme.of(context).textTheme.bodySmall,
+              style: branding!.footerStyle ??
+                  Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
           ],
@@ -109,11 +114,14 @@ class QRDisplayWidget extends StatelessWidget {
       width: logoOptions.logoSize,
       height: logoOptions.logoSize,
       decoration: BoxDecoration(
-        color: logoOptions.addLogoBackground ? logoOptions.logoBackgroundColor : null,
+        color: logoOptions.addLogoBackground
+            ? logoOptions.logoBackgroundColor
+            : null,
         borderRadius: logoOptions.logoBorderRadius ?? BorderRadius.circular(8),
       ),
       padding: logoOptions.logoMargin,
-      child: const Icon(Icons.business, size: 24), // Placeholder - would use actual logo
+      child: const Icon(Icons.business,
+          size: 24), // Placeholder - would use actual logo
     );
 
     return logoWidget;
@@ -140,7 +148,8 @@ class AnimatedQRDisplayWidget extends StatefulWidget {
   });
 
   @override
-  State<AnimatedQRDisplayWidget> createState() => _AnimatedQRDisplayWidgetState();
+  State<AnimatedQRDisplayWidget> createState() =>
+      _AnimatedQRDisplayWidgetState();
 }
 
 class _AnimatedQRDisplayWidgetState extends State<AnimatedQRDisplayWidget>
@@ -181,8 +190,10 @@ class _AnimatedQRDisplayWidgetState extends State<AnimatedQRDisplayWidget>
   @override
   void didUpdateWidget(AnimatedQRDisplayWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
-    if (widget.qrData != null && !widget.isLoading && oldWidget.qrData != widget.qrData) {
+
+    if (widget.qrData != null &&
+        !widget.isLoading &&
+        oldWidget.qrData != widget.qrData) {
       _animationController.reset();
       _animationController.forward();
     }
@@ -229,7 +240,7 @@ class _AnimatedQRDisplayWidgetState extends State<AnimatedQRDisplayWidget>
 
   Widget _buildLoadingState() {
     final QRStylingOptions styling = widget.styling ?? const QRStylingOptions();
-    
+
     return Container(
       width: styling.size + styling.padding.horizontal,
       height: styling.size + styling.padding.vertical,
@@ -254,7 +265,7 @@ class _AnimatedQRDisplayWidgetState extends State<AnimatedQRDisplayWidget>
 
   Widget _buildErrorState() {
     final QRStylingOptions styling = widget.styling ?? const QRStylingOptions();
-    
+
     return Container(
       width: styling.size + styling.padding.horizontal,
       height: styling.size + styling.padding.vertical,
@@ -298,7 +309,7 @@ class _AnimatedQRDisplayWidgetState extends State<AnimatedQRDisplayWidget>
 
   Widget _buildEmptyState() {
     final QRStylingOptions styling = widget.styling ?? const QRStylingOptions();
-    
+
     return Container(
       width: styling.size + styling.padding.horizontal,
       height: styling.size + styling.padding.vertical,
@@ -374,17 +385,23 @@ class QRCardWidget extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         if (subtitle != null) ...[
                           const SizedBox(height: 4),
                           Text(
                             subtitle!,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
                           ),
                         ],
                       ],
@@ -392,7 +409,8 @@ class QRCardWidget extends StatelessWidget {
                   ),
                   if (amount != null)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: Theme.of(context).primaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(16),
@@ -503,11 +521,11 @@ class _ExpandableQRWidgetState extends State<ExpandableQRWidget>
             child: Row(
               children: [
                 Expanded(
-                  child: widget.collapsedChild ?? 
-                    Text(
-                      widget.title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                  child: widget.collapsedChild ??
+                      Text(
+                        widget.title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                 ),
                 AnimatedRotation(
                   turns: _isExpanded ? 0.5 : 0.0,

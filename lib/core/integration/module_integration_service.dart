@@ -4,10 +4,11 @@ import '../../navigation/app_navigation_service.dart';
 /// Service that provides integration points between different modules
 /// This demonstrates how modules can work together in the BizSync app
 class ModuleIntegrationService {
-  static final ModuleIntegrationService _instance = ModuleIntegrationService._internal();
-  
+  static final ModuleIntegrationService _instance =
+      ModuleIntegrationService._internal();
+
   factory ModuleIntegrationService() => _instance;
-  
+
   ModuleIntegrationService._internal();
 
   final AppNavigationService _navigationService = AppNavigationService();
@@ -51,7 +52,7 @@ class ModuleIntegrationService {
   }) async {
     // Update invoice status (this would integrate with invoice service)
     // Send notification (this would integrate with notification service)
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Payment of \$${amount.toStringAsFixed(2)} received!'),
@@ -74,7 +75,7 @@ class ModuleIntegrationService {
   }) async {
     // Calculate tax implications
     final taxAmount = _calculateIncomeTax(grossSalary);
-    
+
     // Show payroll summary with tax information
     showDialog(
       context: context,
@@ -88,7 +89,8 @@ class ModuleIntegrationService {
             _buildPayrollLine('CPF Contribution', cpf),
             _buildPayrollLine('Estimated Income Tax', taxAmount),
             const Divider(),
-            _buildPayrollLine('Net Pay', grossSalary - cpf - taxAmount, isBold: true),
+            _buildPayrollLine('Net Pay', grossSalary - cpf - taxAmount,
+                isBold: true),
           ],
         ),
         actions: [
@@ -155,7 +157,8 @@ class ModuleIntegrationService {
     if (daysUntilDeadline <= 30 && daysUntilDeadline > 0) {
       _navigationService.showNotificationAlert(
         title: 'Tax Payment Reminder',
-        message: 'Your tax payment of \$${totalTax.toStringAsFixed(2)} is due in $daysUntilDeadline days.',
+        message:
+            'Your tax payment of \$${totalTax.toStringAsFixed(2)} is due in $daysUntilDeadline days.',
         actionRoute: '/tax',
       );
     }
@@ -262,12 +265,14 @@ class ModuleIntegrationService {
   double _calculateIncomeTax(double grossSalary) {
     // Simplified Singapore income tax calculation
     final annualIncome = grossSalary * 12;
-    
+
     if (annualIncome <= 20000) return 0;
     if (annualIncome <= 30000) return (annualIncome - 20000) * 0.02 / 12;
-    if (annualIncome <= 40000) return (200 + (annualIncome - 30000) * 0.035) / 12;
-    if (annualIncome <= 80000) return (550 + (annualIncome - 40000) * 0.07) / 12;
-    
+    if (annualIncome <= 40000)
+      return (200 + (annualIncome - 30000) * 0.035) / 12;
+    if (annualIncome <= 80000)
+      return (550 + (annualIncome - 40000) * 0.07) / 12;
+
     // Simplified calculation for higher incomes
     return (annualIncome * 0.15) / 12;
   }
@@ -301,7 +306,8 @@ class ModuleIntegrationService {
     );
   }
 
-  void _scheduleBackupReminder(BuildContext context, String reason, {bool autoTrigger = false}) {
+  void _scheduleBackupReminder(BuildContext context, String reason,
+      {bool autoTrigger = false}) {
     if (autoTrigger) {
       // Auto-trigger backup
       _navigationService.goToBackup();
@@ -322,7 +328,7 @@ class ModuleIntegrationService {
   ) async {
     // Step 1: Add customer
     _navigationService.goToAddCustomer(prefilledData: data);
-    
+
     // Steps 2-3 would be triggered by callbacks from the customer creation process
     // Step 2: Create first invoice
     // Step 3: Generate payment QR
@@ -334,7 +340,7 @@ class ModuleIntegrationService {
   ) async {
     // Navigate to dashboard for review
     _navigationService.goToDashboard();
-    
+
     // Show monthly review checklist
     showDialog(
       context: context,
@@ -375,7 +381,7 @@ class ModuleIntegrationService {
     BuildContext context,
   ) async {
     _navigationService.goToTaxCenter();
-    
+
     // Show tax preparation checklist
     showDialog(
       context: context,

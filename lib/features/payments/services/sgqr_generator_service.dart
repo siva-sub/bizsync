@@ -67,7 +67,7 @@ class SGQRGenerationOptions {
 }
 
 /// Main SGQR Generator Service
-/// 
+///
 /// This service handles the generation of SGQR/PayNow QR codes according to
 /// Singapore's SGQR specification and EMVCo standards.
 class SGQRGeneratorService {
@@ -88,7 +88,7 @@ class SGQRGeneratorService {
 
       // Generate SGQR string
       final String sgqrString = _generateSGQRString(request);
-      
+
       // Validate generated SGQR
       if (!CRC16Calculator.validate(sgqrString)) {
         return SGQRGenerationResult.failure(
@@ -114,7 +114,6 @@ class SGQRGeneratorService {
           'generated_at': DateTime.now().toIso8601String(),
         },
       );
-
     } catch (e) {
       return SGQRGenerationResult.failure(
         errors: ['Failed to generate SGQR: $e'],
@@ -150,7 +149,8 @@ class SGQRGeneratorService {
 
     // Merchant Account Information (Tag 26) - PayNow
     if (request.payNowData != null) {
-      buffer.write(EMVCoFormatter.formatPayNowMerchantInfo(request.payNowData!));
+      buffer
+          .write(EMVCoFormatter.formatPayNowMerchantInfo(request.payNowData!));
     }
 
     // Merchant Category Code (Tag 52)
@@ -242,7 +242,7 @@ class SGQRGeneratorService {
     // Calculate and add CRC16 checksum
     final String dataWithoutCrc = buffer.toString();
     final String crc = CRC16Calculator.calculate(dataWithoutCrc);
-    
+
     return dataWithoutCrc + crc;
   }
 
@@ -256,9 +256,10 @@ class SGQRGeneratorService {
 
       // Remove CRC for parsing
       final String dataWithoutCrc = CRC16Calculator.removeChecksum(sgqrString);
-      
+
       // Parse TLV data objects
-      final List<SGQRDataObject> objects = EMVCoFormatter.parseTLV(dataWithoutCrc);
+      final List<SGQRDataObject> objects =
+          EMVCoFormatter.parseTLV(dataWithoutCrc);
 
       // Extract required fields
       PayloadFormatIndicator? payloadFormat;
@@ -297,7 +298,9 @@ class SGQRGeneratorService {
         }
       }
 
-      if (payloadFormat == null || initiationMethod == null || payNowData == null) {
+      if (payloadFormat == null ||
+          initiationMethod == null ||
+          payNowData == null) {
         return null;
       }
 
@@ -313,7 +316,6 @@ class SGQRGeneratorService {
         payNowData: payNowData,
         amount: amount,
       );
-
     } catch (e) {
       return null;
     }
@@ -355,22 +357,31 @@ class SGQRGeneratorService {
     try {
       // Parse and validate structure
       final String dataWithoutCrc = CRC16Calculator.removeChecksum(sgqrString);
-      final List<SGQRDataObject> objects = EMVCoFormatter.parseTLV(dataWithoutCrc);
-      
+      final List<SGQRDataObject> objects =
+          EMVCoFormatter.parseTLV(dataWithoutCrc);
+
       // Validate EMVCo structure
-      final List<String> structureErrors = EMVCoFormatter.validateDataObjects(objects);
+      final List<String> structureErrors =
+          EMVCoFormatter.validateDataObjects(objects);
       errors.addAll(structureErrors);
 
       // Check for required fields
-      final Set<String> requiredTags = {'00', '01', '26', '52', '53', '58', '59'};
+      final Set<String> requiredTags = {
+        '00',
+        '01',
+        '26',
+        '52',
+        '53',
+        '58',
+        '59'
+      };
       final Set<String> presentTags = objects.map((obj) => obj.tag).toSet();
-      
+
       for (final String requiredTag in requiredTags) {
         if (!presentTags.contains(requiredTag)) {
           errors.add('Missing required tag: $requiredTag');
         }
       }
-
     } catch (e) {
       errors.add('Failed to parse SGQR structure: $e');
     }

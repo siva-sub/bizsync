@@ -1,5 +1,5 @@
 /// Desktop Services Index
-/// 
+///
 /// This file exports all desktop-specific services for the BizSync application.
 /// These services provide enhanced functionality specifically for Linux desktop users.
 
@@ -43,10 +43,11 @@ import 'advanced_search_service.dart';
 import 'data_visualization_service.dart';
 
 /// Desktop Services Manager
-/// 
+///
 /// Provides a centralized way to initialize and manage all desktop services
 class DesktopServicesManager {
-  static final DesktopServicesManager _instance = DesktopServicesManager._internal();
+  static final DesktopServicesManager _instance =
+      DesktopServicesManager._internal();
   factory DesktopServicesManager() => _instance;
   DesktopServicesManager._internal();
 
@@ -109,7 +110,8 @@ class DesktopServicesManager {
   }
 
   /// Initialize a single service with error handling
-  Future<void> _initializeService(String serviceName, Future<void> Function() initFunction) async {
+  Future<void> _initializeService(
+      String serviceName, Future<void> Function() initFunction) async {
     try {
       await initFunction();
       _initializedServices.add(serviceName);
@@ -120,7 +122,8 @@ class DesktopServicesManager {
   }
 
   /// Get initialized services list
-  List<String> get initializedServices => List.unmodifiable(_initializedServices);
+  List<String> get initializedServices =>
+      List.unmodifiable(_initializedServices);
 
   /// Check if all services are initialized
   bool get isInitialized => _isInitialized;
@@ -167,7 +170,7 @@ class DesktopServicesManager {
 }
 
 /// Desktop Feature Flags
-/// 
+///
 /// Controls which desktop features are enabled
 class DesktopFeatureFlags {
   static const bool systemTrayEnabled = true;

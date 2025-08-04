@@ -24,10 +24,10 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   final _costController = TextEditingController();
   final _stockController = TextEditingController();
   final _barcodeController = TextEditingController();
-  
+
   bool _isLoading = false;
   Product? _existingProduct;
-  
+
   bool get _isEditing => widget.productId != null;
 
   @override
@@ -51,11 +51,11 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
 
   Future<void> _loadProduct() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final repository = ref.read(productRepositoryProvider);
       _existingProduct = await repository.getProduct(widget.productId!);
-      
+
       if (_existingProduct != null) {
         _nameController.text = _existingProduct!.name;
         _descriptionController.text = _existingProduct!.description ?? '';
@@ -71,7 +71,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -87,7 +87,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         actions: [
           FilledButton(
             onPressed: _isLoading ? null : _saveProduct,
-            child: _isLoading 
+            child: _isLoading
                 ? const SizedBox(
                     width: 16,
                     height: 16,
@@ -116,9 +116,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                           children: [
                             Text(
                               'Basic Information',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
@@ -161,7 +164,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
 
                     // Pricing Information Card
@@ -173,9 +176,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                           children: [
                             Text(
                               'Pricing Information',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             Row(
@@ -189,7 +195,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                                       prefixIcon: Icon(Icons.attach_money),
                                       border: OutlineInputBorder(),
                                     ),
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                            decimal: true),
                                     validator: (value) {
                                       if (value?.isEmpty ?? true) {
                                         return 'Selling price is required';
@@ -212,7 +220,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                                       prefixIcon: Icon(Icons.money_off),
                                       border: OutlineInputBorder(),
                                     ),
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                            decimal: true),
                                     validator: (value) {
                                       if (value?.isNotEmpty == true) {
                                         final cost = double.tryParse(value!);
@@ -232,7 +242,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
 
                     // Inventory Information Card
@@ -244,9 +254,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                           children: [
                             Text(
                               'Inventory Information',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
@@ -275,7 +288,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -363,11 +376,11 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
       valueListenable: _stockController,
       builder: (context, stockValue, child) {
         final stock = int.tryParse(_stockController.text) ?? 0;
-        
+
         Color statusColor;
         String statusText;
         IconData statusIcon;
-        
+
         if (stock == 0) {
           statusColor = Colors.red;
           statusText = 'Out of Stock';
@@ -434,19 +447,27 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
     try {
       final repository = ref.read(productRepositoryProvider);
       final now = DateTime.now();
-      
+
       final price = double.parse(_priceController.text);
-      final cost = _costController.text.isEmpty ? null : double.parse(_costController.text);
-      final stock = _stockController.text.isEmpty ? 0 : int.parse(_stockController.text);
-      
+      final cost = _costController.text.isEmpty
+          ? null
+          : double.parse(_costController.text);
+      final stock =
+          _stockController.text.isEmpty ? 0 : int.parse(_stockController.text);
+
       final product = Product(
-        id: _existingProduct?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        id: _existingProduct?.id ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
-        description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
+        description: _descriptionController.text.trim().isEmpty
+            ? null
+            : _descriptionController.text.trim(),
         price: price,
         cost: cost,
         stockQuantity: stock,
-        barcode: _barcodeController.text.trim().isEmpty ? null : _barcodeController.text.trim(),
+        barcode: _barcodeController.text.trim().isEmpty
+            ? null
+            : _barcodeController.text.trim(),
         createdAt: _existingProduct?.createdAt ?? now,
         updatedAt: now,
       );
@@ -460,7 +481,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing ? 'Product updated successfully' : 'Product added successfully'),
+            content: Text(_isEditing
+                ? 'Product updated successfully'
+                : 'Product added successfully'),
             backgroundColor: Colors.green,
           ),
         );

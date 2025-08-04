@@ -55,7 +55,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
       if (_selectedNetworks.contains(network)) {
         if (widget.allowMultipleSelection || _selectedNetworks.length > 1) {
           _selectedNetworks.remove(network);
-          
+
           // If removing the primary network, set a new primary
           if (_primaryNetwork == network && _selectedNetworks.isNotEmpty) {
             _primaryNetwork = _selectedNetworks.first;
@@ -68,14 +68,15 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
         } else {
           _selectedNetworks = [network];
         }
-        
+
         // Set as primary if it's the first selection
-        if (_primaryNetwork == null || !_selectedNetworks.contains(_primaryNetwork)) {
+        if (_primaryNetwork == null ||
+            !_selectedNetworks.contains(_primaryNetwork)) {
           _primaryNetwork = network;
           widget.onPrimaryChanged?.call(_primaryNetwork!);
         }
       }
-      
+
       widget.onSelectionChanged(_selectedNetworks);
     });
   }
@@ -97,13 +98,12 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
         Text(
           'Payment Methods',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
-        
-        ...widget.availableNetworks.map((network) => _buildNetworkTile(network)),
-        
+        ...widget.availableNetworks
+            .map((network) => _buildNetworkTile(network)),
         if (_selectedNetworks.length > 1 && widget.allowMultipleSelection) ...[
           const SizedBox(height: 16),
           const Divider(),
@@ -111,11 +111,12 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
           Text(
             'Primary Payment Method',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
-          ..._selectedNetworks.map((network) => _buildPrimaryNetworkTile(network)),
+          ..._selectedNetworks
+              .map((network) => _buildPrimaryNetworkTile(network)),
         ],
       ],
     );
@@ -124,7 +125,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
   Widget _buildNetworkTile(PaymentNetwork network) {
     final bool isSelected = _selectedNetworks.contains(network);
     final bool isPrimary = _primaryNetwork == network;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       elevation: isSelected ? 2 : 1,
@@ -172,7 +173,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
 
   Widget _buildPrimaryNetworkTile(PaymentNetwork network) {
     final bool isPrimary = _primaryNetwork == network;
-    
+
     return ListTile(
       dense: true,
       leading: Radio<PaymentNetwork>(
@@ -305,8 +306,8 @@ class PaymentMethodChips extends StatelessWidget {
         Text(
           'Payment Methods',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -314,13 +315,13 @@ class PaymentMethodChips extends StatelessWidget {
           runSpacing: 8,
           children: availableNetworks.map((network) {
             final bool isSelected = selectedNetworks.contains(network);
-            
+
             return FilterChip(
               label: Text(_getNetworkDisplayName(network)),
               selected: isSelected,
               onSelected: (bool selected) {
                 List<PaymentNetwork> newSelection = List.from(selectedNetworks);
-                
+
                 if (selected) {
                   if (allowMultipleSelection) {
                     newSelection.add(network);
@@ -332,7 +333,7 @@ class PaymentMethodChips extends StatelessWidget {
                     newSelection.remove(network);
                   }
                 }
-                
+
                 onSelectionChanged(newSelection);
               },
               avatar: _getNetworkIcon(network),
@@ -389,7 +390,8 @@ class PaymentMethodConfigWidget extends StatefulWidget {
   });
 
   @override
-  State<PaymentMethodConfigWidget> createState() => _PaymentMethodConfigWidgetState();
+  State<PaymentMethodConfigWidget> createState() =>
+      _PaymentMethodConfigWidgetState();
 }
 
 class _PaymentMethodConfigWidgetState extends State<PaymentMethodConfigWidget> {
@@ -433,11 +435,11 @@ class _PaymentMethodConfigWidgetState extends State<PaymentMethodConfigWidget> {
             Text(
               'Payment Configuration',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
-            
+
             PaymentMethodSelector(
               availableNetworks: _allNetworks,
               selectedNetworks: _selectedNetworks,
@@ -445,7 +447,8 @@ class _PaymentMethodConfigWidgetState extends State<PaymentMethodConfigWidget> {
               onSelectionChanged: (List<PaymentNetwork> selected) {
                 setState(() {
                   _selectedNetworks = selected;
-                  if (!selected.contains(_primaryNetwork) && selected.isNotEmpty) {
+                  if (!selected.contains(_primaryNetwork) &&
+                      selected.isNotEmpty) {
                     _primaryNetwork = selected.first;
                   }
                 });
@@ -458,18 +461,18 @@ class _PaymentMethodConfigWidgetState extends State<PaymentMethodConfigWidget> {
                 _updateConfig();
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Quick presets
             Text(
               'Quick Presets',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
-            
+
             Wrap(
               spacing: 8,
               children: [
@@ -484,7 +487,6 @@ class _PaymentMethodConfigWidgetState extends State<PaymentMethodConfigWidget> {
                   icon: const Icon(Icons.account_balance_wallet, size: 16),
                   label: const Text('PayNow Only'),
                 ),
-                
                 ElevatedButton.icon(
                   onPressed: () {
                     setState(() {
@@ -499,7 +501,6 @@ class _PaymentMethodConfigWidgetState extends State<PaymentMethodConfigWidget> {
                   icon: const Icon(Icons.credit_card, size: 16),
                   label: const Text('SG Standard'),
                 ),
-                
                 ElevatedButton.icon(
                   onPressed: () {
                     setState(() {

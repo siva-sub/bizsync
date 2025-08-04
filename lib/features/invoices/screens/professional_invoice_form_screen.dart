@@ -35,7 +35,7 @@ class _ProfessionalInvoiceFormScreenState
   final _notesController = TextEditingController();
   final _termsController = TextEditingController();
   final _footerController = TextEditingController();
-  
+
   String? _selectedCustomerId;
   DateTime _issueDate = DateTime.now();
   DateTime? _dueDate;
@@ -43,15 +43,15 @@ class _ProfessionalInvoiceFormScreenState
   String _currency = 'SGD';
   double _exchangeRate = 1.0;
   bool _sameAsShipping = true;
-  
+
   bool get _isEditing => widget.invoiceId != null;
-  
+
   @override
   void initState() {
     super.initState();
     _dueDate = _issueDate.add(Duration(days: _paymentTerms.days));
   }
-  
+
   @override
   void dispose() {
     _customerNameController.dispose();
@@ -69,20 +69,21 @@ class _ProfessionalInvoiceFormScreenState
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(invoiceFormProvider(widget.invoiceId));
-    final formNotifier = ref.read(invoiceFormProvider(widget.invoiceId).notifier);
-    
+    final formNotifier =
+        ref.read(invoiceFormProvider(widget.invoiceId).notifier);
+
     // Update form fields when invoice data loads
     if (formState.invoice != null && _isEditing) {
       _updateFormFields(formState.invoice!);
     }
-    
+
     // Show loading indicator
     if (formState.isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    
+
     // Show error if loading failed
     if (formState.error != null) {
       return Scaffold(
@@ -119,7 +120,7 @@ class _ProfessionalInvoiceFormScreenState
         ),
       );
     }
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -134,13 +135,15 @@ class _ProfessionalInvoiceFormScreenState
         ),
         actions: [
           TextButton(
-            onPressed: formState.isSaving ? null : () => _saveAsDraft(formNotifier),
+            onPressed:
+                formState.isSaving ? null : () => _saveAsDraft(formNotifier),
             child: const Text('Save Draft'),
           ),
           const SizedBox(width: 8),
           FilledButton(
-            onPressed: formState.isSaving ? null : () => _saveInvoice(formNotifier),
-            child: formState.isSaving 
+            onPressed:
+                formState.isSaving ? null : () => _saveInvoice(formNotifier),
+            child: formState.isSaving
                 ? const SizedBox(
                     width: 16,
                     height: 16,
@@ -194,7 +197,7 @@ class _ProfessionalInvoiceFormScreenState
       _exchangeRate = invoice.exchangeRate.value;
     }
   }
-  
+
   Widget _buildCustomerSection(InvoiceFormState formState) {
     return Card(
       child: Padding(
@@ -205,8 +208,8 @@ class _ProfessionalInvoiceFormScreenState
             Text(
               'Customer Information',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             CustomerPicker(
@@ -231,7 +234,8 @@ class _ProfessionalInvoiceFormScreenState
                 labelText: 'Customer Name *',
                 border: OutlineInputBorder(),
               ),
-              validator: (value) => value?.isEmpty ?? true ? 'Customer name is required' : null,
+              validator: (value) =>
+                  value?.isEmpty ?? true ? 'Customer name is required' : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -259,7 +263,8 @@ class _ProfessionalInvoiceFormScreenState
                 setState(() {
                   _sameAsShipping = value ?? true;
                   if (_sameAsShipping) {
-                    _shippingAddressController.text = _billingAddressController.text;
+                    _shippingAddressController.text =
+                        _billingAddressController.text;
                   }
                 });
               },
@@ -280,7 +285,7 @@ class _ProfessionalInvoiceFormScreenState
       ),
     );
   }
-  
+
   Widget _buildInvoiceDetailsSection() {
     return Card(
       child: Padding(
@@ -291,8 +296,8 @@ class _ProfessionalInvoiceFormScreenState
             Text(
               'Invoice Details',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -334,14 +339,17 @@ class _ProfessionalInvoiceFormScreenState
                           initialDate: _issueDate,
                           firstDate: DateTime(2020),
                           // Limit to reasonable future dates - max 1 year ahead
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 365)),
                         );
                         if (date != null) {
                           // Additional validation for issue dates - allow reasonable future dating
-                          if (date.isAfter(DateTime.now().add(const Duration(days: 180)))) {
+                          if (date.isAfter(
+                              DateTime.now().add(const Duration(days: 180)))) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Invoice issue date cannot be more than 6 months in the future'),
+                                content: Text(
+                                    'Invoice issue date cannot be more than 6 months in the future'),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -350,7 +358,8 @@ class _ProfessionalInvoiceFormScreenState
                           setState(() {
                             _issueDate = date;
                             if (_paymentTerms != PaymentTerm.custom) {
-                              _dueDate = date.add(Duration(days: _paymentTerms.days));
+                              _dueDate =
+                                  date.add(Duration(days: _paymentTerms.days));
                             }
                           });
                         }
@@ -358,7 +367,8 @@ class _ProfessionalInvoiceFormScreenState
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${_issueDate.day}/${_issueDate.month}/${_issueDate.year}'),
+                          Text(
+                              '${_issueDate.day}/${_issueDate.month}/${_issueDate.year}'),
                           const Icon(Icons.calendar_today),
                         ],
                       ),
@@ -376,7 +386,8 @@ class _ProfessionalInvoiceFormScreenState
                     items: PaymentTerm.values.map((term) {
                       return DropdownMenuItem(
                         value: term,
-                        child: Text(term.value.replaceAll('_', ' ').toUpperCase()),
+                        child:
+                            Text(term.value.replaceAll('_', ' ').toUpperCase()),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -384,7 +395,8 @@ class _ProfessionalInvoiceFormScreenState
                         setState(() {
                           _paymentTerms = value;
                           if (value != PaymentTerm.custom) {
-                            _dueDate = _issueDate.add(Duration(days: value.days));
+                            _dueDate =
+                                _issueDate.add(Duration(days: value.days));
                           }
                         });
                       }
@@ -406,7 +418,8 @@ class _ProfessionalInvoiceFormScreenState
                       onTap: () async {
                         final date = await showDatePicker(
                           context: context,
-                          initialDate: _dueDate ?? _issueDate.add(const Duration(days: 30)),
+                          initialDate: _dueDate ??
+                              _issueDate.add(const Duration(days: 30)),
                           firstDate: _issueDate,
                           // Due dates can be up to 1 year after issue date, but limit excessive future dates
                           lastDate: _issueDate.add(const Duration(days: 365)),
@@ -421,7 +434,7 @@ class _ProfessionalInvoiceFormScreenState
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_dueDate != null 
+                          Text(_dueDate != null
                               ? '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}'
                               : 'Select date'),
                           const Icon(Icons.calendar_today),
@@ -484,8 +497,9 @@ class _ProfessionalInvoiceFormScreenState
       ),
     );
   }
-  
-  Widget _buildLineItemsSection(InvoiceFormState formState, InvoiceFormNotifier formNotifier) {
+
+  Widget _buildLineItemsSection(
+      InvoiceFormState formState, InvoiceFormNotifier formNotifier) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -498,8 +512,8 @@ class _ProfessionalInvoiceFormScreenState
                 Text(
                   'Line Items',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 FilledButton.icon(
                   onPressed: () => _addLineItem(formNotifier),
@@ -523,36 +537,37 @@ class _ProfessionalInvoiceFormScreenState
                     Text(
                       'No line items added yet',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Add items to your invoice using the button above',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[500],
-                      ),
+                            color: Colors.grey[500],
+                          ),
                     ),
                   ],
                 ),
               )
             else
               ...formState.lineItems.map((item) => LineItemForm(
-                key: ValueKey(item.id),
-                item: item,
-                onUpdate: (itemData) => formNotifier.updateLineItem(item.id, itemData),
-                onDelete: () => formNotifier.removeLineItem(item.id),
-              )),
+                    key: ValueKey(item.id),
+                    item: item,
+                    onUpdate: (itemData) =>
+                        formNotifier.updateLineItem(item.id, itemData),
+                    onDelete: () => formNotifier.removeLineItem(item.id),
+                  )),
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildTotalsSection(InvoiceFormState formState) {
     final invoice = formState.invoice;
     if (invoice == null) return const SizedBox.shrink();
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -561,9 +576,11 @@ class _ProfessionalInvoiceFormScreenState
           children: [
             _buildTotalRow('Subtotal', invoice.subtotal.value, _currency),
             if (invoice.discountAmount.value > 0)
-              _buildTotalRow('Discount', -invoice.discountAmount.value, _currency),
+              _buildTotalRow(
+                  'Discount', -invoice.discountAmount.value, _currency),
             if (invoice.shippingAmount.value > 0)
-              _buildTotalRow('Shipping', invoice.shippingAmount.value, _currency),
+              _buildTotalRow(
+                  'Shipping', invoice.shippingAmount.value, _currency),
             _buildTotalRow('Tax (GST)', invoice.taxAmount.value, _currency),
             const Divider(),
             _buildTotalRow(
@@ -577,8 +594,9 @@ class _ProfessionalInvoiceFormScreenState
       ),
     );
   }
-  
-  Widget _buildTotalRow(String label, double amount, String currency, {bool isTotal = false}) {
+
+  Widget _buildTotalRow(String label, double amount, String currency,
+      {bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -588,23 +606,23 @@ class _ProfessionalInvoiceFormScreenState
             label,
             style: isTotal
                 ? Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  )
+                      fontWeight: FontWeight.bold,
+                    )
                 : Theme.of(context).textTheme.bodyMedium,
           ),
           Text(
             '$currency ${amount.toStringAsFixed(2)}',
             style: isTotal
                 ? Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  )
+                      fontWeight: FontWeight.bold,
+                    )
                 : Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildNotesSection() {
     return Card(
       child: Padding(
@@ -615,8 +633,8 @@ class _ProfessionalInvoiceFormScreenState
             Text(
               'Additional Information',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -653,7 +671,7 @@ class _ProfessionalInvoiceFormScreenState
       ),
     );
   }
-  
+
   void _addLineItem(InvoiceFormNotifier formNotifier) {
     showDialog(
       context: context,
@@ -689,13 +707,13 @@ class _ProfessionalInvoiceFormScreenState
       },
     );
   }
-  
+
   void _saveAsDraft(InvoiceFormNotifier formNotifier) async {
     final invoiceData = _buildInvoiceData();
     invoiceData['status'] = 'draft';
-    
+
     await formNotifier.saveInvoice(invoiceData);
-    
+
     final formState = ref.read(invoiceFormProvider(widget.invoiceId));
     if (formState.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -713,13 +731,13 @@ class _ProfessionalInvoiceFormScreenState
       );
     }
   }
-  
+
   void _saveInvoice(InvoiceFormNotifier formNotifier) async {
     if (_formKey.currentState?.validate() ?? false) {
       final invoiceData = _buildInvoiceData();
-      
+
       await formNotifier.saveInvoice(invoiceData);
-      
+
       final formState = ref.read(invoiceFormProvider(widget.invoiceId));
       if (formState.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -735,7 +753,7 @@ class _ProfessionalInvoiceFormScreenState
             backgroundColor: Colors.green,
           ),
         );
-        
+
         // Navigate back to invoice list
         Future.delayed(const Duration(seconds: 1), () {
           if (mounted) {
@@ -745,22 +763,32 @@ class _ProfessionalInvoiceFormScreenState
       }
     }
   }
-  
+
   Map<String, dynamic> _buildInvoiceData() {
     return {
       'customer_id': _selectedCustomerId,
       'customer_name': _customerNameController.text,
-      'customer_email': _customerEmailController.text.isEmpty ? null : _customerEmailController.text,
-      'billing_address': _billingAddressController.text.isEmpty ? null : _billingAddressController.text,
-      'shipping_address': _shippingAddressController.text.isEmpty ? null : _shippingAddressController.text,
+      'customer_email': _customerEmailController.text.isEmpty
+          ? null
+          : _customerEmailController.text,
+      'billing_address': _billingAddressController.text.isEmpty
+          ? null
+          : _billingAddressController.text,
+      'shipping_address': _shippingAddressController.text.isEmpty
+          ? null
+          : _shippingAddressController.text,
       'issue_date': _issueDate.millisecondsSinceEpoch,
       'due_date': _dueDate?.millisecondsSinceEpoch,
       'payment_terms': _paymentTerms.value,
-      'po_number': _poNumberController.text.isEmpty ? null : _poNumberController.text,
-      'reference': _referenceController.text.isEmpty ? null : _referenceController.text,
+      'po_number':
+          _poNumberController.text.isEmpty ? null : _poNumberController.text,
+      'reference':
+          _referenceController.text.isEmpty ? null : _referenceController.text,
       'notes': _notesController.text.isEmpty ? null : _notesController.text,
-      'terms_and_conditions': _termsController.text.isEmpty ? null : _termsController.text,
-      'footer_text': _footerController.text.isEmpty ? null : _footerController.text,
+      'terms_and_conditions':
+          _termsController.text.isEmpty ? null : _termsController.text,
+      'footer_text':
+          _footerController.text.isEmpty ? null : _footerController.text,
       'currency': _currency,
       'exchange_rate': _exchangeRate,
     };

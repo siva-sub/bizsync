@@ -38,28 +38,28 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
   late NumberFormat _currencyFormatter;
   bool _isDynamic = true;
   String? _errorText;
-  
+
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
     _currencyFormatter = _getCurrencyFormatter(widget.currency);
-    
+
     if (widget.initialAmount != null) {
       _controller.text = widget.initialAmount!.toStringAsFixed(2);
     }
-    
+
     _controller.addListener(_onTextChanged);
   }
 
   @override
   void didUpdateWidget(AmountInputWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     if (oldWidget.currency != widget.currency) {
       _currencyFormatter = _getCurrencyFormatter(widget.currency);
     }
-    
+
     if (oldWidget.initialAmount != widget.initialAmount) {
       if (widget.initialAmount != null) {
         _controller.text = widget.initialAmount!.toStringAsFixed(2);
@@ -84,7 +84,8 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
       case CurrencyCode.eur:
         return NumberFormat.currency(locale: 'en_EU', symbol: '€');
       case CurrencyCode.jpy:
-        return NumberFormat.currency(locale: 'ja_JP', symbol: '¥', decimalDigits: 0);
+        return NumberFormat.currency(
+            locale: 'ja_JP', symbol: '¥', decimalDigits: 0);
       case CurrencyCode.gbp:
         return NumberFormat.currency(locale: 'en_GB', symbol: '£');
       case CurrencyCode.aud:
@@ -107,11 +108,11 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
   void _onTextChanged() {
     final String text = _controller.text;
     final double? amount = double.tryParse(text);
-    
+
     setState(() {
       _errorText = _validateAmount(amount);
     });
-    
+
     widget.onAmountChanged(_errorText == null ? amount : null);
   }
 
@@ -119,7 +120,7 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
     if (!_isDynamic) {
       return null; // No validation for static QR
     }
-    
+
     if (amount == null) {
       if (_controller.text.isNotEmpty) {
         return 'Invalid amount format';
@@ -167,8 +168,8 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
               Text(
                 'QR Type:',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -212,9 +213,10 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
           ],
           decoration: InputDecoration(
             labelText: widget.label ?? 'Amount',
-            helperText: widget.helpText ?? (_isDynamic 
-                ? 'Enter amount for fixed payment' 
-                : 'Leave empty for customer to enter amount'),
+            helperText: widget.helpText ??
+                (_isDynamic
+                    ? 'Enter amount for fixed payment'
+                    : 'Leave empty for customer to enter amount'),
             errorText: _errorText,
             prefixText: _getCurrencySymbol(widget.currency),
             suffixIcon: _isDynamic && _controller.text.isNotEmpty
@@ -238,8 +240,8 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
           Text(
             'Quick Amounts:',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -268,17 +270,17 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
 
   Widget _buildValidationInfo() {
     final List<String> info = [];
-    
+
     if (widget.minimumAmount != null) {
       info.add('Min: ${_currencyFormatter.format(widget.minimumAmount!)}');
     }
-    
+
     if (widget.maximumAmount != null) {
       info.add('Max: ${_currencyFormatter.format(widget.maximumAmount!)}');
     }
-    
+
     if (info.isEmpty) return const SizedBox.shrink();
-    
+
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -296,8 +298,8 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
           Text(
             info.join(' • '),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
         ],
       ),
@@ -361,8 +363,9 @@ class CurrencySelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<CurrencyCode> currencies = availableCurrencies ?? _defaultCurrencies;
-    
+    final List<CurrencyCode> currencies =
+        availableCurrencies ?? _defaultCurrencies;
+
     return DropdownButtonFormField<CurrencyCode>(
       value: selectedCurrency,
       decoration: const InputDecoration(
@@ -381,8 +384,8 @@ class CurrencySelectorWidget extends StatelessWidget {
               Text(
                 _getCurrencyCode(currency),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
             ],
           ),

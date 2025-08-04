@@ -8,10 +8,12 @@ class DeveloperSettingsScreen extends ConsumerStatefulWidget {
   const DeveloperSettingsScreen({super.key});
 
   @override
-  ConsumerState<DeveloperSettingsScreen> createState() => _DeveloperSettingsScreenState();
+  ConsumerState<DeveloperSettingsScreen> createState() =>
+      _DeveloperSettingsScreenState();
 }
 
-class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScreen> {
+class _DeveloperSettingsScreenState
+    extends ConsumerState<DeveloperSettingsScreen> {
   late FeatureFlags _featureFlags;
   bool _isDemoDataEnabled = false;
   bool _isDebugModeEnabled = false;
@@ -37,16 +39,14 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
     setState(() {
       _isDemoDataEnabled = value;
     });
-    
+
     if (!mounted) return;
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          value 
-            ? 'Demo data enabled. Restart the app to see demo data.' 
-            : 'Demo data disabled. Restart the app to hide demo data.'
-        ),
+        content: Text(value
+            ? 'Demo data enabled. Restart the app to see demo data.'
+            : 'Demo data disabled. Restart the app to hide demo data.'),
         action: SnackBarAction(
           label: 'OK',
           onPressed: () {},
@@ -72,9 +72,9 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
   Future<void> _resetToDefaults() async {
     await _featureFlags.resetToDefaults();
     _loadSettings();
-    
+
     if (!mounted) return;
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Feature flags reset to defaults'),
@@ -87,13 +87,11 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear All Data'),
-        content: const Text(
-          'This will clear all app data including:\n'
-          '• All invoices and customers\n'
-          '• All settings and preferences\n'
-          '• All cached data\n\n'
-          'This action cannot be undone. Continue?'
-        ),
+        content: const Text('This will clear all app data including:\n'
+            '• All invoices and customers\n'
+            '• All settings and preferences\n'
+            '• All cached data\n\n'
+            'This action cannot be undone. Continue?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -124,7 +122,7 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final themeService = ref.watch(themeServiceProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Developer Settings'),
@@ -161,9 +159,9 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
                 ],
               ),
             ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Feature Flags Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -175,7 +173,7 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
               ),
             ),
           ),
-          
+
           SwitchListTile(
             title: const Text('Enable Demo Data'),
             subtitle: const Text('Show demo customers and invoices'),
@@ -183,7 +181,7 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
             onChanged: _toggleDemoData,
             secondary: const Icon(Icons.dataset),
           ),
-          
+
           SwitchListTile(
             title: const Text('Enable Debug Mode'),
             subtitle: const Text('Show debug information and logs'),
@@ -191,7 +189,7 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
             onChanged: _toggleDebugMode,
             secondary: const Icon(Icons.bug_report),
           ),
-          
+
           SwitchListTile(
             title: const Text('Enable Beta Features'),
             subtitle: const Text('Access experimental features'),
@@ -199,9 +197,9 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
             onChanged: _toggleBetaFeatures,
             secondary: const Icon(Icons.science),
           ),
-          
+
           const Divider(height: 32),
-          
+
           // Developer Tools Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -213,33 +211,33 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
               ),
             ),
           ),
-          
+
           ListTile(
             leading: const Icon(Icons.cleaning_services),
             title: const Text('Clear All Data'),
             subtitle: const Text('Remove all app data and settings'),
             onTap: _clearAllData,
           ),
-          
+
           ListTile(
             leading: const Icon(Icons.refresh),
             title: const Text('Regenerate Demo Data'),
             subtitle: const Text('Create fresh demo data'),
             enabled: _isDemoDataEnabled,
             onTap: _isDemoDataEnabled
-              ? () {
-                  // TODO: Implement demo data regeneration
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Demo data regenerated'),
-                    ),
-                  );
-                }
-              : null,
+                ? () {
+                    // TODO: Implement demo data regeneration
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Demo data regenerated'),
+                      ),
+                    );
+                  }
+                : null,
           ),
-          
+
           const Divider(height: 32),
-          
+
           // App Info Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -251,25 +249,25 @@ class _DeveloperSettingsScreenState extends ConsumerState<DeveloperSettingsScree
               ),
             ),
           ),
-          
+
           ListTile(
             leading: const Icon(Icons.info),
             title: const Text('Build Mode'),
             subtitle: Text(kDebugMode ? 'Debug' : 'Release'),
           ),
-          
+
           ListTile(
             leading: const Icon(Icons.code),
             title: const Text('Version'),
             subtitle: Text('${DateTime.now().year}.1.1'),
           ),
-          
+
           ListTile(
             leading: const Icon(Icons.fingerprint),
             title: const Text('Build Number'),
             subtitle: const Text('1'),
           ),
-          
+
           const SizedBox(height: 32),
         ],
       ),

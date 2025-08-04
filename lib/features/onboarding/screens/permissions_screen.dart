@@ -19,16 +19,16 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   bool _isLoading = false;
-  
+
   final Map<String, bool> _permissions = {
     'notifications': false,
     'camera': false,
     'storage': false,
     'location': false,
   };
-  
+
   final Map<String, PermissionStatus> _permissionStatuses = {};
 
   @override
@@ -43,12 +43,12 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -56,7 +56,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
       parent: _fadeController,
       curve: Curves.easeOut,
     ));
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -64,7 +64,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
       parent: _slideController,
       curve: Curves.easeOutCubic,
     ));
-    
+
     _fadeController.forward();
     Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) {
@@ -79,13 +79,13 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
       final cameraStatus = await Permission.camera.status;
       final storageStatus = await Permission.storage.status;
       final locationStatus = await Permission.location.status;
-      
+
       setState(() {
         _permissionStatuses['notifications'] = notificationStatus;
         _permissionStatuses['camera'] = cameraStatus;
         _permissionStatuses['storage'] = storageStatus;
         _permissionStatuses['location'] = locationStatus;
-        
+
         _permissions['notifications'] = notificationStatus.isGranted;
         _permissions['camera'] = cameraStatus.isGranted;
         _permissions['storage'] = storageStatus.isGranted;
@@ -134,7 +134,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                   label: 'Final step! Let\'s set up permissions',
                 ),
               ),
-              
+
               // Content
               Expanded(
                 child: SingleChildScrollView(
@@ -145,7 +145,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                       // Header
                       _buildHeader(),
                       const SizedBox(height: 32),
-                      
+
                       // Permission cards
                       _buildPermissionCard(
                         'notifications',
@@ -156,7 +156,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                         required: true,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       _buildPermissionCard(
                         'camera',
                         'Camera',
@@ -166,7 +166,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                         required: false,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       _buildPermissionCard(
                         'storage',
                         'Storage',
@@ -176,7 +176,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                         required: false,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       _buildPermissionCard(
                         'location',
                         'Location',
@@ -186,14 +186,14 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                         required: false,
                       ),
                       const SizedBox(height: 32),
-                      
+
                       // Privacy info
                       _buildPrivacyCard(),
                     ],
                   ),
                 ),
               ),
-              
+
               // Navigation buttons
               _buildNavigationButtons(),
             ],
@@ -210,31 +210,27 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
         Text(
           'App Permissions',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 8),
         Text(
           'Grant permissions to unlock BizSync\'s full potential. You can change these anytime in Settings.',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-          ),
+                color:
+                    Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+              ),
         ),
       ],
     );
   }
 
   Widget _buildPermissionCard(
-    String key,
-    String title,
-    String description,
-    IconData icon,
-    Color color,
-    { required bool required }
-  ) {
+      String key, String title, String description, IconData icon, Color color,
+      {required bool required}) {
     final isGranted = _permissions[key] ?? false;
     final status = _permissionStatuses[key];
-    
+
     return Card(
       elevation: 2,
       child: Padding(
@@ -266,16 +262,23 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                         children: [
                           Text(
                             title,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           if (required) ...[
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -294,8 +297,11 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                       Text(
                         description,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-                        ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(0.7),
+                            ),
                       ),
                     ],
                   ),
@@ -367,8 +373,8 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                 Text(
                   'Privacy & Security',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -402,7 +408,9 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: _isLoading ? null : () => context.go('/onboarding/user-profile'),
+              onPressed: _isLoading
+                  ? null
+                  : () => context.go('/onboarding/user-profile'),
               child: const Text('Previous'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -450,13 +458,13 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
         default:
           return;
       }
-      
+
       final status = await permission.request();
       setState(() {
         _permissionStatuses[key] = status;
         _permissions[key] = status.isGranted;
       });
-      
+
       if (status.isPermanentlyDenied) {
         _showPermissionDeniedDialog(key);
       }
@@ -484,7 +492,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
         permissionName = 'Location';
         break;
     }
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

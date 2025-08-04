@@ -39,7 +39,7 @@ class _ProfessionalCustomerListScreenState
         );
       }
     }
-    
+
     _applyFilters();
     setState(() => _isLoading = false);
   }
@@ -49,7 +49,7 @@ class _ProfessionalCustomerListScreenState
       if (_searchQuery.isNotEmpty) {
         final query = _searchQuery.toLowerCase();
         return customer.name.toLowerCase().contains(query) ||
-               (customer.email?.toLowerCase().contains(query) ?? false);
+            (customer.email?.toLowerCase().contains(query) ?? false);
       }
       return true;
     }).toList();
@@ -69,191 +69,205 @@ class _ProfessionalCustomerListScreenState
         onRefresh: _loadCustomers,
         child: Column(
           children: [
-          // Header with search
-          Card(
-            margin: const EdgeInsets.all(16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
+            // Header with search
+            Card(
+              margin: const EdgeInsets.all(16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SearchBar(
+                        hintText: 'Search customers...',
+                        leading: const Icon(Icons.search),
+                        onChanged: _onSearchChanged,
+                        trailing: [
+                          if (_searchQuery.isNotEmpty)
+                            IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () => _onSearchChanged(''),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    FilledButton.icon(
+                      onPressed: () => context.go('/customers/create'),
+                      icon: const Icon(Icons.add),
+                      label: const Text('New Customer'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Results summary
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Expanded(
-                    child: SearchBar(
-                      hintText: 'Search customers...',
-                      leading: const Icon(Icons.search),
-                      onChanged: _onSearchChanged,
-                      trailing: [
-                        if (_searchQuery.isNotEmpty)
-                          IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () => _onSearchChanged(''),
-                          ),
-                      ],
-                    ),
+                  Text(
+                    '${_filteredCustomers.length} of ${_customers.length} customers',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey[600],
+                        ),
                   ),
-                  const SizedBox(width: 12),
-                  FilledButton.icon(
-                    onPressed: () => context.go('/customers/create'),
-                    icon: const Icon(Icons.add),
-                    label: const Text('New Customer'),
-                  ),
+                  const Spacer(),
+                  if (_isLoading) const CircularProgressIndicator.adaptive(),
                 ],
               ),
             ),
-          ),
 
-          // Results summary
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Text(
-                  '${_filteredCustomers.length} of ${_customers.length} customers',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                ),
-                const Spacer(),
-                if (_isLoading) const CircularProgressIndicator.adaptive(),
-              ],
-            ),
-          ),
+            const SizedBox(height: 8),
 
-          const SizedBox(height: 8),
-
-          // Data table
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _filteredCustomers.isEmpty
-                    ? _buildEmptyState()
-                    : Card(
-                        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: DataTable2(
-                          columnSpacing: 12,
-                          horizontalMargin: 12,
-                          minWidth: 800,
-                          columns: const [
-                            DataColumn2(
-                              label: Text('Customer'),
-                              size: ColumnSize.L,
-                            ),
-                            DataColumn2(
-                              label: Text('Contact'),
-                              size: ColumnSize.M,
-                            ),
-                            DataColumn2(
-                              label: Text('UEN'),
-                              size: ColumnSize.M,
-                            ),
-                            DataColumn2(
-                              label: Text('Status'),
-                              size: ColumnSize.S,
-                            ),
-                            DataColumn2(
-                              label: Text('Created'),
-                              size: ColumnSize.S,
-                            ),
-                            DataColumn2(
-                              label: Text('Actions'),
-                              size: ColumnSize.S,
-                            ),
-                          ],
-                          rows: _filteredCustomers.map((customer) {
-                            return DataRow2(
-                              onTap: () => _showCustomerDetails(customer),
-                              cells: [
-                                DataCell(
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        customer.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
+            // Data table
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _filteredCustomers.isEmpty
+                      ? _buildEmptyState()
+                      : Card(
+                          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: DataTable2(
+                            columnSpacing: 12,
+                            horizontalMargin: 12,
+                            minWidth: 800,
+                            columns: const [
+                              DataColumn2(
+                                label: Text('Customer'),
+                                size: ColumnSize.L,
+                              ),
+                              DataColumn2(
+                                label: Text('Contact'),
+                                size: ColumnSize.M,
+                              ),
+                              DataColumn2(
+                                label: Text('UEN'),
+                                size: ColumnSize.M,
+                              ),
+                              DataColumn2(
+                                label: Text('Status'),
+                                size: ColumnSize.S,
+                              ),
+                              DataColumn2(
+                                label: Text('Created'),
+                                size: ColumnSize.S,
+                              ),
+                              DataColumn2(
+                                label: Text('Actions'),
+                                size: ColumnSize.S,
+                              ),
+                            ],
+                            rows: _filteredCustomers.map((customer) {
+                              return DataRow2(
+                                onTap: () => _showCustomerDetails(customer),
+                                cells: [
+                                  DataCell(
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          customer.name,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          customer.email ?? 'No email',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                color: Colors.grey[600],
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(customer.phone ?? 'No phone'),
+                                        Text(
+                                          customer.gstStatusDisplay,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                color: Colors.grey[600],
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  DataCell(Text(customer.uen ?? 'No UEN')),
+                                  DataCell(
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: customer.isActive
+                                            ? Colors.green.withOpacity(0.1)
+                                            : Colors.grey.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        customer.isActive
+                                            ? 'Active'
+                                            : 'Inactive',
+                                        style: TextStyle(
+                                          color: customer.isActive
+                                              ? Colors.green
+                                              : Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      Text(
-                                        customer.email ?? 'No email',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              color: Colors.grey[600],
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                DataCell(
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(customer.phone ?? 'No phone'),
-                                      Text(
-                                        customer.gstStatusDisplay,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              color: Colors.grey[600],
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                DataCell(Text(customer.uen ?? 'No UEN')),
-                                DataCell(
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: customer.isActive ? Colors.green.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    child: Text(
-                                      customer.isActive ? 'Active' : 'Inactive',
-                                      style: TextStyle(
-                                        color: customer.isActive ? Colors.green : Colors.grey,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      '${customer.createdAt.day}/${customer.createdAt.month}/${customer.createdAt.year}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
-                                ),
-                                DataCell(
-                                  Text(
-                                    '${customer.createdAt.day}/${customer.createdAt.month}/${customer.createdAt.year}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
+                                  DataCell(
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon:
+                                              const Icon(Icons.edit, size: 20),
+                                          onPressed: () => context.go(
+                                              '/customers/edit/${customer.id}'),
+                                          tooltip: 'Edit Customer',
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.more_vert,
+                                              size: 20),
+                                          onPressed: () =>
+                                              _showCustomerActions(customer),
+                                          tooltip: 'More Actions',
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                                DataCell(
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.edit, size: 20),
-                                        onPressed: () => context
-                                            .go('/customers/edit/${customer.id}'),
-                                        tooltip: 'Edit Customer',
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.more_vert, size: 20),
-                                        onPressed: () => _showCustomerActions(customer),
-                                        tooltip: 'More Actions',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
+                                ],
+                              );
+                            }).toList(),
+                          ),
                         ),
-                      ),
-          ),
-        ],
+            ),
+          ],
         ),
       ),
     );
@@ -310,14 +324,18 @@ class _ProfessionalCustomerListScreenState
               _DetailRow('Email', customer.email ?? 'Not provided'),
               _DetailRow('Phone', customer.phone ?? 'Not provided'),
               _DetailRow('Address', customer.address ?? 'Not provided'),
-              _DetailRow('Billing Address', customer.billingAddress ?? 'Not provided'),
-              _DetailRow('Shipping Address', customer.shippingAddress ?? 'Not provided'),
+              _DetailRow(
+                  'Billing Address', customer.billingAddress ?? 'Not provided'),
+              _DetailRow('Shipping Address',
+                  customer.shippingAddress ?? 'Not provided'),
               _DetailRow('UEN', customer.uen ?? 'Not provided'),
               _DetailRow('Country', customer.countryCode ?? 'Not specified'),
               _DetailRow('GST Status', customer.gstStatusDisplay),
               _DetailRow('Status', customer.isActive ? 'Active' : 'Inactive'),
-              _DetailRow('Created', '${customer.createdAt.day}/${customer.createdAt.month}/${customer.createdAt.year}'),
-              _DetailRow('Last Updated', '${customer.updatedAt.day}/${customer.updatedAt.month}/${customer.updatedAt.year}'),
+              _DetailRow('Created',
+                  '${customer.createdAt.day}/${customer.createdAt.month}/${customer.createdAt.year}'),
+              _DetailRow('Last Updated',
+                  '${customer.updatedAt.day}/${customer.updatedAt.month}/${customer.updatedAt.year}'),
             ],
           ),
         ),
@@ -375,7 +393,8 @@ class _ProfessionalCustomerListScreenState
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete Customer', style: TextStyle(color: Colors.red)),
+              title: const Text('Delete Customer',
+                  style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 _showDeleteConfirmation(customer);
@@ -459,4 +478,3 @@ class _DetailRow extends StatelessWidget {
     );
   }
 }
-

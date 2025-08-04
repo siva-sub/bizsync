@@ -58,8 +58,8 @@ class _InvoiceFiltersSheetState extends State<InvoiceFiltersSheet> {
               Text(
                 'Filter Invoices',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const Spacer(),
               TextButton(
@@ -79,8 +79,8 @@ class _InvoiceFiltersSheetState extends State<InvoiceFiltersSheet> {
           Text(
             'Status',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -100,7 +100,9 @@ class _InvoiceFiltersSheetState extends State<InvoiceFiltersSheet> {
                     }
                   });
                 },
-                avatar: isSelected ? null : InvoiceStatusChip(status: status).build(context),
+                avatar: isSelected
+                    ? null
+                    : InvoiceStatusChip(status: status).build(context),
               );
             }).toList(),
           ),
@@ -110,8 +112,8 @@ class _InvoiceFiltersSheetState extends State<InvoiceFiltersSheet> {
           Text(
             'Date Range',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -187,7 +189,7 @@ class _InvoiceFiltersSheetState extends State<InvoiceFiltersSheet> {
       firstDate: DateTime(2020),
       lastDate: _dateTo ?? DateTime.now().add(const Duration(days: 365)),
     );
-    
+
     if (date != null) {
       setState(() {
         _dateFrom = date;
@@ -202,7 +204,7 @@ class _InvoiceFiltersSheetState extends State<InvoiceFiltersSheet> {
       firstDate: _dateFrom ?? DateTime(2020),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    
+
     if (date != null) {
       setState(() {
         _dateTo = date;

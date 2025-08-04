@@ -9,13 +9,14 @@ import 'background_task_service.dart';
 
 /// Advanced notification scheduler with recurring support
 class NotificationScheduler {
-  static final NotificationScheduler _instance = NotificationScheduler._internal();
+  static final NotificationScheduler _instance =
+      NotificationScheduler._internal();
   factory NotificationScheduler() => _instance;
   NotificationScheduler._internal();
 
   final BackgroundTaskService _backgroundService = BackgroundTaskService();
   final _uuid = const Uuid();
-  
+
   bool _initialized = false;
   Timer? _maintenanceTimer;
   final List<NotificationSchedule> _schedules = [];
@@ -26,7 +27,7 @@ class NotificationScheduler {
 
     await _loadSchedules();
     await _setupMaintenanceTimer();
-    
+
     _initialized = true;
   }
 
@@ -127,7 +128,8 @@ class NotificationScheduler {
   }
 
   /// Check and trigger scheduled notifications
-  Future<void> checkScheduledNotifications([Map<String, dynamic>? context]) async {
+  Future<void> checkScheduledNotifications(
+      [Map<String, dynamic>? context]) async {
     if (!_initialized) await initialize();
 
     final now = DateTime.now();
@@ -150,11 +152,11 @@ class NotificationScheduler {
   Future<void> schedulePendingNotifications() async {
     final prefs = await SharedPreferences.getInstance();
     final pendingJson = prefs.getStringList('pending_notifications') ?? [];
-    
+
     if (pendingJson.isEmpty) return;
 
     final notifications = <BizSyncNotification>[];
-    
+
     for (final notificationJson in pendingJson) {
       try {
         final data = jsonDecode(notificationJson) as Map<String, dynamic>;
@@ -184,7 +186,8 @@ class NotificationScheduler {
     try {
       // Extract template information from conditions
       final templateId = schedule.conditions?['templateId'] as String?;
-      final variables = schedule.conditions?['variables'] as Map<String, dynamic>?;
+      final variables =
+          schedule.conditions?['variables'] as Map<String, dynamic>?;
 
       if (templateId != null && variables != null) {
         // Create notification from template
@@ -212,7 +215,8 @@ class NotificationScheduler {
     }
   }
 
-  Future<void> _updateScheduleAfterTrigger(NotificationSchedule schedule) async {
+  Future<void> _updateScheduleAfterTrigger(
+      NotificationSchedule schedule) async {
     final updatedSchedule = NotificationSchedule(
       id: schedule.id,
       notificationTemplateId: schedule.notificationTemplateId,
@@ -237,28 +241,35 @@ class NotificationScheduler {
 
     // Schedule next occurrence for recurring notifications
     if (schedule.recurrenceRule != null) {
-      final nextOccurrence = schedule.recurrenceRule!.getNextOccurrence(DateTime.now());
+      final nextOccurrence =
+          schedule.recurrenceRule!.getNextOccurrence(DateTime.now());
       if (nextOccurrence != null) {
-        final nextSchedule = updatedSchedule.copyWith(scheduledTime: nextOccurrence);
+        final nextSchedule =
+            updatedSchedule.copyWith(scheduledTime: nextOccurrence);
         // Note: This would need a copyWith method in NotificationSchedule
       }
     }
   }
 
   /// Store scheduled notification for background processing
-  Future<void> _storeScheduledNotification(BizSyncNotification notification) async {
+  Future<void> _storeScheduledNotification(
+      BizSyncNotification notification) async {
     final prefs = await SharedPreferences.getInstance();
-    final scheduledNotifications = prefs.getStringList('scheduled_notifications') ?? [];
-    
+    final scheduledNotifications =
+        prefs.getStringList('scheduled_notifications') ?? [];
+
     scheduledNotifications.add(jsonEncode(notification.toJson()));
-    await prefs.setStringList('scheduled_notifications', scheduledNotifications);
+    await prefs.setStringList(
+        'scheduled_notifications', scheduledNotifications);
   }
 
   /// Store notification for immediate delivery by main app
-  Future<void> _storeNotificationForDelivery(BizSyncNotification notification) async {
+  Future<void> _storeNotificationForDelivery(
+      BizSyncNotification notification) async {
     final prefs = await SharedPreferences.getInstance();
-    final deliveryQueue = prefs.getStringList('notification_delivery_queue') ?? [];
-    
+    final deliveryQueue =
+        prefs.getStringList('notification_delivery_queue') ?? [];
+
     deliveryQueue.add(jsonEncode(notification.toJson()));
     await prefs.setStringList('notification_delivery_queue', deliveryQueue);
   }
@@ -289,7 +300,7 @@ class NotificationScheduler {
   Future<void> _loadSchedules() async {
     final prefs = await SharedPreferences.getInstance();
     final schedulesJson = prefs.getStringList('notification_schedules') ?? [];
-    
+
     _schedules.clear();
     for (final scheduleJson in schedulesJson) {
       try {
@@ -306,14 +317,15 @@ class NotificationScheduler {
   /// Save schedules to storage
   Future<void> _saveSchedules() async {
     final prefs = await SharedPreferences.getInstance();
-    final schedulesJson = _schedules.map((s) => jsonEncode(s.toJson())).toList();
+    final schedulesJson =
+        _schedules.map((s) => jsonEncode(s.toJson())).toList();
     await prefs.setStringList('notification_schedules', schedulesJson);
   }
 
   /// Set up maintenance timer for periodic checks
   Future<void> _setupMaintenanceTimer() async {
     _maintenanceTimer?.cancel();
-    
+
     // Check every 5 minutes for scheduled notifications
     _maintenanceTimer = Timer.periodic(const Duration(minutes: 5), (_) async {
       await checkScheduledNotifications();
@@ -325,26 +337,25 @@ class NotificationScheduler {
   Future<void> _cleanupExpiredSchedules() async {
     final now = DateTime.now();
     final initialCount = _schedules.length;
-    
+
     _schedules.removeWhere((schedule) {
       // Remove disabled schedules older than 30 days
-      if (!schedule.enabled && 
-          now.difference(schedule.createdAt).inDays > 30) {
+      if (!schedule.enabled && now.difference(schedule.createdAt).inDays > 30) {
         return true;
       }
-      
+
       // Remove one-time schedules that have been triggered
       if (schedule.triggerType != NotificationTrigger.recurring &&
           schedule.lastTriggered != null) {
         return true;
       }
-      
+
       // Remove schedules with end dates that have passed
       if (schedule.recurrenceRule?.endDate != null &&
           now.isAfter(schedule.recurrenceRule!.endDate!)) {
         return true;
       }
-      
+
       return false;
     });
 
@@ -366,8 +377,9 @@ class NotificationScheduler {
   /// Cancel a scheduled notification
   Future<void> cancelScheduledNotification(String notificationId) async {
     final prefs = await SharedPreferences.getInstance();
-    final scheduledNotifications = prefs.getStringList('scheduled_notifications') ?? [];
-    
+    final scheduledNotifications =
+        prefs.getStringList('scheduled_notifications') ?? [];
+
     final filtered = scheduledNotifications.where((json) {
       try {
         final data = jsonDecode(json) as Map<String, dynamic>;
@@ -383,7 +395,8 @@ class NotificationScheduler {
   /// Get scheduled notifications count
   Future<int> getScheduledNotificationsCount() async {
     final prefs = await SharedPreferences.getInstance();
-    final scheduledNotifications = prefs.getStringList('scheduled_notifications') ?? [];
+    final scheduledNotifications =
+        prefs.getStringList('scheduled_notifications') ?? [];
     return scheduledNotifications.length;
   }
 
@@ -391,7 +404,7 @@ class NotificationScheduler {
   Future<void> clearAllSchedules() async {
     _schedules.clear();
     await _saveSchedules();
-    
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('scheduled_notifications');
     await prefs.remove('notification_delivery_queue');
@@ -419,7 +432,8 @@ extension NotificationScheduleExtension on NotificationSchedule {
   }) {
     return NotificationSchedule(
       id: id ?? this.id,
-      notificationTemplateId: notificationTemplateId ?? this.notificationTemplateId,
+      notificationTemplateId:
+          notificationTemplateId ?? this.notificationTemplateId,
       triggerType: triggerType ?? this.triggerType,
       scheduledTime: scheduledTime ?? this.scheduledTime,
       recurrenceRule: recurrenceRule ?? this.recurrenceRule,

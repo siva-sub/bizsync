@@ -21,7 +21,8 @@ class DashboardDateRangePicker extends StatefulWidget {
   });
 
   @override
-  State<DashboardDateRangePicker> createState() => _DashboardDateRangePickerState();
+  State<DashboardDateRangePicker> createState() =>
+      _DashboardDateRangePickerState();
 }
 
 class _DashboardDateRangePickerState extends State<DashboardDateRangePicker> {
@@ -48,7 +49,7 @@ class _DashboardDateRangePickerState extends State<DashboardDateRangePicker> {
                   ),
             ),
             const SizedBox(height: 16),
-            
+
             // Predefined period buttons
             Wrap(
               spacing: 8,
@@ -62,7 +63,7 @@ class _DashboardDateRangePickerState extends State<DashboardDateRangePicker> {
                 _buildPeriodChip(TimePeriod.custom, 'Custom'),
               ],
             ),
-            
+
             // Custom date range picker
             if (widget.selectedPeriod == TimePeriod.custom) ...[
               const SizedBox(height: 16),
@@ -105,7 +106,7 @@ class _DashboardDateRangePickerState extends State<DashboardDateRangePicker> {
 
   Widget _buildPeriodChip(TimePeriod period, String label) {
     final isSelected = widget.selectedPeriod == period;
-    
+
     return FilterChip(
       label: Text(label),
       selected: isSelected,
@@ -134,16 +135,17 @@ class _DashboardDateRangePickerState extends State<DashboardDateRangePicker> {
       context: context,
       firstDate: firstDate,
       lastDate: lastDate,
-      initialDateRange: _selectedDateRange ?? DateTimeRange(
-        start: DateTime(now.year, now.month, 1),
-        end: now,
-      ),
+      initialDateRange: _selectedDateRange ??
+          DateTimeRange(
+            start: DateTime(now.year, now.month, 1),
+            end: now,
+          ),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: Theme.of(context).primaryColor,
-            ),
+                  primary: Theme.of(context).primaryColor,
+                ),
           ),
           child: child!,
         );
@@ -202,7 +204,7 @@ class _DashboardExportDialogState extends State<DashboardExportDialog> {
                   ),
             ),
             const SizedBox(height: 8),
-            
+
             // Export format selection
             ...ExportFormat.values.map((format) => RadioListTile<ExportFormat>(
                   title: Text(_getFormatLabel(format)),
@@ -215,11 +217,11 @@ class _DashboardExportDialogState extends State<DashboardExportDialog> {
                     });
                   },
                 )),
-            
+
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
-            
+
             Text(
               'Include Data',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -227,7 +229,7 @@ class _DashboardExportDialogState extends State<DashboardExportDialog> {
                   ),
             ),
             const SizedBox(height: 8),
-            
+
             // Data inclusion options
             CheckboxListTile(
               title: const Text('KPIs and Metrics'),
@@ -311,7 +313,7 @@ class _DashboardExportDialogState extends State<DashboardExportDialog> {
 
     try {
       final exportService = DashboardExportService();
-      
+
       switch (_selectedFormat) {
         case ExportFormat.pdf:
           await exportService.exportToPDF(
@@ -345,7 +347,8 @@ class _DashboardExportDialogState extends State<DashboardExportDialog> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Data exported successfully as ${_getFormatLabel(_selectedFormat)}'),
+            content: Text(
+                'Data exported successfully as ${_getFormatLabel(_selectedFormat)}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -424,7 +427,9 @@ class DrillDownNavigator extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: isActive
-                                  ? Theme.of(context).primaryColor.withOpacity(0.1)
+                                  ? Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.1)
                                   : null,
                               borderRadius: BorderRadius.circular(16),
                               border: isActive
@@ -440,9 +445,14 @@ class DrillDownNavigator extends StatelessWidget {
                                 color: isActive
                                     ? Theme.of(context).primaryColor
                                     : isClickable
-                                        ? Theme.of(context).textTheme.bodyMedium?.color
+                                        ? Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.color
                                         : Colors.grey[400],
-                                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: isActive
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                                 fontSize: 14,
                               ),
                             ),
@@ -475,7 +485,8 @@ class RealTimeUpdateIndicator extends StatefulWidget {
   });
 
   @override
-  State<RealTimeUpdateIndicator> createState() => _RealTimeUpdateIndicatorState();
+  State<RealTimeUpdateIndicator> createState() =>
+      _RealTimeUpdateIndicatorState();
 }
 
 class _RealTimeUpdateIndicatorState extends State<RealTimeUpdateIndicator>
@@ -513,7 +524,7 @@ class _RealTimeUpdateIndicatorState extends State<RealTimeUpdateIndicator>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: widget.isUpdating 
+        color: widget.isUpdating
             ? Colors.blue.withOpacity(0.1)
             : Colors.green.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
@@ -633,10 +644,11 @@ class DashboardExportService {
               pw.Text('Generated on: ${DateTime.now().toString()}'),
               pw.Text('Period: ${data.currentPeriod.name}'),
               pw.SizedBox(height: 40),
-              
+
               // KPIs section
               if (includeKPIs) ...[
-                pw.Header(level: 1, child: pw.Text('Key Performance Indicators')),
+                pw.Header(
+                    level: 1, child: pw.Text('Key Performance Indicators')),
                 pw.SizedBox(height: 10),
                 ...data.kpis.map((kpi) => pw.Padding(
                       padding: const pw.EdgeInsets.only(bottom: 10),
@@ -669,37 +681,47 @@ class DashboardExportService {
     bool includeAnalytics = true,
   }) async {
     final excelFile = excel.Excel.createExcel();
-    
+
     // KPIs sheet
     if (includeKPIs) {
       final kpiSheet = excelFile['KPIs'];
-      kpiSheet.cell(excel.CellIndex.indexByString('A1')).value = 'KPI Name' as excel.CellValue?;
-      kpiSheet.cell(excel.CellIndex.indexByString('B1')).value = 'Current Value' as excel.CellValue?;
-      kpiSheet.cell(excel.CellIndex.indexByString('C1')).value = 'Previous Value' as excel.CellValue?;
-      kpiSheet.cell(excel.CellIndex.indexByString('D1')).value = 'Change %' as excel.CellValue?;
-      
+      kpiSheet.cell(excel.CellIndex.indexByString('A1')).value =
+          'KPI Name' as excel.CellValue?;
+      kpiSheet.cell(excel.CellIndex.indexByString('B1')).value =
+          'Current Value' as excel.CellValue?;
+      kpiSheet.cell(excel.CellIndex.indexByString('C1')).value =
+          'Previous Value' as excel.CellValue?;
+      kpiSheet.cell(excel.CellIndex.indexByString('D1')).value =
+          'Change %' as excel.CellValue?;
+
       for (int i = 0; i < data.kpis.length; i++) {
         final kpi = data.kpis[i];
         final row = i + 2;
-        kpiSheet.cell(excel.CellIndex.indexByString('A$row')).value = kpi.title as excel.CellValue?;
-        kpiSheet.cell(excel.CellIndex.indexByString('B$row')).value = kpi.currentValue as excel.CellValue?;
-        kpiSheet.cell(excel.CellIndex.indexByString('C$row')).value = kpi.previousValue as excel.CellValue?;
-        kpiSheet.cell(excel.CellIndex.indexByString('D$row')).value = kpi.percentageChange as excel.CellValue?;
+        kpiSheet.cell(excel.CellIndex.indexByString('A$row')).value =
+            kpi.title as excel.CellValue?;
+        kpiSheet.cell(excel.CellIndex.indexByString('B$row')).value =
+            kpi.currentValue as excel.CellValue?;
+        kpiSheet.cell(excel.CellIndex.indexByString('C$row')).value =
+            kpi.previousValue as excel.CellValue?;
+        kpiSheet.cell(excel.CellIndex.indexByString('D$row')).value =
+            kpi.percentageChange as excel.CellValue?;
       }
     }
 
     // Revenue analytics sheet
     if (includeAnalytics && data.revenueAnalytics != null) {
       final revenueSheet = excelFile['Revenue Analytics'];
-      revenueSheet.cell(excel.CellIndex.indexByString('A1')).value = 'Date' as excel.CellValue?;
-      revenueSheet.cell(excel.CellIndex.indexByString('B1')).value = 'Revenue' as excel.CellValue?;
-      
+      revenueSheet.cell(excel.CellIndex.indexByString('A1')).value =
+          'Date' as excel.CellValue?;
+      revenueSheet.cell(excel.CellIndex.indexByString('B1')).value =
+          'Revenue' as excel.CellValue?;
+
       for (int i = 0; i < data.revenueAnalytics!.revenueByDay.length; i++) {
         final dataPoint = data.revenueAnalytics!.revenueByDay[i];
         final row = i + 2;
-        revenueSheet.cell(excel.CellIndex.indexByString('A$row')).value = 
+        revenueSheet.cell(excel.CellIndex.indexByString('A$row')).value =
             dataPoint.timestamp.toString() as excel.CellValue?;
-        revenueSheet.cell(excel.CellIndex.indexByString('B$row')).value = 
+        revenueSheet.cell(excel.CellIndex.indexByString('B$row')).value =
             dataPoint.value as excel.CellValue?;
       }
     }
@@ -724,7 +746,8 @@ class DashboardExportService {
     if (includeKPIs) {
       buffer.writeln('KPI Name,Current Value,Previous Value,Change %');
       for (final kpi in data.kpis) {
-        buffer.writeln('${kpi.title},${kpi.currentValue},${kpi.previousValue ?? ''},${kpi.percentageChange}');
+        buffer.writeln(
+            '${kpi.title},${kpi.currentValue},${kpi.previousValue ?? ''},${kpi.percentageChange}');
       }
       buffer.writeln();
     }
@@ -743,7 +766,7 @@ class DashboardExportService {
   /// Export dashboard data to JSON
   Future<void> exportToJSON(DashboardData data) async {
     final jsonData = data.toJson();
-    
+
     // In a real implementation, you would save this to device storage
     await Future.delayed(const Duration(milliseconds: 200));
   }

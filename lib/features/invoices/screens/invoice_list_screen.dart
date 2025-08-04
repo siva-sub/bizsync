@@ -28,13 +28,13 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   late ScrollController _scrollController;
-  
+
   List<CRDTInvoiceEnhanced> _invoices = [];
   bool _isLoading = false;
   bool _hasMore = true;
   int _currentPage = 0;
   static const int _pageSize = 20;
-  
+
   InvoiceSearchFilters _currentFilters = const InvoiceSearchFilters();
   String _selectedTab = 'all';
   String _sortBy = 'updated_at';
@@ -82,7 +82,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
     try {
       final filters = _buildFiltersForTab(_selectedTab);
       final result = await widget.invoiceService.searchInvoices(filters);
-      
+
       if (result.success && result.data != null) {
         setState(() {
           if (refresh) {
@@ -109,7 +109,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
 
   InvoiceSearchFilters _buildFiltersForTab(String tab) {
     List<InvoiceStatus>? statuses;
-    
+
     switch (tab) {
       case 'draft':
         statuses = [InvoiceStatus.draft, InvoiceStatus.pending];
@@ -154,7 +154,15 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
   }
 
   void _onTabChanged(int index) {
-    final tabs = ['all', 'draft', 'sent', 'paid', 'partial', 'overdue', 'disputed'];
+    final tabs = [
+      'all',
+      'draft',
+      'sent',
+      'paid',
+      'partial',
+      'overdue',
+      'disputed'
+    ];
     _selectedTab = tabs[index];
     _loadInvoices(refresh: true);
   }
@@ -188,7 +196,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
             icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
-                context: context, 
+                context: context,
                 delegate: InvoiceSearchDelegate(invoices: _invoices),
               );
             },
@@ -228,7 +236,8 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
             ],
           ),
           IconButton(
-            icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+            icon: Icon(
+                _sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
             onPressed: () {
               setState(() {
                 _sortAscending = !_sortAscending;
@@ -274,7 +283,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
 
   Widget _buildActiveFiltersChips() {
     final chips = <Widget>[];
-    
+
     if (_currentFilters.customerId != null) {
       chips.add(_buildFilterChip('Customer', () {
         setState(() {
@@ -296,7 +305,8 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
       }));
     }
 
-    if (_currentFilters.issueDateFrom != null || _currentFilters.issueDateTo != null) {
+    if (_currentFilters.issueDateFrom != null ||
+        _currentFilters.issueDateTo != null) {
       chips.add(_buildFilterChip('Date Range', () {
         setState(() {
           _currentFilters = InvoiceSearchFilters(
@@ -316,7 +326,8 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
       }));
     }
 
-    if (_currentFilters.amountFrom != null || _currentFilters.amountTo != null) {
+    if (_currentFilters.amountFrom != null ||
+        _currentFilters.amountTo != null) {
       chips.add(_buildFilterChip('Amount Range', () {
         setState(() {
           _currentFilters = InvoiceSearchFilters(
@@ -436,15 +447,15 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
           Text(
             'No invoices found',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Create your first invoice to get started',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[500],
-            ),
+                  color: Colors.grey[500],
+                ),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -502,7 +513,8 @@ class _InvoiceListScreenState extends State<InvoiceListScreen>
     // Note: Consider using refresh callback when returning from detail screen
   }
 
-  void _onInvoiceStatusChanged(String invoiceId, InvoiceStatus newStatus) async {
+  void _onInvoiceStatusChanged(
+      String invoiceId, InvoiceStatus newStatus) async {
     try {
       final result = await widget.invoiceService.changeStatus(
         invoiceId,

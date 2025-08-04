@@ -88,7 +88,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -100,8 +100,8 @@ class _AnimatedButtonState extends State<AnimatedButton>
           animation: _scaleAnimation,
           builder: (context, child) {
             return Transform.scale(
-              scale: _isHovered && !_isPressed 
-                  ? widget.hoverScale 
+              scale: _isHovered && !_isPressed
+                  ? widget.hoverScale
                   : _scaleAnimation.value,
               child: AnimatedContainer(
                 duration: AnimationConstants.cardHover,
@@ -110,19 +110,22 @@ class _AnimatedButtonState extends State<AnimatedButton>
                   borderRadius: widget.borderRadius ?? BorderRadius.circular(8),
                   boxShadow: _isHovered && widget.enabled
                       ? createMesaSafeBoxShadow(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                          color:
+                              theme.colorScheme.primary.withValues(alpha: 0.3),
                           offset: const Offset(0, 4),
                           blurRadius: 12,
                         )
                       : null,
                 ),
-                padding: widget.padding ?? const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
+                padding: widget.padding ??
+                    const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                 child: DefaultTextStyle(
                   style: TextStyle(
-                    color: widget.foregroundColor ?? theme.colorScheme.onPrimary,
+                    color:
+                        widget.foregroundColor ?? theme.colorScheme.onPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                   child: widget.child,
@@ -349,14 +352,14 @@ class _AnimatedProgressBarState extends State<AnimatedProgressBar>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       height: widget.height,
       decoration: BoxDecoration(
-        color: widget.backgroundColor ?? 
-               theme.colorScheme.surfaceContainerHighest,
-        borderRadius: widget.borderRadius ?? 
-                     BorderRadius.circular(widget.height / 2),
+        color:
+            widget.backgroundColor ?? theme.colorScheme.surfaceContainerHighest,
+        borderRadius:
+            widget.borderRadius ?? BorderRadius.circular(widget.height / 2),
       ),
       child: AnimatedBuilder(
         animation: _animation,
@@ -367,8 +370,8 @@ class _AnimatedProgressBarState extends State<AnimatedProgressBar>
             child: Container(
               decoration: BoxDecoration(
                 color: widget.progressColor ?? theme.colorScheme.primary,
-                borderRadius: widget.borderRadius ?? 
-                             BorderRadius.circular(widget.height / 2),
+                borderRadius: widget.borderRadius ??
+                    BorderRadius.circular(widget.height / 2),
               ),
             ),
           );
@@ -561,7 +564,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
       duration: AnimationConstants.buttonPress,
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 0.95,

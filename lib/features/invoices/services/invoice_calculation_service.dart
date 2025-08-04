@@ -165,7 +165,7 @@ class TaxRule {
 
   bool isApplicable(LineItemType itemType, double amount, DateTime date) {
     // Check item type applicability
-    if (applicableItemTypes != null && 
+    if (applicableItemTypes != null &&
         !applicableItemTypes!.contains(itemType.value)) {
       return false;
     }
@@ -199,7 +199,8 @@ class InvoiceCalculationService {
   }
 
   /// Calculate totals for an entire invoice
-  Future<InvoiceCalculationResult> calculateInvoiceTotals(String invoiceId) async {
+  Future<InvoiceCalculationResult> calculateInvoiceTotals(
+      String invoiceId) async {
     try {
       // Get invoice and line items
       final invoice = await _getInvoiceById(invoiceId);
@@ -208,7 +209,7 @@ class InvoiceCalculationService {
       }
 
       final lineItems = await _getInvoiceLineItems(invoiceId);
-      
+
       double subtotal = 0.0;
       double totalDiscount = 0.0;
       double totalTax = 0.0;
@@ -218,7 +219,7 @@ class InvoiceCalculationService {
       // Calculate each line item
       for (final item in lineItems) {
         final itemCalc = calculateLineItemTotals(item);
-        
+
         subtotal += itemCalc.subtotal;
         totalDiscount += itemCalc.discount;
         totalTax += itemCalc.taxAmount;
@@ -255,9 +256,9 @@ class InvoiceCalculationService {
         'total_amount': _roundCurrency(totalAmount),
         'tax_breakdown': taxBreakdown.map((b) => b.toJson()).toList(),
       });
-
     } catch (e) {
-      return InvoiceCalculationResult.failure('Failed to calculate invoice totals: $e');
+      return InvoiceCalculationResult.failure(
+          'Failed to calculate invoice totals: $e');
     }
   }
 
@@ -316,8 +317,8 @@ class InvoiceCalculationService {
       ));
     }
 
-    final lineTotal = taxMethod == TaxCalculationMethod.inclusive 
-        ? discountedAmount 
+    final lineTotal = taxMethod == TaxCalculationMethod.inclusive
+        ? discountedAmount
         : discountedAmount + taxAmount;
 
     return LineItemCalculationResult(
@@ -337,16 +338,18 @@ class InvoiceCalculationService {
     required String jurisdictionCode,
     DateTime? transactionDate,
   }) {
-    final jurisdiction = _taxJurisdictions[jurisdictionCode] ?? 
-                        _taxJurisdictions.values.firstWhere(
-                          (j) => j.isDefault,
-                          orElse: () => _getDefaultTaxJurisdiction(),
-                        );
+    final jurisdiction = _taxJurisdictions[jurisdictionCode] ??
+        _taxJurisdictions.values.firstWhere(
+          (j) => j.isDefault,
+          orElse: () => _getDefaultTaxJurisdiction(),
+        );
 
     final date = transactionDate ?? DateTime.now();
-    final applicableRules = jurisdiction.rules.where(
-      (rule) => rule.isApplicable(itemType, amount, date),
-    ).toList();
+    final applicableRules = jurisdiction.rules
+        .where(
+          (rule) => rule.isApplicable(itemType, amount, date),
+        )
+        .toList();
 
     if (applicableRules.isEmpty) {
       return TaxCalculationResult(
@@ -403,25 +406,26 @@ class InvoiceCalculationService {
     switch (discount.type) {
       case DiscountType.percentage:
         return amount * (discount.value / 100);
-        
+
       case DiscountType.fixedAmount:
         return min(discount.value, amount);
-        
+
       case DiscountType.buyXGetY:
         final buyQuantity = discount.parameters?['buy_quantity'] ?? 1;
         final getQuantity = discount.parameters?['get_quantity'] ?? 1;
         final itemQuantity = discount.parameters?['item_quantity'] ?? 1;
         final unitPrice = discount.parameters?['unit_price'] ?? amount;
-        
+
         final freeItems = (itemQuantity / buyQuantity).floor() * getQuantity;
         return freeItems * unitPrice;
-        
+
       case DiscountType.tiered:
-        final tiers = discount.parameters?['tiers'] as List<Map<String, dynamic>>? ?? [];
+        final tiers =
+            discount.parameters?['tiers'] as List<Map<String, dynamic>>? ?? [];
         for (final tier in tiers) {
           final threshold = tier['threshold'] as double;
           final discountRate = tier['discount_rate'] as double;
-          
+
           if (amount >= threshold) {
             return amount * (discountRate / 100);
           }
@@ -463,17 +467,17 @@ class InvoiceCalculationService {
   }) {
     final discountRate = discountTerms['rate'] as double? ?? 0.0;
     final discountDays = discountTerms['days'] as int? ?? 0;
-    
+
     if (discountRate == 0 || discountDays == 0) {
       return 0.0;
     }
 
     final daysDifference = paymentDate.difference(invoiceDate).inDays;
-    
+
     if (daysDifference <= discountDays) {
       return invoiceAmount * (discountRate / 100);
     }
-    
+
     return 0.0;
   }
 
@@ -484,20 +488,21 @@ class InvoiceCalculationService {
     required DateTime currentDate,
     required Map<String, dynamic> penaltyTerms,
   }) {
-    if (currentDate.isBefore(dueDate) || currentDate.isAtSameMomentAs(dueDate)) {
+    if (currentDate.isBefore(dueDate) ||
+        currentDate.isAtSameMomentAs(dueDate)) {
       return 0.0;
     }
 
     final penaltyRate = penaltyTerms['rate'] as double? ?? 0.0;
     final penaltyType = penaltyTerms['type'] as String? ?? 'percentage';
     final compoundDaily = penaltyTerms['compound_daily'] as bool? ?? false;
-    
+
     if (penaltyRate == 0) {
       return 0.0;
     }
 
     final daysLate = currentDate.difference(dueDate).inDays;
-    
+
     switch (penaltyType) {
       case 'percentage':
         if (compoundDaily) {
@@ -506,13 +511,13 @@ class InvoiceCalculationService {
         } else {
           return invoiceAmount * (penaltyRate / 100);
         }
-        
+
       case 'fixed':
         return penaltyRate;
-        
+
       case 'daily':
         return penaltyRate * daysLate;
-        
+
       default:
         return 0.0;
     }
@@ -526,7 +531,8 @@ class InvoiceCalculationService {
     final shippingAmount = calculation['shipping_amount'] as double? ?? 0.0;
     final totalAmount = calculation['total_amount'] as double? ?? 0.0;
 
-    final calculatedTotal = subtotal + taxAmount + shippingAmount - discountAmount;
+    final calculatedTotal =
+        subtotal + taxAmount + shippingAmount - discountAmount;
     const tolerance = 0.01; // 1 cent tolerance for rounding
 
     return (calculatedTotal - totalAmount).abs() < tolerance;
@@ -595,9 +601,10 @@ class InvoiceCalculationService {
     return totalTax;
   }
 
-  double _calculateShippingTax(double shippingAmount, CRDTInvoiceEnhanced invoice) {
+  double _calculateShippingTax(
+      double shippingAmount, CRDTInvoiceEnhanced invoice) {
     if (shippingAmount == 0) return 0.0;
-    
+
     // Apply default tax rate to shipping (typically same as goods)
     final defaultTaxRate = _getShippingTaxRate(invoice);
     return shippingAmount * (defaultTaxRate / 100);
@@ -626,19 +633,20 @@ class InvoiceCalculationService {
   }
 
   /// Get calculation summary for reporting
-  Map<String, dynamic> getCalculationSummary(List<CRDTInvoiceEnhanced> invoices) {
+  Map<String, dynamic> getCalculationSummary(
+      List<CRDTInvoiceEnhanced> invoices) {
     double totalSubtotal = 0.0;
     double totalTax = 0.0;
     double totalDiscount = 0.0;
     double totalShipping = 0.0;
     double totalAmount = 0.0;
-    
+
     final currencyTotals = <String, Map<String, double>>{};
     final taxBreakdown = <String, double>{};
 
     for (final invoice in invoices) {
       final currency = invoice.currency.value;
-      
+
       totalSubtotal += invoice.subtotal.value;
       totalTax += invoice.taxAmount.value;
       totalDiscount += invoice.discountAmount.value;
@@ -646,23 +654,27 @@ class InvoiceCalculationService {
       totalAmount += invoice.totalAmount.value;
 
       // Track by currency
-      currencyTotals.putIfAbsent(currency, () => {
-        'subtotal': 0.0,
-        'tax': 0.0,
-        'discount': 0.0,
-        'shipping': 0.0,
-        'total': 0.0,
-      });
-      
-      currencyTotals[currency]!['subtotal'] = 
+      currencyTotals.putIfAbsent(
+          currency,
+          () => {
+                'subtotal': 0.0,
+                'tax': 0.0,
+                'discount': 0.0,
+                'shipping': 0.0,
+                'total': 0.0,
+              });
+
+      currencyTotals[currency]!['subtotal'] =
           (currencyTotals[currency]!['subtotal']! + invoice.subtotal.value);
-      currencyTotals[currency]!['tax'] = 
+      currencyTotals[currency]!['tax'] =
           (currencyTotals[currency]!['tax']! + invoice.taxAmount.value);
-      currencyTotals[currency]!['discount'] = 
-          (currencyTotals[currency]!['discount']! + invoice.discountAmount.value);
-      currencyTotals[currency]!['shipping'] = 
-          (currencyTotals[currency]!['shipping']! + invoice.shippingAmount.value);
-      currencyTotals[currency]!['total'] = 
+      currencyTotals[currency]!['discount'] =
+          (currencyTotals[currency]!['discount']! +
+              invoice.discountAmount.value);
+      currencyTotals[currency]!['shipping'] =
+          (currencyTotals[currency]!['shipping']! +
+              invoice.shippingAmount.value);
+      currencyTotals[currency]!['total'] =
           (currencyTotals[currency]!['total']! + invoice.totalAmount.value);
     }
 
@@ -673,8 +685,8 @@ class InvoiceCalculationService {
       'total_discount': _roundCurrency(totalDiscount),
       'total_shipping': _roundCurrency(totalShipping),
       'total_amount': _roundCurrency(totalAmount),
-      'average_invoice_value': invoices.isEmpty 
-          ? 0.0 
+      'average_invoice_value': invoices.isEmpty
+          ? 0.0
           : _roundCurrency(totalAmount / invoices.length),
       'currency_breakdown': currencyTotals,
       'tax_breakdown': taxBreakdown,
