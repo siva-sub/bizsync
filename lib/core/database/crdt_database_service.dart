@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -68,6 +69,34 @@ class CRDTDatabaseService {
         onOpen: _onOpen,
       );
     } catch (e) {
+      // If the error is about SQL statements, try without the onOpen callback
+      if (e.toString().contains('SQLITE_OK') || e.toString().contains('rawQuery')) {
+        try {
+          debugPrint('Retrying database initialization without PRAGMA statements');
+          final documentsDirectory = await getApplicationDocumentsDirectory();
+          final path = join(documentsDirectory.path, AppConstants.databaseName);
+          
+          return await PlatformDatabaseFactory.openDatabase(
+            path,
+            version: AppConstants.databaseVersion,
+            password: AppConstants.encryptionKey,
+            onCreate: _onCreate,
+            onUpgrade: _onUpgrade,
+            // Skip onOpen to avoid PRAGMA issues
+          );
+        } catch (retryError) {
+          // Get database info for better error reporting
+          final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
+          throw app_exceptions.DatabaseException(
+            'Failed to initialize CRDT database after retry: $retryError\n'
+            'Original error: $e\n'
+            'Platform: ${dbInfo['platform']}\n'
+            'Database type: ${dbInfo['database_type']}\n'
+            'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}'
+          );
+        }
+      }
+      
       // Get database info for better error reporting
       final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
       throw app_exceptions.DatabaseException(
@@ -98,11 +127,27 @@ class CRDTDatabaseService {
   
   Future<void> _onOpen(Database db) async {
     // Enable foreign keys and other pragmas
-    await db.execute('PRAGMA foreign_keys = ON');
-    await db.execute('PRAGMA journal_mode = WAL');
-    await db.execute('PRAGMA synchronous = NORMAL');
-    await db.execute('PRAGMA cache_size = 10000');
-    await db.execute('PRAGMA temp_store = MEMORY');
+    try {
+      await db.execute('PRAGMA foreign_keys = ON');
+    } catch (e) {
+      debugPrint('Warning: Could not enable foreign keys: $e');
+    }
+    
+    // Try to set journal mode to WAL, but fall back if not supported
+    try {
+      await db.execute('PRAGMA journal_mode = WAL');
+    } catch (e) {
+      debugPrint('Warning: Could not set WAL mode, using default: $e');
+      // Some Android devices don't support WAL mode
+    }
+    
+    try {
+      await db.execute('PRAGMA synchronous = NORMAL');
+      await db.execute('PRAGMA cache_size = 10000');
+      await db.execute('PRAGMA temp_store = MEMORY');
+    } catch (e) {
+      debugPrint('Warning: Could not set performance pragmas: $e');
+    }
   }
   
   Future<void> _createCRDTBusinessTables(Database db) async {
