@@ -45,7 +45,7 @@ dependencies:
   path_provider: ^2.1.2
   
   # Local Notifications
-  flutter_local_notifications: ^15.1.3
+  flutter_local_notifications: ^14.1.5
   timezone: ^0.9.4
   
   # P2P Communication  
