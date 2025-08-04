@@ -95,7 +95,7 @@ dependencies:
   image_picker: ^1.1.2  # Image selection
   # google_mlkit_text_recognition: ^0.14.0  # OCR - version conflicts
   # google_mlkit_barcode_scanning: ^0.12.1  # Barcode - version conflicts
-  cached_network_image: ^3.4.1  # Image caching for performance
+  cached_network_image: ^3.3.2  # Image caching for performance
   flutter_cache_manager: ^3.3.1  # General caching
   quick_actions: ^1.0.7  # App shortcuts
   
