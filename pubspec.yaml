@@ -161,7 +161,7 @@ dev_dependencies:
   build_runner: ^2.4.8
   json_serializable: ^6.7.1
   riverpod_generator: ^2.3.9
-  custom_lint: ^0.7.6
+  custom_lint: ^0.6.0
   riverpod_lint: ^2.3.7
   
   # Icon generation
