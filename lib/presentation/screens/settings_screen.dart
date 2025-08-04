@@ -187,7 +187,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             _SettingsTile(
               icon: Icons.info,
               title: 'About',
-              subtitle: 'Version 1.0.0',
+              subtitle: 'Version 1.2.0',
               onTap: () => _showAboutDialog(context),
             ),
             _SettingsTile(
@@ -346,7 +346,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showDeveloperOptions(BuildContext context) {
-    _showComingSoonDialog(context, 'Developer Options');
+    Navigator.of(context).pushNamed('/settings/developer');
   }
 
   void _showImportExportOptions(BuildContext context) {
@@ -393,7 +393,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     showAboutDialog(
       context: context,
       applicationName: 'BizSync',
-      applicationVersion: '1.0.0',
+      applicationVersion: '1.2.0',
       applicationIcon: const Icon(
         Icons.business_center,
         size: 48,

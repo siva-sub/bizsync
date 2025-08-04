@@ -1,10 +1,12 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import '../../data/models/customer.dart';
 import '../../features/invoices/models/enhanced_invoice.dart';
 import '../../features/notifications/models/notification_models.dart';
 import '../../features/notifications/models/notification_types.dart';
 import 'models/demo_employee.dart';
 import '../../core/utils/uuid_generator.dart';
+import '../config/feature_flags.dart';
 
 class DemoDataService {
   static final DemoDataService _instance = DemoDataService._internal();
@@ -20,16 +22,27 @@ class DemoDataService {
   List<Employee> _employees = [];
   List<NotificationModel> _notifications = [];
   
-  // Getters
-  List<Customer> get customers => List.unmodifiable(_customers);
-  List<EnhancedInvoice> get invoices => List.unmodifiable(_invoices);
-  List<Employee> get employees => List.unmodifiable(_employees);
-  List<NotificationModel> get notifications => List.unmodifiable(_notifications);
+  // Getters - Return empty lists if demo data is disabled
+  List<Customer> get customers => 
+      FeatureFlags().isDemoDataEnabled ? List.unmodifiable(_customers) : [];
+  List<EnhancedInvoice> get invoices => 
+      FeatureFlags().isDemoDataEnabled ? List.unmodifiable(_invoices) : [];
+  List<Employee> get employees => 
+      FeatureFlags().isDemoDataEnabled ? List.unmodifiable(_employees) : [];
+  List<NotificationModel> get notifications => 
+      FeatureFlags().isDemoDataEnabled ? List.unmodifiable(_notifications) : [];
 
   bool get isInitialized => _isInitialized;
 
   Future<void> initializeDemoData() async {
     if (_isInitialized) return;
+    
+    // Only initialize demo data if feature flag is enabled
+    if (!FeatureFlags().isDemoDataEnabled) {
+      debugPrint('Demo data is disabled via feature flag');
+      _isInitialized = true;
+      return;
+    }
 
     // Generate demo data
     await _generateCustomers();
@@ -103,8 +116,9 @@ class DemoDataService {
         isActive: true,
         gstRegistered: business['gstRegistered'] as bool,
         uen: business['uen'] as String,
-        createdAt: DateTime.now().subtract(Duration(days: _random.nextInt(365))),
-        updatedAt: DateTime.now().subtract(Duration(days: _random.nextInt(365))),
+        // Customer creation dates should be realistic - within the last 2 years
+        createdAt: DateTime.now().subtract(Duration(days: _random.nextInt(730) + 1)),
+        updatedAt: DateTime.now().subtract(Duration(days: _random.nextInt(90) + 1)),
       ));
     }
   }
@@ -176,7 +190,8 @@ class DemoDataService {
         basicSalary: emp['basicSalary'] as double,
         cpfContribution: emp['cpfContribution'] as double,
         isActive: true,
-        joinDate: DateTime.now().subtract(Duration(days: _random.nextInt(1095))), // Up to 3 years ago
+        // Employee join dates should be realistic - within the last 3 years but not future
+        joinDate: DateTime.now().subtract(Duration(days: _random.nextInt(1095) + 1)), // 1 day to 3 years ago
         leaveBalance: _random.nextInt(21) + 5, // 5-25 days
       ));
     }
@@ -214,8 +229,10 @@ class DemoDataService {
       final gstAmount = subtotal * gstRate;
       final total = subtotal + gstAmount;
 
-      final invoiceDate = DateTime.now().subtract(Duration(days: _random.nextInt(90)));
-      final dueDate = invoiceDate.add(Duration(days: 30));
+      // Generate invoice dates within the last 6 months (up to 180 days ago)
+      final invoiceDate = DateTime.now().subtract(Duration(days: _random.nextInt(180) + 1));
+      // Due date should be 15-45 days after invoice date (realistic payment terms)
+      final dueDate = invoiceDate.add(Duration(days: _random.nextInt(31) + 15));
 
       _invoices.add(EnhancedInvoice(
         id: UuidGenerator.generateId(),
@@ -244,7 +261,7 @@ class DemoDataService {
         terms: 'Payment due within 30 days. Late payment charges may apply.',
         createdAt: invoiceDate,
         updatedAt: status == InvoiceStatus.paid 
-          ? invoiceDate.add(Duration(days: _random.nextInt(30)))
+          ? invoiceDate.add(Duration(days: _random.nextInt(15) + 1)) // Paid 1-15 days after issue
           : invoiceDate,
       ));
     }
@@ -338,7 +355,8 @@ class DemoDataService {
         category: notification['type'] as NotificationCategory,
         priority: notification['priority'] as NotificationPriority,
         channel: (notification['type'] as NotificationCategory).defaultChannel,
-        createdAt: DateTime.now().subtract(Duration(hours: _random.nextInt(72))),
+        // Notifications should be recent - within the last 72 hours
+        createdAt: DateTime.now().subtract(Duration(hours: _random.nextInt(72) + 1)),
       ));
     }
 

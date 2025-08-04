@@ -18,10 +18,17 @@ import 'core/notifications/enhanced_push_notification_service.dart';
 import 'core/performance/performance_optimizer.dart';
 import 'core/shortcuts/quick_actions_service.dart';
 import 'core/desktop/index.dart';
+import 'core/config/feature_flags.dart';
 
 void main(List<String> args) async {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize feature flags first
+  debugPrint('🏳️ Initializing feature flags...');
+  final featureFlags = FeatureFlags();
+  await featureFlags.initialize();
+  debugPrint('✅ Feature flags initialized - Demo data: ${featureFlags.isDemoDataEnabled}');
   
   // Handle CLI mode first
   if (args.isNotEmpty) {

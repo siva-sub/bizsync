@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../models/invoice_models.dart';
 import '../models/enhanced_invoice_model.dart';
 import '../providers/invoice_providers.dart';
@@ -121,7 +122,12 @@ class _ProfessionalInvoiceFormScreenState
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Invoice' : 'Create Invoice'),
+        title: Text(
+          ResponsiveBreakpoints.of(context).smallerThan(TABLET)
+              ? (_isEditing ? 'Edit' : 'Create')
+              : (_isEditing ? 'Edit Invoice' : 'Create Invoice'),
+          overflow: TextOverflow.ellipsis,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/invoices'),
@@ -327,9 +333,20 @@ class _ProfessionalInvoiceFormScreenState
                           context: context,
                           initialDate: _issueDate,
                           firstDate: DateTime(2020),
-                          lastDate: DateTime(2030),
+                          // Limit to reasonable future dates - max 1 year ahead
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
                         );
                         if (date != null) {
+                          // Additional validation for issue dates - allow reasonable future dating
+                          if (date.isAfter(DateTime.now().add(const Duration(days: 180)))) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Invoice issue date cannot be more than 6 months in the future'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
                           setState(() {
                             _issueDate = date;
                             if (_paymentTerms != PaymentTerm.custom) {
@@ -391,7 +408,8 @@ class _ProfessionalInvoiceFormScreenState
                           context: context,
                           initialDate: _dueDate ?? _issueDate.add(const Duration(days: 30)),
                           firstDate: _issueDate,
-                          lastDate: DateTime(2030),
+                          // Due dates can be up to 1 year after issue date, but limit excessive future dates
+                          lastDate: _issueDate.add(const Duration(days: 365)),
                         );
                         if (date != null) {
                           setState(() {

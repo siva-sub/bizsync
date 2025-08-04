@@ -39,6 +39,10 @@ import '../features/vendors/screens/vendor_form_screen.dart';
 import '../features/forecasting/screens/forecasting_dashboard_screen.dart';
 import '../features/forecasting/screens/revenue_forecasting_screen.dart';
 import '../features/forecasting/screens/financial_reports_screen.dart';
+import '../features/invoices/screens/recurring_invoices_screen.dart';
+import '../features/invoices/screens/email_settings_screen.dart';
+import '../features/customers/screens/customer_statements_screen.dart';
+import '../features/settings/screens/developer_settings_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -103,6 +107,14 @@ class AppRouter {
                   invoiceId: state.pathParameters['id']!,
                 ),
               ),
+              GoRoute(
+                path: '/recurring',
+                builder: (context, state) => const RecurringInvoicesScreen(),
+              ),
+              GoRoute(
+                path: '/email-settings',
+                builder: (context, state) => const EmailSettingsScreen(),
+              ),
             ],
           ),
           
@@ -138,6 +150,10 @@ class AppRouter {
                 builder: (context, state) => CustomerDetailScreenWrapper(
                   customerId: state.pathParameters['id']!,
                 ),
+              ),
+              GoRoute(
+                path: '/statements',
+                builder: (context, state) => const CustomerStatementsScreen(),
               ),
             ],
           ),
@@ -304,6 +320,12 @@ class AppRouter {
           GoRoute(
             path: '/settings',
             builder: (context, state) => const SettingsScreen(),
+            routes: [
+              GoRoute(
+                path: '/developer',
+                builder: (context, state) => const DeveloperSettingsScreen(),
+              ),
+            ],
           ),
         ],
       ),

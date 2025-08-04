@@ -373,7 +373,7 @@ class _TaxDashboardScreenState extends ConsumerState<TaxDashboardScreen>
             children: [
               ListTile(
                 title: const Text('GST F5 Return'),
-                subtitle: const Text('Due: 30 Jan 2025'),
+                subtitle: Text('Due: 30 Jan ${DateTime.now().year}'),
                 trailing: Chip(label: Text('Due Soon'), backgroundColor: Colors.orange[100]),
               ),
               ListTile(

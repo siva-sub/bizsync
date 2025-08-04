@@ -123,12 +123,13 @@ class CompanyTaxProfile {
 
   TaxRate _getCurrentGstRate(DateTime date) {
     // Simplified - in real implementation, would query historical rates
-    if (date.year >= 2025) {
+    final currentYear = DateTime.now().year;
+    if (date.year >= currentYear) {
       return TaxRate(
-        id: 'gst_2025',
+        id: 'gst_current',
         taxType: TaxType.gst,
         rate: 0.09,
-        effectiveFrom: DateTime(2025, 1, 1),
+        effectiveFrom: DateTime(currentYear, 1, 1),
         description: 'GST 9%',
       );
     } else if (date.year >= 2023) {
@@ -136,7 +137,7 @@ class CompanyTaxProfile {
         id: 'gst_2023',
         taxType: TaxType.gst,
         rate: 0.08,
-        effectiveFrom: DateTime(2025, 1, 1),
+        effectiveFrom: DateTime(2023, 1, 1),
         description: 'GST 8%',
       );
     }
@@ -157,7 +158,7 @@ class CompanyTaxProfile {
         id: 'charity_exemption',
         taxType: TaxType.corporateTax,
         rate: 0.0,
-        effectiveFrom: DateTime(2025, 1, 1),
+        effectiveFrom: DateTime(DateTime.now().year, 1, 1),
         description: 'Charity Exemption',
       ));
     } else if (isEligibleForStartupExemption()) {
@@ -166,14 +167,14 @@ class CompanyTaxProfile {
           id: 'startup_first_100k',
           taxType: TaxType.corporateTax,
           rate: 0.0,
-          effectiveFrom: DateTime(2025, 1, 1),
+          effectiveFrom: DateTime(DateTime.now().year, 1, 1),
           description: 'Startup Exemption - First S\$100k',
         ),
         TaxRate(
           id: 'startup_next_200k',
           taxType: TaxType.corporateTax,
           rate: 0.085,
-          effectiveFrom: DateTime(2025, 1, 1),
+          effectiveFrom: DateTime(DateTime.now().year, 1, 1),
           description: 'Startup Partial Exemption - Next S\$200k',
         ),
       ]);

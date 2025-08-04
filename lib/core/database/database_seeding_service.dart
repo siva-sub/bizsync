@@ -6,6 +6,7 @@ import '../crdt/crdt_types.dart';
 import '../crdt/hybrid_logical_clock.dart';
 import '../crdt/vector_clock.dart';
 import '../utils/uuid_generator.dart';
+import '../config/feature_flags.dart';
 
 /// Service for seeding the database with initial demo data
 class DatabaseSeedingService {
@@ -25,6 +26,14 @@ class DatabaseSeedingService {
   
   /// Seed the database with initial data
   Future<void> seedDatabase() async {
+    // Check if demo data is enabled via feature flag
+    if (!FeatureFlags().isDemoDataEnabled) {
+      if (kDebugMode) {
+        print('Demo data is disabled via feature flag, skipping database seeding...');
+      }
+      return;
+    }
+    
     if (await isDatabaseSeeded()) {
       if (kDebugMode) {
         print('Database already seeded, skipping...');

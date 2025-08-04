@@ -615,7 +615,7 @@ final realRecentActivitiesProvider = FutureProvider<List<Map<String, dynamic>>>(
       {
         'type': 'invoice_created',
         'title': 'New Invoice Created',
-        'description': 'Invoice INV-2025-001 for ACME Corp',
+        'description': 'Invoice INV-${DateTime.now().year}-001 for ACME Corp',
         'amount': 2500.00,
         'timestamp': DateTime.now().subtract(const Duration(hours: 2)).millisecondsSinceEpoch,
         'icon': 'receipt',

@@ -672,7 +672,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
               ),
               const SizedBox(height: 8),
               _buildInfoRow('Version', '1.0.0'),
-              _buildInfoRow('Build', '2025.1.1'),
+              _buildInfoRow('Build', '${DateTime.now().year}.1.1'),
               _buildInfoRow('Platform', 'Flutter'),
             ],
           ),

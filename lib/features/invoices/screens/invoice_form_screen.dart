@@ -1070,10 +1070,16 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen>
       context: context,
       initialDate: initialDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+      // Limit future dates to 1 year to prevent unrealistic future invoice dates
+      lastDate: DateTime.now().add(const Duration(days: 365)),
       helpText: title,
     ).then((date) {
       if (date != null) {
+        // Additional validation for issue date - should not be more than 6 months in the future (reasonable business practice)
+        if (title == 'Issue Date' && date.isAfter(DateTime.now().add(const Duration(days: 180)))) {
+          _showError('Invoice issue date cannot be more than 6 months in the future');
+          return;
+        }
         onDateSelected(date);
       }
     });

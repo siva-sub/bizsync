@@ -338,7 +338,7 @@ class _LineItemFormState extends State<LineItemForm> {
           child: TextFormField(
             controller: _discountController,
             decoration: const InputDecoration(
-              labelText: 'Discount',
+              labelText: 'Discount %',
               hintText: '0.1 for 10% or 50 for \$50',
               border: OutlineInputBorder(),
             ),
@@ -353,7 +353,7 @@ class _LineItemFormState extends State<LineItemForm> {
           child: TextFormField(
             controller: _taxRateController,
             decoration: const InputDecoration(
-              labelText: 'Tax Rate (%)',
+              labelText: 'Tax Rate %',
               border: OutlineInputBorder(),
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -370,6 +370,7 @@ class _LineItemFormState extends State<LineItemForm> {
     return Row(
       children: [
         Expanded(
+          flex: 2,
           child: DropdownButtonFormField<GstTaxCategory>(
             value: _gstCategory,
             decoration: const InputDecoration(
@@ -380,7 +381,11 @@ class _LineItemFormState extends State<LineItemForm> {
             items: GstTaxCategory.values.map((category) {
               return DropdownMenuItem(
                 value: category,
-                child: Text(category.displayName),
+                child: Text(
+                  category.displayName,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               );
             }).toList(),
             onChanged: (value) {
@@ -401,6 +406,7 @@ class _LineItemFormState extends State<LineItemForm> {
         ),
         const SizedBox(width: 12),
         Expanded(
+          flex: 1,
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(

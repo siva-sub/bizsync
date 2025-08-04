@@ -321,7 +321,7 @@ class SingaporeTaxReliefs {
       maximumRelief: 600000, // S$600,000 per year
       applicableTaxType: TaxType.corporateTax,
       effectiveFrom: DateTime(2024, 1, 1),
-      effectiveTo: DateTime(2025, 12, 31), // Check current validity
+      effectiveTo: DateTime(DateTime.now().year, 12, 31), // Check current validity
       applicableCompanyTypes: [
         CompanyType.privateLimited,
         CompanyType.publicLimited,

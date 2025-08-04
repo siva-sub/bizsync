@@ -215,7 +215,7 @@ class HistoricalTaxServiceImpl implements HistoricalTaxService {
       case TaxType.gst:
         if (newRate.effectiveFrom.year == 2023) {
           return 'Budget 2022 announcement - GST increase to fund social spending';
-        } else if (newRate.effectiveFrom.year == 2025) {
+        } else if (newRate.effectiveFrom.year >= DateTime.now().year) {
           return 'Second phase of GST increase as announced in Budget 2022';
         }
         return 'Government policy adjustment';

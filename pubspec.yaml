@@ -11,7 +11,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # - MINOR: New features, backwards compatible
 # - PATCH: Bug fixes, small improvements
 # - BUILD_NUMBER: Incremental build number for each deployment
-version: 1.0.0+1
+version: 1.2.0+3
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -148,6 +148,9 @@ dependencies:
   # Enhanced data visualization
   syncfusion_flutter_charts: ^26.1.35  # Professional charts with zoom/pan
   flutter_charts: ^0.5.2  # Additional chart types
+  
+  # Email functionality
+  mailer: ^6.1.2  # Email sending for invoices
 
 dev_dependencies:
   flutter_test:

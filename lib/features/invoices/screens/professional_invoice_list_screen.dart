@@ -456,9 +456,11 @@ class _ProfessionalInvoiceListScreenState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                           Text(
                             'Amount',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -470,12 +472,17 @@ class _ProfessionalInvoiceListScreenState
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
-                        ],
+                          ],
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
                           Text(
                             'Due Date',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -491,7 +498,8 @@ class _ProfessionalInvoiceListScreenState
                               fontWeight: invoice.isOverdue ? FontWeight.w600 : null,
                             ),
                           ),
-                        ],
+                          ],
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.more_vert),

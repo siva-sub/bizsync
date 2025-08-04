@@ -43,7 +43,7 @@ export 'widgets/amount_input_widget.dart';
 const String paymentModuleVersion = '1.0.0';
 
 /// Payment Module Build Date
-const String paymentModuleBuildDate = '2025-01-01';
+final String paymentModuleBuildDate = '${DateTime.now().year}-01-01';
 
 /// Supported SGQR Specification Version
 const String supportedSGQRVersion = '1.1';
