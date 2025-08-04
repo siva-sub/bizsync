@@ -6,7 +6,7 @@ class AppConstants {
 
   // Database
   static const String databaseName = 'bizsync.db';
-  static const int databaseVersion = 1;
+  static const int databaseVersion = 2;
 
   // Encryption
   static const String encryptionKey = 'bizsync_secure_key_2024';

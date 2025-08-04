@@ -165,7 +165,7 @@ class _NotificationCenterScreenState
           },
           child: NotificationList(
             notifications: sortedNotifications,
-            emptyMessage: 'No notifications yet',
+            emptyMessage: 'No notifications',
           ),
         );
       },

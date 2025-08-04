@@ -133,6 +133,7 @@ class UserProfile {
   final String role;
   final String? title;
   final String? department;
+  final String? profilePicturePath;
 
   const UserProfile({
     required this.firstName,
@@ -142,6 +143,7 @@ class UserProfile {
     required this.role,
     this.title,
     this.department,
+    this.profilePicturePath,
   });
 
   String get fullName => '$firstName $lastName';
@@ -156,6 +158,7 @@ class UserProfile {
     String? role,
     String? title,
     String? department,
+    String? profilePicturePath,
   }) {
     return UserProfile(
       firstName: firstName ?? this.firstName,
@@ -165,6 +168,7 @@ class UserProfile {
       role: role ?? this.role,
       title: title ?? this.title,
       department: department ?? this.department,
+      profilePicturePath: profilePicturePath ?? this.profilePicturePath,
     );
   }
 

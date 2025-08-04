@@ -1,9 +1,13 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../models/onboarding_models.dart';
 import '../providers/onboarding_provider.dart';
 import '../widgets/onboarding_page_indicator.dart';
+import '../../../services/profile_picture_service.dart';
+import '../../../core/widgets/profile_avatar.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
   const UserProfileScreen({super.key});
@@ -22,6 +26,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   late Animation<Offset> _slideAnimation;
 
   bool _isLoading = false;
+  String? _profilePicturePath;
+  Uint8List? _profilePictureBytes;
+  final ProfilePictureService _profilePictureService = ProfilePictureService();
 
   // Form controllers
   final _firstNameController = TextEditingController();
@@ -85,6 +92,15 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
       _selectedRole = userProfile.role;
       _titleController.text = userProfile.title ?? '';
       _departmentController.text = userProfile.department ?? '';
+      _profilePicturePath = userProfile.profilePicturePath;
+      
+      // Load profile picture if exists
+      if (_profilePicturePath != null) {
+        _loadProfilePicture();
+      }
+    } else {
+      // Try to load existing profile picture from storage
+      _loadExistingProfilePicture();
     }
   }
 
@@ -193,7 +209,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
           'Let\'s personalize your BizSync experience',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color:
-                    Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
         ),
       ],
@@ -206,52 +222,28 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     return Center(
       child: Column(
         children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                initials,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+          ProfileAvatarLarge(
+            imagePath: _profilePicturePath,
+            imageBytes: _profilePictureBytes,
+            initials: initials,
+            onTap: _isLoading ? null : _selectProfilePicture,
+            showEditIcon: true,
           ),
           const SizedBox(height: 12),
           TextButton.icon(
-            onPressed: () {
-              // TODO: Implement photo picker
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Profile photo feature coming soon!'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
-            icon: const Icon(Icons.camera_alt),
-            label: const Text('Add Photo'),
+            onPressed: _isLoading ? null : _selectProfilePicture,
+            icon: Icon(_profilePictureBytes == null ? Icons.camera_alt : Icons.edit),
+            label: Text(_profilePictureBytes == null ? 'Add Photo' : 'Change Photo'),
           ),
+          if (_profilePictureBytes != null)
+            TextButton.icon(
+              onPressed: _isLoading ? null : _removeProfilePicture,
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              label: const Text(
+                'Remove Photo',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
         ],
       ),
     );
@@ -423,7 +415,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
 
   Widget _buildInfoCard() {
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -542,6 +534,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         department: _departmentController.text.trim().isEmpty
             ? null
             : _departmentController.text.trim(),
+        profilePicturePath: _profilePicturePath,
       );
 
       final notifier = ref.read(onboardingStateProvider.notifier);
@@ -593,6 +586,162 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Skip for Now'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Loads existing profile picture from storage
+  Future<void> _loadExistingProfilePicture() async {
+    try {
+      final picturePath = await _profilePictureService.getProfilePicturePath();
+      if (picturePath != null) {
+        final pictureBytes = await _profilePictureService.getProfilePictureBytes();
+        if (pictureBytes != null && mounted) {
+          setState(() {
+            _profilePicturePath = picturePath;
+            _profilePictureBytes = pictureBytes;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading existing profile picture: $e');
+    }
+  }
+
+  /// Loads profile picture from the given path
+  Future<void> _loadProfilePicture() async {
+    if (_profilePicturePath == null) return;
+
+    try {
+      final file = File(_profilePicturePath!);
+      if (await file.exists()) {
+        final bytes = await file.readAsBytes();
+        if (mounted) {
+          setState(() {
+            _profilePictureBytes = bytes;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading profile picture: $e');
+    }
+  }
+
+  /// Handles profile picture selection
+  Future<void> _selectProfilePicture() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final picturePath = await _profilePictureService.selectAndSaveProfilePicture(context);
+      if (picturePath != null) {
+        final pictureBytes = await _profilePictureService.getProfilePictureBytes();
+        if (pictureBytes != null && mounted) {
+          setState(() {
+            _profilePicturePath = picturePath;
+            _profilePictureBytes = pictureBytes;
+          });
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile picture updated successfully!'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+
+          // Clean up old profile pictures
+          _profilePictureService.cleanupOldProfilePictures();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating profile picture: $e'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  /// Removes the current profile picture
+  Future<void> _removeProfilePicture() async {
+    final shouldRemove = await _showRemovePhotoDialog();
+    if (shouldRemove != true) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final success = await _profilePictureService.deleteProfilePicture();
+      if (success && mounted) {
+        setState(() {
+          _profilePicturePath = null;
+          _profilePictureBytes = null;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile picture removed successfully!'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error removing profile picture: $e'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  /// Shows confirmation dialog for removing profile picture
+  Future<bool?> _showRemovePhotoDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove Profile Picture?'),
+        content: const Text(
+          'Are you sure you want to remove your profile picture? '
+          'This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Remove'),
           ),
         ],
       ),

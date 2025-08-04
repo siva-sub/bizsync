@@ -85,7 +85,14 @@ class DatabaseService {
         address TEXT,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL,
-        sync_status INTEGER DEFAULT 0
+        sync_status INTEGER DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        gst_registered BOOLEAN DEFAULT FALSE,
+        uen TEXT,
+        gst_registration_number TEXT,
+        country_code TEXT DEFAULT 'SG',
+        billing_address TEXT,
+        shipping_address TEXT
       )
     ''');
 
@@ -306,13 +313,78 @@ class DatabaseService {
   }
 
   Future<void> _migrateToVersion(Database db, int version) async {
+    print('🔄 Migrating database to version $version...');
+    
     // Handle specific version migrations
     switch (version) {
       case 2:
-        // Future migration example
-        // await db.execute('ALTER TABLE customers ADD COLUMN loyalty_points INTEGER DEFAULT 0');
+        await _migrateToVersion2(db);
         break;
       // Add more migration cases as needed
+    }
+    
+    print('✅ Migration to version $version completed');
+  }
+
+  Future<void> _migrateToVersion2(Database db) async {
+    print('🔄 Adding missing columns to customers table...');
+    
+    try {
+      // Add missing columns to customers table
+      await db.execute('''
+        ALTER TABLE customers ADD COLUMN is_active BOOLEAN DEFAULT TRUE
+      ''');
+      
+      await db.execute('''
+        ALTER TABLE customers ADD COLUMN gst_registered BOOLEAN DEFAULT FALSE
+      ''');
+      
+      await db.execute('''
+        ALTER TABLE customers ADD COLUMN uen TEXT
+      ''');
+      
+      await db.execute('''
+        ALTER TABLE customers ADD COLUMN gst_registration_number TEXT
+      ''');
+      
+      await db.execute('''
+        ALTER TABLE customers ADD COLUMN country_code TEXT DEFAULT 'SG'
+      ''');
+      
+      await db.execute('''
+        ALTER TABLE customers ADD COLUMN billing_address TEXT
+      ''');
+      
+      await db.execute('''
+        ALTER TABLE customers ADD COLUMN shipping_address TEXT
+      ''');
+      
+      print('✅ Successfully added missing columns to customers table');
+    } catch (e) {
+      print('⚠️  Error adding columns (may already exist): $e');
+      // Continue - columns may already exist from previous attempts
+    }
+    
+    // Create indexes for the new columns
+    try {
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_customers_gst_registered 
+        ON customers(gst_registered)
+      ''');
+      
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_customers_country_code 
+        ON customers(country_code)
+      ''');
+      
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_customers_is_active 
+        ON customers(is_active)
+      ''');
+      
+      print('✅ Created indexes for new customer columns');
+    } catch (e) {
+      print('⚠️  Error creating indexes: $e');
     }
   }
 

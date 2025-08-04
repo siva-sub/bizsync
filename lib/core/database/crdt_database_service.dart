@@ -164,7 +164,14 @@ class CRDTDatabaseService {
         address TEXT,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL,
-        sync_status INTEGER DEFAULT 0
+        sync_status INTEGER DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        gst_registered BOOLEAN DEFAULT FALSE,
+        uen TEXT,
+        gst_registration_number TEXT,
+        country_code TEXT DEFAULT 'SG',
+        billing_address TEXT,
+        shipping_address TEXT
       )
     ''');
 
@@ -183,6 +190,13 @@ class CRDTDatabaseService {
         email TEXT,
         phone TEXT,
         loyalty_points INTEGER DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        gst_registered BOOLEAN DEFAULT FALSE,
+        uen TEXT,
+        gst_registration_number TEXT,
+        country_code TEXT DEFAULT 'SG',
+        billing_address TEXT,
+        shipping_address TEXT,
         -- Constraints
         UNIQUE(id),
         CHECK(json_valid(crdt_data))
@@ -356,6 +370,14 @@ class CRDTDatabaseService {
         'CREATE INDEX idx_customers_updated ON customers_crdt(updated_at)');
     await db
         .execute('CREATE INDEX idx_customers_node ON customers_crdt(node_id)');
+    await db.execute(
+        'CREATE INDEX idx_customers_gst_registered ON customers_crdt(gst_registered) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_customers_country_code ON customers_crdt(country_code) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_customers_is_active ON customers_crdt(is_active) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX idx_customers_uen ON customers_crdt(uen) WHERE is_deleted = FALSE AND uen IS NOT NULL');
 
     // Invoice indexes
     await db.execute(
@@ -670,6 +692,14 @@ class CRDTDatabaseService {
           'email': customer.email.value,
           'phone': customer.phone.value,
           'loyalty_points': customer.loyaltyPoints.value,
+          // Add new fields with safe access
+          'is_active': true, // Default for CRDT customers
+          'gst_registered': false, // Default 
+          'uen': null,
+          'gst_registration_number': null,
+          'country_code': 'SG', // Default
+          'billing_address': null,
+          'shipping_address': null,
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
@@ -1072,11 +1102,61 @@ class CRDTDatabaseService {
   }
 
   Future<void> _migrateToVersion(Database db, int version) async {
+    print('🔄 CRDT Database: Migrating to version $version...');
+    
     // Handle specific version migrations
     switch (version) {
       case 2:
-        // Future migration example
+        await _migrateToVersion2(db);
         break;
+    }
+    
+    print('✅ CRDT Migration to version $version completed');
+  }
+
+  Future<void> _migrateToVersion2(Database db) async {
+    print('🔄 CRDT: Adding missing columns to customers tables...');
+    
+    try {
+      // Add missing columns to legacy customers table
+      await db.execute('ALTER TABLE customers ADD COLUMN is_active BOOLEAN DEFAULT TRUE');
+      await db.execute('ALTER TABLE customers ADD COLUMN gst_registered BOOLEAN DEFAULT FALSE');
+      await db.execute('ALTER TABLE customers ADD COLUMN uen TEXT');
+      await db.execute('ALTER TABLE customers ADD COLUMN gst_registration_number TEXT');
+      await db.execute('ALTER TABLE customers ADD COLUMN country_code TEXT DEFAULT \'SG\'');
+      await db.execute('ALTER TABLE customers ADD COLUMN billing_address TEXT');
+      await db.execute('ALTER TABLE customers ADD COLUMN shipping_address TEXT');
+      
+      print('✅ CRDT: Added missing columns to legacy customers table');
+    } catch (e) {
+      print('⚠️  CRDT: Error adding columns to legacy customers (may already exist): $e');
+    }
+    
+    try {
+      // Add missing columns to CRDT customers table
+      await db.execute('ALTER TABLE customers_crdt ADD COLUMN is_active BOOLEAN DEFAULT TRUE');
+      await db.execute('ALTER TABLE customers_crdt ADD COLUMN gst_registered BOOLEAN DEFAULT FALSE');
+      await db.execute('ALTER TABLE customers_crdt ADD COLUMN uen TEXT');
+      await db.execute('ALTER TABLE customers_crdt ADD COLUMN gst_registration_number TEXT');
+      await db.execute('ALTER TABLE customers_crdt ADD COLUMN country_code TEXT DEFAULT \'SG\'');
+      await db.execute('ALTER TABLE customers_crdt ADD COLUMN billing_address TEXT');
+      await db.execute('ALTER TABLE customers_crdt ADD COLUMN shipping_address TEXT');
+      
+      print('✅ CRDT: Added missing columns to CRDT customers table');
+    } catch (e) {
+      print('⚠️  CRDT: Error adding columns to CRDT customers (may already exist): $e');
+    }
+    
+    // Create indexes for the new columns
+    try {
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_customers_gst_registered ON customers_crdt(gst_registered) WHERE is_deleted = FALSE');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_customers_country_code ON customers_crdt(country_code) WHERE is_deleted = FALSE');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_customers_is_active ON customers_crdt(is_active) WHERE is_deleted = FALSE');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_customers_uen ON customers_crdt(uen) WHERE is_deleted = FALSE AND uen IS NOT NULL');
+      
+      print('✅ CRDT: Created indexes for new customer columns');
+    } catch (e) {
+      print('⚠️  CRDT: Error creating indexes: $e');
     }
   }
 
@@ -1131,7 +1211,14 @@ class CRDTDatabaseService {
         address TEXT,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL,
-        sync_status INTEGER DEFAULT 0
+        sync_status INTEGER DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        gst_registered BOOLEAN DEFAULT FALSE,
+        uen TEXT,
+        gst_registration_number TEXT,
+        country_code TEXT DEFAULT 'SG',
+        billing_address TEXT,
+        shipping_address TEXT
       )
     ''');
   }
@@ -1152,6 +1239,13 @@ class CRDTDatabaseService {
         email TEXT,
         phone TEXT,
         loyalty_points INTEGER DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        gst_registered BOOLEAN DEFAULT FALSE,
+        uen TEXT,
+        gst_registration_number TEXT,
+        country_code TEXT DEFAULT 'SG',
+        billing_address TEXT,
+        shipping_address TEXT,
         -- Constraints
         UNIQUE(id),
         CHECK(json_valid(crdt_data))
@@ -1167,6 +1261,14 @@ class CRDTDatabaseService {
         'CREATE INDEX IF NOT EXISTS idx_customers_updated ON customers_crdt(updated_at)');
     await db.execute(
         'CREATE INDEX IF NOT EXISTS idx_customers_node ON customers_crdt(node_id)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_customers_gst_registered ON customers_crdt(gst_registered) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_customers_country_code ON customers_crdt(country_code) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_customers_is_active ON customers_crdt(is_active) WHERE is_deleted = FALSE');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_customers_uen ON customers_crdt(uen) WHERE is_deleted = FALSE AND uen IS NOT NULL');
   }
 
   /// Create missing products table

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../../core/animations/animated_widgets.dart';
 import '../../core/animations/animation_constants.dart';
 import '../../core/animations/animation_utils.dart';
+import '../../features/notifications/providers/notification_providers.dart';
 
-class AppNavigationDrawer extends StatefulWidget {
+class AppNavigationDrawer extends ConsumerStatefulWidget {
   final bool isDesktopMode;
   final bool isExpanded;
   final VoidCallback? onToggle;
@@ -18,10 +20,10 @@ class AppNavigationDrawer extends StatefulWidget {
   });
 
   @override
-  State<AppNavigationDrawer> createState() => _AppNavigationDrawerState();
+  ConsumerState<AppNavigationDrawer> createState() => _AppNavigationDrawerState();
 }
 
-class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
+class _AppNavigationDrawerState extends ConsumerState<AppNavigationDrawer> {
   String? _expandedSection;
 
   @override
@@ -300,15 +302,20 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                   ],
 
                   // Notifications
-                  _NavigationTile(
-                    icon: Icons.notifications_outlined,
-                    selectedIcon: Icons.notifications,
-                    title: 'Notifications',
-                    route: '/notifications',
-                    currentRoute: currentLocation,
-                    isExpanded: widget.isExpanded,
-                    badge: '3',
-                    onTap: () => _navigateTo(context, '/notifications'),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final unreadCount = ref.watch(unreadNotificationsCountProvider);
+                      return _NavigationTile(
+                        icon: Icons.notifications_outlined,
+                        selectedIcon: Icons.notifications,
+                        title: 'Notifications',
+                        route: '/notifications',
+                        currentRoute: currentLocation,
+                        isExpanded: widget.isExpanded,
+                        badge: unreadCount > 0 ? unreadCount.toString() : null,
+                        onTap: () => _navigateTo(context, '/notifications'),
+                      );
+                    },
                   ),
 
                   // Sync & Share
