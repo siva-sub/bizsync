@@ -91,7 +91,7 @@ dependencies:
   vibration: ^2.0.0  # Haptic feedback
   flutter_tts: ^4.2.0  # Text-to-speech
   speech_to_text: ^7.0.0  # Voice recognition
-  camera: ^0.11.0+2  # Camera integration
+  camera: ^0.10.5+9  # Camera integration
   image_picker: ^1.0.8  # Image selection
   # google_mlkit_text_recognition: ^0.14.0  # OCR - version conflicts
   # google_mlkit_barcode_scanning: ^0.12.1  # Barcode - version conflicts
