@@ -236,6 +236,7 @@ class NotificationService {
       platformChannelSpecifics,
       payload: payload,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 

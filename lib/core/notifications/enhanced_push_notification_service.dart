@@ -412,6 +412,7 @@ class EnhancedPushNotificationService extends ChangeNotifier {
           notificationDetails,
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           payload: _stringifyJson(notification.payload ?? {}),
+          uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         );
       }
 
@@ -444,6 +445,7 @@ class EnhancedPushNotificationService extends ChangeNotifier {
         notificationDetails,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         payload: _stringifyJson(notification.payload ?? {}),
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       );
 
       nextScheduleTime = nextScheduleTime.add(notification.recurringInterval!);
