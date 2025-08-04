@@ -181,7 +181,7 @@ dev_dependencies:
   
   # Network Testing
   http_mock_adapter: ^0.6.1
-  nock: ^1.2.4
+  nock: ^1.2.3
   
   # Widget Testing
   golden_toolkit: ^0.15.0
@@ -189,10 +189,6 @@ dev_dependencies:
   
   # Performance Testing
   benchmark_harness: ^2.2.2
-  
-  # Mock Generation
-  build_runner: ^2.4.8
-  mockito: ^5.4.4
   
   # Test Utilities
   faker: ^2.1.0
