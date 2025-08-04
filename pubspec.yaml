@@ -72,7 +72,7 @@ dependencies:
   
   # File System and Storage
   file_picker: ^8.0.3
-  share_plus: ^10.0.0
+  share_plus: ^7.2.2
   csv: ^6.0.0
   
   # Utilities
