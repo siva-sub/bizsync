@@ -40,7 +40,7 @@ dependencies:
   
   # Database and Storage
   sqflite: ^2.3.0  # Mobile platforms (Android/iOS)
-  sqflite_common_ffi: ^2.3.0  # Desktop platforms (Linux, Windows, macOS)
+  sqflite_common_ffi: ^2.2.0+1  # Desktop platforms (Linux, Windows, macOS)
   path: ^1.8.3
   path_provider: ^2.1.2
   
