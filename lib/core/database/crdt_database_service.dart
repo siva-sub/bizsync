@@ -60,52 +60,46 @@ class CRDTDatabaseService {
       final documentsDirectory = await getApplicationDocumentsDirectory();
       final path = join(documentsDirectory.path, AppConstants.databaseName);
 
-      // Use platform-aware database factory
-      return await PlatformDatabaseFactory.openDatabase(
-        path,
-        version: AppConstants.databaseVersion,
-        password: AppConstants.encryptionKey,
-        onCreate: _onCreate,
-        onUpgrade: _onUpgrade,
-        onOpen: _onOpen,
-      );
-    } catch (e) {
-      // If the error is about SQL statements, try without the onOpen callback
-      if (e.toString().contains('SQLITE_OK') ||
-          e.toString().contains('rawQuery')) {
-        try {
-          debugPrint(
-              'Retrying database initialization without PRAGMA statements');
-          final documentsDirectory = await getApplicationDocumentsDirectory();
-          final path = join(documentsDirectory.path, AppConstants.databaseName);
+      debugPrint('🔧 Initializing CRDT database at: $path');
 
-          return await PlatformDatabaseFactory.openDatabase(
-            path,
-            version: AppConstants.databaseVersion,
-            password: AppConstants.encryptionKey,
-            onCreate: _onCreate,
-            onUpgrade: _onUpgrade,
-            // Skip onOpen to avoid PRAGMA issues
-          );
-        } catch (retryError) {
-          // Get database info for better error reporting
-          final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
-          throw app_exceptions.DatabaseException(
-              'Failed to initialize CRDT database after retry: $retryError\n'
-              'Original error: $e\n'
-              'Platform: ${dbInfo['platform']}\n'
-              'Database type: ${dbInfo['database_type']}\n'
-              'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}');
-        }
+      // Test connectivity first
+      final isReachable = await PlatformDatabaseFactory.testDatabaseConnectivity(path + '.test');
+      if (!isReachable) {
+        debugPrint('⚠️ Database connectivity test failed, proceeding with caution');
       }
 
-      // Get database info for better error reporting
+      // Use robust platform-aware database factory with automatic PRAGMA handling
+      final database = await PlatformDatabaseFactory.openDatabase(
+        path,
+        version: AppConstants.databaseVersion,
+        // Password ignored - encryption disabled for compatibility
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+        // onOpen is handled by the PlatformDatabaseFactory with safe PRAGMA commands
+      );
+
+      debugPrint('✅ CRDT database initialized successfully');
+      return database;
+      
+    } catch (e) {
+      debugPrint('❌ CRDT database initialization failed: $e');
+      
+      // Enhanced error reporting with platform information
       final dbInfo = await PlatformDatabaseFactory.getDatabaseInfo();
+      final errorDetails = '''
+CRDT Database Initialization Failed:
+- Error: $e
+- Platform: ${dbInfo['platform']} (${dbInfo['is_mobile'] ? 'Mobile' : 'Desktop'})
+- Database Factory: ${dbInfo['database_factory']}
+- WAL Mode Supported: ${dbInfo['wal_mode_supported']}
+- Initialization Status: ${dbInfo['initialization_status']}
+- Encryption Status: ${dbInfo['encryption_status']}
+      ''';
+      
+      debugPrint(errorDetails);
+      
       throw app_exceptions.DatabaseException(
-          'Failed to initialize CRDT database: $e\n'
-          'Platform: ${dbInfo['platform']}\n'
-          'Database type: ${dbInfo['database_type']}\n'
-          'Encryption: ${dbInfo['encryption_available'] ? "enabled" : "disabled"}');
+          'Failed to initialize CRDT database: $e\n$errorDetails');
     }
   }
 
@@ -126,30 +120,8 @@ class CRDTDatabaseService {
     }
   }
 
-  Future<void> _onOpen(Database db) async {
-    // Enable foreign keys and other pragmas
-    try {
-      await db.execute('PRAGMA foreign_keys = ON');
-    } catch (e) {
-      debugPrint('Warning: Could not enable foreign keys: $e');
-    }
-
-    // Try to set journal mode to WAL, but fall back if not supported
-    try {
-      await db.execute('PRAGMA journal_mode = WAL');
-    } catch (e) {
-      debugPrint('Warning: Could not set WAL mode, using default: $e');
-      // Some Android devices don't support WAL mode
-    }
-
-    try {
-      await db.execute('PRAGMA synchronous = NORMAL');
-      await db.execute('PRAGMA cache_size = 10000');
-      await db.execute('PRAGMA temp_store = MEMORY');
-    } catch (e) {
-      debugPrint('Warning: Could not set performance pragmas: $e');
-    }
-  }
+  // _onOpen method removed - PRAGMA commands now handled by PlatformDatabaseFactory
+  // This ensures cross-platform compatibility and proper error handling
 
   Future<void> _createCRDTBusinessTables(Database db) async {
     // Create both CRDT and legacy table formats for compatibility

@@ -48,24 +48,33 @@
 
 library bizsync_debugging_framework;
 
-// Core debugging service
+// Legacy debugging service
 export 'debug_framework_service.dart';
 
-// Hypothesis-driven debugging
+// Legacy hypothesis-driven debugging
 export 'hypothesis_driven_debugger.dart';
 
-// Validation components
+// Legacy validation components
 export 'runtime_validator.dart';
 export 'schema_validator.dart';
 export 'null_safety_validator.dart';
 
-// Monitoring components
+// Legacy monitoring components
 export 'crdt_monitor.dart';
 export 'ui_state_validator.dart';
 export 'performance_monitor.dart';
 
-// Error reporting
+// Legacy error reporting
 export 'error_reporting_system.dart';
+
+// New comprehensive debugging framework for database initialization issues
+export 'database_initialization_debugger.dart';
+export 'cross_platform_compatibility_validator.dart';
+export 'sqlcipher_decision_framework.dart';
+export 'database_regression_prevention.dart';
+export 'evidence_collection_system.dart';
+export 'automated_remediation_system.dart';
+export 'comprehensive_debugging_service.dart';
 
 // Re-export commonly used types and enums
 

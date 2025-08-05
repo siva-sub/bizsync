@@ -40,8 +40,8 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen>
 
     try {
       await ref
-          .read(mockDashboardDataProvider.notifier)
-          .refreshData(_selectedPeriod);
+          .read(dashboardDataProvider.notifier)
+          .loadDashboardData(_selectedPeriod);
     } finally {
       if (mounted) {
         setState(() {
@@ -53,7 +53,7 @@ class _MainDashboardScreenState extends ConsumerState<MainDashboardScreen>
 
   @override
   Widget build(BuildContext context) {
-    final dashboardData = ref.watch(mockDashboardDataProvider);
+    final dashboardData = ref.watch(dashboardDataProvider);
     final theme = Theme.of(context);
 
     return Scaffold(

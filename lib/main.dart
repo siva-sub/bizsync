@@ -6,7 +6,12 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'dart:io' show Platform, exit;
 import 'navigation/app_router.dart';
 import 'core/database/crdt_database_service.dart';
+import 'core/database/database_health_service.dart';
+import 'core/database/platform_database_factory.dart';
 import 'core/storage/database_service.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'core/constants/app_constants.dart';
 import 'core/platform/wayland_helper.dart';
 import 'core/utils/mesa_rendering_detector.dart';
 import 'core/utils/mesa_rendering_config.dart';
@@ -124,7 +129,7 @@ void main(List<String> args) async {
     // Continue with app startup - mobile features will have limited functionality
   }
 
-  // Initialize the database services with comprehensive error handling
+  // Initialize the database services with comprehensive error handling and monitoring
   try {
     debugPrint('🚀 Initializing BizSync database services...');
 
@@ -136,23 +141,56 @@ void main(List<String> args) async {
     final basicDatabaseService = DatabaseService();
     await basicDatabaseService.database; // Trigger initialization
 
+    // Perform initial health check
+    final healthService = DatabaseHealthService();
+    final database = await crdtDatabaseService.database;
+    final healthReport = await healthService.performHealthCheck(database);
+    
+    debugPrint('📊 Initial Database Health Report:');
+    debugPrint(healthReport.getStatusSummary());
+    
+    if (healthReport.hasWarnings && kDebugMode) {
+      debugPrint(healthReport.getFormattedReport());
+    }
+
     // Verify both services are working
     await _verifyDatabaseIntegrity(crdtDatabaseService, basicDatabaseService);
 
     debugPrint('✅ All database services initialized successfully');
+    
   } catch (e) {
     debugPrint('❌ Critical error initializing database services: $e');
+    
+    // Enhanced error analysis
+    if (e.toString().contains('PRAGMA journal_mode')) {
+      debugPrint('💡 Error appears to be PRAGMA-related - this is now handled automatically');
+    }
+    if (e.toString().contains('SQLiteDatabase query or rawQuery')) {
+      debugPrint('💡 Error appears to be SQLCipher-related - encryption is disabled for compatibility');
+    }
 
-    // Attempt recovery
+    // Attempt recovery with detailed logging
     try {
-      debugPrint('🔧 Attempting database recovery...');
+      debugPrint('🔧 Attempting comprehensive database recovery...');
       await _attemptDatabaseRecovery();
       debugPrint('✅ Database recovery successful');
+      
     } catch (recoveryError) {
       debugPrint('❌ Database recovery failed: $recoveryError');
+      
+      // Log platform information for debugging
+      try {
+        final platformInfo = await PlatformDatabaseFactory.getDatabaseInfo();
+        debugPrint('🔍 Platform Information:');
+        platformInfo.forEach((key, value) => debugPrint('  $key: $value'));
+      } catch (infoError) {
+        debugPrint('⚠️ Could not retrieve platform information: $infoError');
+      }
+      
       // Continue with app startup but show warning
       if (kDebugMode) {
         debugPrint('⚠️  App will start with limited functionality');
+        debugPrint('💡 Consider checking device compatibility and available storage');
       }
     }
   }
@@ -217,20 +255,46 @@ Future<void> _verifyDatabaseIntegrity(
   }
 }
 
-/// Attempt database recovery by forcing table creation
+/// Attempt comprehensive database recovery with health monitoring
 Future<void> _attemptDatabaseRecovery() async {
   try {
-    // Force create tables in both services
+    debugPrint('🔧 Starting comprehensive database recovery...');
+    
+    // Step 1: Use health service for automated recovery
+    final healthService = DatabaseHealthService();
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final crdtPath = join(documentsDirectory.path, AppConstants.databaseName);
+    
+    final recoverySuccess = await healthService.attemptRecovery(crdtPath);
+    if (!recoverySuccess) {
+      throw Exception('Automated recovery failed');
+    }
+    
+    // Step 2: Reinitialize services
     final crdtService = CRDTDatabaseService();
     await crdtService.initialize();
-    await crdtService.forceCreateTables();
-
+    
     final basicService = DatabaseService();
-    await basicService.forceCreateTables();
-
-    // Verify recovery worked
+    await basicService.database; // Trigger initialization
+    
+    // Step 3: Perform health check
+    final database = await crdtService.database;
+    final healthReport = await healthService.performHealthCheck(database);
+    
+    debugPrint('📊 Recovery Health Report:');
+    debugPrint(healthReport.getFormattedReport());
+    
+    if (!healthReport.isHealthy) {
+      throw Exception('Post-recovery health check failed: ${healthReport.getStatusSummary()}');
+    }
+    
+    // Step 4: Verify basic functionality
     await _verifyDatabaseIntegrity(crdtService, basicService);
+    
+    debugPrint('✅ Database recovery completed successfully');
+    
   } catch (e) {
+    debugPrint('❌ Database recovery failed: $e');
     throw Exception('Database recovery failed: $e');
   }
 }

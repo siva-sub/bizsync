@@ -25,33 +25,37 @@ class DatabaseSeedingService {
   }
 
   /// Seed the database with initial data
+  /// Now provides essential bootstrap data regardless of demo flag status
   Future<void> seedDatabase() async {
-    // Check if demo data is enabled via feature flag
-    if (!FeatureFlags().isDemoDataEnabled) {
-      if (kDebugMode) {
-        print(
-            'Demo data is disabled via feature flag, skipping database seeding...');
-      }
-      return;
-    }
-
     if (await isDatabaseSeeded()) {
       if (kDebugMode) {
-        print('Database already seeded, skipping...');
+        print('Database already has data, skipping seeding...');
       }
       return;
     }
 
     if (kDebugMode) {
-      print('Seeding database with initial data...');
+      print('Seeding database with essential bootstrap data...');
     }
 
     try {
+      // Always seed essential business data
       await _seedBusinessProfile();
-      await _seedCustomers();
       await _seedTaxRates();
-      await _seedEmployees();
-      await _seedSampleInvoices();
+      
+      // Only seed demo data if feature flag is enabled
+      if (FeatureFlags().isDemoDataEnabled) {
+        if (kDebugMode) {
+          print('Demo data enabled - seeding sample customers, employees, and invoices...');
+        }
+        await _seedCustomers();
+        await _seedEmployees();
+        await _seedSampleInvoices();
+      } else {
+        if (kDebugMode) {
+          print('Demo data disabled - skipping sample data seeding');
+        }
+      }
 
       if (kDebugMode) {
         print('Database seeding completed successfully');
@@ -60,6 +64,7 @@ class DatabaseSeedingService {
       if (kDebugMode) {
         print('Database seeding failed: $e');
       }
+      rethrow; // Re-throw to ensure initialization fails if seeding fails
     }
   }
 

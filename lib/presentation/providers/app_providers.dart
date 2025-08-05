@@ -50,23 +50,38 @@ final isAppInitializedProvider = StateProvider<bool>((ref) => false);
 final themeProvider =
     StateProvider<bool>((ref) => false); // false = light, true = dark
 
-// Initialize app services
+// Initialize app services with proper error handling
 final appInitializationProvider = FutureProvider<void>((ref) async {
-  final crdtDatabase = ref.read(crdtDatabaseServiceProvider);
-  final basicDatabase = ref.read(basicDatabaseServiceProvider);
-  final notifications = ref.read(notificationServiceProvider);
-  final seeding = ref.read(databaseSeedingServiceProvider);
+  print('🔄 Starting app initialization...');
+  
+  try {
+    final crdtDatabase = ref.read(crdtDatabaseServiceProvider);
+    final basicDatabase = ref.read(basicDatabaseServiceProvider);
+    final notifications = ref.read(notificationServiceProvider);
+    final seeding = ref.read(databaseSeedingServiceProvider);
 
-  // Initialize core services
-  await crdtDatabase.initialize(); // Initialize CRDT database
-  await basicDatabase.database; // Initialize basic database
-  await notifications.initialize();
+    // Initialize core services sequentially for proper error handling
+    print('📊 Initializing CRDT database...');
+    await crdtDatabase.initialize();
+    
+    print('💾 Initializing basic database...');
+    await basicDatabase.database;
+    
+    print('🔔 Initializing notifications...');
+    await notifications.initialize();
 
-  // Seed database with initial data if needed
-  await seeding.seedDatabase();
+    // Seed database with initial data if needed (bootstrap + demo if enabled)
+    print('🌱 Seeding database with initial data...');
+    await seeding.seedDatabase();
 
-  // Mark app as initialized
-  ref.read(isAppInitializedProvider.notifier).state = true;
+    // Mark app as initialized
+    ref.read(isAppInitializedProvider.notifier).state = true;
+    print('✅ App initialization completed successfully');
+  } catch (e) {
+    print('❌ App initialization failed: $e');
+    ref.read(errorProvider.notifier).state = 'App initialization failed: $e';
+    rethrow;
+  }
 });
 
 // Navigation state

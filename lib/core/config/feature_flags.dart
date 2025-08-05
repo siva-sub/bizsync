@@ -14,7 +14,7 @@ class FeatureFlags {
   static const String _enableDebugModeKey = 'enable_debug_mode';
   static const String _enableBetaFeaturesKey = 'enable_beta_features';
 
-  // Default values
+  // Default values - Demo data disabled by default to use real data
   bool _enableDemoData = false;
   bool _enableDebugMode = kDebugMode;
   bool _enableBetaFeatures = false;

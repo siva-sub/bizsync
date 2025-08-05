@@ -42,6 +42,9 @@ import '../features/forecasting/screens/financial_reports_screen.dart';
 import '../features/invoices/screens/recurring_invoices_screen.dart';
 import '../features/invoices/screens/email_settings_screen.dart';
 import '../features/customers/screens/customer_statements_screen.dart';
+import '../features/customers/screens/customer_details_screen.dart';
+import '../features/employees/screens/cpf_calculator_screen.dart';
+import '../features/forecasting/screens/forecasting_reports_screen.dart';
 import '../features/settings/screens/developer_settings_screen.dart';
 
 class AppRouter {
@@ -148,7 +151,7 @@ class AppRouter {
               ),
               GoRoute(
                 path: '/detail/:id',
-                builder: (context, state) => CustomerDetailScreenWrapper(
+                builder: (context, state) => CustomerDetailsScreen(
                   customerId: state.pathParameters['id']!,
                 ),
               ),
@@ -184,7 +187,7 @@ class AppRouter {
               ),
               GoRoute(
                 path: '/cpf-calculator',
-                builder: (context, state) => const CpfCalculatorScreenWrapper(),
+                builder: (context, state) => const CpfCalculatorScreen(),
               ),
             ],
           ),
@@ -231,7 +234,7 @@ class AppRouter {
               GoRoute(
                 path: '/forecasting',
                 builder: (context, state) =>
-                    const ForecastingReportScreenWrapper(),
+                    const ForecastingReportsScreen(),
               ),
             ],
           ),
@@ -1618,116 +1621,5 @@ class PayrollScreenWrapper extends StatelessWidget {
 }
 
 // Placeholder wrapper classes for missing screens
-class CustomerDetailScreenWrapper extends StatelessWidget {
-  final String customerId;
 
-  const CustomerDetailScreenWrapper({super.key, required this.customerId});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Customer Details'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person, size: 64, color: Colors.purple.withOpacity(0.7)),
-            const SizedBox(height: 16),
-            const Text('Customer Details',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            Text('Customer ID: $customerId',
-                style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            const Text('Coming Soon',
-                style: TextStyle(fontSize: 18, color: Colors.grey)),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => context.go('/customers'),
-              icon: const Icon(Icons.arrow_back),
-              label: const Text('Back to Customers'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CpfCalculatorScreenWrapper extends StatelessWidget {
-  const CpfCalculatorScreenWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('CPF Calculator'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.calculate,
-                size: 64, color: Colors.blue.withOpacity(0.7)),
-            const SizedBox(height: 16),
-            const Text('CPF Calculator',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            const Text('Calculate CPF contributions for employees',
-                style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            const Text('Coming Soon',
-                style: TextStyle(fontSize: 18, color: Colors.grey)),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => context.go('/employees'),
-              icon: const Icon(Icons.arrow_back),
-              label: const Text('Back to Employees'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ForecastingReportScreenWrapper extends StatelessWidget {
-  const ForecastingReportScreenWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Forecasting Reports'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.trending_up,
-                size: 64, color: Colors.green.withOpacity(0.7)),
-            const SizedBox(height: 16),
-            const Text('Forecasting Reports',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            const Text('Advanced forecasting and trend analysis',
-                style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            const Text('Coming Soon',
-                style: TextStyle(fontSize: 18, color: Colors.grey)),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => context.go('/reports'),
-              icon: const Icon(Icons.arrow_back),
-              label: const Text('Back to Reports'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

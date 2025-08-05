@@ -21,63 +21,8 @@ class CustomerRepository {
     return _databaseService!;
   }
 
-  // Mock data for demo purposes - this will be replaced with database seeding
-  static final List<Customer> _mockCustomers = [
-    Customer(
-      id: '1',
-      name: 'Acme Corporation Pte Ltd',
-      email: 'billing@acme.com.sg',
-      phone: '+65 6123 4567',
-      address: '123 Business Street\nSingapore 123456',
-      createdAt: DateTime.now().subtract(const Duration(days: 30)),
-      updatedAt: DateTime.now().subtract(const Duration(days: 5)),
-      gstRegistered: true,
-      uen: '200123456A',
-    ),
-    Customer(
-      id: '2',
-      name: 'Tech Solutions Pte Ltd',
-      email: 'accounts@techsolutions.sg',
-      phone: '+65 6789 0123',
-      address: '456 Innovation Drive\nSingapore 654321',
-      createdAt: DateTime.now().subtract(const Duration(days: 25)),
-      updatedAt: DateTime.now().subtract(const Duration(days: 2)),
-      gstRegistered: true,
-      uen: '201987654B',
-    ),
-    Customer(
-      id: '3',
-      name: 'Global Trading Co',
-      email: 'finance@globaltrading.com',
-      phone: '+65 6555 1234',
-      address: '789 Commerce Avenue\nSingapore 987654',
-      createdAt: DateTime.now().subtract(const Duration(days: 20)),
-      updatedAt: DateTime.now().subtract(const Duration(days: 1)),
-      gstRegistered: false,
-    ),
-    Customer(
-      id: '4',
-      name: 'Singapore Manufacturing Ltd',
-      email: 'procurement@sgmanufacturing.com.sg',
-      phone: '+65 6777 8888',
-      address: '321 Industrial Road\nSingapore 456789',
-      createdAt: DateTime.now().subtract(const Duration(days: 15)),
-      updatedAt: DateTime.now(),
-      gstRegistered: true,
-      uen: '199876543C',
-    ),
-    Customer(
-      id: '5',
-      name: 'Digital Services Hub',
-      email: 'admin@digitalhub.sg',
-      phone: '+65 6999 0000',
-      address: '654 Digital Way\nSingapore 321654',
-      createdAt: DateTime.now().subtract(const Duration(days: 10)),
-      updatedAt: DateTime.now(),
-      gstRegistered: true,
-      uen: '202112345D',
-    ),
-  ];
+  // Database seeding service provides initial data when database is empty
+  // No static mock data needed - all data comes from CRDT database
 
   /// Convert Customer to CRDTCustomer
   Future<CRDTCustomer> _customerToCrdt(Customer customer) async {
@@ -126,8 +71,9 @@ class CustomerRepository {
       final crdtCustomers = await dbService.getAllCustomers();
       return crdtCustomers.map((crdt) => _crdtToCustomer(crdt)).toList();
     } catch (e) {
-      // Fallback to mock data if database fails
-      return List.from(_mockCustomers);
+      // Log error and return empty list for proper error handling
+      print('Error getting customers from database: $e');
+      throw Exception('Failed to retrieve customers: $e');
     }
   }
 
@@ -138,12 +84,9 @@ class CustomerRepository {
       final crdtCustomer = await dbService.getCustomer(id);
       return crdtCustomer != null ? _crdtToCustomer(crdtCustomer) : null;
     } catch (e) {
-      // Fallback to mock data
-      try {
-        return _mockCustomers.firstWhere((customer) => customer.id == id);
-      } catch (e) {
-        return null;
-      }
+      // Log error and return null for proper error handling
+      print('Error getting customer by ID $id: $e');
+      return null;
     }
   }
 
@@ -156,18 +99,9 @@ class CustomerRepository {
       });
       return crdtCustomers.map((crdt) => _crdtToCustomer(crdt)).toList();
     } catch (e) {
-      // Fallback to mock data
-      if (query.isEmpty) {
-        return List.from(_mockCustomers);
-      }
-
-      final lowercaseQuery = query.toLowerCase();
-      return _mockCustomers.where((customer) {
-        return customer.name.toLowerCase().contains(lowercaseQuery) ||
-            (customer.email?.toLowerCase().contains(lowercaseQuery) ?? false) ||
-            (customer.phone?.toLowerCase().contains(lowercaseQuery) ?? false) ||
-            (customer.uen?.toLowerCase().contains(lowercaseQuery) ?? false);
-      }).toList();
+      // Log error and throw exception for proper error handling
+      print('Error searching customers with query "$query": $e');
+      throw Exception('Failed to search customers: $e');
     }
   }
 
@@ -185,9 +119,9 @@ class CustomerRepository {
 
       return _crdtToCustomer(crdtCustomer);
     } catch (e) {
-      // Fallback to mock data
-      _mockCustomers.add(customer);
-      return customer;
+      // Log error and throw exception for proper error handling
+      print('Error creating customer "${customer.name}": $e');
+      throw Exception('Failed to create customer: $e');
     }
   }
 
@@ -208,16 +142,12 @@ class CustomerRepository {
         await dbService.upsertCustomer(existingCrdt);
         return _crdtToCustomer(existingCrdt);
       } else {
-        throw Exception('Customer not found');
+        throw Exception('Customer with ID ${customer.id} not found');
       }
     } catch (e) {
-      // Fallback to mock data
-      final index = _mockCustomers.indexWhere((c) => c.id == customer.id);
-      if (index != -1) {
-        _mockCustomers[index] = customer;
-        return customer;
-      }
-      throw Exception('Customer not found');
+      // Log error and throw exception for proper error handling
+      print('Error updating customer "${customer.name}" (ID: ${customer.id}): $e');
+      throw Exception('Failed to update customer: $e');
     }
   }
 
@@ -227,8 +157,9 @@ class CustomerRepository {
       final dbService = await databaseService;
       await dbService.deleteCustomer(id);
     } catch (e) {
-      // Fallback to mock data
-      _mockCustomers.removeWhere((customer) => customer.id == id);
+      // Log error and throw exception for proper error handling
+      print('Error deleting customer with ID $id: $e');
+      throw Exception('Failed to delete customer: $e');
     }
   }
 
@@ -238,9 +169,9 @@ class CustomerRepository {
       final allCustomers = await getAllCustomers();
       return allCustomers.where((customer) => customer.gstRegistered).toList();
     } catch (e) {
-      return _mockCustomers
-          .where((customer) => customer.gstRegistered)
-          .toList();
+      // Log error and throw exception for proper error handling
+      print('Error getting GST registered customers: $e');
+      throw Exception('Failed to retrieve GST registered customers: $e');
     }
   }
 
@@ -250,7 +181,9 @@ class CustomerRepository {
       final allCustomers = await getAllCustomers();
       return allCustomers.where((customer) => customer.isActive).toList();
     } catch (e) {
-      return _mockCustomers.where((customer) => customer.isActive).toList();
+      // Log error and throw exception for proper error handling
+      print('Error getting active customers: $e');
+      throw Exception('Failed to retrieve active customers: $e');
     }
   }
 }
