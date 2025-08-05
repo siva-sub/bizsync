@@ -4,12 +4,12 @@ library run_all_tests;
 import 'dart:io';
 import 'dart:async';
 
-void main(List<String> args) async {
+void main() async {
   print('🚀 BizSync Comprehensive Test Suite Runner');
   print('============================================');
   
   final runner = TestSuiteRunner();
-  await runner.runAllTests(args);
+  await runner.runAllTests([]);
 }
 
 class TestSuiteRunner {
@@ -357,7 +357,7 @@ Examples:
   
   String _jsonValue(dynamic value) {
     if (value is String) return '"$value"';
-    if (value is Map) return '{${_formatJson(value)}}';
+    if (value is Map) return '{${_formatJson(Map<String, dynamic>.from(value))}}';
     if (value is List) return '[${value.map(_jsonValue).join(',')}]';
     return value.toString();
   }

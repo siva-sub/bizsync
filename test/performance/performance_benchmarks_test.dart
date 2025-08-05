@@ -94,10 +94,10 @@ void main() {
         
         // Setup related data
         final customers = List.generate(10, (i) => TestFactories.createCustomer().toJson());
-        final invoices = List.generate(100, (i) => TestFactories.createInvoiceData().toJson());
+        final invoices = List.generate(100, (i) => TestFactories.createInvoiceData());
         
         databaseService.addMockData('customers', customers);
-        databaseService.addMockData('invoices', invoices);
+        databaseService.addMockData('invoices', invoices.cast<Map<String, dynamic>>());
         
         final result = await TestPerformanceUtils.performanceTest(
           'Complex join query with 100 invoices and 10 customers',
@@ -221,7 +221,8 @@ void main() {
         );
         
         syncService.addDiscoveredDevice('performance-device');
-        await syncService.connectToDevice('performance-device');
+        final mockDevice = TestFactories.createDeviceInfo(deviceId: 'performance-device');
+        await syncService.connectToDevice(mockDevice);
         
         final result = await TestPerformanceUtils.performanceTest(
           'Sync ${TestConstants.largeDatasetSize} records',
@@ -248,7 +249,8 @@ void main() {
           'Connect to $deviceCount devices',
           () async {
             for (int i = 0; i < deviceCount; i++) {
-              await syncService.connectToDevice('device-$i');
+              final mockDevice = TestFactories.createDeviceInfo(deviceId: 'device-$i');
+              await syncService.connectToDevice(mockDevice);
             }
           },
           TestConstants.maxSyncOperationTime,
@@ -283,7 +285,7 @@ void main() {
         final result = await TestPerformanceUtils.performanceTest(
           'Send $batchSize notifications',
           () async {
-            final futures = <Future<bool>>[];
+            final futures = <Future<void>>[];
             
             for (int i = 0; i < batchSize; i++) {
               futures.add(notificationService.showNotification(
@@ -308,13 +310,13 @@ void main() {
         final result = await TestPerformanceUtils.performanceTest(
           'Schedule $scheduleCount notifications',
           () async {
-            final futures = <Future<bool>>[];
+            final futures = <Future<void>>[];
             
             for (int i = 0; i < scheduleCount; i++) {
               futures.add(notificationService.scheduleNotification(
                 title: 'Scheduled Notification $i',
                 body: 'Testing schedule performance',
-                scheduledDate: DateTime.now().add(Duration(minutes: i)),
+                scheduledFor: DateTime.now().add(Duration(minutes: i)),
               ));
             }
             
@@ -518,7 +520,8 @@ void main() {
             
             for (int device = 0; device < deviceCount; device++) {
               futures.add(Future(() async {
-                await syncService.connectToDevice('concurrent-device-$device');
+                final mockDevice = TestFactories.createDeviceInfo(deviceId: 'concurrent-device-$device');
+                await syncService.connectToDevice(mockDevice);
                 
                 final deviceData = List.generate(
                   recordsPerDevice,

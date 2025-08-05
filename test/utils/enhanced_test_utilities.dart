@@ -415,7 +415,7 @@ class BusinessScenarioGenerators {
     
     // Calculate line totals
     for (final item in lineItems) {
-      item['line_total'] = item['quantity'] * item['unit_price'];
+      item['line_total'] = (item['quantity'] as num) * (item['unit_price'] as num);
     }
     
     return {
@@ -567,7 +567,7 @@ class TestExecutionUtils {
   /// Verify test environment is properly set up
   static Future<void> verifyTestEnvironment() async {
     // Check if required services are available
-    expect(TestConfig._initialized, isTrue, reason: 'TestConfig not initialized');
+    // Note: TestConfig doesn't have _initialized field, skip this check
     
     // Verify database connection
     final db = await TestDatabaseConfig.getInMemoryDatabase();
@@ -753,4 +753,10 @@ class TestFailure implements Exception {
   
   @override
   String toString() => 'TestFailure: $message';
+}
+
+/// Main function for testing
+void main() {
+  // This is a test utilities library, not meant to be run directly
+  // Individual tests will import the required utilities
 }

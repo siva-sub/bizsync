@@ -37,8 +37,13 @@ class TestConfig {
   /// Reset test environment for clean state between tests
   static Future<void> reset() async {
     SharedPreferences.setMockInitialValues({});
+    // Reset method channel handlers
+    const deviceInfoChannel = MethodChannel('dev.fluttercommunity.plus/device_info');
+    const pathProviderChannel = MethodChannel('plugins.flutter.io/path_provider');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(null, null);
+        .setMockMethodCallHandler(deviceInfoChannel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pathProviderChannel, null);
   }
   
   /// Setup common method channel mocks
@@ -369,4 +374,10 @@ class TestConstants {
   static const Duration shortTimeout = Duration(seconds: 5);
   static const Duration mediumTimeout = Duration(seconds: 30);
   static const Duration longTimeout = Duration(minutes: 2);
+}
+
+/// Main function for testing
+void main() {
+  // This is a test config library, not meant to be run directly
+  // Individual tests will import the required configurations
 }

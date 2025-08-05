@@ -3,11 +3,16 @@ import 'package:bizsync/features/inventory/models/product.dart';
 import 'package:bizsync/features/invoices/models/invoice_models.dart';
 import 'package:bizsync/core/crdt/hybrid_logical_clock.dart';
 import 'package:bizsync/core/utils/uuid_generator.dart';
+import 'package:bizsync/features/sync/models/sync_models.dart';
+import 'dart:math' as math;
+import 'package:uuid/uuid.dart';
 
 /// Test data factories for creating consistent test data
 class TestFactories {
   static final _nodeId = 'test_node_${DateTime.now().millisecondsSinceEpoch}';
   static final _hlc = HybridLogicalClock(_nodeId);
+  static final _uuid = const Uuid();
+  static final _random = math.Random();
 
   /// Create a test customer with optional overrides
   static Customer createCustomer({
@@ -119,6 +124,26 @@ class TestFactories {
       name: name ?? 'Out of Stock Product',
       stockQuantity: 0,
       minStockLevel: 10,
+    );
+  }
+
+  /// Create device info for P2P testing
+  static DeviceInfo createDeviceInfo({
+    String? deviceId,
+    String? deviceName,
+    String? deviceType,
+    String? platform,
+  }) {
+    return DeviceInfo(
+      deviceId: deviceId ?? _uuid.v4(),
+      deviceName: deviceName ?? 'Test Device',
+      deviceType: deviceType ?? 'mobile',
+      platform: platform ?? 'android',
+      appVersion: '1.0.0',
+      lastSeen: DateTime.now(),
+      isOnline: true,
+      supportedTransports: ['bluetooth', 'wifi'],
+      metadata: {},
     );
   }
 
@@ -458,4 +483,10 @@ class TestValidators {
     // Should be +659XXXXXXX or 9XXXXXXX
     return RegExp(r'^(\+65)?[89]\d{7}$').hasMatch(cleanPhone);
   }
+}
+
+/// Main function for testing
+void main() {
+  // This is a test factories library, not meant to be run directly
+  // Individual tests will import the required factories
 }

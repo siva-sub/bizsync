@@ -3,21 +3,27 @@ library mock_services;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:mockito/mockito.dart';
 import 'package:bizsync/core/database/crdt_database_service.dart';
-import 'package:bizsync/core/database/database_service.dart';
+import 'package:bizsync/core/storage/database_service.dart';
 import 'package:bizsync/features/notifications/services/enhanced_notification_service.dart';
 import 'package:bizsync/services/profile_picture_service.dart';
 import 'package:bizsync/features/sync/services/p2p_sync_service.dart';
 import 'package:bizsync/features/tax/services/singapore_gst_service.dart';
+import 'package:bizsync/features/sync/models/sync_models.dart';
+import 'package:bizsync/core/crdt/hybrid_logical_clock.dart';
+import 'package:bizsync/core/crdt/vector_clock.dart';
 import 'package:bizsync/features/invoices/services/invoice_service.dart';
 import 'package:bizsync/features/customers/repositories/customer_repository.dart';
 import 'package:bizsync/features/inventory/repositories/product_repository.dart';
-import 'package:bizsync/core/crdt/hybrid_logical_clock.dart';
-import 'package:bizsync/core/crdt/vector_clock.dart';
+import 'package:bizsync/data/models/customer.dart';
+import 'package:bizsync/features/inventory/models/product.dart';
+import 'dart:typed_data';
 
 /// Mock Database Service
-class MockDatabaseService extends Mock implements DatabaseService {
+class MockDatabaseService extends Mock {
+  // Mock implementation that matches DatabaseService interface
   final Map<String, List<Map<String, dynamic>>> _mockTables = {};
   bool _isConnected = true;
   bool _shouldThrowError = false;
@@ -38,7 +44,6 @@ class MockDatabaseService extends Mock implements DatabaseService {
     _mockTables.clear();
   }
   
-  @override
   Future<List<Map<String, dynamic>>> query(
     String table, {
     String? where,
@@ -58,7 +63,6 @@ class MockDatabaseService extends Mock implements DatabaseService {
     return _mockTables[table] ?? [];
   }
   
-  @override
   Future<int> insert(String table, Map<String, dynamic> values) async {
     if (_shouldThrowError) {
       throw Exception('Mock database error');
@@ -73,7 +77,6 @@ class MockDatabaseService extends Mock implements DatabaseService {
     return _mockTables[table]!.length;
   }
   
-  @override
   Future<int> update(
     String table,
     Map<String, dynamic> values, {
@@ -91,7 +94,6 @@ class MockDatabaseService extends Mock implements DatabaseService {
     return 1; // Mock successful update
   }
   
-  @override
   Future<int> delete(
     String table, {
     String? where,
@@ -170,7 +172,8 @@ class MockCRDTDatabaseService extends Mock implements CRDTDatabaseService {
 }
 
 /// Mock Notification Service
-class MockNotificationService extends Mock implements EnhancedNotificationService {
+class MockNotificationService extends Mock {
+  // Mock implementation that matches EnhancedNotificationService interface
   final List<Map<String, dynamic>> _sentNotifications = [];
   bool _shouldFailSending = false;
   
@@ -186,15 +189,27 @@ class MockNotificationService extends Mock implements EnhancedNotificationServic
     _sentNotifications.clear();
   }
   
-  @override
-  Future<bool> showNotification({
+  Future<void> showNotification({
     required String title,
     required String body,
     String? payload,
     Map<String, dynamic>? data,
+    List<dynamic>? actions,
+    String? bigText,
+    dynamic type,
+    dynamic category,
+    dynamic priority,
+    dynamic channel,
+    String? imageUrl,
+    dynamic style,
+    bool? persistent,
+    String? groupKey,
+    int? progress,
+    int? maxProgress,
+    bool? indeterminate,
   }) async {
     if (_shouldFailSending) {
-      return false;
+      throw Exception('Mock notification failed');
     }
     
     _sentNotifications.add({
@@ -204,20 +219,23 @@ class MockNotificationService extends Mock implements EnhancedNotificationServic
       'data': data,
       'timestamp': DateTime.now().toIso8601String(),
     });
-    
-    return true;
   }
   
-  @override
-  Future<bool> scheduleNotification({
+  Future<void> scheduleNotification({
     required String title,
     required String body,
-    required DateTime scheduledDate,
+    required DateTime scheduledFor,
     String? payload,
     Map<String, dynamic>? data,
+    List<dynamic>? actions,
+    dynamic type,
+    dynamic category,
+    dynamic priority,
+    dynamic channel,
+    dynamic recurrenceRule,
   }) async {
     if (_shouldFailSending) {
-      return false;
+      throw Exception('Mock scheduled notification failed');
     }
     
     _sentNotifications.add({
@@ -225,21 +243,19 @@ class MockNotificationService extends Mock implements EnhancedNotificationServic
       'body': body,
       'payload': payload,
       'data': data,
-      'scheduledDate': scheduledDate.toIso8601String(),
+      'scheduledDate': scheduledFor.toIso8601String(),
       'timestamp': DateTime.now().toIso8601String(),
     });
-    
-    return true;
   }
 }
 
 /// Mock Profile Picture Service
 class MockProfilePictureService extends Mock implements ProfilePictureService {
   String? _mockProfilePicturePath;
-  List<int>? _mockProfilePictureBytes;
+  Uint8List? _mockProfilePictureBytes;
   bool _shouldFailOperations = false;
   
-  void setMockProfilePicture(String? path, List<int>? bytes) {
+  void setMockProfilePicture(String? path, Uint8List? bytes) {
     _mockProfilePicturePath = path;
     _mockProfilePictureBytes = bytes;
   }
@@ -256,8 +272,7 @@ class MockProfilePictureService extends Mock implements ProfilePictureService {
     return _mockProfilePicturePath;
   }
   
-  @override
-  Future<List<int>?> getProfilePictureBytes() async {
+  Future<Uint8List?> getProfilePictureBytes() async {
     if (_shouldFailOperations) {
       throw Exception('Mock profile picture service error');
     }
@@ -271,7 +286,7 @@ class MockProfilePictureService extends Mock implements ProfilePictureService {
     }
     
     _mockProfilePicturePath = imageFile.path;
-    _mockProfilePictureBytes = await imageFile.readAsBytes();
+    _mockProfilePictureBytes = Uint8List.fromList(await imageFile.readAsBytes());
     return true;
   }
   
@@ -319,7 +334,6 @@ class MockP2PSyncService extends Mock implements P2PSyncService {
     return List.from(_syncedData);
   }
   
-  @override
   Future<List<String>> discoverDevices() async {
     if (_shouldFailConnection) {
       throw Exception('Mock device discovery error');
@@ -327,16 +341,20 @@ class MockP2PSyncService extends Mock implements P2PSyncService {
     return List.from(_discoveredDevices);
   }
   
-  @override
-  Future<bool> connectToDevice(String deviceId) async {
+  Future<P2PConnection> connectToDevice(DeviceInfo device, {TransportType? preferredTransport}) async {
     if (_shouldFailConnection) {
-      return false;
+      throw Exception('Mock connection failed');
     }
     _isConnected = true;
-    return true;
+    return P2PConnection(
+      connectionId: 'mock-connection',
+      remoteDevice: device,
+      transport: preferredTransport ?? TransportType.bluetooth,
+      state: ConnectionState.connected,
+      connectedAt: DateTime.now(),
+    );
   }
   
-  @override
   Future<bool> syncData(List<Map<String, dynamic>> data) async {
     if (_shouldFailSync || !_isConnected) {
       return false;
@@ -346,14 +364,14 @@ class MockP2PSyncService extends Mock implements P2PSyncService {
     return true;
   }
   
-  @override
   Future<void> disconnect() async {
     _isConnected = false;
   }
 }
 
 /// Mock Singapore GST Service
-class MockSingaporeGSTService extends Mock implements SingaporeGSTService {
+class MockSingaporeGSTService extends Mock {
+  // Mock implementation that matches SingaporeGstService interface
   double _mockGSTRate = 0.09; // 9% current rate
   bool _shouldThrowError = false;
   final Map<DateTime, double> _historicalRates = {
@@ -370,7 +388,6 @@ class MockSingaporeGSTService extends Mock implements SingaporeGSTService {
     _shouldThrowError = shouldThrow;
   }
   
-  @override
   Future<double> getGSTRate({DateTime? date}) async {
     if (_shouldThrowError) {
       throw Exception('Mock GST service error');
@@ -387,7 +404,6 @@ class MockSingaporeGSTService extends Mock implements SingaporeGSTService {
     return _mockGSTRate;
   }
   
-  @override
   Future<Map<String, dynamic>> calculateGST({
     required double amount,
     required bool isGSTRegistered,
@@ -435,45 +451,39 @@ class MockCustomerRepository extends Mock implements CustomerRepository {
     _customers.clear();
   }
   
-  @override
-  Future<List<Map<String, dynamic>>> getAllCustomers() async {
+  Future<List<Customer>> getAllCustomers() async {
     if (_shouldThrowError) {
       throw Exception('Mock customer repository error');
     }
-    return _customers.values.toList();
+    return _customers.values.map((json) => Customer.fromJson(json)).toList();
   }
   
-  @override
-  Future<Map<String, dynamic>?> getCustomerById(String id) async {
+  Future<Customer?> getCustomer(String id) async {
     if (_shouldThrowError) {
       throw Exception('Mock customer repository error');
     }
-    return _customers[id];
+    final json = _customers[id];
+    return json != null ? Customer.fromJson(json) : null;
   }
   
-  @override
-  Future<String> createCustomer(Map<String, dynamic> customer) async {
-    if (_shouldThrowError) {
-      throw Exception('Mock customer repository error');
-    }
-    
-    final id = customer['id'] as String;
-    _customers[id] = customer;
-    return id;
-  }
-  
-  @override
-  Future<void> updateCustomer(String id, Map<String, dynamic> customer) async {
+  Future<void> createCustomer(Customer customer) async {
     if (_shouldThrowError) {
       throw Exception('Mock customer repository error');
     }
     
-    if (_customers.containsKey(id)) {
-      _customers[id] = customer;
+    _customers[customer.id] = customer.toJson();
+  }
+  
+  Future<void> updateCustomer(Customer customer) async {
+    if (_shouldThrowError) {
+      throw Exception('Mock customer repository error');
+    }
+    
+    if (_customers.containsKey(customer.id)) {
+      _customers[customer.id] = customer.toJson();
     }
   }
   
-  @override
   Future<void> deleteCustomer(String id) async {
     if (_shouldThrowError) {
       throw Exception('Mock customer repository error');
@@ -500,45 +510,39 @@ class MockProductRepository extends Mock implements ProductRepository {
     _products.clear();
   }
   
-  @override
-  Future<List<Map<String, dynamic>>> getAllProducts() async {
+  Future<List<Product>> getProducts() async {
     if (_shouldThrowError) {
       throw Exception('Mock product repository error');
     }
-    return _products.values.toList();
+    return _products.values.map((json) => Product.fromJson(json)).toList();
   }
   
-  @override
-  Future<Map<String, dynamic>?> getProductById(String id) async {
+  Future<Product?> getProduct(String id) async {
     if (_shouldThrowError) {
       throw Exception('Mock product repository error');
     }
-    return _products[id];
+    final json = _products[id];
+    return json != null ? Product.fromJson(json) : null;
   }
   
-  @override
-  Future<String> createProduct(Map<String, dynamic> product) async {
-    if (_shouldThrowError) {
-      throw Exception('Mock product repository error');
-    }
-    
-    final id = product['id'] as String;
-    _products[id] = product;
-    return id;
-  }
-  
-  @override
-  Future<void> updateProduct(String id, Map<String, dynamic> product) async {
+  Future<void> createProduct(Product product) async {
     if (_shouldThrowError) {
       throw Exception('Mock product repository error');
     }
     
-    if (_products.containsKey(id)) {
-      _products[id] = product;
+    _products[product.id] = product.toJson();
+  }
+  
+  Future<void> updateProduct(Product product) async {
+    if (_shouldThrowError) {
+      throw Exception('Mock product repository error');
+    }
+    
+    if (_products.containsKey(product.id)) {
+      _products[product.id] = product.toJson();
     }
   }
   
-  @override
   Future<void> deleteProduct(String id) async {
     if (_shouldThrowError) {
       throw Exception('Mock product repository error');
@@ -559,26 +563,21 @@ class MockHybridLogicalClock extends Mock implements HybridLogicalClock {
     _mockTimestamp = timestamp;
   }
   
-  @override
   String get nodeId => _nodeId;
   
-  @override
-  int now() {
-    return _mockTimestamp++;
+  HLCTimestamp tick() {
+    return HLCTimestamp(_mockTimestamp++, 0, _nodeId);
   }
   
-  @override
-  int update(int receivedTime) {
-    _mockTimestamp = receivedTime + 1;
-    return _mockTimestamp;
+  HLCTimestamp update(HLCTimestamp remoteTimestamp) {
+    _mockTimestamp = remoteTimestamp.physicalTime + 1;
+    return HLCTimestamp(_mockTimestamp, 0, _nodeId);
   }
   
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'node_id': _nodeId,
-      'timestamp': _mockTimestamp,
-    };
+  HLCTimestamp get current => HLCTimestamp(_mockTimestamp, 0, _nodeId);
+  
+  HLCTimestamp now() {
+    return HLCTimestamp(_mockTimestamp++, 0, _nodeId);
   }
 }
 
@@ -596,9 +595,9 @@ class MockVectorClock extends Mock implements VectorClock {
     _clock[nodeId] = (_clock[nodeId] ?? 0) + 1;
   }
   
-  @override
-  void update(String nodeId, int timestamp) {
-    _clock[nodeId] = timestamp;
+  VectorClock update(VectorClock remoteClock) {
+    // Simple mock implementation
+    return this;
   }
   
   @override
@@ -618,8 +617,13 @@ class MockVectorClock extends Mock implements VectorClock {
     return Map.from(_clock);
   }
   
-  @override
-  String toJson() {
-    return _clock.toString();
+  Map<String, dynamic> toJson() {
+    return _clock;
   }
+}
+
+/// Main function for testing
+void main() {
+  // This is a mock service library, not meant to be run directly
+  // Individual tests will import the required mocks
 }

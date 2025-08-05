@@ -4,6 +4,8 @@ library ui_components_test;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bizsync/data/models/customer.dart';
+import 'package:bizsync/features/inventory/models/product.dart';
 import '../test_config.dart';
 import '../test_factories.dart';
 
@@ -297,7 +299,7 @@ void main() {
         await tester.pump();
         
         // Should show zero tax for export
-        expect(find.textContaining('0.00'), findsWidgets(2)); // Tax and total difference
+        expect(find.text('0.00'), findsNWidgets(2)); // Tax and total difference
       });
     });
     
@@ -347,7 +349,7 @@ void main() {
         );
         
         // Should show loading indicators
-        expect(find.byType(CircularProgressIndicator), findsWidgets(4)); // One per card
+        expect(find.byType(CircularProgressIndicator), findsNWidgets(4)); // One per card
       });
       
       testWidgets('should handle error state', (WidgetTester tester) async {
@@ -407,18 +409,8 @@ void main() {
         );
         
         // Selected item should be highlighted
-        final invoicesTab = tester.widget<BottomNavigationBarItem>(
-          find.descendant(
-            of: find.byType(BottomNavigationBar),
-            matching: find.byWidgetPredicate((widget) => 
-              widget is BottomNavigationBarItem && 
-              widget.label == 'Invoices'
-            ),
-          ),
-        );
-        
-        // In a real test, you'd check the selection state
-        expect(invoicesTab, isNotNull);
+        // Check that invoices tab exists
+        expect(find.text('Invoices'), findsOneWidget);
       });
       
       testWidgets('should navigate when tapped', (WidgetTester tester) async {
@@ -561,7 +553,7 @@ void main() {
         await tester.pump();
         
         // Should show validation errors and not submit
-        expect(find.textContaining('required'), findsWidgets(2));
+        expect(find.textContaining('required'), findsNWidgets(2));
       });
     });
     
@@ -588,11 +580,16 @@ void main() {
           ProviderScope(
             child: MaterialApp(
               home: Scaffold(
-                body: ErrorWidget.withDetails(
-                  message: 'Failed to load data',
-                  retry: () {
-                    retryPressed = true;
-                  },
+                body: Column(
+                  children: [
+                    Text('Failed to load data'),
+                    ElevatedButton(
+                      onPressed: () {
+                        retryPressed = true;
+                      },
+                      child: Text('Retry'),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -884,8 +881,8 @@ class CustomerListWidget extends StatelessWidget {
       children: [
         TextField(decoration: InputDecoration(hintText: 'Search customers')),
         ...customers.map((customer) => ListTile(
-          title: Text(customer.name),
-          subtitle: Text(customer.email ?? ''),
+          title: Text((customer as Customer).name),
+          subtitle: Text((customer as Customer).email ?? ''),
         )),
       ],
     );
