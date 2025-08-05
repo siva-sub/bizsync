@@ -19,7 +19,7 @@ jobs:
       - name: 🔧 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.9'
+          flutter-version: '3.22.0'
           channel: 'stable'
           cache: true
 
@@ -29,7 +29,7 @@ jobs:
           flutter pub outdated
 
       - name: 🔧 Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: 🧪 Run tests
         run: flutter test
@@ -79,7 +79,7 @@ jobs:
       - name: 🔧 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.9'
+          flutter-version: '3.22.0'
           channel: 'stable'
           cache: true
 
@@ -100,7 +100,7 @@ jobs:
           flutter pub deps --style=compact >> security-report.md
 
       - name: 📤 Upload security report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-report
           path: security-report.md

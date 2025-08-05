@@ -9,7 +9,7 @@ on:
     types: [ published ]
 
 env:
-  FLUTTER_VERSION: '3.16.9'
+  FLUTTER_VERSION: '3.22.0'
   JAVA_VERSION: '11'
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🔧 Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: ${{ env.JAVA_VERSION }}
@@ -37,19 +37,19 @@ jobs:
         run: flutter pub get
 
       - name: 🔧 Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: ✅ Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
       - name: 🔍 Analyze project source
-        run: flutter analyze || true  # Continue even if analyze fails
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: 🧪 Run tests
         run: flutter test --coverage
 
       - name: 📊 Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage/lcov.info
 
@@ -59,13 +59,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        flutter-version: ['3.16.9']
+        flutter-version: ['3.22.0']
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
       - name: 🔧 Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: ${{ env.JAVA_VERSION }}
@@ -81,7 +81,7 @@ jobs:
         run: flutter pub get
 
       - name: 🔧 Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: 🧪 Run unit tests
         run: flutter test
@@ -100,7 +100,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🔧 Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: ${{ env.JAVA_VERSION }}
@@ -116,7 +116,7 @@ jobs:
         run: flutter pub get
 
       - name: 🔧 Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: 🔑 Setup Android signing
         if: github.event_name == 'release'
@@ -140,14 +140,14 @@ jobs:
         run: flutter build appbundle --release
 
       - name: 📤 Upload APK artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: build/app/outputs/flutter-apk/*.apk
 
       - name: 📤 Upload App Bundle artifacts
         if: github.event_name == 'release'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: android-aab
           path: build/app/outputs/bundle/release/*.aab
@@ -181,7 +181,7 @@ jobs:
         run: flutter pub get
 
       - name: 🔧 Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: 🏗️ Build Linux app
         run: flutter build linux --release
@@ -192,7 +192,7 @@ jobs:
           tar -czf ../../../../../bizsync-linux-x64.tar.gz .
 
       - name: 📤 Upload Linux artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux-x64
           path: bizsync-linux-x64.tar.gz
@@ -220,7 +220,7 @@ jobs:
         run: flutter pub get
 
       - name: 🔧 Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: 🏗️ Build Windows app
         run: flutter build windows --release
@@ -230,7 +230,7 @@ jobs:
           Compress-Archive -Path "build\windows\runner\Release\*" -DestinationPath "bizsync-windows-x64.zip"
 
       - name: 📤 Upload Windows artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-x64
           path: bizsync-windows-x64.zip
@@ -258,7 +258,7 @@ jobs:
         run: flutter pub get
 
       - name: 🔧 Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: 🏗️ Build macOS app
         run: flutter build macos --release
@@ -269,7 +269,7 @@ jobs:
           tar -czf ../../../../../bizsync-macos.tar.gz BizSync.app
 
       - name: 📤 Upload macOS artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-universal
           path: bizsync-macos.tar.gz
@@ -301,7 +301,7 @@ jobs:
     if: github.event_name == 'release'
     steps:
       - name: 📥 Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: 📝 Generate release notes
         id: release_notes
@@ -340,7 +340,7 @@ jobs:
     if: github.event_name == 'release' && contains(github.event.release.tag_name, 'stable')
     steps:
       - name: 📥 Download App Bundle
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: android-aab
 
