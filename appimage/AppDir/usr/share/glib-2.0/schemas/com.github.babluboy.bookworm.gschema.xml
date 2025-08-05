@@ -1,0 +1,110 @@
+<schemalist>
+	<schema id="com.github.babluboy.bookworm" path="/com/github/babluboy/bookworm/" gettext-domain="bookworm">
+		<key name="pos-x" type="i">
+			<default>0</default>
+			<summary>Save x co-ordinate of window position</summary>
+		</key>
+		<key name="pos-y" type="i">
+			<default>0</default>
+			<summary>Save x co-ordinate of window position</summary>
+		</key>
+		<key name="window-width" type="i">
+			<default>1200</default>
+			<summary>The saved width of the window.</summary>
+		</key>
+		<key name="window-height" type="i">
+			<default>800</default>
+			<summary>The saved height of the window.</summary>
+        </key>
+		<key name="window-is-maximized" type="b">
+				<default>false</default>
+				<summary>Save maximized state of window</summary>
+		</key>
+		<key name="window-position-x" type="i">
+				<default>0</default>
+				<summary>Save x co-ordinate of window position</summary>
+		</key>
+		<key name="window-position-y" type="i">
+				<default>0</default>
+				<summary>Save y co-ordinate of window position</summary>
+		</key>
+		<key name="zoom-level" type="d">
+				<default>1.0</default>
+				<summary>Save Zoom Level of WebView</summary>
+		</key>
+		<key name="reading-profile" type="s">
+				<default>"PROFILE1"</default>
+				<summary>Save the reading profile</summary>
+		</key>
+		<key name="is-local-storage-enabled" type="b">
+				<default>true</default>
+				<summary>Local storage for extracted contents of books</summary>
+		</key>
+		<key name="is-show-library-on-start" type="b">
+				<default>false</default>
+				<summary>Always show the library view on start</summary>
+		</key>
+		<key name="is-dark-theme-enabled" type="b">
+				<default>false</default>
+				<summary>Enable dark theme</summary>
+		</key>
+		<key name="reading-width" type="s">
+				<default>"1"</default>
+				<summary>Save the page width for reading</summary>
+		</key>
+		<key name="reading-line-height" type="s">
+				<default>"150"</default>
+				<summary>Save the page line height for reading</summary>
+		</key>
+		<key name="text-alignment" type="s">
+				<default>"left"</default>
+				<summary>Save the page text alignment for reading</summary>
+		</key>
+		<key name="reading-font-name" type="s">
+				<default>"georgia"</default>
+				<summary>Save the choosen font for reading</summary>
+		</key>
+		<key name="reading-font-name-family" type="s">
+				<default>"georgia 12"</default>
+				<summary>Save the choosen font for reading</summary>
+		</key>
+		<key name="reading-font-size" type="i">
+				<default>12</default>
+				<summary>Save the choosen font size for reading</summary>
+		</key>
+		<key name="is-two-page-enabled" type="b">
+				<default>false</default>
+				<summary>Enable two page view</summary>
+		</key>
+		<key name="library-view-mode" type="s">
+				<default>"LIBRARY_MODE_GRID"</default>
+				<summary>Save the library view mode</summary>
+		</key>
+		<key name="is-fullscreen" type="b">
+				<default>false</default>
+				<summary>Save fullscreen state</summary>
+		</key>
+		<key name="list-of-profile-colors" type="s">
+            <default>"#000000,#fbfbfb,#E8ED00,#586e75,#fdf6e3,#87FF2B,#93a1a1,#002b36,#3465A4"</default>
+            <summary>
+			List of profile colours. Each profiles has three colors - First color is text color, second one is bgcolor and third color is highlight color. The first three sets are customizable and the last two sets are the default light and dark profiles
+		    </summary>
+        </key>
+		    <key name="list-of-scan-dirs" type="s">
+            <default>""</default>
+            <summary>List of directories to be scanned for new books</summary>
+        </key>
+		<key name="book-being-read" type="s">
+				<default>""</default>
+				<summary>Save the path of the book being read if the user closes the app while reading</summary>
+		</key>
+		<key name="current-info-tab" type="s">
+				<default>"content-list"</default>
+				<summary>Save the last viewed info tab</summary>
+		</key>
+        <key name="library-page-items" type="i">
+				<default>21</default>
+				<summary>Number of books to show per library page in both grid and list views</summary>
+		</key>
+  </schema>
+</schemalist>

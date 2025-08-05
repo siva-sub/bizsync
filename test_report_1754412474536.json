@@ -1,0 +1,1707 @@
+"timestamp": "2025-08-06T00:47:54.536953",
+"summary": {"total_tests": 14,
+"passed_tests": 0,
+"failed_tests": 14,
+"total_duration_ms": 109322},
+"results": [{"name": "database_schema_migration",
+"category": "Unit",
+"path": "test/unit/database/database_schema_migration_test.dart",
+"passed": false,
+"duration_ms": 5423,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/unit/database/database_schema_migration_test.dart                                                                                           00:01 +0: loading /home/siva/Projects/testing/bizsync/test/unit/database/database_schema_migration_test.dart                                                                                           00:02 +0: loading /home/siva/Projects/testing/bizsync/test/unit/database/database_schema_migration_test.dart                                                                                           00:02 +0: Database Schema Migration Tests (setUpAll)                                                                                                                                                   00:02 +0: Database Schema Migration Tests Initial Schema Creation should create all required tables                                                                                                    00:03 +0: Database Schema Migration Tests Initial Schema Creation should create all required tables                                                                                                    00:03 +1: Database Schema Migration Tests Initial Schema Creation should create all required tables                                                                                                    00:03 +1: Database Schema Migration Tests Initial Schema Creation should create customers table with correct schema                                                                                    00:03 +2: Database Schema Migration Tests Initial Schema Creation should create customers table with correct schema                                                                                    00:03 +2: Database Schema Migration Tests Initial Schema Creation should create products table with correct schema                                                                                     00:03 +3: Database Schema Migration Tests Initial Schema Creation should create products table with correct schema                                                                                     00:03 +3: Database Schema Migration Tests Initial Schema Creation should create invoices table with correct schema                                                                                     00:03 +3 -1: Database Schema Migration Tests Initial Schema Creation should create invoices table with correct schema [E]                                                                              
+  Expected: <1>
+    Actual: <0>
+  id should be NOT NULL
+  
+  package:matcher                                                expect
+  package:flutter_test/src/widget_tester.dart 474:18             expect
+  test/unit/database/database_schema_migration_test.dart 130:11  main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/unit/database/database_schema_migration_test.dart -p vm --plain-name 'Database Schema Migration Tests Initial Schema Creation should create invoices table with correct schema'
+00:03 +3 -1: Database Schema Migration Tests Initial Schema Creation should create invoice_line_items table with foreign key constraint                                                                00:03 +4 -1: Database Schema Migration Tests Initial Schema Creation should create invoice_line_items table with foreign key constraint                                                                00:03 +4 -1: Database Schema Migration Tests Initial Schema Creation should create crdt_operations table with correct schema                                                                           00:03 +4 -2: Database Schema Migration Tests Initial Schema Creation should create crdt_operations table with correct schema [E]                                                                       
+  Expected: <1>
+    Actual: <0>
+  id should be NOT NULL
+  
+  package:matcher                                                expect
+  package:flutter_test/src/widget_tester.dart 474:18             expect
+  test/unit/database/database_schema_migration_test.dart 181:11  main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/unit/database/database_schema_migration_test.dart -p vm --plain-name 'Database Schema Migration Tests Initial Schema Creation should create crdt_operations table with correct schema'
+00:03 +4 -2: Database Schema Migration Tests Schema Migration Scenarios should handle adding new column to existing table                                                                              00:03 +5 -2: Database Schema Migration Tests Schema Migration Scenarios should handle adding new column to existing table                                                                              00:03 +5 -2: Database Schema Migration Tests Schema Migration Scenarios should handle adding new table                                                                                                 00:03 +6 -2: Database Schema Migration Tests Schema Migration Scenarios should handle adding new table                                                                                                 00:03 +6 -2: Database Schema Migration Tests Schema Migration Scenarios should handle creating indexes for performance                                                                                 00:03 +7 -2: Database Schema Migration Tests Schema Migration Scenarios should handle creating indexes for performance                                                                                 00:03 +7 -2: Database Schema Migration Tests Data Integrity Tests should enforce NOT NULL constraints                                                                                                  00:03 +8 -2: Database Schema Migration Tests Data Integrity Tests should enforce NOT NULL constraints                                                                                                  00:03 +8 -2: Database Schema Migration Tests Data Integrity Tests should enforce foreign key constraints                                                                                               00:03 +9 -2: Database Schema Migration Tests Data Integrity Tests should enforce foreign key constraints                                                                                               00:03 +9 -2: Database Schema Migration Tests Data Integrity Tests should handle UNIQUE constraints                                                                                                     00:03 +10 -2: Database Schema Migration Tests Data Integrity Tests should handle UNIQUE constraints                                                                                                    00:03 +10 -2: Database Schema Migration Tests Performance Tests should execute queries within acceptable time limits                                                                                   00:03 +11 -2: Database Schema Migration Tests Performance Tests should execute queries within acceptable time limits                                                                                   00:03 +11 -2: Database Schema Migration Tests Performance Tests should handle complex joins efficiently                                                                                                00:03 +12 -2: Database Schema Migration Tests Performance Tests should handle complex joins efficiently                                                                                                00:03 +12 -2: Database Schema Migration Tests CRDT Operations Schema Tests should support CRDT operations storage                                                                                      00:03 +13 -2: Database Schema Migration Tests CRDT Operations Schema Tests should support CRDT operations storage                                                                                      00:03 +13 -2: Database Schema Migration Tests CRDT Operations Schema Tests should support querying pending CRDT operations                                                                             00:03 +14 -2: Database Schema Migration Tests CRDT Operations Schema Tests should support querying pending CRDT operations                                                                             00:03 +14 -2: Database Schema Migration Tests (tearDownAll)                                                                                                                                            00:03 +14 -2: Some tests failed.                                                                                                                                                                       
+",
+"error": ""},{"name": "null_safety_validation",
+"category": "Unit",
+"path": "test/unit/validation/null_safety_validation_test.dart",
+"passed": false,
+"duration_ms": 3669,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/unit/validation/null_safety_validation_test.dart                                                                                            00:01 +0: loading /home/siva/Projects/testing/bizsync/test/unit/validation/null_safety_validation_test.dart                                                                                            00:01 +0 -1: loading /home/siva/Projects/testing/bizsync/test/unit/validation/null_safety_validation_test.dart [E]                                                                                     
+  Failed to load "/home/siva/Projects/testing/bizsync/test/unit/validation/null_safety_validation_test.dart":
+  Compilation failed for testPath=/home/siva/Projects/testing/bizsync/test/unit/validation/null_safety_validation_test.dart: lib/core/debugging/null_safety_validator.dart:310:49: Error: The getter 'violationType' isn't defined for the class 'NullSafetyResult'.
+   - 'NullSafetyResult' is from 'package:bizsync/core/debugging/null_safety_validator.dart' ('lib/core/debugging/null_safety_validator.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'violationType'.
+        final key = '${result.tableName}_${result.violationType}';
+                                                  ^^^^^^^^^^^^^
+  lib/core/debugging/null_safety_validator.dart:325:42: Error: The getter 'violationType' isn't defined for the class 'NullSafetyResult'.
+   - 'NullSafetyResult' is from 'package:bizsync/core/debugging/null_safety_validator.dart' ('lib/core/debugging/null_safety_validator.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'violationType'.
+          'violation_type': firstViolation.violationType?.name,
+                                           ^^^^^^^^^^^^^
+  lib/core/debugging/null_safety_validator.dart:332:60: Error: The getter 'violationType' isn't defined for the class 'NullSafetyResult'.
+   - 'NullSafetyResult' is from 'package:bizsync/core/debugging/null_safety_validator.dart' ('lib/core/debugging/null_safety_validator.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'violationType'.
+          'estimated_effort': _estimateEffort(firstViolation.violationType, totalCount),
+                                                             ^^^^^^^^^^^^^
+  lib/core/debugging/null_safety_validator.dart:775:28: Error: The getter 'ConflictAlgorithm' isn't defined for the class 'NullSafetyValidator'.
+   - 'NullSafetyValidator' is from 'package:bizsync/core/debugging/null_safety_validator.dart' ('lib/core/debugging/null_safety_validator.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'ConflictAlgorithm'.
+          conflictAlgorithm: ConflictAlgorithm.replace,
+                             ^^^^^^^^^^^^^^^^^
+  .
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/unit/validation/null_safety_validation_test.dart -p vm --plain-name 'loading /home/siva/Projects/testing/bizsync/test/unit/validation/null_safety_validation_test.dart'
+00:01 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": "lib/core/debugging/null_safety_validator.dart:310:49: Error: The getter 'violationType' isn't defined for the class 'NullSafetyResult'.
+ - 'NullSafetyResult' is from 'package:bizsync/core/debugging/null_safety_validator.dart' ('lib/core/debugging/null_safety_validator.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'violationType'.
+      final key = '${result.tableName}_${result.violationType}';
+                                                ^^^^^^^^^^^^^
+lib/core/debugging/null_safety_validator.dart:325:42: Error: The getter 'violationType' isn't defined for the class 'NullSafetyResult'.
+ - 'NullSafetyResult' is from 'package:bizsync/core/debugging/null_safety_validator.dart' ('lib/core/debugging/null_safety_validator.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'violationType'.
+        'violation_type': firstViolation.violationType?.name,
+                                         ^^^^^^^^^^^^^
+lib/core/debugging/null_safety_validator.dart:332:60: Error: The getter 'violationType' isn't defined for the class 'NullSafetyResult'.
+ - 'NullSafetyResult' is from 'package:bizsync/core/debugging/null_safety_validator.dart' ('lib/core/debugging/null_safety_validator.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'violationType'.
+        'estimated_effort': _estimateEffort(firstViolation.violationType, totalCount),
+                                                           ^^^^^^^^^^^^^
+lib/core/debugging/null_safety_validator.dart:775:28: Error: The getter 'ConflictAlgorithm' isn't defined for the class 'NullSafetyValidator'.
+ - 'NullSafetyValidator' is from 'package:bizsync/core/debugging/null_safety_validator.dart' ('lib/core/debugging/null_safety_validator.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'ConflictAlgorithm'.
+        conflictAlgorithm: ConflictAlgorithm.replace,
+                           ^^^^^^^^^^^^^^^^^
+"},{"name": "comprehensive_profile_picture",
+"category": "Unit",
+"path": "test/unit/services/comprehensive_profile_picture_test.dart",
+"passed": false,
+"duration_ms": 10157,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:01 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:02 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:03 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:04 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:05 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:06 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:07 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:08 +0: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart                                                                                       00:08 +0 -1: loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart [E]                                                                                
+  Failed to load "/home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart":
+  Compilation failed for testPath=/home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart: test/unit/services/comprehensive_profile_picture_test.dart:74:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, testImageData);
+                                                            ^
+  test/unit/services/comprehensive_profile_picture_test.dart:92:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, largeImageData);
+                                                            ^
+  test/unit/services/comprehensive_profile_picture_test.dart:135:64: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(largeImageFile.path, compressedData);
+                                                                 ^
+  test/unit/services/comprehensive_profile_picture_test.dart:152:61: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+            mockService.setMockProfilePicture(imageFile.path, testImageData);
+                                                              ^
+  test/unit/services/comprehensive_profile_picture_test.dart:175:68: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/test_profile.jpg', testImageData);
+                                                                     ^
+  test/unit/services/comprehensive_profile_picture_test.dart:193:68: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/cached_image.jpg', testImageData);
+                                                                     ^
+  test/unit/services/comprehensive_profile_picture_test.dart:212:75: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/large_for_thumbnail.jpg', largeImageData);
+                                                                            ^
+  test/unit/services/comprehensive_profile_picture_test.dart:227:65: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/to_delete.jpg', testImageData);
+                                                                  ^
+  test/unit/services/comprehensive_profile_picture_test.dart:244:69: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/cached_delete.jpg', testImageData);
+                                                                      ^
+  test/unit/services/comprehensive_profile_picture_test.dart:265:69: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/with_metadata.jpg', testImageData);
+                                                                      ^
+  test/unit/services/comprehensive_profile_picture_test.dart:346:58: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(testFile.path, testImageData);
+                                                           ^
+  test/unit/services/comprehensive_profile_picture_test.dart:358:64: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(smallImageFile.path, smallImageData);
+                                                                 ^
+  test/unit/services/comprehensive_profile_picture_test.dart:373:72: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/performance_test.jpg', testImageData);
+                                                                         ^
+  test/unit/services/comprehensive_profile_picture_test.dart:398:61: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+            mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                              ^
+  test/unit/services/comprehensive_profile_picture_test.dart:423:61: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+            mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                              ^
+  test/unit/services/comprehensive_profile_picture_test.dart:435:71: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/concurrent_read.jpg', testImageData);
+                                                                        ^
+  test/unit/services/comprehensive_profile_picture_test.dart:456:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, testImageData);
+                                                            ^
+  test/unit/services/comprehensive_profile_picture_test.dart:477:61: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+            mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                              ^
+  test/unit/services/comprehensive_profile_picture_test.dart:492:64: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(largeImageFile.path, largeImageData);
+                                                                 ^
+  test/unit/services/comprehensive_profile_picture_test.dart:506:71: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+            mockService.setMockProfilePicture('/tmp/cache_test_$i.jpg', imageData);
+                                                                        ^
+  test/unit/services/comprehensive_profile_picture_test.dart:529:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                            ^
+  test/unit/services/comprehensive_profile_picture_test.dart:549:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+   - 'List' is from 'dart:core'.
+   - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                            ^
+  .
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart -p vm --plain-name 'loading /home/siva/Projects/testing/bizsync/test/unit/services/comprehensive_profile_picture_test.dart'
+00:08 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": "test/unit/services/comprehensive_profile_picture_test.dart:74:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(imageFile.path, testImageData);
+                                                          ^
+test/unit/services/comprehensive_profile_picture_test.dart:92:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(imageFile.path, largeImageData);
+                                                          ^
+test/unit/services/comprehensive_profile_picture_test.dart:135:64: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(largeImageFile.path, compressedData);
+                                                               ^
+test/unit/services/comprehensive_profile_picture_test.dart:152:61: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, testImageData);
+                                                            ^
+test/unit/services/comprehensive_profile_picture_test.dart:175:68: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture('/tmp/test_profile.jpg', testImageData);
+                                                                   ^
+test/unit/services/comprehensive_profile_picture_test.dart:193:68: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture('/tmp/cached_image.jpg', testImageData);
+                                                                   ^
+test/unit/services/comprehensive_profile_picture_test.dart:212:75: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture('/tmp/large_for_thumbnail.jpg', largeImageData);
+                                                                          ^
+test/unit/services/comprehensive_profile_picture_test.dart:227:65: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture('/tmp/to_delete.jpg', testImageData);
+                                                                ^
+test/unit/services/comprehensive_profile_picture_test.dart:244:69: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture('/tmp/cached_delete.jpg', testImageData);
+                                                                    ^
+test/unit/services/comprehensive_profile_picture_test.dart:265:69: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture('/tmp/with_metadata.jpg', testImageData);
+                                                                    ^
+test/unit/services/comprehensive_profile_picture_test.dart:346:58: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(testFile.path, testImageData);
+                                                         ^
+test/unit/services/comprehensive_profile_picture_test.dart:358:64: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(smallImageFile.path, smallImageData);
+                                                               ^
+test/unit/services/comprehensive_profile_picture_test.dart:373:72: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture('/tmp/performance_test.jpg', testImageData);
+                                                                       ^
+test/unit/services/comprehensive_profile_picture_test.dart:398:61: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                            ^
+test/unit/services/comprehensive_profile_picture_test.dart:423:61: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                            ^
+test/unit/services/comprehensive_profile_picture_test.dart:435:71: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture('/tmp/concurrent_read.jpg', testImageData);
+                                                                      ^
+test/unit/services/comprehensive_profile_picture_test.dart:456:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(imageFile.path, testImageData);
+                                                          ^
+test/unit/services/comprehensive_profile_picture_test.dart:477:61: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                            ^
+test/unit/services/comprehensive_profile_picture_test.dart:492:64: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(largeImageFile.path, largeImageData);
+                                                               ^
+test/unit/services/comprehensive_profile_picture_test.dart:506:71: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+          mockService.setMockProfilePicture('/tmp/cache_test_$i.jpg', imageData);
+                                                                      ^
+test/unit/services/comprehensive_profile_picture_test.dart:529:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                          ^
+test/unit/services/comprehensive_profile_picture_test.dart:549:59: Error: The argument type 'List<int>' can't be assigned to the parameter type 'Uint8List?'.
+ - 'List' is from 'dart:core'.
+ - 'Uint8List' is from 'dart:typed_data'.
+        mockService.setMockProfilePicture(imageFile.path, imageData);
+                                                          ^
+"},{"name": "notification_system",
+"category": "Unit",
+"path": "test/unit/notifications/notification_system_test.dart",
+"passed": false,
+"duration_ms": 10374,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:01 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:02 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:03 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:04 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:05 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:06 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:07 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:08 +0: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart                                                                                            00:08 +0 -1: loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart [E]                                                                                     
+  Failed to load "/home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart":
+  Compilation failed for testPath=/home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart: test/unit/notifications/notification_system_test.dart:31:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:46:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:65:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:79:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isFalse);
+                 ^
+  test/unit/notifications/notification_system_test.dart:91:11: Error: No named parameter with the name 'scheduledDate'.
+            scheduledDate: scheduledDate,
+            ^^^^^^^^^^^^^
+  test/unit/notifications/notification_system_test.dart:125:13: Error: No named parameter with the name 'scheduledDate'.
+              scheduledDate: notification['scheduledDate'] as DateTime,
+              ^^^^^^^^^^^^^
+  test/unit/notifications/notification_system_test.dart:140:11: Error: No named parameter with the name 'scheduledDate'.
+            scheduledDate: DateTime.now().add(Duration(hours: 1)),
+            ^^^^^^^^^^^^^
+  test/unit/notifications/notification_system_test.dart:165:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:190:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:206:11: Error: No named parameter with the name 'scheduledDate'.
+            scheduledDate: dueDate.subtract(Duration(days: 7)), // 1 week before
+            ^^^^^^^^^^^^^
+  test/unit/notifications/notification_system_test.dart:245:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:274:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:310:43: Error: The argument type 'Future<void>' can't be assigned to the parameter type 'Future<bool>'.
+   - 'Future' is from 'dart:async'.
+            futures.add(notificationService.showNotification(
+                                            ^
+  test/unit/notifications/notification_system_test.dart:330:13: Error: No named parameter with the name 'scheduledDate'.
+              scheduledDate: scheduledDate,
+              ^^^^^^^^^^^^^
+  test/unit/notifications/notification_system_test.dart:366:47: Error: The argument type 'Future<void>' can't be assigned to the parameter type 'Future<bool>'.
+   - 'Future' is from 'dart:async'.
+                futures.add(notificationService.showNotification(
+                                                ^
+  test/unit/notifications/notification_system_test.dart:393:17: Error: No named parameter with the name 'scheduledDate'.
+                  scheduledDate: DateTime.now().add(Duration(minutes: i)),
+                  ^^^^^^^^^^^^^
+  test/unit/notifications/notification_system_test.dart:416:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isFalse);
+                 ^
+  test/unit/notifications/notification_system_test.dart:428:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isFalse);
+                 ^
+  test/unit/notifications/notification_system_test.dart:444:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isFalse);
+                 ^
+  test/unit/notifications/notification_system_test.dart:458:18: Error: A value of type 'void' can't be returned from an async function with return type 'Future<bool>'.
+   - 'Future' is from 'dart:async'.
+            return await notificationService.showNotification(
+                   ^
+  test/unit/notifications/notification_system_test.dart:488:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:502:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:517:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:530:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue); // Mock allows empty title
+                 ^
+  test/unit/notifications/notification_system_test.dart:537:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue); // Mock allows empty body
+                 ^
+  test/unit/notifications/notification_system_test.dart:574:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:599:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  test/unit/notifications/notification_system_test.dart:626:16: Error: This expression has type 'void' and can't be used.
+          expect(result, isTrue);
+                 ^
+  .
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart -p vm --plain-name 'loading /home/siva/Projects/testing/bizsync/test/unit/notifications/notification_system_test.dart'
+00:08 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": "test/unit/notifications/notification_system_test.dart:31:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:46:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:65:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:79:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isFalse);
+               ^
+test/unit/notifications/notification_system_test.dart:91:11: Error: No named parameter with the name 'scheduledDate'.
+          scheduledDate: scheduledDate,
+          ^^^^^^^^^^^^^
+test/unit/notifications/notification_system_test.dart:125:13: Error: No named parameter with the name 'scheduledDate'.
+            scheduledDate: notification['scheduledDate'] as DateTime,
+            ^^^^^^^^^^^^^
+test/unit/notifications/notification_system_test.dart:140:11: Error: No named parameter with the name 'scheduledDate'.
+          scheduledDate: DateTime.now().add(Duration(hours: 1)),
+          ^^^^^^^^^^^^^
+test/unit/notifications/notification_system_test.dart:165:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:190:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:206:11: Error: No named parameter with the name 'scheduledDate'.
+          scheduledDate: dueDate.subtract(Duration(days: 7)), // 1 week before
+          ^^^^^^^^^^^^^
+test/unit/notifications/notification_system_test.dart:245:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:274:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:310:43: Error: The argument type 'Future<void>' can't be assigned to the parameter type 'Future<bool>'.
+ - 'Future' is from 'dart:async'.
+          futures.add(notificationService.showNotification(
+                                          ^
+test/unit/notifications/notification_system_test.dart:330:13: Error: No named parameter with the name 'scheduledDate'.
+            scheduledDate: scheduledDate,
+            ^^^^^^^^^^^^^
+test/unit/notifications/notification_system_test.dart:366:47: Error: The argument type 'Future<void>' can't be assigned to the parameter type 'Future<bool>'.
+ - 'Future' is from 'dart:async'.
+              futures.add(notificationService.showNotification(
+                                              ^
+test/unit/notifications/notification_system_test.dart:393:17: Error: No named parameter with the name 'scheduledDate'.
+                scheduledDate: DateTime.now().add(Duration(minutes: i)),
+                ^^^^^^^^^^^^^
+test/unit/notifications/notification_system_test.dart:416:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isFalse);
+               ^
+test/unit/notifications/notification_system_test.dart:428:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isFalse);
+               ^
+test/unit/notifications/notification_system_test.dart:444:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isFalse);
+               ^
+test/unit/notifications/notification_system_test.dart:458:18: Error: A value of type 'void' can't be returned from an async function with return type 'Future<bool>'.
+ - 'Future' is from 'dart:async'.
+          return await notificationService.showNotification(
+                 ^
+test/unit/notifications/notification_system_test.dart:488:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:502:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:517:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:530:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue); // Mock allows empty title
+               ^
+test/unit/notifications/notification_system_test.dart:537:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue); // Mock allows empty body
+               ^
+test/unit/notifications/notification_system_test.dart:574:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:599:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+test/unit/notifications/notification_system_test.dart:626:16: Error: This expression has type 'void' and can't be used.
+        expect(result, isTrue);
+               ^
+"},{"name": "crdt_synchronization",
+"category": "Unit",
+"path": "test/unit/crdt/crdt_synchronization_test.dart",
+"passed": false,
+"duration_ms": 10280,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:01 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:02 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:03 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:04 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:05 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:06 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:07 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:08 +0: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart                                                                                                    00:08 +0 -1: loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart [E]                                                                                             
+  Failed to load "/home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart":
+  Compilation failed for testPath=/home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart: test/unit/crdt/crdt_synchronization_test.dart:161:45: Error: The operator '>' isn't defined for the class 'HLCTimestamp'.
+   - 'HLCTimestamp' is from 'package:bizsync/core/crdt/hybrid_logical_clock.dart' ('lib/core/crdt/hybrid_logical_clock.dart').
+  Try correcting the operator to an existing operator, or defining a '>' operator.
+          final winningOperation = timestamp1 > timestamp2 ? operation1 : operation2;
+                                              ^
+  test/unit/crdt/crdt_synchronization_test.dart:276:68: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+   - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+          final connectionResult = await syncService.connectToDevice('target-device');
+                                                                     ^
+  test/unit/crdt/crdt_synchronization_test.dart:284:68: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+   - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+          final connectionResult = await syncService.connectToDevice('unreachable-device');
+                                                                     ^
+  test/unit/crdt/crdt_synchronization_test.dart:291:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+   - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+          await syncService.connectToDevice('sync-device');
+                                            ^
+  test/unit/crdt/crdt_synchronization_test.dart:331:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+   - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+          await syncService.connectToDevice('device-2');
+                                            ^
+  test/unit/crdt/crdt_synchronization_test.dart:379:32: Error: The method 'toJson' isn't defined for the class 'MockHybridLogicalClock'.
+   - 'MockHybridLogicalClock' is from 'test/mocks/mock_services.dart'.
+  Try correcting the name to the name of an existing method, or defining a method named 'toJson'.
+          final clockJson = hlc1.toJson();
+                                 ^^^^^^
+  test/unit/crdt/crdt_synchronization_test.dart:399:28: Error: Too many positional arguments: 1 allowed, but 2 found.
+  Try removing the extra positional arguments.
+          vectorClock1.update('node-3', 5);
+                             ^
+  test/unit/crdt/crdt_synchronization_test.dart:466:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+   - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+          await syncService.connectToDevice('performance-device');
+                                            ^
+  test/unit/crdt/crdt_synchronization_test.dart:584:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+   - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+          await syncService.connectToDevice('partition-device');
+                                            ^
+  test/unit/crdt/crdt_synchronization_test.dart:648:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+   - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+          await syncService.connectToDevice('customer-sync-device');
+                                            ^
+  test/unit/crdt/crdt_synchronization_test.dart:674:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+   - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+          await syncService.connectToDevice('invoice-sync-device');
+                                            ^
+  .
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart -p vm --plain-name 'loading /home/siva/Projects/testing/bizsync/test/unit/crdt/crdt_synchronization_test.dart'
+00:08 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": "test/unit/crdt/crdt_synchronization_test.dart:161:45: Error: The operator '>' isn't defined for the class 'HLCTimestamp'.
+ - 'HLCTimestamp' is from 'package:bizsync/core/crdt/hybrid_logical_clock.dart' ('lib/core/crdt/hybrid_logical_clock.dart').
+Try correcting the operator to an existing operator, or defining a '>' operator.
+        final winningOperation = timestamp1 > timestamp2 ? operation1 : operation2;
+                                            ^
+test/unit/crdt/crdt_synchronization_test.dart:276:68: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+ - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+        final connectionResult = await syncService.connectToDevice('target-device');
+                                                                   ^
+test/unit/crdt/crdt_synchronization_test.dart:284:68: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+ - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+        final connectionResult = await syncService.connectToDevice('unreachable-device');
+                                                                   ^
+test/unit/crdt/crdt_synchronization_test.dart:291:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+ - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+        await syncService.connectToDevice('sync-device');
+                                          ^
+test/unit/crdt/crdt_synchronization_test.dart:331:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+ - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+        await syncService.connectToDevice('device-2');
+                                          ^
+test/unit/crdt/crdt_synchronization_test.dart:379:32: Error: The method 'toJson' isn't defined for the class 'MockHybridLogicalClock'.
+ - 'MockHybridLogicalClock' is from 'test/mocks/mock_services.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'toJson'.
+        final clockJson = hlc1.toJson();
+                               ^^^^^^
+test/unit/crdt/crdt_synchronization_test.dart:399:28: Error: Too many positional arguments: 1 allowed, but 2 found.
+Try removing the extra positional arguments.
+        vectorClock1.update('node-3', 5);
+                           ^
+test/unit/crdt/crdt_synchronization_test.dart:466:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+ - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+        await syncService.connectToDevice('performance-device');
+                                          ^
+test/unit/crdt/crdt_synchronization_test.dart:584:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+ - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+        await syncService.connectToDevice('partition-device');
+                                          ^
+test/unit/crdt/crdt_synchronization_test.dart:648:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+ - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+        await syncService.connectToDevice('customer-sync-device');
+                                          ^
+test/unit/crdt/crdt_synchronization_test.dart:674:43: Error: The argument type 'String' can't be assigned to the parameter type 'DeviceInfo'.
+ - 'DeviceInfo' is from 'package:bizsync/features/sync/models/sync_models.dart' ('lib/features/sync/models/sync_models.dart').
+        await syncService.connectToDevice('invoice-sync-device');
+                                          ^
+"},{"name": "ui_components",
+"category": "Widget",
+"path": "test/widget/ui_components_test.dart",
+"passed": false,
+"duration_ms": 8014,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart                                                                                                              00:01 +0: loading /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart                                                                                                              00:02 +0: loading /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart                                                                                                              00:02 +0: UI Components Widget Tests (setUpAll)                                                                                                                                                        00:02 +0: UI Components Widget Tests Customer Form Components should render customer form with all fields                                                                                              00:03 +0: UI Components Widget Tests Customer Form Components should render customer form with all fields                                                                                              00:03 +0: UI Components Widget Tests Customer Form Components should render customer form with all fields                                                                                              
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly 6 matching candidates
+  Actual: _TypeWidgetFinder:<Found 5 widgets with type "TextFormField": [
+            TextFormField(dependencies: [InheritedCupertinoTheme, UnmanagedRestorationScope,
+_FormScope, _InheritedTheme, _LocalizationsScope-[GlobalKey#44b1c]], state:
+_TextFormFieldState#beb4c),
+            TextFormField(dependencies: [InheritedCupertinoTheme, UnmanagedRestorationScope,
+_FormScope, _InheritedTheme, _LocalizationsScope-[GlobalKey#44b1c]], state:
+_TextFormFieldState#35017),
+            TextFormField(dependencies: [InheritedCupertinoTheme, UnmanagedRestorationScope,
+_FormScope, _InheritedTheme, _LocalizationsScope-[GlobalKey#44b1c]], state:
+_TextFormFieldState#1e8bb),
+            TextFormField(dependencies: [InheritedCupertinoTheme, UnmanagedRestorationScope,
+_FormScope, _InheritedTheme, _LocalizationsScope-[GlobalKey#44b1c]], state:
+_TextFormFieldState#ba192),
+            TextFormField(dependencies: [InheritedCupertinoTheme, UnmanagedRestorationScope,
+_FormScope, _InheritedTheme, _LocalizationsScope-[GlobalKey#44b1c]], state:
+_TextFormFieldState#0a63b),
+          ]>
+   Which: is not enough
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:35:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 35
+The test description was:
+  should render customer form with all fields
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +0 -1: UI Components Widget Tests Customer Form Components should render customer form with all fields [E]                                                                                       
+  Test failed. See exception logs above.
+  The test description was: should render customer form with all fields
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Customer Form Components should render customer form with all fields'
+00:03 +0 -1: UI Components Widget Tests Customer Form Components should validate required fields                                                                                                       00:03 +0 -1: UI Components Widget Tests Customer Form Components should validate required fields                                                                                                       
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Customer name is required": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:62:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 62
+The test description was:
+  should validate required fields
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +0 -2: UI Components Widget Tests Customer Form Components should validate required fields [E]                                                                                                   
+  Test failed. See exception logs above.
+  The test description was: should validate required fields
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Customer Form Components should validate required fields'
+00:03 +0 -2: UI Components Widget Tests Customer Form Components should show GST registration field when checkbox is checked                                                                           00:03 +0 -2: UI Components Widget Tests Customer Form Components should show GST registration field when checkbox is checked                                                                           
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TextWidgetFinder:<Found 1 widget with text "GST Registration Number": [
+            Text("GST Registration Number", textAlign: start, overflow: ellipsis, dependencies:
+[DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:77:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 77
+The test description was:
+  should show GST registration field when checkbox is checked
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +0 -3: UI Components Widget Tests Customer Form Components should show GST registration field when checkbox is checked [E]                                                                       
+  Test failed. See exception logs above.
+  The test description was: should show GST registration field when checkbox is checked
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Customer Form Components should show GST registration field when checkbox is checked'
+00:03 +0 -3: UI Components Widget Tests Customer Form Components should validate GST registration number format                                                                                        00:04 +0 -3: UI Components Widget Tests Customer Form Components should validate GST registration number format                                                                                        00:04 +0 -3: UI Components Widget Tests Customer Form Components should validate GST registration number format                                                                                        
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Invalid GST registration number format": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:112:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 112
+The test description was:
+  should validate GST registration number format
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:04 +0 -4: UI Components Widget Tests Customer Form Components should validate GST registration number format [E]                                                                                    
+  Test failed. See exception logs above.
+  The test description was: should validate GST registration number format
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Customer Form Components should validate GST registration number format'
+00:04 +0 -4: UI Components Widget Tests Product Form Components should render product form with all fields                                                                                             00:04 +1 -4: UI Components Widget Tests Product Form Components should render product form with all fields                                                                                             00:04 +1 -4: UI Components Widget Tests Product Form Components should validate numeric fields                                                                                                         00:04 +1 -4: UI Components Widget Tests Product Form Components should validate numeric fields                                                                                                         
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Please enter a valid price": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:156:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 156
+The test description was:
+  should validate numeric fields
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:04 +1 -5: UI Components Widget Tests Product Form Components should validate numeric fields [E]                                                                                                     
+  Test failed. See exception logs above.
+  The test description was: should validate numeric fields
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Product Form Components should validate numeric fields'
+00:04 +1 -5: UI Components Widget Tests Product Form Components should show low stock warning                                                                                                          00:04 +2 -5: UI Components Widget Tests Product Form Components should show low stock warning                                                                                                          00:04 +2 -5: UI Components Widget Tests Invoice Components should render invoice form with customer picker                                                                                             00:04 +3 -5: UI Components Widget Tests Invoice Components should render invoice form with customer picker                                                                                             00:04 +3 -5: UI Components Widget Tests Invoice Components should add and remove line items                                                                                                            00:04 +3 -5: UI Components Widget Tests Invoice Components should add and remove line items                                                                                                            
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly 2 matching candidates
+  Actual: _TypeWidgetFinder:<Found 1 widget with type "LineItemWidget": [
+            LineItemWidget,
+          ]>
+   Which: is not enough
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:217:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 217
+The test description was:
+  should add and remove line items
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:04 +3 -6: UI Components Widget Tests Invoice Components should add and remove line items [E]                                                                                                        
+  Test failed. See exception logs above.
+  The test description was: should add and remove line items
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Invoice Components should add and remove line items'
+00:04 +3 -6: UI Components Widget Tests Invoice Components should calculate totals automatically                                                                                                       00:05 +3 -6: UI Components Widget Tests Invoice Components should calculate totals automatically                                                                                                       00:05 +3 -6: UI Components Widget Tests Invoice Components should calculate totals automatically                                                                                                       
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "200.00": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:248:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 248
+The test description was:
+  should calculate totals automatically
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +3 -7: UI Components Widget Tests Invoice Components should calculate totals automatically [E]                                                                                                   
+  Test failed. See exception logs above.
+  The test description was: should calculate totals automatically
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Invoice Components should calculate totals automatically'
+00:05 +3 -7: UI Components Widget Tests Invoice Components should show GST calculation for Singapore customers                                                                                         00:05 +3 -7: UI Components Widget Tests Invoice Components should show GST calculation for Singapore customers                                                                                         
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextContainingWidgetFinder:<Found 0 widgets with text containing 9.00: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:277:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 277
+The test description was:
+  should show GST calculation for Singapore customers
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +3 -8: UI Components Widget Tests Invoice Components should show GST calculation for Singapore customers [E]                                                                                     
+  Test failed. See exception logs above.
+  The test description was: should show GST calculation for Singapore customers
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Invoice Components should show GST calculation for Singapore customers'
+00:05 +3 -8: UI Components Widget Tests Invoice Components should show zero-rated tax for export customers                                                                                             00:05 +3 -8: UI Components Widget Tests Invoice Components should show zero-rated tax for export customers                                                                                             
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly 2 matching candidates
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "0.00": []>
+   Which: means none were found but some were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:302:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 302
+The test description was:
+  should show zero-rated tax for export customers
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +3 -9: UI Components Widget Tests Invoice Components should show zero-rated tax for export customers [E]                                                                                         
+  Test failed. See exception logs above.
+  The test description was: should show zero-rated tax for export customers
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Invoice Components should show zero-rated tax for export customers'
+00:05 +3 -9: UI Components Widget Tests Dashboard Components should render dashboard cards                                                                                                             00:05 +4 -9: UI Components Widget Tests Dashboard Components should render dashboard cards                                                                                                             00:05 +4 -9: UI Components Widget Tests Dashboard Components should show revenue chart                                                                                                                 00:05 +5 -9: UI Components Widget Tests Dashboard Components should show revenue chart                                                                                                                 00:05 +5 -9: UI Components Widget Tests Dashboard Components should handle loading state                                                                                                               00:05 +6 -9: UI Components Widget Tests Dashboard Components should handle loading state                                                                                                               00:05 +6 -9: UI Components Widget Tests Dashboard Components should handle error state                                                                                                                 00:05 +7 -9: UI Components Widget Tests Dashboard Components should handle error state                                                                                                                 00:05 +7 -9: UI Components Widget Tests Navigation Components should render bottom navigation bar                                                                                                      00:05 +8 -9: UI Components Widget Tests Navigation Components should render bottom navigation bar                                                                                                      00:05 +8 -9: UI Components Widget Tests Navigation Components should highlight selected navigation item                                                                                                00:05 +9 -9: UI Components Widget Tests Navigation Components should highlight selected navigation item                                                                                                00:05 +9 -9: UI Components Widget Tests Navigation Components should navigate when tapped                                                                                                              00:05 +10 -9: UI Components Widget Tests Navigation Components should navigate when tapped                                                                                                             00:05 +10 -9: UI Components Widget Tests List Components should render customer list                                                                                                                   00:05 +11 -9: UI Components Widget Tests List Components should render customer list                                                                                                                   00:05 +11 -9: UI Components Widget Tests List Components should show empty state when no customers                                                                                                     00:05 +12 -9: UI Components Widget Tests List Components should show empty state when no customers                                                                                                     00:05 +12 -9: UI Components Widget Tests List Components should filter customers based on search query                                                                                                 00:05 +12 -9: UI Components Widget Tests List Components should filter customers based on search query                                                                                                 
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TextWidgetFinder:<Found 1 widget with text "Google LLC": [
+            Text("Google LLC", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:506:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 506
+The test description was:
+  should filter customers based on search query
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +12 -10: UI Components Widget Tests List Components should filter customers based on search query [E]                                                                                            
+  Test failed. See exception logs above.
+  The test description was: should filter customers based on search query
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests List Components should filter customers based on search query'
+00:05 +12 -10: UI Components Widget Tests Form Validation Components should show validation errors in real-time                                                                                        00:05 +12 -10: UI Components Widget Tests Form Validation Components should show validation errors in real-time                                                                                        
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Please enter a valid email": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:530:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 530
+The test description was:
+  should show validation errors in real-time
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +12 -11: UI Components Widget Tests Form Validation Components should show validation errors in real-time [E]                                                                                    
+  Test failed. See exception logs above.
+  The test description was: should show validation errors in real-time
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Form Validation Components should show validation errors in real-time'
+00:05 +12 -11: UI Components Widget Tests Form Validation Components should prevent submission with validation errors                                                                                  00:05 +12 -11: UI Components Widget Tests Form Validation Components should prevent submission with validation errors                                                                                  
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly 2 matching candidates
+  Actual: _TextContainingWidgetFinder:<Found 0 widgets with text containing required: []>
+   Which: means none were found but some were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure>.<anonymous closure> (file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart:556:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:193:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1064:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart line 556
+The test description was:
+  should prevent submission with validation errors
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +12 -12: UI Components Widget Tests Form Validation Components should prevent submission with validation errors [E]                                                                              
+  Test failed. See exception logs above.
+  The test description was: should prevent submission with validation errors
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/widget/ui_components_test.dart -p vm --plain-name 'UI Components Widget Tests Form Validation Components should prevent submission with validation errors'
+00:05 +12 -12: UI Components Widget Tests Loading and Error States should show loading spinner                                                                                                         00:05 +13 -12: UI Components Widget Tests Loading and Error States should show loading spinner                                                                                                         00:05 +13 -12: UI Components Widget Tests Loading and Error States should show error message with retry button                                                                                         00:05 +14 -12: UI Components Widget Tests Loading and Error States should show error message with retry button                                                                                         00:05 +14 -12: UI Components Widget Tests Responsive Design should adapt to different screen sizes                                                                                                     00:06 +14 -12: UI Components Widget Tests Responsive Design should adapt to different screen sizes                                                                                                     00:06 +15 -12: UI Components Widget Tests Responsive Design should adapt to different screen sizes                                                                                                     00:06 +15 -12: UI Components Widget Tests (tearDownAll)                                                                                                                                                00:06 +15 -12: Some tests failed.                                                                                                                                                                      
+",
+"error": ""},{"name": "critical_workflows",
+"category": "Integration",
+"path": "test/integration/critical_workflows_test.dart",
+"passed": false,
+"duration_ms": 9877,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart                                                                                                    00:01 +0: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart                                                                                                    00:02 +0: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart                                                                                                    00:03 +0: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart                                                                                                    00:04 +0: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart                                                                                                    00:05 +0: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart                                                                                                    00:06 +0: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart                                                                                                    00:07 +0: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart                                                                                                    00:07 +0 -1: loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart [E]                                                                                             
+  Failed to load "/home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart":
+  Compilation failed for testPath=/home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart: Error: Couldn't resolve the package 'integration_test' in 'package:integration_test/integration_test.dart'.
+  test/integration/critical_workflows_test.dart:5:8: Error: Not found: 'package:integration_test/integration_test.dart'
+  import 'package:integration_test/integration_test.dart';
+         ^
+  test/integration/critical_workflows_test.dart:13:3: Error: Undefined name 'IntegrationTestWidgetsFlutterBinding'.
+    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart -p vm --plain-name 'loading /home/siva/Projects/testing/bizsync/test/integration/critical_workflows_test.dart'
+00:07 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": "Error: Couldn't resolve the package 'integration_test' in 'package:integration_test/integration_test.dart'.
+test/integration/critical_workflows_test.dart:5:8: Error: Not found: 'package:integration_test/integration_test.dart'
+import 'package:integration_test/integration_test.dart';
+       ^
+test/integration/critical_workflows_test.dart:13:3: Error: Undefined name 'IntegrationTestWidgetsFlutterBinding'.
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"},{"name": "customer_management",
+"category": "Integration",
+"path": "test/integration/customer_management_test.dart",
+"passed": false,
+"duration_ms": 4593,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/integration/customer_management_test.dart                                                                                                   00:01 +0: loading /home/siva/Projects/testing/bizsync/test/integration/customer_management_test.dart                                                                                                   00:02 +0: loading /home/siva/Projects/testing/bizsync/test/integration/customer_management_test.dart                                                                                                   00:02 +0: Customer Management Integration Tests (setUpAll)                                                                                                                                             00:02 +0: Customer Management Integration Tests (setUpAll)                                                                                                                                             
+❌ Failed to initialize CRDT database: BizSyncException: Failed to initialize CRDT database: Binding has not yet been initialized.
+The "instance" getter on the ServicesBinding binding mixin is only available once that binding has been initialized.
+Typically, this is done by calling "WidgetsFlutterBinding.ensureInitialized()" or "runApp()" (the latter calls the former). Typically this call is done in the "void main()" method. The "ensureInitialized" method is idempotent; calling it multiple times is not harmful. After calling that method, the "instance" getter will return the binding.
+In a test, one can call "TestWidgetsFlutterBinding.ensureInitialized()" as the first line in the test's "main()" method to initialize the binding.
+If ServicesBinding is a custom binding mixin, there must also be a custom binding class, like WidgetsFlutterBinding, but that mixes in the selected binding, and that is the class that must be constructed before using the "instance" getter.
+Platform: linux
+Database type: SQLite (Unencrypted)
+Encryption: disabled
+00:02 +0 -1: Customer Management Integration Tests (setUpAll) [E]                                                                                                                                      
+  BizSyncException: CRDT Database initialization failed: BizSyncException: Failed to initialize CRDT database: Binding has not yet been initialized.
+  The "instance" getter on the ServicesBinding binding mixin is only available once that binding has been initialized.
+  Typically, this is done by calling "WidgetsFlutterBinding.ensureInitialized()" or "runApp()" (the latter calls the former). Typically this call is done in the "void main()" method. The "ensureInitialized" method is idempotent; calling it multiple times is not harmful. After calling that method, the "instance" getter will return the binding.
+  In a test, one can call "TestWidgetsFlutterBinding.ensureInitialized()" as the first line in the test's "main()" method to initialize the binding.
+  If ServicesBinding is a custom binding mixin, there must also be a custom binding class, like WidgetsFlutterBinding, but that mixes in the selected binding, and that is the class that must be constructed before using the "instance" getter.
+  Platform: linux
+  Database type: SQLite (Unencrypted)
+  Encryption: disabled
+  package:bizsync/core/database/crdt_database_service.dart 42:7  CRDTDatabaseService.initialize
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/integration/customer_management_test.dart -p vm --plain-name 'Customer Management Integration Tests (setUpAll)'
+00:02 +0 -1: Customer Management Integration Tests (tearDownAll)                                                                                                                                       00:02 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": ""},{"name": "data_integrity",
+"category": "Integration",
+"path": "test/integration/data_integrity_test.dart",
+"passed": false,
+"duration_ms": 3434,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/integration/data_integrity_test.dart                                                                                                        00:01 +0: loading /home/siva/Projects/testing/bizsync/test/integration/data_integrity_test.dart                                                                                                        00:01 +0 -1: loading /home/siva/Projects/testing/bizsync/test/integration/data_integrity_test.dart [E]                                                                                                 
+  Failed to load "/home/siva/Projects/testing/bizsync/test/integration/data_integrity_test.dart":
+  Compilation failed for testPath=/home/siva/Projects/testing/bizsync/test/integration/data_integrity_test.dart: test/integration/data_integrity_test.dart:242:25: Error: Undefined name 'PaymentTerm'.
+            paymentTerms: PaymentTerm.net30,
+                          ^^^^^^^^^^^
+  test/integration/data_integrity_test.dart:247:62: Error: 'PaymentTerm' isn't a type.
+          final paymentTerms = invoiceData['payment_terms'] as PaymentTerm;
+                                                               ^^^^^^^^^^^
+  test/integration/data_integrity_test.dart:251:16: Error: Undefined name 'PaymentTerm'.
+            case PaymentTerm.dueOnReceipt:
+                 ^^^^^^^^^^^
+  test/integration/data_integrity_test.dart:254:16: Error: Undefined name 'PaymentTerm'.
+            case PaymentTerm.net15:
+                 ^^^^^^^^^^^
+  test/integration/data_integrity_test.dart:257:16: Error: Undefined name 'PaymentTerm'.
+            case PaymentTerm.net30:
+                 ^^^^^^^^^^^
+  test/integration/data_integrity_test.dart:260:16: Error: Undefined name 'PaymentTerm'.
+            case PaymentTerm.net60:
+                 ^^^^^^^^^^^
+  test/integration/data_integrity_test.dart:263:16: Error: Undefined name 'PaymentTerm'.
+            case PaymentTerm.custom:
+                 ^^^^^^^^^^^
+  test/integration/data_integrity_test.dart:268:48: Error: Non-nullable variable 'expectedDueDate' must be assigned before it can be used.
+          expect(invoiceData['due_date'], equals(expectedDueDate));
+                                                 ^^^^^^^^^^^^^^^
+  .
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/integration/data_integrity_test.dart -p vm --plain-name 'loading /home/siva/Projects/testing/bizsync/test/integration/data_integrity_test.dart'
+00:01 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": "test/integration/data_integrity_test.dart:242:25: Error: Undefined name 'PaymentTerm'.
+          paymentTerms: PaymentTerm.net30,
+                        ^^^^^^^^^^^
+test/integration/data_integrity_test.dart:247:62: Error: 'PaymentTerm' isn't a type.
+        final paymentTerms = invoiceData['payment_terms'] as PaymentTerm;
+                                                             ^^^^^^^^^^^
+test/integration/data_integrity_test.dart:251:16: Error: Undefined name 'PaymentTerm'.
+          case PaymentTerm.dueOnReceipt:
+               ^^^^^^^^^^^
+test/integration/data_integrity_test.dart:254:16: Error: Undefined name 'PaymentTerm'.
+          case PaymentTerm.net15:
+               ^^^^^^^^^^^
+test/integration/data_integrity_test.dart:257:16: Error: Undefined name 'PaymentTerm'.
+          case PaymentTerm.net30:
+               ^^^^^^^^^^^
+test/integration/data_integrity_test.dart:260:16: Error: Undefined name 'PaymentTerm'.
+          case PaymentTerm.net60:
+               ^^^^^^^^^^^
+test/integration/data_integrity_test.dart:263:16: Error: Undefined name 'PaymentTerm'.
+          case PaymentTerm.custom:
+               ^^^^^^^^^^^
+test/integration/data_integrity_test.dart:268:48: Error: Non-nullable variable 'expectedDueDate' must be assigned before it can be used.
+        expect(invoiceData['due_date'], equals(expectedDueDate));
+                                               ^^^^^^^^^^^^^^^
+"},{"name": "inventory_management",
+"category": "Integration",
+"path": "test/integration/inventory_management_test.dart",
+"passed": false,
+"duration_ms": 9917,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart                                                                                                  00:01 +0: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart                                                                                                  00:02 +0: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart                                                                                                  00:03 +0: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart                                                                                                  00:04 +0: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart                                                                                                  00:05 +0: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart                                                                                                  00:06 +0: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart                                                                                                  00:07 +0: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart                                                                                                  00:07 +0 -1: loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart [E]                                                                                           
+  Failed to load "/home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart":
+  Compilation failed for testPath=/home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart: test/integration/inventory_management_test.dart:18:27: Error: The class 'ProductRepository' is abstract and can't be instantiated.
+        productRepository = ProductRepository();
+                            ^^^^^^^^^^^^^^^^^
+  .
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart -p vm --plain-name 'loading /home/siva/Projects/testing/bizsync/test/integration/inventory_management_test.dart'
+00:07 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": "test/integration/inventory_management_test.dart:18:27: Error: The class 'ProductRepository' is abstract and can't be instantiated.
+      productRepository = ProductRepository();
+                          ^^^^^^^^^^^^^^^^^
+"},{"name": "invoice_flow",
+"category": "Integration",
+"path": "test/integration/invoice_flow_test.dart",
+"passed": false,
+"duration_ms": 4613,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/integration/invoice_flow_test.dart                                                                                                          00:01 +0: loading /home/siva/Projects/testing/bizsync/test/integration/invoice_flow_test.dart                                                                                                          00:02 +0: loading /home/siva/Projects/testing/bizsync/test/integration/invoice_flow_test.dart                                                                                                          00:02 +0: Invoice Creation Flow Integration Tests (setUpAll)                                                                                                                                           00:02 +0: Invoice Creation Flow Integration Tests (setUpAll)                                                                                                                                           
+❌ Failed to initialize CRDT database: BizSyncException: Failed to initialize CRDT database: Binding has not yet been initialized.
+The "instance" getter on the ServicesBinding binding mixin is only available once that binding has been initialized.
+Typically, this is done by calling "WidgetsFlutterBinding.ensureInitialized()" or "runApp()" (the latter calls the former). Typically this call is done in the "void main()" method. The "ensureInitialized" method is idempotent; calling it multiple times is not harmful. After calling that method, the "instance" getter will return the binding.
+In a test, one can call "TestWidgetsFlutterBinding.ensureInitialized()" as the first line in the test's "main()" method to initialize the binding.
+If ServicesBinding is a custom binding mixin, there must also be a custom binding class, like WidgetsFlutterBinding, but that mixes in the selected binding, and that is the class that must be constructed before using the "instance" getter.
+Platform: linux
+Database type: SQLite (Unencrypted)
+Encryption: disabled
+00:02 +0 -1: Invoice Creation Flow Integration Tests (setUpAll) [E]                                                                                                                                    
+  BizSyncException: CRDT Database initialization failed: BizSyncException: Failed to initialize CRDT database: Binding has not yet been initialized.
+  The "instance" getter on the ServicesBinding binding mixin is only available once that binding has been initialized.
+  Typically, this is done by calling "WidgetsFlutterBinding.ensureInitialized()" or "runApp()" (the latter calls the former). Typically this call is done in the "void main()" method. The "ensureInitialized" method is idempotent; calling it multiple times is not harmful. After calling that method, the "instance" getter will return the binding.
+  In a test, one can call "TestWidgetsFlutterBinding.ensureInitialized()" as the first line in the test's "main()" method to initialize the binding.
+  If ServicesBinding is a custom binding mixin, there must also be a custom binding class, like WidgetsFlutterBinding, but that mixes in the selected binding, and that is the class that must be constructed before using the "instance" getter.
+  Platform: linux
+  Database type: SQLite (Unencrypted)
+  Encryption: disabled
+  package:bizsync/core/database/crdt_database_service.dart 42:7  CRDTDatabaseService.initialize
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/integration/invoice_flow_test.dart -p vm --plain-name 'Invoice Creation Flow Integration Tests (setUpAll)'
+00:02 +0 -1: Invoice Creation Flow Integration Tests (tearDownAll)                                                                                                                                     00:02 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": ""},{"name": "offline_functionality",
+"category": "Integration",
+"path": "test/integration/offline_functionality_test.dart",
+"passed": false,
+"duration_ms": 3358,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/integration/offline_functionality_test.dart                                                                                                 00:01 +0: loading /home/siva/Projects/testing/bizsync/test/integration/offline_functionality_test.dart                                                                                                 00:01 +0 -1: loading /home/siva/Projects/testing/bizsync/test/integration/offline_functionality_test.dart [E]                                                                                          
+  Failed to load "/home/siva/Projects/testing/bizsync/test/integration/offline_functionality_test.dart":
+  Compilation failed for testPath=/home/siva/Projects/testing/bizsync/test/integration/offline_functionality_test.dart: test/integration/offline_functionality_test.dart:49:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:44:38: Error: Required named parameter 'loyaltyPoints' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:75:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:70:38: Error: Required named parameter 'email' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:103:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:98:38: Error: Required named parameter 'email' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:138:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:133:39: Error: Required named parameter 'email' must be provided.
+          final customerA = CRDTCustomer(
+                                        ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:148:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:143:39: Error: Required named parameter 'email' must be provided.
+          final customerB = CRDTCustomer(
+                                        ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:179:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:174:38: Error: Required named parameter 'email' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:208:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:203:38: Error: Required named parameter 'email' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:222:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:217:39: Error: Required named parameter 'email' must be provided.
+          final customerB = CRDTCustomer(
+                                        ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:252:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:268:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:314:22: Error: Method not found: 'CRDTVectorClock'.
+              version: CRDTVectorClock(),
+                       ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:309:40: Error: Required named parameter 'phone' must be provided.
+            final customer = CRDTCustomer(
+                                         ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:342:22: Error: Method not found: 'CRDTVectorClock'.
+              version: CRDTVectorClock(),
+                       ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:337:48: Error: Required named parameter 'phone' must be provided.
+            final externalCustomer = CRDTCustomer(
+                                                 ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:384:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:379:38: Error: Required named parameter 'email' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:436:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:431:39: Error: Required named parameter 'phone' must be provided.
+          final customerA = CRDTCustomer(
+                                        ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:446:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:441:39: Error: Required named parameter 'phone' must be provided.
+          final customerB = CRDTCustomer(
+                                        ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:498:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:493:38: Error: Required named parameter 'email' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:540:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:535:38: Error: Required named parameter 'email' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:567:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:562:39: Error: Required named parameter 'email' must be provided.
+          final customerA = CRDTCustomer(
+                                        ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:576:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:571:39: Error: Required named parameter 'email' must be provided.
+          final customerB = CRDTCustomer(
+                                        ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:607:20: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:602:42: Error: Required named parameter 'email' must be provided.
+          final baseCustomer = CRDTCustomer(
+                                           ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:619:22: Error: Method not found: 'CRDTVectorClock'.
+              version: CRDTVectorClock(),
+                       ^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:614:39: Error: Required named parameter 'email' must be provided.
+            final version = CRDTCustomer(
+                                        ^
+  lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+    CRDTCustomer({
+    ^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:192:34: Error: The setter 'nodeId' isn't defined for the class 'CRDTCounter'.
+   - 'CRDTCounter' is from 'package:bizsync/core/crdt/crdt_types.dart' ('lib/core/crdt/crdt_types.dart').
+  Try correcting the name to the name of an existing setter, or defining a setter or field named 'nodeId'.
+          customerB!.loyaltyPoints.nodeId = nodeBId; // Simulate different node
+                                   ^^^^^^
+  test/integration/offline_functionality_test.dart:193:19: Error: The method 'addLoyaltyPoints' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'addLoyaltyPoints'.
+          customerB.addLoyaltyPoints(75); // Node B adds 75 points
+                    ^^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:326:20: Error: The method 'updateName' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'updateName'.
+            customer.updateName(
+                     ^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:328:20: Error: The method 'addLoyaltyPoints' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'addLoyaltyPoints'.
+            customer.addLoyaltyPoints(100 * (i + 1));
+                     ^^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:397:24: Error: The method 'addLoyaltyPoints' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'addLoyaltyPoints'.
+              customerA!.addLoyaltyPoints(10);
+                         ^^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:398:23: Error: The method 'updateEmail' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'updateEmail'.
+              customerA.updateEmail('update$i@test.com', nodeAClock.tick());
+                        ^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:407:38: Error: The setter 'nodeId' isn't defined for the class 'CRDTCounter'.
+   - 'CRDTCounter' is from 'package:bizsync/core/crdt/crdt_types.dart' ('lib/core/crdt/crdt_types.dart').
+  Try correcting the name to the name of an existing setter, or defining a setter or field named 'nodeId'.
+              customerB!.loyaltyPoints.nodeId = nodeBId;
+                                       ^^^^^^
+  test/integration/offline_functionality_test.dart:408:23: Error: The method 'addLoyaltyPoints' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'addLoyaltyPoints'.
+              customerB.addLoyaltyPoints(20);
+                        ^^^^^^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:409:23: Error: The method 'updatePhone' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing method, or defining a method named 'updatePhone'.
+              customerB.updatePhone('+65 9876543$i', nodeBClock.tick());
+                        ^^^^^^^^^^^
+  test/integration/offline_functionality_test.dart:481:31: Error: The getter 'tags' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'tags'.
+          expect(healedCustomer.tags.elements.contains('node_a_tag'), isTrue);
+                                ^^^^
+  test/integration/offline_functionality_test.dart:482:31: Error: The getter 'tags' isn't defined for the class 'CRDTCustomer'.
+   - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'tags'.
+          expect(healedCustomer.tags.elements.contains('node_b_tag'), isTrue);
+                                ^^^^
+  .
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/integration/offline_functionality_test.dart -p vm --plain-name 'loading /home/siva/Projects/testing/bizsync/test/integration/offline_functionality_test.dart'
+00:01 +0 -1: Some tests failed.                                                                                                                                                                        
+",
+"error": "test/integration/offline_functionality_test.dart:49:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:44:38: Error: Required named parameter 'loyaltyPoints' must be provided.
+        final customer = CRDTCustomer(
+                                     ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:75:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:70:38: Error: Required named parameter 'email' must be provided.
+        final customer = CRDTCustomer(
+                                     ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:103:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:98:38: Error: Required named parameter 'email' must be provided.
+        final customer = CRDTCustomer(
+                                     ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:138:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:133:39: Error: Required named parameter 'email' must be provided.
+        final customerA = CRDTCustomer(
+                                      ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:148:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:143:39: Error: Required named parameter 'email' must be provided.
+        final customerB = CRDTCustomer(
+                                      ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:179:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:174:38: Error: Required named parameter 'email' must be provided.
+        final customer = CRDTCustomer(
+                                     ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:208:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:203:38: Error: Required named parameter 'email' must be provided.
+        final customer = CRDTCustomer(
+                                     ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:222:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:217:39: Error: Required named parameter 'email' must be provided.
+        final customerB = CRDTCustomer(
+                                      ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:252:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:268:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:314:22: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:309:40: Error: Required named parameter 'phone' must be provided.
+          final customer = CRDTCustomer(
+                                       ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:342:22: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:337:48: Error: Required named parameter 'phone' must be provided.
+          final externalCustomer = CRDTCustomer(
+                                               ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:384:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:379:38: Error: Required named parameter 'email' must be provided.
+        final customer = CRDTCustomer(
+                                     ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:436:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:431:39: Error: Required named parameter 'phone' must be provided.
+        final customerA = CRDTCustomer(
+                                      ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:446:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:441:39: Error: Required named parameter 'phone' must be provided.
+        final customerB = CRDTCustomer(
+                                      ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:498:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:493:38: Error: Required named parameter 'email' must be provided.
+        final customer = CRDTCustomer(
+                                     ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:540:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:535:38: Error: Required named parameter 'email' must be provided.
+        final customer = CRDTCustomer(
+                                     ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:567:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:562:39: Error: Required named parameter 'email' must be provided.
+        final customerA = CRDTCustomer(
+                                      ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:576:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:571:39: Error: Required named parameter 'email' must be provided.
+        final customerB = CRDTCustomer(
+                                      ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:607:20: Error: Method not found: 'CRDTVectorClock'.
+          version: CRDTVectorClock(),
+                   ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:602:42: Error: Required named parameter 'email' must be provided.
+        final baseCustomer = CRDTCustomer(
+                                         ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:619:22: Error: Method not found: 'CRDTVectorClock'.
+            version: CRDTVectorClock(),
+                     ^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:614:39: Error: Required named parameter 'email' must be provided.
+          final version = CRDTCustomer(
+                                      ^
+lib/core/database/crdt_models.dart:46:3: Context: Found this candidate, but the arguments don't match.
+  CRDTCustomer({
+  ^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:192:34: Error: The setter 'nodeId' isn't defined for the class 'CRDTCounter'.
+ - 'CRDTCounter' is from 'package:bizsync/core/crdt/crdt_types.dart' ('lib/core/crdt/crdt_types.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'nodeId'.
+        customerB!.loyaltyPoints.nodeId = nodeBId; // Simulate different node
+                                 ^^^^^^
+test/integration/offline_functionality_test.dart:193:19: Error: The method 'addLoyaltyPoints' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'addLoyaltyPoints'.
+        customerB.addLoyaltyPoints(75); // Node B adds 75 points
+                  ^^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:326:20: Error: The method 'updateName' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'updateName'.
+          customer.updateName(
+                   ^^^^^^^^^^
+test/integration/offline_functionality_test.dart:328:20: Error: The method 'addLoyaltyPoints' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'addLoyaltyPoints'.
+          customer.addLoyaltyPoints(100 * (i + 1));
+                   ^^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:397:24: Error: The method 'addLoyaltyPoints' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'addLoyaltyPoints'.
+            customerA!.addLoyaltyPoints(10);
+                       ^^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:398:23: Error: The method 'updateEmail' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'updateEmail'.
+            customerA.updateEmail('update$i@test.com', nodeAClock.tick());
+                      ^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:407:38: Error: The setter 'nodeId' isn't defined for the class 'CRDTCounter'.
+ - 'CRDTCounter' is from 'package:bizsync/core/crdt/crdt_types.dart' ('lib/core/crdt/crdt_types.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'nodeId'.
+            customerB!.loyaltyPoints.nodeId = nodeBId;
+                                     ^^^^^^
+test/integration/offline_functionality_test.dart:408:23: Error: The method 'addLoyaltyPoints' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'addLoyaltyPoints'.
+            customerB.addLoyaltyPoints(20);
+                      ^^^^^^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:409:23: Error: The method 'updatePhone' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'updatePhone'.
+            customerB.updatePhone('+65 9876543$i', nodeBClock.tick());
+                      ^^^^^^^^^^^
+test/integration/offline_functionality_test.dart:481:31: Error: The getter 'tags' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'tags'.
+        expect(healedCustomer.tags.elements.contains('node_a_tag'), isTrue);
+                              ^^^^
+test/integration/offline_functionality_test.dart:482:31: Error: The getter 'tags' isn't defined for the class 'CRDTCustomer'.
+ - 'CRDTCustomer' is from 'package:bizsync/core/database/crdt_models.dart' ('lib/core/database/crdt_models.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'tags'.
+        expect(healedCustomer.tags.elements.contains('node_b_tag'), isTrue);
+                              ^^^^
+"},{"name": "tax_calculations",
+"category": "Integration",
+"path": "test/integration/tax_calculations_test.dart",
+"passed": false,
+"duration_ms": 4620,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/integration/tax_calculations_test.dart                                                                                                      00:01 +0: loading /home/siva/Projects/testing/bizsync/test/integration/tax_calculations_test.dart                                                                                                      00:02 +0: loading /home/siva/Projects/testing/bizsync/test/integration/tax_calculations_test.dart                                                                                                      00:02 +0: Tax Calculations Integration Tests Current GST Rate (9%) Tests should calculate 9% GST for standard transactions                                                                             00:02 +0 -1: Tax Calculations Integration Tests Current GST Rate (9%) Tests should calculate 9% GST for standard transactions [E]                                                                      
+  Expected: contains '9%'
+    Actual: 'Standard GST applied at 9.0%'
+     Which: does not contain '9%'
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 474:18  expect
+  test/integration/tax_calculations_test.dart 29:9    main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/integration/tax_calculations_test.dart -p vm --plain-name 'Tax Calculations Integration Tests Current GST Rate (9%) Tests should calculate 9% GST for standard transactions'
+00:02 +0 -1: Tax Calculations Integration Tests Current GST Rate (9%) Tests should handle tax-inclusive calculations at 9%                                                                             00:02 +1 -1: Tax Calculations Integration Tests Current GST Rate (9%) Tests should handle tax-inclusive calculations at 9%                                                                             00:02 +1 -1: Tax Calculations Integration Tests Current GST Rate (9%) Tests should calculate GST on different amounts with precision                                                                   00:02 +2 -1: Tax Calculations Integration Tests Current GST Rate (9%) Tests should calculate GST on different amounts with precision                                                                   00:02 +2 -1: Tax Calculations Integration Tests Historical GST Rates should apply 8% GST for 2022 transactions                                                                                         00:02 +3 -1: Tax Calculations Integration Tests Historical GST Rates should apply 8% GST for 2022 transactions                                                                                         00:02 +3 -1: Tax Calculations Integration Tests Historical GST Rates should apply 7% GST for 2020 transactions                                                                                         00:02 +4 -1: Tax Calculations Integration Tests Historical GST Rates should apply 7% GST for 2020 transactions                                                                                         00:02 +4 -1: Tax Calculations Integration Tests Historical GST Rates should apply 5% GST for pre-2016 transactions                                                                                     00:02 +5 -1: Tax Calculations Integration Tests Historical GST Rates should apply 5% GST for pre-2016 transactions                                                                                     00:02 +5 -1: Tax Calculations Integration Tests Historical GST Rates should handle transition dates correctly                                                                                          00:02 +6 -1: Tax Calculations Integration Tests Historical GST Rates should handle transition dates correctly                                                                                          00:02 +6 -1: Tax Calculations Integration Tests GST Registration Status Scenarios should apply no GST when company is not registered                                                                   00:02 +7 -1: Tax Calculations Integration Tests GST Registration Status Scenarios should apply no GST when company is not registered                                                                   00:02 +7 -1: Tax Calculations Integration Tests GST Registration Status Scenarios should apply GST regardless of customer registration status                                                          00:02 +8 -1: Tax Calculations Integration Tests GST Registration Status Scenarios should apply GST regardless of customer registration status                                                          00:02 +8 -1: Tax Calculations Integration Tests Export and Zero-Rated Transactions should apply zero rate for export transactions                                                                      00:02 +9 -1: Tax Calculations Integration Tests Export and Zero-Rated Transactions should apply zero rate for export transactions                                                                      00:02 +9 -1: Tax Calculations Integration Tests Export and Zero-Rated Transactions should apply zero rate for non-Singapore customers                                                                  00:02 +10 -1: Tax Calculations Integration Tests Export and Zero-Rated Transactions should apply zero rate for non-Singapore customers                                                                 00:02 +10 -1: Tax Calculations Integration Tests Export and Zero-Rated Transactions should handle zero-rated domestic supplies                                                                         00:02 +11 -1: Tax Calculations Integration Tests Export and Zero-Rated Transactions should handle zero-rated domestic supplies                                                                         00:02 +11 -1: Tax Calculations Integration Tests Exempt Transactions should handle exempt supplies correctly                                                                                           00:02 +12 -1: Tax Calculations Integration Tests Exempt Transactions should handle exempt supplies correctly                                                                                           00:02 +12 -1: Tax Calculations Integration Tests Exempt Transactions should identify exempt categories correctly                                                                                       00:02 +12 -2: Tax Calculations Integration Tests Exempt Transactions should identify exempt categories correctly [E]                                                                                   
+  Expected: true
+    Actual: <false>
+  Education services should be exempt
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 474:18  expect
+  test/integration/tax_calculations_test.dart 265:11  main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/integration/tax_calculations_test.dart -p vm --plain-name 'Tax Calculations Integration Tests Exempt Transactions should identify exempt categories correctly'
+00:02 +12 -2: Tax Calculations Integration Tests Import GST Calculations should calculate import GST on CIF plus duty                                                                                  00:02 +13 -2: Tax Calculations Integration Tests Import GST Calculations should calculate import GST on CIF plus duty                                                                                  00:02 +13 -2: Tax Calculations Integration Tests Import GST Calculations should handle zero duty imports                                                                                               00:02 +14 -2: Tax Calculations Integration Tests Import GST Calculations should handle zero duty imports                                                                                               00:02 +14 -2: Tax Calculations Integration Tests Import GST Calculations should apply historical rates for import GST                                                                                  00:02 +15 -2: Tax Calculations Integration Tests Import GST Calculations should apply historical rates for import GST                                                                                  00:02 +15 -2: Tax Calculations Integration Tests GST Invoice Validation should validate correct GST invoice                                                                                            00:02 +16 -2: Tax Calculations Integration Tests GST Invoice Validation should validate correct GST invoice                                                                                            00:02 +16 -2: Tax Calculations Integration Tests GST Invoice Validation should detect invalid GST number formats                                                                                       00:02 +17 -2: Tax Calculations Integration Tests GST Invoice Validation should detect invalid GST number formats                                                                                       00:02 +17 -2: Tax Calculations Integration Tests GST Invoice Validation should detect calculation errors                                                                                               00:02 +18 -2: Tax Calculations Integration Tests GST Invoice Validation should detect calculation errors                                                                                               00:02 +18 -2: Tax Calculations Integration Tests GST Invoice Validation should warn about high-value transactions without GST                                                                          00:02 +19 -2: Tax Calculations Integration Tests GST Invoice Validation should warn about high-value transactions without GST                                                                          00:02 +19 -2: Tax Calculations Integration Tests Multi-tier Tax Scenarios should handle mixed tax categories in single transaction                                                                     00:02 +20 -2: Tax Calculations Integration Tests Multi-tier Tax Scenarios should handle mixed tax categories in single transaction                                                                     00:02 +20 -2: Tax Calculations Integration Tests Multi-tier Tax Scenarios should calculate compound tax scenarios                                                                                      00:02 +21 -2: Tax Calculations Integration Tests Multi-tier Tax Scenarios should calculate compound tax scenarios                                                                                      00:02 +21 -2: Tax Calculations Integration Tests Edge Cases and Error Handling should handle zero amounts                                                                                              00:02 +22 -2: Tax Calculations Integration Tests Edge Cases and Error Handling should handle zero amounts                                                                                              00:02 +22 -2: Tax Calculations Integration Tests Edge Cases and Error Handling should handle very large amounts                                                                                        00:02 +23 -2: Tax Calculations Integration Tests Edge Cases and Error Handling should handle very large amounts                                                                                        00:02 +23 -2: Tax Calculations Integration Tests Edge Cases and Error Handling should handle very small amounts with rounding                                                                          00:02 +24 -2: Tax Calculations Integration Tests Edge Cases and Error Handling should handle very small amounts with rounding                                                                          00:02 +24 -2: Tax Calculations Integration Tests Edge Cases and Error Handling should handle future dates with current rate                                                                            00:02 +25 -2: Tax Calculations Integration Tests Edge Cases and Error Handling should handle future dates with current rate                                                                            00:02 +25 -2: Tax Calculations Integration Tests Comprehensive Tax Scenarios should run all predefined tax scenarios                                                                                   00:02 +25 -2: Tax Calculations Integration Tests Comprehensive Tax Scenarios should run all predefined tax scenarios                                                                                   
+Scenario: Standard Singapore B2B GST
+  Amount: 1000.0
+  GST: 90.0
+  Total: 1090.0
+  Reasoning: Standard GST applied at 9.0%
+---
+Scenario: Standard Singapore B2C GST
+  Amount: 1000.0
+  GST: 90.0
+  Total: 1090.0
+  Reasoning: Standard GST applied at 9.0%
+---
+Scenario: Export to US (Zero-rated)
+  Amount: 1000.0
+  GST: 0.0
+  Total: 1000.0
+  Reasoning: Zero-rated export supply - 0% GST
+---
+Scenario: Non-GST registered company
+  Amount: 1000.0
+  GST: 0.0
+  Total: 1000.0
+  Reasoning: Company not GST registered
+---
+Scenario: Historical 8% GST rate (2022)
+  Amount: 1000.0
+  GST: 80.0
+  Total: 1080.0
+  Reasoning: Standard GST applied at 8.0%
+---
+Scenario: Historical 7% GST rate (2020)
+  Amount: 1000.0
+  GST: 70.0
+  Total: 1070.0
+  Reasoning: Standard GST applied at 7.0%
+---
+00:02 +26 -2: Tax Calculations Integration Tests Comprehensive Tax Scenarios should run all predefined tax scenarios                                                                                   00:02 +26 -2: Tax Calculations Integration Tests Comprehensive Tax Scenarios should maintain calculation consistency across multiple runs                                                              00:02 +27 -2: Tax Calculations Integration Tests Comprehensive Tax Scenarios should maintain calculation consistency across multiple runs                                                              00:02 +27 -2: Tax Calculations Integration Tests GST Registration Information should provide correct GST registration thresholds                                                                       00:02 +28 -2: Tax Calculations Integration Tests GST Registration Information should provide correct GST registration thresholds                                                                       00:02 +28 -2: Some tests failed.                                                                                                                                                                       
+",
+"error": ""},{"name": "performance_benchmarks",
+"category": "Performance",
+"path": "test/performance/performance_benchmarks_test.dart",
+"passed": false,
+"duration_ms": 20993,
+"output": "00:00 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:01 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:02 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:03 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:04 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:05 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:06 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:07 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:08 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:09 +0: loading /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart                                                                                                00:09 +0: Performance Benchmarks and Tests (setUpAll)                                                                                                                                                  00:09 +0: Performance Benchmarks and Tests Database Performance Tests should perform database queries within acceptable time limits                                                                    00:09 +1: Performance Benchmarks and Tests Database Performance Tests should perform database queries within acceptable time limits                                                                    00:09 +1: Performance Benchmarks and Tests Database Performance Tests should perform database inserts efficiently                                                                                      00:09 +2: Performance Benchmarks and Tests Database Performance Tests should perform database inserts efficiently                                                                                      00:09 +2: Performance Benchmarks and Tests Database Performance Tests should perform batch updates efficiently                                                                                         00:09 +3: Performance Benchmarks and Tests Database Performance Tests should perform batch updates efficiently                                                                                         00:09 +3: Performance Benchmarks and Tests Database Performance Tests should handle complex join queries efficiently                                                                                   00:09 +4: Performance Benchmarks and Tests Database Performance Tests should handle complex join queries efficiently                                                                                   00:09 +4: Performance Benchmarks and Tests Database Performance Tests should handle concurrent database operations                                                                                     00:09 +5: Performance Benchmarks and Tests Database Performance Tests should handle concurrent database operations                                                                                     00:09 +5: Performance Benchmarks and Tests CRDT Performance Tests should apply CRDT operations efficiently                                                                                             00:09 +6: Performance Benchmarks and Tests CRDT Performance Tests should apply CRDT operations efficiently                                                                                             00:09 +6: Performance Benchmarks and Tests CRDT Performance Tests should handle CRDT conflict resolution efficiently                                                                                   00:09 +7: Performance Benchmarks and Tests CRDT Performance Tests should handle CRDT conflict resolution efficiently                                                                                   00:09 +7: Performance Benchmarks and Tests P2P Sync Performance Tests should sync large datasets efficiently                                                                                           00:09 +8: Performance Benchmarks and Tests P2P Sync Performance Tests should sync large datasets efficiently                                                                                           00:09 +8: Performance Benchmarks and Tests P2P Sync Performance Tests should handle multiple device connections efficiently                                                                            00:09 +9: Performance Benchmarks and Tests P2P Sync Performance Tests should handle multiple device connections efficiently                                                                            00:09 +9: Performance Benchmarks and Tests Notification Performance Tests should send notifications within time limits                                                                                 00:09 +10: Performance Benchmarks and Tests Notification Performance Tests should send notifications within time limits                                                                                00:09 +10: Performance Benchmarks and Tests Notification Performance Tests should handle batch notifications efficiently                                                                               00:09 +11: Performance Benchmarks and Tests Notification Performance Tests should handle batch notifications efficiently                                                                               00:09 +11: Performance Benchmarks and Tests Notification Performance Tests should schedule notifications efficiently                                                                                   00:09 +12: Performance Benchmarks and Tests Notification Performance Tests should schedule notifications efficiently                                                                                   00:09 +12: Performance Benchmarks and Tests Business Logic Performance Tests should calculate invoice totals efficiently                                                                               00:09 +13: Performance Benchmarks and Tests Business Logic Performance Tests should calculate invoice totals efficiently                                                                               00:09 +13: Performance Benchmarks and Tests Business Logic Performance Tests should process tax calculations efficiently                                                                               00:09 +14: Performance Benchmarks and Tests Business Logic Performance Tests should process tax calculations efficiently                                                                               00:09 +14: Performance Benchmarks and Tests Business Logic Performance Tests should search and filter large datasets efficiently                                                                       00:09 +14 -1: Performance Benchmarks and Tests Business Logic Performance Tests should search and filter large datasets efficiently [E]                                                                
+  Expected: true
+    Actual: <false>
+  Performance test error: Expected: true
+    Actual: <false>
+  
+  
+  package:matcher                                          expect
+  package:flutter_test/src/widget_tester.dart 474:18       expect
+  test/performance/performance_benchmarks_test.dart 415:9  main.<fn>.<fn>.<fn>
+  
+
+To run this test again: /home/siva/.cache/flutter_sdk/bin/cache/dart-sdk/bin/dart test /home/siva/Projects/testing/bizsync/test/performance/performance_benchmarks_test.dart -p vm --plain-name 'Performance Benchmarks and Tests Business Logic Performance Tests should search and filter large datasets efficiently'
+00:09 +14 -1: Performance Benchmarks and Tests Memory Performance Tests should handle large datasets without memory leaks                                                                              00:09 +15 -1: Performance Benchmarks and Tests Memory Performance Tests should handle large datasets without memory leaks                                                                              00:09 +15 -1: Performance Benchmarks and Tests Memory Performance Tests should efficiently manage object creation and disposal                                                                         00:09 +16 -1: Performance Benchmarks and Tests Memory Performance Tests should efficiently manage object creation and disposal                                                                         00:09 +16 -1: Performance Benchmarks and Tests Concurrent Operations Performance Tests should handle concurrent database operations efficiently                                                        00:09 +17 -1: Performance Benchmarks and Tests Concurrent Operations Performance Tests should handle concurrent database operations efficiently                                                        00:09 +17 -1: Performance Benchmarks and Tests Concurrent Operations Performance Tests should handle concurrent sync operations                                                                        00:09 +18 -1: Performance Benchmarks and Tests Concurrent Operations Performance Tests should handle concurrent sync operations                                                                        00:09 +18 -1: Performance Benchmarks and Tests Benchmark Harness Tests should run custom benchmarks                                                                                                    00:10 +18 -1: Performance Benchmarks and Tests Benchmark Harness Tests should run custom benchmarks                                                                                                    00:11 +18 -1: Performance Benchmarks and Tests Benchmark Harness Tests should run custom benchmarks                                                                                                    00:11 +18 -1: Performance Benchmarks and Tests Benchmark Harness Tests should run custom benchmarks                                                                                                    
+Customer Creation Benchmark: 14945.41304347826 μs/op
+Invoice Calculation Benchmark: 70.4697256054879 μs/op
+Tax Calculation Benchmark: 32.875954922698696 μs/op
+CRDT Operation Benchmark: 8629.284 μs/op
+00:18 +19 -1: Performance Benchmarks and Tests Benchmark Harness Tests should run custom benchmarks                                                                                                    00:18 +19 -1: Performance Benchmarks and Tests (tearDownAll)                                                                                                                                           00:18 +19 -1: Some tests failed.                                                                                                                                                                       
+",
+"error": ""}],
+"environment": {"platform": "linux",
+"dart_version": "3.8.1 (stable) (Wed May 28 00:47:25 2025 -0700) on "linux_x64"",
+"flutter_version": "Flutter 3.32.8 • channel stable • https://github.com/flutter/flutter.git"}
