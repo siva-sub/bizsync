@@ -13,11 +13,26 @@ export APPDIR="${HERE}"
 export ARGV0="${0}"
 export APPIMAGE_ORIGINAL_NAME="$(basename "${ARGV0}")"
 
-# Set up library paths
-export LD_LIBRARY_PATH="${HERE}/usr/lib:${HERE}/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
+# Set up library paths with comprehensive search paths
+export LD_LIBRARY_PATH="${HERE}/usr/lib:${HERE}/usr/lib/x86_64-linux-gnu:${HERE}/usr/lib64:${LD_LIBRARY_PATH}"
 
 # Set up data directories
 export XDG_DATA_DIRS="${HERE}/usr/share:${XDG_DATA_DIRS}"
+
+# GLib schemas path for GTK applications
+export GSETTINGS_SCHEMA_DIR="${HERE}/usr/share/glib-2.0/schemas:${GSETTINGS_SCHEMA_DIR}"
+
+# GTK modules and theme paths
+export GTK2_RC_FILES="${HERE}/usr/share/themes/Adwaita/gtk-2.0/gtkrc"
+export GTK_THEME="Adwaita"
+
+# Keybinder compatibility - check if library is available
+if [ -f "${HERE}/usr/lib/libkeybinder-3.0.so.0" ] || [ -f "${HERE}/usr/lib/libkeybinder-3.0.so.0.0.0" ]; then
+    export BIZSYNC_HOTKEYS_ENABLED=1
+else
+    export BIZSYNC_HOTKEYS_ENABLED=0
+    echo "Warning: Keybinder library not found. Hotkey functionality will be disabled."
+fi
 
 # Flutter-specific environment variables
 export FLUTTER_ROOT="${HERE}/usr/lib/flutter"

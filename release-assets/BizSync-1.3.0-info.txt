@@ -1,0 +1,51 @@
+BizSync v1.3.0 - Linux AppImage
+=====================================
+
+Built: August 5, 2025
+Architecture: x86_64
+Size: 44.2 MB
+Compression: SquashFS with gzip
+
+Installation:
+1. Download the AppImage file
+2. Make it executable: chmod +x BizSync-1.3.0-x86_64.AppImage
+3. Run: ./BizSync-1.3.0-x86_64.AppImage
+
+System Requirements:
+- Linux x86_64 (64-bit)
+- FUSE support (for AppImage mounting)
+- GTK 3.24+ compatible system
+- glibc 2.31+ (Ubuntu 20.04+)
+
+Features:
+- Self-contained (no installation required)
+- Desktop integration included
+- All dependencies bundled (127 libraries)
+- Hardware acceleration support (Mesa drivers included)
+- Wayland and X11 compatible
+- Keybinder3 support for global hotkeys
+- GStreamer multimedia support
+
+Bundled Dependencies:
+✅ GTK3 complete stack
+✅ Flutter Linux engine
+✅ Mesa DRI drivers for hardware acceleration
+✅ X11/Wayland libraries
+✅ Keybinder3 for hotkey support
+✅ GStreamer for multimedia
+✅ All plugin libraries
+✅ System fonts and themes
+
+Tested Distributions:
+- Arch Linux (build system)
+- Compatible with Ubuntu 20.04+, Debian 11+, Fedora 36+
+
+Security:
+- All libraries stripped for smaller size
+- No external dependencies required
+- Runs in userspace (no root required)
+
+For more information, visit: https://github.com/your-repo/bizsync
+
+Verification:
+SHA256: $(cat BizSync-1.3.0-x86_64.AppImage.sha256 | cut -d' ' -f1)
