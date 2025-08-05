@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../core/permissions/permission_utils.dart';
+import '../../../core/permissions/permission_manager.dart';
+import '../../../core/permissions/storage_permission_service.dart';
 import '../models/onboarding_models.dart';
 import '../providers/onboarding_provider.dart';
 import '../widgets/onboarding_page_indicator.dart';
@@ -30,12 +33,14 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
   };
 
   final Map<String, PermissionStatus> _permissionStatuses = {};
+  bool _isAndroid13Plus = false;
+  List<Permission> _storagePermissions = [];
 
   @override
   void initState() {
     super.initState();
     _initializeAnimations();
-    _checkExistingPermissions();
+    _initializePermissions();
   }
 
   void _initializeAnimations() {
@@ -73,26 +78,52 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
     });
   }
 
+  Future<void> _initializePermissions() async {
+    try {
+      // Check Android version for appropriate permission handling
+      _isAndroid13Plus = await PermissionUtils.isAndroid13OrAbove;
+      _storagePermissions = await PermissionUtils.getStoragePermissions();
+      
+      await _checkExistingPermissions();
+    } catch (e) {
+      debugPrint('Error initializing permissions: $e');
+    }
+  }
+
   Future<void> _checkExistingPermissions() async {
     try {
-      final notificationStatus = await Permission.notification.status;
-      final cameraStatus = await Permission.camera.status;
-      final storageStatus = await Permission.storage.status;
-      final locationStatus = await Permission.location.status;
+      final manager = PermissionManager.instance;
+      
+      // Check individual permissions
+      final notificationStatus = await manager.getPermissionStatus(Permission.notification);
+      final cameraStatus = await manager.getPermissionStatus(Permission.camera);
+      final locationStatus = await manager.getPermissionStatus(Permission.location);
+      
+      // Check storage permissions based on Android version
+      bool storageGranted = false;
+      if (_isAndroid13Plus) {
+        // For Android 13+, check if we have at least photos permission
+        final photosStatus = await manager.getPermissionStatus(Permission.photos);
+        storageGranted = photosStatus.isGranted;
+        _permissionStatuses['storage'] = photosStatus;
+      } else {
+        // For older versions, check legacy storage permission
+        final storageStatus = await manager.getPermissionStatus(Permission.storage);
+        storageGranted = storageStatus.isGranted;
+        _permissionStatuses['storage'] = storageStatus;
+      }
 
       setState(() {
         _permissionStatuses['notifications'] = notificationStatus;
         _permissionStatuses['camera'] = cameraStatus;
-        _permissionStatuses['storage'] = storageStatus;
         _permissionStatuses['location'] = locationStatus;
 
         _permissions['notifications'] = notificationStatus.isGranted;
         _permissions['camera'] = cameraStatus.isGranted;
-        _permissions['storage'] = storageStatus.isGranted;
+        _permissions['storage'] = storageGranted;
         _permissions['location'] = locationStatus.isGranted;
       });
     } catch (e) {
-      // Handle permission check errors
       debugPrint('Error checking permissions: $e');
     }
   }
@@ -169,11 +200,13 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
 
                       _buildPermissionCard(
                         'storage',
-                        'Storage',
-                        'Save invoices, reports, and backups to your device storage',
-                        Icons.folder_outlined,
+                        _isAndroid13Plus ? 'Photos & Files' : 'Storage',
+                        _isAndroid13Plus
+                            ? 'Access photos for profile pictures and business documents'
+                            : 'Save invoices, reports, and backups to your device storage',
+                        _isAndroid13Plus ? Icons.photo_library_outlined : Icons.folder_outlined,
                         Colors.orange,
-                        required: false,
+                        required: true, // Storage is essential for business app
                       ),
                       const SizedBox(height: 16),
 
@@ -379,12 +412,19 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
               ],
             ),
             const SizedBox(height: 8),
-            const Text(
-              'BizSync respects your privacy:\n'
-              '• All data is stored locally on your device\n'
-              '• No personal information is sent to external servers\n'
-              '• You control what permissions to grant\n'
-              '• Permissions can be changed anytime in Settings',
+            Text(
+              _isAndroid13Plus
+                  ? 'BizSync respects your privacy:\n'
+                    '• Only accesses files you specifically choose\n'
+                    '• Uses Android\'s granular permissions for better security\n'
+                    '• All business data stays on your device\n'
+                    '• No personal files are accessed without permission\n'
+                    '• You control every aspect of data access'
+                  : 'BizSync respects your privacy:\n'
+                    '• All data is stored locally on your device\n'
+                    '• No personal information is sent to external servers\n'
+                    '• You control what permissions to grant\n'
+                    '• Permissions can be changed anytime in Settings',
             ),
           ],
         ),
@@ -439,40 +479,95 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
   }
 
   Future<void> _handlePermissionToggle(String key, bool value) async {
-    if (value) {
-      // Request permission
-      Permission permission;
-      switch (key) {
-        case 'notifications':
-          permission = Permission.notification;
-          break;
-        case 'camera':
-          permission = Permission.camera;
-          break;
-        case 'storage':
-          permission = Permission.storage;
-          break;
-        case 'location':
-          permission = Permission.location;
-          break;
-        default:
-          return;
-      }
+    if (!value) {
+      // Can't revoke permissions from the app, just update UI
+      setState(() {
+        _permissions[key] = false;
+      });
+      return;
+    }
 
-      final status = await permission.request();
+    // Handle different permission types
+    switch (key) {
+      case 'storage':
+        await _handleStoragePermission();
+        break;
+      case 'notifications':
+        await _handleSinglePermission(Permission.notification, key);
+        break;
+      case 'camera':
+        await _handleSinglePermission(Permission.camera, key);
+        break;
+      case 'location':
+        await _handleSinglePermission(Permission.location, key);
+        break;
+      default:
+        return;
+    }
+  }
+
+  Future<void> _handleStoragePermission() async {
+    try {
+      final storageService = StoragePermissionService.instance;
+      final result = await storageService.requestStoragePermissions(
+        context: context,
+        includeExternalStorage: false,
+      );
+
+      setState(() {
+        _permissions['storage'] = result.isGranted;
+      });
+
+      if (result.isPermanentlyDenied && mounted) {
+        _showPermissionDeniedDialog('storage');
+      } else if (result.isGranted) {
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(_isAndroid13Plus 
+                  ? 'Photo and file access granted!'
+                  : 'Storage access granted!'),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error requesting storage permission: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to request storage permission: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleSinglePermission(Permission permission, String key) async {
+    try {
+      final manager = PermissionManager.instance;
+      final result = await manager.requestPermissionWithFlow(
+        permission: permission,
+        context: context,
+        showRationale: true,
+      );
+
+      final status = await manager.getPermissionStatus(permission);
       setState(() {
         _permissionStatuses[key] = status;
         _permissions[key] = status.isGranted;
       });
 
-      if (status.isPermanentlyDenied) {
+      if (result == PermissionRequestResult.permanentlyDenied && mounted) {
         _showPermissionDeniedDialog(key);
       }
-    } else {
-      // Can't revoke permissions from the app, just update UI
-      setState(() {
-        _permissions[key] = false;
-      });
+    } catch (e) {
+      debugPrint('Error requesting $key permission: $e');
     }
   }
 

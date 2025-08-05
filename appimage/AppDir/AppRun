@@ -1,0 +1,133 @@
+#!/bin/bash
+
+# AppRun script for BizSync AppImage
+# This script sets up the environment and launches the application
+
+set -e
+
+# Get the directory where this AppImage is mounted
+HERE="$(dirname "$(readlink -f "${0}")")"
+
+# Export environment variables for AppImage
+export APPDIR="${HERE}"
+export ARGV0="${0}"
+export APPIMAGE_ORIGINAL_NAME="$(basename "${ARGV0}")"
+
+# Set up library paths
+export LD_LIBRARY_PATH="${HERE}/usr/lib:${HERE}/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
+
+# Set up data directories
+export XDG_DATA_DIRS="${HERE}/usr/share:${XDG_DATA_DIRS}"
+
+# Flutter-specific environment variables
+export FLUTTER_ROOT="${HERE}/usr/lib/flutter"
+export PATH="${HERE}/usr/bin:${PATH}"
+
+# Wayland and X11 compatibility
+if [ -n "${WAYLAND_DISPLAY}" ]; then
+    # Running under Wayland
+    export GDK_BACKEND=wayland
+    export QT_QPA_PLATFORM=wayland
+    export SDL_VIDEODRIVER=wayland
+    export _JAVA_AWT_WM_NONREPARENTING=1
+    export MOZ_ENABLE_WAYLAND=1
+    export CLUTTER_BACKEND=wayland
+else
+    # Fallback to X11
+    export GDK_BACKEND=x11
+    export QT_QPA_PLATFORM=xcb
+fi
+
+# Set up font configuration
+export FONTCONFIG_PATH="${HERE}/usr/share/fontconfig/conf.avail:${HERE}/usr/share/fontconfig/conf.d"
+export FONTCONFIG_FILE="${HERE}/usr/share/fontconfig/fonts.conf"
+
+# Set up icon theme
+export XCURSOR_PATH="${HERE}/usr/share/icons:${XCURSOR_PATH}"
+
+# GTK theme compatibility
+export GTK_PATH="${HERE}/usr/lib/gtk-3.0:${HERE}/usr/lib/gtk-2.0"
+export GTK_IM_MODULE_FILE="${HERE}/usr/lib/gtk-3.0/3.0.0/immodules.cache"
+
+# GStreamer plugins (for multimedia support if needed)
+export GST_PLUGIN_SYSTEM_PATH="${HERE}/usr/lib/gstreamer-1.0"
+export GST_PLUGIN_SCANNER="${HERE}/usr/libexec/gstreamer-1.0/gst-plugin-scanner"
+
+# Mesa drivers for hardware acceleration
+export LIBGL_DRIVERS_PATH="${HERE}/usr/lib/dri:${LIBGL_DRIVERS_PATH}"
+export __EGL_VENDOR_LIBRARY_DIRS="${HERE}/usr/share/glvnd/egl_vendor.d:${__EGL_VENDOR_LIBRARY_DIRS}"
+
+# Disable various desktop integration that might cause issues
+export NO_AT_BRIDGE=1
+
+# Create temporary directories if they don't exist
+mkdir -p "${HOME}/.local/share/bizsync"
+mkdir -p "${HOME}/.config/bizsync"
+mkdir -p "${HOME}/.cache/bizsync"
+
+# Handle desktop integration
+if [ ! -f "${HOME}/.local/share/applications/bizsync.desktop" ] && [ "${1}" != "--no-desktop-integration" ]; then
+    echo "Setting up desktop integration..."
+    mkdir -p "${HOME}/.local/share/applications"
+    cp "${HERE}/usr/share/applications/bizsync.desktop" "${HOME}/.local/share/applications/"
+    sed -i "s|Exec=bizsync|Exec=${ARGV0}|g" "${HOME}/.local/share/applications/bizsync.desktop"
+    
+    # Copy icons
+    for size in 16 32 48 64 128 256 512; do
+        icon_dir="${HOME}/.local/share/icons/hicolor/${size}x${size}/apps"
+        mkdir -p "${icon_dir}"
+        if [ -f "${HERE}/usr/share/icons/hicolor/${size}x${size}/apps/bizsync.png" ]; then
+            cp "${HERE}/usr/share/icons/hicolor/${size}x${size}/apps/bizsync.png" "${icon_dir}/"
+        fi
+    done
+    
+    # Update desktop database
+    if command -v update-desktop-database >/dev/null 2>&1; then
+        update-desktop-database "${HOME}/.local/share/applications" 2>/dev/null || true
+    fi
+fi
+
+# Function to check if we're running in a sandboxed environment
+is_sandboxed() {
+    [ -n "${SNAP}" ] || [ -n "${FLATPAK_ID}" ] || [ -n "${APPIMAGE}" ]
+}
+
+# Handle auto-update check (if not sandboxed)
+if [ ! "$(is_sandboxed)" ] && [ "${1}" != "--no-update-check" ]; then
+    UPDATE_INFO_FILE="${HOME}/.cache/bizsync/update_info"
+    if [ -f "${UPDATE_INFO_FILE}" ]; then
+        source "${UPDATE_INFO_FILE}"
+        if [ -n "${APPIMAGE_UPDATE_INFORMATION}" ]; then
+            # Check for updates in background
+            (
+                if command -v zsync2 >/dev/null 2>&1; then
+                    echo "Checking for updates..."
+                    # This would normally check for updates using zsync
+                    # Implementation depends on your update server setup
+                fi
+            ) &
+        fi
+    fi
+fi
+
+# Function to handle crashes and provide debugging info
+handle_crash() {
+    echo "BizSync encountered an error. Debug information:"
+    echo "APPDIR: ${APPDIR}"
+    echo "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}"
+    echo "XDG_DATA_DIRS: ${XDG_DATA_DIRS}"
+    echo "Desktop Environment: ${XDG_CURRENT_DESKTOP}"
+    echo "Session Type: ${XDG_SESSION_TYPE}"
+    echo "Wayland Display: ${WAYLAND_DISPLAY}"
+    echo "X11 Display: ${DISPLAY}"
+    exit 1
+}
+
+# Set up crash handler
+trap handle_crash ERR
+
+# Change to application directory
+cd "${HERE}/usr/bin"
+
+# Launch the application with all arguments passed through
+exec "${HERE}/usr/bin/bizsync" "$@"

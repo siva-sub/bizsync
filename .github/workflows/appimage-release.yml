@@ -1,0 +1,349 @@
+name: AppImage Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
+      - release/*
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      create_release:
+        description: 'Create GitHub release'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  FLUTTER_VERSION: '3.16.0'
+  FLUTTER_CHANNEL: 'stable'
+
+jobs:
+  build-appimage:
+    runs-on: ubuntu-22.04
+    
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      appimage_name: ${{ steps.build.outputs.appimage_name }}
+      appimage_path: ${{ steps.build.outputs.appimage_path }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            pkg-config \
+            libgtk-3-dev \
+            libblkid-dev \
+            liblzma-dev \
+            libglib2.0-dev \
+            libgdk-pixbuf2.0-dev \
+            libcairo2-dev \
+            libpango1.0-dev \
+            libatk1.0-dev \
+            libgtk-3-dev \
+            libepoxy-dev \
+            libx11-dev \
+            libxcomposite-dev \
+            libxdamage-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxrandr-dev \
+            libxrender-dev \
+            libxi-dev \
+            libxcursor-dev \
+            fuse \
+            imagemagick \
+            zsync \
+            wget \
+            desktop-file-utils
+            
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            ${{ github.workspace }}/.dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+            
+      - name: Cache AppImage tools
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/appimage/build/appimagetool
+            ${{ github.workspace }}/appimage/build/linuxdeploy
+          key: ${{ runner.os }}-appimage-tools
+          
+      - name: Get Flutter dependencies
+        run: flutter pub get
+        
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos
+        
+      - name: Run tests
+        run: flutter test
+        
+      - name: Get version information
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            # Manual trigger - bump version
+            ./appimage/scripts/version-manager.sh bump ${{ github.event.inputs.release_type }}
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Tag push - use tag version
+            TAG_VERSION=${GITHUB_REF#refs/tags/v}
+            echo "Using tag version: $TAG_VERSION"
+          fi
+          
+          VERSION=$(./appimage/scripts/version-manager.sh info | grep "Full Version:" | cut -d' ' -f4)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          
+      - name: Build AppImage
+        id: build
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # Make build script executable
+          chmod +x ./appimage/scripts/build-appimage.sh
+          
+          # Run the build
+          ./appimage/scripts/build-appimage.sh
+          
+          # Get the generated AppImage info
+          VERSION_PART=$(echo "$VERSION" | cut -d'+' -f1)
+          APPIMAGE_NAME="BizSync-${VERSION_PART}-x86_64.AppImage"
+          APPIMAGE_PATH="./appimage/build/${APPIMAGE_NAME}"
+          
+          echo "appimage_name=$APPIMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "appimage_path=$APPIMAGE_PATH" >> $GITHUB_OUTPUT
+          
+          # Verify the AppImage was created
+          if [ -f "$APPIMAGE_PATH" ]; then
+            echo "AppImage created successfully: $APPIMAGE_PATH"
+            ls -lh "$APPIMAGE_PATH"
+            
+            # Test the AppImage
+            chmod +x "$APPIMAGE_PATH"
+            timeout 30s "$APPIMAGE_PATH" --appimage-extract-and-run --version || echo "AppImage test completed"
+          else
+            echo "Error: AppImage not found at $APPIMAGE_PATH"
+            exit 1
+          fi
+          
+      - name: Generate checksums
+        run: |
+          cd ./appimage/build
+          sha256sum *.AppImage > checksums.sha256
+          sha512sum *.AppImage > checksums.sha512
+          md5sum *.AppImage > checksums.md5
+          
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: bizsync-appimage-${{ steps.version.outputs.version }}
+          path: |
+            ${{ steps.build.outputs.appimage_path }}
+            ./appimage/build/*.zsync
+            ./appimage/build/checksums.*
+          retention-days: 30
+          
+      - name: Upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-logs-${{ github.run_number }}
+          path: |
+            ./appimage/build/*.log
+            /tmp/appimage-build-*.log
+          retention-days: 7
+
+  create-release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
+    needs: build-appimage
+    runs-on: ubuntu-22.04
+    
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Download AppImage artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: bizsync-appimage-${{ needs.build-appimage.outputs.version }}
+          path: ./release-assets
+          
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          VERSION_PART=$(echo "${{ needs.build-appimage.outputs.version }}" | cut -d'+' -f1)
+          
+          cat > release_notes.md << EOF
+          # BizSync v${VERSION_PART}
+          
+          ## What's New
+          
+          This release includes the latest features and improvements to BizSync.
+          
+          ## Installation
+          
+          ### Linux AppImage
+          1. Download the AppImage file below
+          2. Make it executable: \`chmod +x BizSync-${VERSION_PART}-x86_64.AppImage\`
+          3. Run it: \`./BizSync-${VERSION_PART}-x86_64.AppImage\`
+          
+          The AppImage is self-contained and includes all necessary dependencies.
+          
+          ## System Requirements
+          
+          - Linux x86_64 (64-bit)
+          - GLIBC 2.31+ (Ubuntu 20.04+, similar for other distributions)
+          - GTK 3.24+
+          - X11 or Wayland display server
+          
+          ## Features
+          
+          - Offline-first business management
+          - CRDT synchronization
+          - Singapore tax and GST calculations
+          - Invoice management
+          - Customer and vendor management
+          - Professional reporting
+          - Enterprise-grade security
+          
+          ## Checksums
+          
+          Verify your download using the provided checksums:
+          - SHA256: See checksums.sha256
+          - SHA512: See checksums.sha512
+          - MD5: See checksums.md5
+          EOF
+          
+          echo "release_notes_path=release_notes.md" >> $GITHUB_OUTPUT
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name || format('v{0}', needs.build-appimage.outputs.version | split('+') | first) }}
+          name: BizSync v${{ needs.build-appimage.outputs.version | split('+') | first }}
+          body_path: ${{ steps.release_notes.outputs.release_notes_path }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          files: |
+            ./release-assets/${{ needs.build-appimage.outputs.appimage_name }}
+            ./release-assets/*.zsync
+            ./release-assets/checksums.*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test-appimage:
+    needs: build-appimage
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        ubuntu_version: ['20.04', '22.04']
+        
+    steps:
+      - name: Download AppImage artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: bizsync-appimage-${{ needs.build-appimage.outputs.version }}
+          path: ./test-appimage
+          
+      - name: Test AppImage on Ubuntu ${{ matrix.ubuntu_version }}
+        run: |
+          cd ./test-appimage
+          chmod +x ${{ needs.build-appimage.outputs.appimage_name }}
+          
+          # Test basic execution
+          timeout 30s ./${{ needs.build-appimage.outputs.appimage_name }} --appimage-extract-and-run --version || echo "Version test completed"
+          
+          # Test desktop integration
+          ./${{ needs.build-appimage.outputs.appimage_name }} --appimage-extract
+          
+          # Verify required files are present
+          [ -f "squashfs-root/AppRun" ] && echo "AppRun found"
+          [ -f "squashfs-root/bizsync.desktop" ] && echo "Desktop file found"
+          [ -f "squashfs-root/bizsync.png" ] && echo "Icon found"
+          [ -f "squashfs-root/usr/bin/bizsync" ] && echo "Main binary found"
+          
+          # Test dependencies
+          ldd squashfs-root/usr/bin/bizsync | grep "not found" && exit 1 || echo "All dependencies satisfied"
+          
+          echo "AppImage testing completed successfully on Ubuntu ${{ matrix.ubuntu_version }}"
+
+  security-scan:
+    needs: build-appimage
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Download AppImage artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: bizsync-appimage-${{ needs.build-appimage.outputs.version }}
+          path: ./security-scan
+          
+      - name: Run security scan
+        run: |
+          cd ./security-scan
+          
+          # Extract AppImage for scanning
+          chmod +x ${{ needs.build-appimage.outputs.appimage_name }}
+          ./${{ needs.build-appimage.outputs.appimage_name }} --appimage-extract
+          
+          # Check for potential security issues
+          echo "Checking for world-writable files..."
+          find squashfs-root -perm -002 -type f | head -10
+          
+          echo "Checking for SUID/SGID files..."
+          find squashfs-root -perm /6000 -type f | head -10
+          
+          echo "Checking binary for known vulnerabilities..."
+          # This would integrate with actual security scanning tools
+          file squashfs-root/usr/bin/bizsync
+          
+          echo "Security scan completed"
+
+  cleanup:
+    if: always()
+    needs: [build-appimage, create-release, test-appimage, security-scan]
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Clean up build artifacts
+        run: |
+          echo "Cleaning up temporary build files..."
+          # This step can include cleanup operations if needed

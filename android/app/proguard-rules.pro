@@ -28,6 +28,23 @@
 # Keep notification classes
 -keep class androidx.core.app.NotificationCompat** { *; }
 
+# Keep permission handler classes
+-keep class com.baseflow.permissionhandler.** { *; }
+-keep class androidx.core.app.ActivityCompat { *; }
+-keep class androidx.core.content.ContextCompat { *; }
+
+# Keep file picker and storage access framework classes
+-keep class com.mr.flutter.plugin.filepicker.** { *; }
+-keep class androidx.documentfile.provider.** { *; }
+
+# Keep camera and image picker classes
+-keep class io.flutter.plugins.camera.** { *; }
+-keep class io.flutter.plugins.imagepicker.** { *; }
+
+# Keep Android system permission classes
+-keep class android.Manifest$permission { *; }
+-keep class android.content.pm.PackageManager { *; }
+
 # Generic rules for reflection-based serialization
 -keepattributes Signature
 -keepattributes *Annotation*

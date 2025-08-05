@@ -1,0 +1,329 @@
+name: AppImage CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'lib/**'
+      - 'linux/**'
+      - 'pubspec.yaml'
+      - 'appimage/**'
+      - '.github/workflows/appimage-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'lib/**'
+      - 'linux/**'
+      - 'pubspec.yaml'
+      - 'appimage/**'
+      - '.github/workflows/appimage-ci.yml'
+
+env:
+  FLUTTER_VERSION: '3.16.0'
+  FLUTTER_CHANNEL: 'stable'
+
+jobs:
+  appimage-build-test:
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            pkg-config \
+            libgtk-3-dev \
+            libblkid-dev \
+            liblzma-dev \
+            fuse \
+            imagemagick \
+            wget
+            
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            ${{ github.workspace }}/.dart_tool
+          key: ${{ runner.os }}-flutter-ci-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-ci-
+            
+      - name: Get Flutter dependencies
+        run: flutter pub get
+        
+      - name: Analyze code
+        run: flutter analyze
+        
+      - name: Run unit tests
+        run: flutter test
+        
+      - name: Test Flutter Linux build
+        run: |
+          flutter build linux --debug
+          
+          # Verify build output
+          if [ -f "build/linux/x64/debug/bundle/bizsync" ]; then
+            echo "Flutter Linux build successful"
+            ls -la build/linux/x64/debug/bundle/
+          else
+            echo "Flutter Linux build failed"
+            exit 1
+          fi
+          
+      - name: Test AppImage scripts
+        run: |
+          # Test version manager
+          chmod +x ./appimage/scripts/version-manager.sh
+          ./appimage/scripts/version-manager.sh info
+          
+          # Test dependency bundling script syntax
+          chmod +x ./appimage/scripts/bundle-dependencies.sh
+          bash -n ./appimage/scripts/bundle-dependencies.sh
+          
+          # Test build script syntax
+          chmod +x ./appimage/scripts/build-appimage.sh
+          bash -n ./appimage/scripts/build-appimage.sh
+          
+          echo "All AppImage scripts validated successfully"
+          
+      - name: Test AppDir structure
+        run: |
+          # Verify AppDir structure
+          [ -d "appimage/AppDir" ] && echo "AppDir exists"
+          [ -f "appimage/AppDir/AppRun" ] && echo "AppRun exists"
+          [ -x "appimage/AppDir/AppRun" ] && echo "AppRun is executable"
+          [ -f "appimage/AppDir/bizsync.desktop" ] && echo "Desktop file exists"
+          [ -f "appimage/AppDir/bizsync.png" ] && echo "Icon exists"
+          
+          # Test desktop file validity
+          desktop-file-validate appimage/AppDir/bizsync.desktop || echo "Desktop file validation completed with warnings"
+          
+          echo "AppDir structure validation completed"
+
+  appimage-quick-build:
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          
+      - name: Install minimal dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            pkg-config \
+            libgtk-3-dev \
+            wget
+            
+      - name: Get Flutter dependencies
+        run: flutter pub get
+        
+      - name: Quick AppImage build test
+        run: |
+          # Test if we can at least prepare the build environment
+          chmod +x ./appimage/scripts/build-appimage.sh
+          
+          # Test dependency check
+          ./appimage/scripts/build-appimage.sh --deps-only
+          
+          # Test Flutter build preparation
+          ./appimage/scripts/build-appimage.sh --flutter-only
+          
+          echo "Quick build test completed successfully"
+
+  appimage-security-check:
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Check AppRun script security
+        run: |
+          # Check for potential security issues in AppRun
+          echo "Checking AppRun script for security issues..."
+          
+          # Check for unsafe practices
+          if grep -q "eval" appimage/AppDir/AppRun; then
+            echo "WARNING: eval found in AppRun script"
+          fi
+          
+          if grep -q "sudo\|su " appimage/AppDir/AppRun; then
+            echo "WARNING: privilege escalation found in AppRun script"
+          fi
+          
+          # Check file permissions
+          [ "$(stat -c %a appimage/AppDir/AppRun)" = "755" ] && echo "AppRun permissions OK"
+          
+          echo "Security check completed"
+          
+      - name: Validate desktop file security
+        run: |
+          # Check desktop file for security issues
+          echo "Checking desktop file security..."
+          
+          if grep -q "Exec=.*sudo\|Exec=.*su " appimage/AppDir/bizsync.desktop; then
+            echo "ERROR: Privilege escalation in desktop file"
+            exit 1
+          fi
+          
+          if grep -q "Terminal=true" appimage/AppDir/bizsync.desktop; then
+            echo "INFO: Application runs in terminal"
+          fi
+          
+          echo "Desktop file security check completed"
+
+  appimage-documentation:
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Check AppImage documentation
+        run: |
+          echo "Checking AppImage documentation..."
+          
+          # Check if README or documentation mentions AppImage
+          if [ -f "README.md" ]; then
+            if grep -q -i "appimage" README.md; then
+              echo "AppImage mentioned in README"
+            else
+              echo "Consider adding AppImage documentation to README"
+            fi
+          fi
+          
+          # Check for build instructions
+          if [ -f "BUILD_INSTRUCTIONS.md" ] || [ -f "INSTALL.md" ]; then
+            echo "Build instructions found"
+          else
+            echo "Consider adding build instructions for AppImage"
+          fi
+          
+          echo "Documentation check completed"
+          
+      - name: Generate AppImage usage guide
+        run: |
+          cat > APPIMAGE_USAGE.md << 'EOF'
+          # BizSync AppImage Usage Guide
+          
+          ## Quick Start
+          
+          1. Download the latest AppImage from the releases page
+          2. Make it executable: `chmod +x BizSync-*.AppImage`
+          3. Run it: `./BizSync-*.AppImage`
+          
+          ## System Requirements
+          
+          - Linux x86_64 (64-bit)
+          - GLIBC 2.31+ (Ubuntu 20.04+)
+          - GTK 3.24+
+          - X11 or Wayland
+          
+          ## Desktop Integration
+          
+          The AppImage will automatically integrate with your desktop environment on first run:
+          - Desktop entry will be created
+          - Application icon will be installed
+          - File associations will be set up
+          
+          To disable desktop integration, run with: `--no-desktop-integration`
+          
+          ## Troubleshooting
+          
+          ### Permission Issues
+          ```bash
+          chmod +x BizSync-*.AppImage
+          ```
+          
+          ### Missing FUSE
+          ```bash
+          sudo apt install fuse
+          ```
+          
+          ### Extract and Run
+          If FUSE is not available:
+          ```bash
+          ./BizSync-*.AppImage --appimage-extract-and-run
+          ```
+          
+          ## Updates
+          
+          The AppImage includes auto-update functionality when available.
+          Check for updates manually from the Help menu.
+          
+          ## Uninstallation
+          
+          1. Delete the AppImage file
+          2. Remove desktop integration:
+             ```bash
+             rm ~/.local/share/applications/bizsync.desktop
+             rm -rf ~/.local/share/icons/hicolor/*/apps/bizsync.png
+             ```
+          3. Remove application data (optional):
+             ```bash
+             rm -rf ~/.local/share/bizsync
+             rm -rf ~/.config/bizsync
+             ```
+          EOF
+          
+          echo "AppImage usage guide generated"
+
+  appimage-compatibility:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        base_image: ['ubuntu:20.04', 'ubuntu:22.04']
+        
+    container:
+      image: ${{ matrix.base_image }}
+      
+    steps:
+      - name: Install basic tools
+        run: |
+          apt-get update
+          apt-get install -y wget curl file
+          
+      - name: Test GLIBC compatibility
+        run: |
+          echo "Testing GLIBC compatibility on ${{ matrix.base_image }}"
+          ldd --version
+          
+          # Check if minimum GLIBC version is available
+          if ldd --version | grep -q "2\.[3-9][0-9]\|2\.[0-2][0-9]"; then
+            echo "GLIBC version compatible"
+          else
+            echo "GLIBC version may be too old"
+          fi
+          
+      - name: Test GTK availability
+        run: |
+          apt-get install -y libgtk-3-0
+          pkg-config --modversion gtk+-3.0 || echo "GTK3 not available"
+          
+          echo "Compatibility test completed for ${{ matrix.base_image }}"

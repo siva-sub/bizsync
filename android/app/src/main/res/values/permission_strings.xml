@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Permission rationale strings for Android compliance -->
+    
+    <!-- Storage and Media Permissions -->
+    <string name="permission_storage_rationale_title">Storage Access Required</string>
+    <string name="permission_storage_rationale_message">BizSync needs storage access to save your business documents, invoices, and create backups. This ensures your important business data is preserved and accessible when you need it.</string>
+    
+    <string name="permission_photos_rationale_title">Photo Access Required</string>
+    <string name="permission_photos_rationale_message">BizSync needs access to photos to set profile pictures and attach images to your business documents and invoices. We only access photos you specifically choose.</string>
+    
+    <string name="permission_media_rationale_title">Media Access Required</string>
+    <string name="permission_media_rationale_message">BizSync needs access to media files to help you manage business documents, import receipts, and create comprehensive business records. Your privacy is protected by Android\'s granular permissions.</string>
+    
+    <!-- Camera Permission -->
+    <string name="permission_camera_rationale_title">Camera Access Required</string>
+    <string name="permission_camera_rationale_message">BizSync needs camera access to scan QR codes for payments, capture receipts and documents, and take photos for your business records. The camera is only used when you actively choose to scan or take a photo.</string>
+    
+    <!-- Notification Permission -->
+    <string name="permission_notification_rationale_title">Notification Permission Required</string>
+    <string name="permission_notification_rationale_message">BizSync needs notification permission to remind you about important business tasks, payment due dates, tax deadlines, and backup schedules. These notifications help keep your business running smoothly.</string>
+    
+    <!-- Location Permission -->
+    <string name="permission_location_rationale_title">Location Access Required</string>
+    <string name="permission_location_rationale_message">BizSync uses your location to automatically fill in business addresses, provide location-based business insights, and help track business expenses by location. Your location data is never shared with third parties.</string>
+    
+    <!-- File Management Permission -->
+    <string name="permission_manage_storage_rationale_title">File Management Permission Required</string>
+    <string name="permission_manage_storage_rationale_message">BizSync needs advanced file management permission to organize your business documents, create structured backup files, and provide comprehensive file export options. This permission helps maintain an organized business document system.</string>
+    
+    <!-- Permanently Denied Messages -->
+    <string name="permission_permanently_denied_title">Permission Required</string>
+    <string name="permission_permanently_denied_message">This permission has been permanently denied. To enable it, please go to Settings > Apps > BizSync > Permissions and turn on the required permission.</string>
+    <string name="permission_permanently_denied_action">Open Settings</string>
+    
+    <!-- Permission Groups -->
+    <string name="permission_group_essential">Essential Permissions</string>
+    <string name="permission_group_enhanced">Enhanced Features</string>
+    <string name="permission_group_optional">Optional Permissions</string>
+    
+    <!-- Permission Status -->
+    <string name="permission_status_granted">Granted</string>
+    <string name="permission_status_denied">Denied</string>
+    <string name="permission_status_permanently_denied">Permanently Denied</string>
+    <string name="permission_status_not_determined">Not Requested</string>
+    
+    <!-- Android Version Specific Messages -->
+    <string name="android_13_storage_explanation">Android 13+ Privacy Enhancement</string>
+    <string name="android_13_storage_message">Android 13 and above uses granular media permissions for better privacy. BizSync will only request access to specific file types needed for business operations.</string>
+    
+    <string name="android_10_scoped_storage_explanation">Scoped Storage Information</string>
+    <string name="android_10_scoped_storage_message">Android 10+ uses scoped storage to protect your privacy. BizSync will primarily use its own secure storage area, with access to shared storage only when you explicitly choose files.</string>
+    
+    <!-- Business Specific Rationales -->
+    <string name="business_backup_rationale">Business Data Backup</string>
+    <string name="business_backup_message">Regular backups protect your valuable business data. Storage permission ensures your invoices, customer information, and financial records are safely preserved.</string>
+    
+    <string name="business_document_rationale">Document Management</string>
+    <string name="business_document_message">Effective document management is crucial for business success. Storage access allows BizSync to help you organize, search, and retrieve business documents efficiently.</string>
+    
+    <string name="business_compliance_rationale">Business Compliance</string>
+    <string name="business_compliance_message">Many businesses are required to maintain digital records for compliance purposes. Storage access ensures you can maintain proper business documentation and audit trails.</string>
+    
+    <!-- File Type Specific Messages -->
+    <string name="image_files_rationale">Business Images</string>
+    <string name="image_files_message">Access to images allows you to attach receipts, product photos, and business documents to your records, creating comprehensive business documentation.</string>
+    
+    <string name="document_files_rationale">Business Documents</string>
+    <string name="document_files_message">Access to documents enables import and export of invoices, contracts, and other business files, ensuring seamless integration with your existing business workflow.</string>
+    
+    <!-- Security and Privacy Assurances -->
+    <string name="privacy_assurance_title">Your Privacy is Protected</string>
+    <string name="privacy_assurance_message">BizSync only accesses files you explicitly choose or create. We never browse or access your personal files without permission. All business data remains private and secure on your device.</string>
+    
+    <string name="data_security_title">Enterprise-Grade Security</string>
+    <string name="data_security_message">Your business data is encrypted and stored securely on your device. BizSync uses industry-standard security practices to protect your sensitive business information.</string>
+    
+    <string name="offline_first_title">Offline-First Design</string>
+    <string name="offline_first_message">BizSync works entirely offline, ensuring your business data never leaves your device unless you explicitly choose to export or share it. Your data, your control.</string>
+</resources>
