@@ -31,47 +31,86 @@ class RealDashboardAnalyticsService {
     final now = DateTime.now();
     final dateRange = _getDateRange(period, customStartDate, customEndDate);
 
-    // Get all data in parallel for better performance
-    final results = await Future.wait([
-      _calculateRevenueMetrics(dateRange),
-      _calculateCashFlowMetrics(dateRange),
-      _calculateCustomerMetrics(dateRange),
-      _calculateInvoiceMetrics(dateRange),
-    ]);
+    try {
+      // Get all data in parallel for better performance
+      final results = await Future.wait([
+        _calculateRevenueMetrics(dateRange),
+        _calculateCashFlowMetrics(dateRange),
+        _calculateCustomerMetrics(dateRange),
+        _calculateInvoiceMetrics(dateRange),
+      ]);
 
-    final revenueData = results[0] as Map<String, dynamic>;
-    final cashFlowData = results[1] as Map<String, dynamic>;
-    final customerData = results[2] as Map<String, dynamic>;
-    final invoiceData = results[3] as Map<String, dynamic>;
+      final revenueData = results[0] as Map<String, dynamic>;
+      final cashFlowData = results[1] as Map<String, dynamic>;
+      final customerData = results[2] as Map<String, dynamic>;
+      final invoiceData = results[3] as Map<String, dynamic>;
 
-    // Build KPIs
-    final kpis =
-        _buildKPIs(revenueData, cashFlowData, customerData, invoiceData);
+      // Check if we have any real data
+      final hasRealData = (revenueData['totalRevenue'] ?? 0.0) > 0 || 
+                         (invoiceData['totalInvoices'] ?? 0) > 0 ||
+                         (customerData['totalCustomers'] ?? 0) > 0;
 
-    // Build revenue analytics
-    final revenueAnalytics =
-        _buildRevenueAnalytics(revenueData, period, dateRange);
+      if (!hasRealData) {
+        // Return minimal data if no real data exists
+        return DashboardData(
+          id: 'empty_dashboard',
+          kpis: [],
+          revenueAnalytics: null,
+          cashFlowData: null,
+          customerInsights: null,
+          inventoryOverview: null,
+          taxComplianceStatus: null,
+          anomalies: [],
+          currentPeriod: period,
+          lastUpdated: now,
+          config: _getDefaultDashboardConfig(),
+        );
+      }
 
-    // Build cash flow data
-    final cashFlow = _buildCashFlowData(cashFlowData, period, dateRange);
+      // Build KPIs with real data
+      final kpis =
+          _buildKPIs(revenueData, cashFlowData, customerData, invoiceData);
 
-    // Build customer insights
-    final customerInsights =
-        _buildCustomerInsights(customerData, period, dateRange);
+      // Build revenue analytics
+      final revenueAnalytics =
+          _buildRevenueAnalytics(revenueData, period, dateRange);
 
-    return DashboardData(
-      id: 'dashboard_${DateTime.now().millisecondsSinceEpoch}',
-      kpis: kpis,
-      revenueAnalytics: revenueAnalytics,
-      cashFlowData: cashFlow,
-      customerInsights: customerInsights,
-      inventoryOverview: null, // TODO: Implement when inventory module is ready
-      taxComplianceStatus: null, // TODO: Implement when tax module is ready
-      anomalies: [], // TODO: Implement anomaly detection
-      currentPeriod: period,
-      lastUpdated: now,
-      config: _getDefaultDashboardConfig(),
-    );
+      // Build cash flow data
+      final cashFlow = _buildCashFlowData(cashFlowData, period, dateRange);
+
+      // Build customer insights
+      final customerInsights =
+          _buildCustomerInsights(customerData, period, dateRange);
+
+      return DashboardData(
+        id: 'dashboard_${DateTime.now().millisecondsSinceEpoch}',
+        kpis: kpis,
+        revenueAnalytics: revenueAnalytics,
+        cashFlowData: cashFlow,
+        customerInsights: customerInsights,
+        inventoryOverview: null, // TODO: Implement when inventory module is ready
+        taxComplianceStatus: null, // TODO: Implement when tax module is ready
+        anomalies: [], // TODO: Implement anomaly detection
+        currentPeriod: period,
+        lastUpdated: now,
+        config: _getDefaultDashboardConfig(),
+      );
+    } catch (e) {
+      // If there's an error loading real data, return empty dashboard
+      return DashboardData(
+        id: 'error_dashboard',
+        kpis: [],
+        revenueAnalytics: null,
+        cashFlowData: null,
+        customerInsights: null,
+        inventoryOverview: null,
+        taxComplianceStatus: null,
+        anomalies: [],
+        currentPeriod: period,
+        lastUpdated: now,
+        config: _getDefaultDashboardConfig(),
+      );
+    }
   }
 
   /// Calculate revenue metrics from invoice data

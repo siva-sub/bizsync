@@ -108,47 +108,48 @@ class _MainShellScreenState extends State<MainShellScreen> {
     final String title = _getTitleForRoute(currentLocation);
 
     return AppBar(
-      title: Row(
-        children: [
-          if (isDesktop && _isDrawerExpanded) ...[
-            // Logo/Brand for desktop when drawer is expanded
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.business,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 20,
+      title: isDesktop && _isDrawerExpanded
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Logo/Brand for desktop when drawer is expanded
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'BizSync',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.business,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'BizSync',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 16),
-            Container(
-              height: 24,
-              width: 1,
-              color: Theme.of(context).dividerColor,
-            ),
-            const SizedBox(width: 16),
-          ],
-          Text(title),
-        ],
-      ),
+                ),
+                const SizedBox(width: 16),
+                Container(
+                  height: 24,
+                  width: 1,
+                  color: Theme.of(context).dividerColor,
+                ),
+                const SizedBox(width: 16),
+                Flexible(child: Text(title)),
+              ],
+            )
+          : Text(title),
       centerTitle: !isDesktop,
       leading: isDesktop
           ? null

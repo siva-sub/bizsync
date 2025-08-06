@@ -63,16 +63,41 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
 
   Future<void> _loadRealDashboardData() async {
     // TODO: Load real data from database
-    // For now, use sample data structure
+    // For now, use sample data to demonstrate functionality
     _dashboardMetrics = {
-      'revenue': {'total': 0.0, 'monthly': 0.0, 'change': '+0%'},
-      'invoices': {'total': 0, 'pending': 0, 'overdue': 0, 'paid': 0},
-      'customers': {'total': 0, 'active': 0},
-      'employees': {'total': 0, 'active': 0},
-      'payments': {'total': 0.0, 'pending': 0.0},
+      'revenue': {'total': 45750.0, 'monthly': 12400.0, 'change': '+12.5%'},
+      'invoices': {'total': 28, 'pending': 5, 'overdue': 2, 'paid': 21},
+      'customers': {'total': 15, 'active': 12},
+      'employees': {'total': 8, 'active': 7},
+      'payments': {'total': 38200.0, 'pending': 7550.0},
     };
 
-    _recentActivity = [];
+    _recentActivity = [
+      {
+        'icon': 'receipt_long',
+        'title': 'New invoice created',
+        'subtitle': 'Invoice #INV-2025-001 for ABC Corp',
+        'color': 'blue',
+      },
+      {
+        'icon': 'payment',
+        'title': 'Payment received',
+        'subtitle': '\$2,500 from XYZ Ltd',
+        'color': 'green',
+      },
+      {
+        'icon': 'person_add',
+        'title': 'New customer added',
+        'subtitle': 'TechStart Pte Ltd',
+        'color': 'purple',
+      },
+      {
+        'icon': 'account_balance',
+        'title': 'Tax calculation completed',
+        'subtitle': 'Q4 2024 GST filing prepared',
+        'color': 'orange',
+      },
+    ];
   }
 
   @override
@@ -330,7 +355,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
               icon: Icons.person_add,
               title: 'Add Customer',
               subtitle: 'New customer profile',
-              onTap: () => context.go('/customers/add'),
+              onTap: () => context.go('/customers/create'),
             ),
             _ActionCard(
               icon: Icons.calculate,
