@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../models/employee_models.dart';
 import '../services/employee_service.dart';
-import '../../../core/utils/date_utils.dart' as app_date_utils;
+import '../../../core/utils/date_utils.dart';
 
 class EmployeeDetailsScreen extends ConsumerStatefulWidget {
   final String employeeId;
@@ -411,7 +411,7 @@ class _EmployeeDetailsScreenState extends ConsumerState<EmployeeDetailsScreen>
               if (employee.dateOfBirth.value != null)
                 _buildInfoTile(
                   'Date of Birth',
-                  app_date_utils.formatDate(employee.dateOfBirth.value!),
+                  AppDateUtils.formatDate(employee.dateOfBirth.value!),
                   Icons.cake,
                 ),
               if (employee.nationality.value != null)
@@ -536,13 +536,13 @@ class _EmployeeDetailsScreenState extends ConsumerState<EmployeeDetailsScreen>
               ),
               _buildInfoTile(
                 'Start Date',
-                app_date_utils.formatDate(employee.startDate.value),
+                AppDateUtils.formatDate(employee.startDate.value),
                 Icons.calendar_today,
               ),
               if (employee.endDate.value != null)
                 _buildInfoTile(
                   'End Date',
-                  app_date_utils.formatDate(employee.endDate.value!),
+                  AppDateUtils.formatDate(employee.endDate.value!),
                   Icons.event_busy,
                 ),
             ],
@@ -570,7 +570,7 @@ class _EmployeeDetailsScreenState extends ConsumerState<EmployeeDetailsScreen>
               if (employee.workPermitExpiry.value != null)
                 _buildInfoTile(
                   'Permit Expiry',
-                  app_date_utils.formatDate(employee.workPermitExpiry.value!),
+                  AppDateUtils.formatDate(employee.workPermitExpiry.value!),
                   Icons.schedule,
                   subtitle: _getExpiryStatus(employee.workPermitExpiry.value!),
                 ),

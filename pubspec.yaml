@@ -11,7 +11,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # - MINOR: New features, backwards compatible
 # - PATCH: Bug fixes, small improvements
 # - BUILD_NUMBER: Incremental build number for each deployment
-version: 1.3.0+4
+version: 1.4.0+5
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

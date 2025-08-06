@@ -7,6 +7,7 @@ import '../models/index.dart';
 
 /// Core Employee Service for CRUD operations and business logic
 class EmployeeService {
+  static EmployeeService? _instance;
   final NotificationService _notificationService;
 
   // In-memory storage for demo - replace with database repository
@@ -25,6 +26,15 @@ class EmployeeService {
   final String _nodeId = UuidGenerator.generateId();
 
   EmployeeService(this._notificationService);
+
+  /// Get singleton instance of EmployeeService
+  static Future<EmployeeService> getInstance() async {
+    if (_instance == null) {
+      final notificationService = NotificationService();
+      _instance = EmployeeService(notificationService);
+    }
+    return _instance!;
+  }
 
   // ============================================================================
   // EMPLOYEE CRUD OPERATIONS

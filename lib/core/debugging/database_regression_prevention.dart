@@ -210,6 +210,32 @@ class DatabaseRegressionPrevention {
     debugPrint('✅ Database Regression Prevention initialized');
   }
 
+  /// Setup regression prevention monitoring and configurations
+  Future<void> setupRegressionPrevention() async {
+    debugPrint('🔧 Setting up regression prevention configurations...');
+    
+    // Initialize auto-fix functions
+    _initializeAutoFixFunctions();
+    
+    // Setup monitoring paths
+    _setupMonitoringPaths();
+    
+    // Validate current system state
+    final currentState = await _captureCurrentState();
+    if (_currentBaselineId != null) {
+      final baseline = _baselines[_currentBaselineId!];
+      if (baseline != null) {
+        final regressions = await _compareStates(baseline, currentState);
+        if (regressions.isNotEmpty) {
+          debugPrint('⚠️ Found ${regressions.length} potential regressions during setup');
+          _detectedRegressions.addAll(regressions);
+        }
+      }
+    }
+    
+    debugPrint('✅ Regression prevention setup completed');
+  }
+
   /// Create a new baseline snapshot
   Future<BaselineSnapshot> createBaseline({
     bool markAsKnownGood = false,
@@ -321,7 +347,7 @@ class DatabaseRegressionPrevention {
       'auto_fix_enabled': _enableAutoFix,
       'monitoring_interval_minutes': _monitoringInterval.inMinutes,
       'performance_threshold_percent': _performanceThreshold,
-      'prevention_measures': await _getActivePrevention Measures(),
+      'prevention_measures': await _getActivePreventionMeasures(),
       'regression_history': await _getRegressionHistory(),
       'baseline_quality': await _assessBaselineQuality(),
       'recommendations': await _generatePreventionRecommendations(),
@@ -1042,6 +1068,61 @@ class DatabaseRegressionPrevention {
   double _getCurrentMemoryUsage() {
     // Placeholder - would implement actual memory usage tracking
     return 0.0;
+  }
+
+  /// Setup monitoring paths for different components
+  void _setupMonitoringPaths() {
+    _monitoredPaths['database'] = ['database initialization', 'schema changes', 'performance metrics'];
+    _monitoredPaths['ui'] = ['state management', 'component lifecycle', 'navigation'];
+    _monitoredPaths['crdt'] = ['synchronization', 'conflict resolution', 'data consistency'];
+    _monitoredPaths['platform'] = ['compatibility', 'platform-specific features', 'permissions'];
+  }
+
+  /// Capture current system state for comparison
+  Future<Map<String, dynamic>> _captureCurrentState() async {
+    return {
+      'timestamp': DateTime.now().toIso8601String(),
+      'database_config': await _captureDatabaseConfig(),
+      'platform_info': await _capturePlatformInfo(),
+      'performance_metrics': await _capturePerformanceMetrics(),
+      'schema_info': await _captureSchemaInfo(),
+    };
+  }
+
+  /// Compare two states and detect regressions
+  Future<List<RegressionDetection>> _compareStates(BaselineSnapshot baseline, Map<String, dynamic> currentState) async {
+    final regressions = <RegressionDetection>[];
+    
+    // Compare performance metrics
+    final baselinePerf = baseline.performanceMetrics;
+    final currentPerf = currentState['performance_metrics'] as Map<String, dynamic>?;
+    
+    if (currentPerf != null) {
+      for (final metric in baselinePerf.keys) {
+        final baseValue = baselinePerf[metric] as double? ?? 0.0;
+        final currentValue = currentPerf[metric] as double? ?? 0.0;
+        
+        if (baseValue > 0 && ((currentValue - baseValue) / baseValue) > (_performanceThreshold / 100)) {
+          regressions.add(RegressionDetection(
+            id: UuidGenerator.generateId(),
+            type: RegressionType.performanceDegradation,
+            severity: RegressionSeverity.warning,
+            title: 'Performance degradation detected in $metric',
+            description: 'Metric $metric degraded from $baseValue to $currentValue',
+            detectedAt: DateTime.now(),
+            platform: Platform.operatingSystem,
+            currentState: currentState,
+            baselineState: baseline.toJson(),
+            evidence: {'metric': metric, 'baseline': baseValue, 'current': currentValue},
+            affectedComponents: ['performance'],
+            suggestedFix: 'Investigate recent changes that might affect $metric performance',
+            isAutoFixable: false,
+          ));
+        }
+      }
+    }
+    
+    return regressions;
   }
 
   /// Dispose resources

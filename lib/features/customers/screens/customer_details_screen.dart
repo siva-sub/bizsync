@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../data/models/customer.dart';
 import '../repositories/customer_repository.dart';
-import '../../../core/utils/date_utils.dart' as app_date_utils;
+import '../../../core/utils/date_utils.dart';
 
 class CustomerDetailsScreen extends ConsumerStatefulWidget {
   final String customerId;
@@ -432,12 +432,12 @@ class _CustomerDetailsScreenState extends ConsumerState<CustomerDetailsScreen>
             [
               _buildInfoTile(
                 'Created',
-                app_date_utils.formatDateTime(customer.createdAt),
+                AppDateUtils.formatDateTime(customer.createdAt),
                 Icons.calendar_today,
               ),
               _buildInfoTile(
                 'Last Updated',
-                app_date_utils.formatDateTime(customer.updatedAt),
+                AppDateUtils.formatDateTime(customer.updatedAt),
                 Icons.update,
               ),
               _buildInfoTile(

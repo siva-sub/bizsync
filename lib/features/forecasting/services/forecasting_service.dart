@@ -582,6 +582,11 @@ class ForecastingService {
     return session;
   }
 
+  /// Save a forecast session (public method)
+  Future<void> saveForecastSession(ForecastSession session) async {
+    await _saveForecastSession(session);
+  }
+
   Future<void> _saveForecastSession(ForecastSession session) async {
     final dbService = await databaseService;
     final db = await dbService.database;
@@ -661,6 +666,20 @@ class ForecastingService {
       where: 'data_source = ?',
       whereArgs: [dataSource],
       orderBy: 'created_at DESC',
+    );
+
+    return results.map((row) => _parseSessionFromRow(row)).toList();
+  }
+
+  /// Get recent forecast sessions (limited number)
+  Future<List<ForecastSession>> getRecentForecasts([int limit = 10]) async {
+    final dbService = await databaseService;
+    final db = await dbService.database;
+
+    final results = await db.query(
+      'forecast_sessions',
+      orderBy: 'created_at DESC',
+      limit: limit,
     );
 
     return results.map((row) => _parseSessionFromRow(row)).toList();

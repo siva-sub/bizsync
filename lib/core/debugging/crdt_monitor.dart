@@ -140,15 +140,19 @@ class CRDTOperation {
   }
 
   factory CRDTOperation.fromJson(Map<String, dynamic> json) {
+    final deviceId = json['device_id'] as String;
     return CRDTOperation(
       id: json['id'] as String,
       tableName: json['table_name'] as String,
       recordId: json['record_id'] as String,
       operationType: json['operation_type'] as String,
       operationData: jsonDecode(json['operation_data'] as String) as Map<String, dynamic>,
-      vectorClock: VectorClock.fromJson(jsonDecode(json['vector_clock'] as String) as Map<String, dynamic>),
+      vectorClock: VectorClock.fromJson(
+        jsonDecode(json['vector_clock'] as String) as Map<String, dynamic>, 
+        deviceId
+      ),
       timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
-      deviceId: json['device_id'] as String,
+      deviceId: deviceId,
       causedBy: json['caused_by'] as String?,
     );
   }
@@ -275,7 +279,7 @@ class CRDTMonitor {
     final concurrentOps = _findConcurrentOperations(operations);
     
     for (final conflictPair in concurrentOps) {
-      final conflict = await _analyzeConflict(conflictPair.first, conflictPair.second);
+      final conflict = await _analyzeConflict(conflictPair[0], conflictPair[1]);
       if (conflict.hasIssue) {
         conflicts.add(conflict);
       }

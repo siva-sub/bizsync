@@ -10,6 +10,7 @@ import 'sqlcipher_decision_framework.dart';
 import 'database_regression_prevention.dart';
 import 'evidence_collection_system.dart';
 import 'automated_remediation_system.dart';
+import 'hypothesis_driven_debugger.dart';
 
 /// Debugging session state
 enum DebuggingSessionState {
