@@ -208,15 +208,15 @@ class ThemeService extends ChangeNotifier {
         toolbarHeight: 64,
       ),
 
-      // Card Theme
-      cardTheme: CardThemeData(
-        elevation: 2,
-        shadowColor: Colors.black12,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: colorScheme.surface,
-      ),
+      // Card Theme - Commented out for Flutter 3.22.0 compatibility
+      // cardTheme: CardThemeData(
+      //   elevation: 2,
+      //   shadowColor: Colors.black12,
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(12),
+      //   ),
+      //   color: colorScheme.surface,
+      // ),
 
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -319,15 +319,15 @@ class ThemeService extends ChangeNotifier {
         toolbarHeight: 64,
       ),
 
-      // Card Theme
-      cardTheme: CardThemeData(
-        elevation: 2,
-        shadowColor: Colors.black26,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: colorScheme.surface,
-      ),
+      // Card Theme - Commented out for Flutter 3.22.0 compatibility
+      // cardTheme: CardThemeData(
+      //   elevation: 2,
+      //   shadowColor: Colors.black26,
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(12),
+      //   ),
+      //   color: colorScheme.surface,
+      // ),
 
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
