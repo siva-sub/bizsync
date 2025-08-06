@@ -555,7 +555,7 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen>
                         leading: CircleAvatar(
                           backgroundColor:
                               _getPayrollStatusColor(payroll.status.value)
-                                  .withValues(alpha: 0.1),
+                                  .withOpacity(0.1),
                           child: Icon(
                             _getPayrollStatusIcon(payroll.status.value),
                             color: _getPayrollStatusColor(payroll.status.value),
@@ -581,7 +581,7 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen>
                               decoration: BoxDecoration(
                                 color:
                                     _getPayrollStatusColor(payroll.status.value)
-                                        .withValues(alpha: 0.1),
+                                        .withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -662,7 +662,7 @@ class _PayrollScreenState extends ConsumerState<PayrollScreen>
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor:
-              Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              Theme.of(context).colorScheme.primary.withOpacity(0.1),
           child: Icon(icon, color: Theme.of(context).colorScheme.primary),
         ),
         title: Text(title),

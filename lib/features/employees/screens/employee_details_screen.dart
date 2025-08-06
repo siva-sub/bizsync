@@ -220,7 +220,7 @@ class _EmployeeDetailsScreenState extends ConsumerState<EmployeeDetailsScreen>
             Icon(
               Icons.error_outline,
               size: 64,
-              color: Colors.red.withValues(alpha: 0.7),
+              color: Colors.red.withOpacity(0.7),
             ),
             const SizedBox(height: 16),
             Text(
@@ -252,7 +252,7 @@ class _EmployeeDetailsScreenState extends ConsumerState<EmployeeDetailsScreen>
             Icon(
               Icons.person_off,
               size: 64,
-              color: Colors.grey.withValues(alpha: 0.7),
+              color: Colors.grey.withOpacity(0.7),
             ),
             const SizedBox(height: 16),
             Text(
@@ -303,7 +303,7 @@ class _EmployeeDetailsScreenState extends ConsumerState<EmployeeDetailsScreen>
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: Colors.blue.withValues(alpha: 0.2),
+                    backgroundColor: Colors.blue.withOpacity(0.2),
                     child: employee.profilePicture.value != null
                         ? ClipOval(
                             child: Image.network(
@@ -473,7 +473,7 @@ class _EmployeeDetailsScreenState extends ConsumerState<EmployeeDetailsScreen>
         children: [
           // Employment Status
           Card(
-            color: _getStatusColor(employee.employmentStatus.value).withValues(alpha: 0.1),
+            color: _getStatusColor(employee.employmentStatus.value).withOpacity(0.1),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -928,7 +928,7 @@ class _EmployeeDetailsScreenState extends ConsumerState<EmployeeDetailsScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
+              color: color.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(

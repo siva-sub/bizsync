@@ -173,7 +173,7 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
+                color: Colors.green.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Text(
@@ -232,8 +232,8 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
         const SizedBox(height: 16),
         Card(
           color: _reportData!.netGstPayable > 0
-              ? Colors.red.withValues(alpha: 0.1)
-              : Colors.green.withValues(alpha: 0.1),
+              ? Colors.red.withOpacity(0.1)
+              : Colors.green.withOpacity(0.1),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -380,8 +380,8 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                             height: 40,
                             decoration: BoxDecoration(
                               color: gstRate.rate == '9%'
-                                  ? Colors.green.withValues(alpha: 0.1)
-                                  : Colors.grey.withValues(alpha: 0.1),
+                                  ? Colors.green.withOpacity(0.1)
+                                  : Colors.grey.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Center(
@@ -468,7 +468,7 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.1),
+                    color: Colors.orange.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -661,8 +661,8 @@ class _TaxMetricCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: isPositive
-                        ? Colors.green.withValues(alpha: 0.1)
-                        : Colors.blue.withValues(alpha: 0.1),
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -745,8 +745,8 @@ class _ComplianceItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: isCompliant
-                  ? Colors.green.withValues(alpha: 0.1)
-                  : Colors.orange.withValues(alpha: 0.1),
+                  ? Colors.green.withOpacity(0.1)
+                  : Colors.orange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(

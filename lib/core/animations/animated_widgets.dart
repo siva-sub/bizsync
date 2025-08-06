@@ -111,7 +111,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
                   boxShadow: _isHovered && widget.enabled
                       ? createMesaSafeBoxShadow(
                           color:
-                              theme.colorScheme.primary.withValues(alpha: 0.3),
+                              theme.colorScheme.primary.withOpacity(0.3),
                           offset: const Offset(0, 4),
                           blurRadius: 12,
                         )

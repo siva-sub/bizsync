@@ -251,7 +251,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
           'Grant permissions to unlock BizSync\'s full potential. You can change these anytime in Settings.',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color:
-                    Theme.of(context).colorScheme.onBackground.withValues(alpha: 0.7),
+                    Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
               ),
         ),
       ],
@@ -277,7 +277,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
+                    color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -311,7 +311,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .primary
-                                    .withValues(alpha: 0.1),
+                                    .withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -333,7 +333,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
                               color: Theme.of(context)
                                   .colorScheme
                                   .onBackground
-                                  .withValues(alpha: 0.7),
+                                  .withOpacity(0.7),
                             ),
                       ),
                     ],
@@ -351,7 +351,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -390,7 +390,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen>
 
   Widget _buildPrivacyCard() {
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

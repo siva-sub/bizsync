@@ -398,7 +398,7 @@ class _AppNavigationDrawerState extends ConsumerState<AppNavigationDrawer> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+            Theme.of(context).colorScheme.primary.withOpacity(0.8),
           ],
         ),
       ),
@@ -410,7 +410,7 @@ class _AppNavigationDrawerState extends ConsumerState<AppNavigationDrawer> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -580,12 +580,12 @@ class _NavigationTileState extends State<_NavigationTile>
                             ? Theme.of(context)
                                 .colorScheme
                                 .primary
-                                .withValues(alpha: 0.1)
+                                .withOpacity(0.1)
                             : _isHovered
                                 ? Theme.of(context)
                                     .colorScheme
                                     .primary
-                                    .withValues(alpha: 0.05)
+                                    .withOpacity(0.05)
                                 : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                         border: isSelected
@@ -593,7 +593,7 @@ class _NavigationTileState extends State<_NavigationTile>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .primary
-                                    .withValues(alpha: 0.3),
+                                    .withOpacity(0.3),
                                 width: 1,
                               )
                             : null,
@@ -611,7 +611,7 @@ class _NavigationTileState extends State<_NavigationTile>
                                         ? Theme.of(context)
                                             .colorScheme
                                             .primary
-                                            .withValues(alpha: 0.8)
+                                            .withOpacity(0.8)
                                         : null,
                                 size: _isHovered ? 26 : 24,
                               ),
@@ -655,7 +655,7 @@ class _NavigationTileState extends State<_NavigationTile>
                                           ? Theme.of(context)
                                               .colorScheme
                                               .primary
-                                              .withValues(alpha: 0.8)
+                                              .withOpacity(0.8)
                                           : Theme.of(context)
                                               .textTheme
                                               .bodyMedium
@@ -735,7 +735,7 @@ class _NavigationTileState extends State<_NavigationTile>
           size: 18,
           color: isSelected
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         ),
         title: Text(
           item.title,
@@ -756,7 +756,7 @@ class _NavigationTileState extends State<_NavigationTile>
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         selected: isSelected,
         selectedTileColor:
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            Theme.of(context).colorScheme.primary.withOpacity(0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),

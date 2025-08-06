@@ -114,7 +114,7 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
           Icon(
             Icons.backup_outlined,
             size: 64,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -241,7 +241,7 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
         break;
       default:
         icon = Icons.backup_outlined;
-        color = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
+        color = Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
     }
 
     return Icon(icon, color: color);
@@ -376,7 +376,7 @@ class _BackupHistoryScreenState extends ConsumerState<BackupHistoryScreen> {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withValues(alpha: 0.3),
+                        .withOpacity(0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

@@ -301,7 +301,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha: 0.1),
+            color: Colors.blue.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -342,7 +342,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.orange.withValues(alpha: 0.1),
+            color: Colors.orange.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -403,7 +403,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.green.withValues(alpha: 0.1),
+          color: Colors.green.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -477,7 +477,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+        color: Theme.of(context).primaryColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -553,7 +553,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
   Widget _buildReliefItem(relief) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      color: Colors.green.withValues(alpha: 0.1),
+      color: Colors.green.withOpacity(0.1),
       child: ListTile(
         leading: const Icon(Icons.savings, color: Colors.green),
         title: Text(relief.name),
@@ -570,7 +570,7 @@ class _TaxCalculatorScreenState extends ConsumerState<TaxCalculatorScreen> {
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),

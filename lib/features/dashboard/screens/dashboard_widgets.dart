@@ -527,7 +527,7 @@ class QuickActionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withValues(alpha: 0.3)),
+          border: Border.all(color: color.withOpacity(0.3)),
         ),
         child: Column(
           children: [
@@ -625,15 +625,15 @@ class _AnimatedQuickActionButtonState extends State<AnimatedQuickActionButton>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isHovered
-                        ? widget.color.withValues(alpha: 0.6)
-                        : widget.color.withValues(alpha: 0.3),
+                        ? widget.color.withOpacity(0.6)
+                        : widget.color.withOpacity(0.3),
                   ),
                   color: _isHovered
-                      ? widget.color.withValues(alpha: 0.05)
+                      ? widget.color.withOpacity(0.05)
                       : Colors.transparent,
                   boxShadow: _isHovered
                       ? createMesaSafeBoxShadow(
-                          color: widget.color.withValues(alpha: 0.2),
+                          color: widget.color.withOpacity(0.2),
                           offset: const Offset(0, 2),
                           blurRadius: 8,
                         )

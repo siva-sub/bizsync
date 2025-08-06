@@ -121,7 +121,7 @@ class _DashboardDateRangePickerState extends State<DashboardDateRangePicker> {
           }
         }
       },
-      selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
       checkmarkColor: Theme.of(context).primaryColor,
     );
   }
@@ -429,7 +429,7 @@ class DrillDownNavigator extends StatelessWidget {
                               color: isActive
                                   ? Theme.of(context)
                                       .primaryColor
-                                      .withValues(alpha: 0.1)
+                                      .withOpacity(0.1)
                                   : null,
                               borderRadius: BorderRadius.circular(16),
                               border: isActive
@@ -525,8 +525,8 @@ class _RealTimeUpdateIndicatorState extends State<RealTimeUpdateIndicator>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: widget.isUpdating
-            ? Colors.blue.withValues(alpha: 0.1)
-            : Colors.green.withValues(alpha: 0.1),
+            ? Colors.blue.withOpacity(0.1)
+            : Colors.green.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: widget.isUpdating ? Colors.blue : Colors.green,

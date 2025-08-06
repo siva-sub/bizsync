@@ -41,14 +41,14 @@ class ProfileAvatar extends StatelessWidget {
             : LinearGradient(
                 colors: [
                   effectiveBackgroundColor,
-                  effectiveBackgroundColor.withValues(alpha: 0.8),
+                  effectiveBackgroundColor.withOpacity(0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
         boxShadow: [
           BoxShadow(
-            color: effectiveBackgroundColor.withValues(alpha: 0.3),
+            color: effectiveBackgroundColor.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),

@@ -37,7 +37,7 @@ class ThemePreferences {
     return {
       'mode': mode.index,
       'useSystemAccentColor': useSystemAccentColor,
-      'customPrimaryColor': customPrimaryColor?.toARGB32(),
+      'customPrimaryColor': customPrimaryColor?.value,
     };
   }
 
@@ -209,7 +209,7 @@ class ThemeService extends ChangeNotifier {
       ),
 
       // Card Theme
-      cardTheme: CardThemeData(
+      cardTheme: const CardThemeData(
         elevation: 2,
         shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
@@ -320,7 +320,7 @@ class ThemeService extends ChangeNotifier {
       ),
 
       // Card Theme
-      cardTheme: CardThemeData(
+      cardTheme: const CardThemeData(
         elevation: 2,
         shadowColor: Colors.black26,
         shape: RoundedRectangleBorder(

@@ -309,7 +309,7 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: _getRiskColor(balance.riskLevel).withValues(alpha: 0.1),
+          backgroundColor: _getRiskColor(balance.riskLevel).withOpacity(0.1),
           child: Icon(
             _getRiskIcon(balance.riskLevel),
             color: _getRiskColor(balance.riskLevel),
@@ -342,7 +342,7 @@ class _CustomerStatementsScreenState extends State<CustomerStatementsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: _getRiskColor(balance.riskLevel).withValues(alpha: 0.1),
+                    color: _getRiskColor(balance.riskLevel).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -868,9 +868,9 @@ class CustomerStatementDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(
         children: [

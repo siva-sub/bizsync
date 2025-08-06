@@ -374,7 +374,7 @@ class _WelcomePageWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: page.color.withValues(alpha: 0.3),
+                  color: page.color.withOpacity(0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -420,7 +420,7 @@ class _WelcomePageWidget extends StatelessWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .onBackground
-                      .withValues(alpha: 0.7),
+                      .withOpacity(0.7),
                   height: 1.6,
                 ),
             textAlign: TextAlign.center,

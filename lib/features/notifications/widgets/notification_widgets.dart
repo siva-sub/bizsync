@@ -118,7 +118,7 @@ class NotificationCard extends ConsumerWidget {
                             decoration: BoxDecoration(
                               color: Color(int.parse(
                                       '0xFF${formatted.priorityColor.substring(1)}'))
-                                  .withValues(alpha: 0.1),
+                                  .withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(

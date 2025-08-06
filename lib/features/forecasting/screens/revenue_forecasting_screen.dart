@@ -410,7 +410,7 @@ class _RevenueForecastingScreenState
                         dotData: FlDotData(show: _historicalData.length <= 24),
                         belowBarData: BarAreaData(
                           show: true,
-                          color: Colors.green.withValues(alpha: 0.1),
+                          color: Colors.green.withOpacity(0.1),
                         ),
                       ),
                     ],

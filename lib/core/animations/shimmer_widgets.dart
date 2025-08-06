@@ -476,7 +476,7 @@ class AnimatedLoadingWidget extends StatelessWidget {
             Text(
               message!,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -522,7 +522,7 @@ class LoadingOverlay extends StatelessWidget {
         child,
         if (isLoading)
           Container(
-            color: overlayColor ?? Colors.black.withValues(alpha: 0.5),
+            color: overlayColor ?? Colors.black.withOpacity(0.5),
             child: AnimatedLoadingWidget(
               message: message,
               style: style,

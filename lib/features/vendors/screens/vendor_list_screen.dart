@@ -315,9 +315,9 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                                             decoration: BoxDecoration(
                                               color: vendor.isInternational
                                                   ? Colors.purple
-                                                      .withValues(alpha: 0.1)
+                                                      .withOpacity(0.1)
                                                   : Colors.green
-                                                      .withValues(alpha: 0.1),
+                                                      .withOpacity(0.1),
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
@@ -365,8 +365,8 @@ class _VendorListScreenState extends ConsumerState<VendorListScreen> {
                                         horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: vendor.isActive
-                                          ? Colors.green.withValues(alpha: 0.1)
-                                          : Colors.grey.withValues(alpha: 0.1),
+                                          ? Colors.green.withOpacity(0.1)
+                                          : Colors.grey.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(

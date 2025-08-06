@@ -260,8 +260,8 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: config.isDefault
-              ? Colors.green.withValues(alpha: 0.1)
-              : Colors.grey.withValues(alpha: 0.1),
+              ? Colors.green.withOpacity(0.1)
+              : Colors.grey.withOpacity(0.1),
           child: Icon(
             config.isDefault ? Icons.email : Icons.email_outlined,
             color: config.isDefault ? Colors.green : Colors.grey,
@@ -284,7 +284,7 @@ class _EmailSettingsScreenState extends State<EmailSettingsScreen> {
                 margin: const EdgeInsets.only(top: 4),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
+                  color: Colors.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(

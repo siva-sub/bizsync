@@ -116,7 +116,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -175,7 +175,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
                       color: Theme.of(context)
                           .colorScheme
                           .primary
-                          .withValues(alpha: 0.8),
+                          .withOpacity(0.8),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
@@ -1052,7 +1052,7 @@ class _GlobalSearchDelegate extends SearchDelegate<String> {
         text: text.substring(index, index + searchTerm.length),
         style: TextStyle(
           backgroundColor:
-              Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+              Theme.of(context).colorScheme.primary.withOpacity(0.3),
           color: Theme.of(context).colorScheme.primary,
           fontWeight: FontWeight.bold,
         ),

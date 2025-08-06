@@ -150,7 +150,7 @@ class _EmployeeReportsScreenState extends ConsumerState<EmployeeReportsScreen> {
           Text(label),
         ],
       ),
-      selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
       checkmarkColor: Theme.of(context).colorScheme.primary,
     );
   }

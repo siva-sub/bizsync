@@ -209,7 +209,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
           'Let\'s personalize your BizSync experience',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
               ),
         ),
       ],
@@ -415,7 +415,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
 
   Widget _buildInfoCard() {
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
