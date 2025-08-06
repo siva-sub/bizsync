@@ -1,0 +1,96 @@
+name: Build AppImage
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.22.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+      
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build pkg-config \
+            libgtk-3-dev libblkid-dev liblzma-dev \
+            wget fuse libfuse2
+      
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+      
+      - name: Build Linux Release
+        run: flutter build linux --release
+      
+      - name: Download AppImageTool
+        run: |
+          wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+          chmod +x appimagetool
+      
+      - name: Prepare AppDir
+        run: |
+          mkdir -p AppDir
+          cp -r build/linux/x64/release/bundle/* AppDir/
+          
+          # Create desktop file
+          cat > AppDir/bizsync.desktop << 'EOF'
+          [Desktop Entry]
+          Name=BizSync
+          Comment=Offline-first business management
+          Exec=bizsync
+          Icon=bizsync
+          Type=Application
+          Categories=Office;Finance;
+          EOF
+          
+          # Create AppRun
+          cat > AppDir/AppRun << 'EOF'
+          #!/bin/bash
+          SELF=$(readlink -f "$0")
+          HERE="${SELF%/*}"
+          export PATH="${HERE}/usr/bin/:${HERE}/usr/sbin/:${HERE}/usr/games/:${HERE}/bin/:${HERE}/sbin/:${PATH}"
+          export LD_LIBRARY_PATH="${HERE}/usr/lib/:${HERE}/usr/lib/x86_64-linux-gnu/:${HERE}/usr/lib64/:${HERE}/lib/:${HERE}/lib/x86_64-linux-gnu/:${HERE}/lib64/:${LD_LIBRARY_PATH}"
+          export XDG_DATA_DIRS="${HERE}/usr/share/:${XDG_DATA_DIRS}"
+          EXEC="${HERE}/bizsync"
+          exec "${EXEC}" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+          
+          # Add icon
+          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+          cp linux/assets/icon/icon.png AppDir/bizsync.png 2>/dev/null || \
+            convert -size 256x256 xc:blue AppDir/bizsync.png
+          cp AppDir/bizsync.png AppDir/usr/share/icons/hicolor/256x256/apps/
+      
+      - name: Build AppImage
+        run: |
+          VERSION=$(grep "version:" pubspec.yaml | sed 's/version: //g' | sed 's/+/-/g')
+          ./appimagetool AppDir "BizSync-${VERSION}-x86_64.AppImage"
+      
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: bizsync-appimage
+          path: BizSync-*.AppImage
+      
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: BizSync-*.AppImage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
