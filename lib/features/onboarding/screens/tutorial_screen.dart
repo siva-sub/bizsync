@@ -385,7 +385,7 @@ class _TutorialPageWidget extends StatelessWidget {
             width: 200,
             height: 200,
             decoration: BoxDecoration(
-              color: page.color.withOpacity(0.1),
+              color: page.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
@@ -416,7 +416,7 @@ class _TutorialPageWidget extends StatelessWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .onBackground
-                      .withOpacity(0.7),
+                      .withValues(alpha: 0.7),
                   height: 1.6,
                 ),
             textAlign: TextAlign.center,

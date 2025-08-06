@@ -359,7 +359,7 @@ class _InvoiceSearchResultTile extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: _getStatusColor(_convertStatus(invoice.status.value))
-              .withOpacity(0.1),
+              .withValues(alpha: 0.1),
           child: Icon(
             _getStatusIcon(_convertStatus(invoice.status.value)),
             color: _getStatusColor(_convertStatus(invoice.status.value)),
@@ -492,7 +492,7 @@ class _InvoiceSearchResultTile extends StatelessWidget {
         text: text.substring(index, index + searchTerm.length),
         style: TextStyle(
           backgroundColor:
-              Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           color: Theme.of(context).colorScheme.primary,
           fontWeight: FontWeight.bold,
         ),

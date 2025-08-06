@@ -42,7 +42,7 @@ class RecentCalculationsList extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: _getTaxTypeColor(item.taxType).withOpacity(0.1),
+            color: _getTaxTypeColor(item.taxType).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(

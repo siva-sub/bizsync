@@ -17,7 +17,7 @@ class ForecastingReportsScreen extends ConsumerWidget {
             Icon(
               Icons.analytics_outlined,
               size: 80,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 24),
             Text(
@@ -28,7 +28,7 @@ class ForecastingReportsScreen extends ConsumerWidget {
             Text(
               'Advanced forecasting features available',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
             ),
             const SizedBox(height: 32),

@@ -123,8 +123,8 @@ class _InteractiveLineChartState extends State<InteractiveLineChart>
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                     colors: [
-                                      widget.lineColor.withOpacity(0.3),
-                                      widget.lineColor.withOpacity(0.1),
+                                      widget.lineColor.withValues(alpha: 0.3),
+                                      widget.lineColor.withValues(alpha: 0.1),
                                     ],
                                   ),
                                 )
@@ -347,7 +347,7 @@ class _InteractiveBarChartState extends State<InteractiveBarChart>
                                   BarChartRodData(
                                     toY: entry.value.value * _animation.value,
                                     color: touchedIndex == entry.key
-                                        ? widget.barColor.withOpacity(0.8)
+                                        ? widget.barColor.withValues(alpha: 0.8)
                                         : widget.barColor,
                                     width: 20,
                                     borderRadius: const BorderRadius.vertical(
@@ -915,9 +915,9 @@ class TrendIndicator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: trendColor.withOpacity(0.1),
+        color: trendColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: trendColor.withOpacity(0.3)),
+        border: Border.all(color: trendColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1095,7 +1095,7 @@ class _AnimatedKPICardState extends State<AnimatedKPICard>
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: trendColor.withOpacity(0.1),
+                              color: trendColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(

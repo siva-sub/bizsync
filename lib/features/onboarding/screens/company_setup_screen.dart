@@ -177,7 +177,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
                   color: Theme.of(context)
                       .colorScheme
                       .onBackground
-                      .withOpacity(0.7),
+                      .withValues(alpha: 0.7),
                 ),
           ),
           const SizedBox(height: 32),
@@ -289,7 +289,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
                   color: Theme.of(context)
                       .colorScheme
                       .onBackground
-                      .withOpacity(0.7),
+                      .withValues(alpha: 0.7),
                 ),
           ),
           const SizedBox(height: 32),
@@ -418,7 +418,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
                   color: Theme.of(context)
                       .colorScheme
                       .onBackground
-                      .withOpacity(0.7),
+                      .withValues(alpha: 0.7),
                 ),
           ),
           const SizedBox(height: 32),
@@ -493,7 +493,7 @@ class _CompanySetupScreenState extends ConsumerState<CompanySetupScreen>
           const SizedBox(height: 24),
           Card(
             color:
-                Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(

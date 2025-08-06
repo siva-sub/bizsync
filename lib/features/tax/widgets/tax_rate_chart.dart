@@ -213,7 +213,7 @@ class TaxRateChartPainter extends CustomPainter {
   void _drawGrid(Canvas canvas, Rect chartRect, int minYear, int maxYear,
       double minRate, double maxRate) {
     final gridPaint = Paint()
-      ..color = Colors.grey.withOpacity(0.3)
+      ..color = Colors.grey.withValues(alpha: 0.3)
       ..strokeWidth = 1;
 
     // Vertical grid lines (years)

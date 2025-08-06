@@ -210,7 +210,7 @@ class _CustomerDetailsScreenState extends ConsumerState<CustomerDetailsScreen>
             Icon(
               Icons.error_outline,
               size: 64,
-              color: Colors.red.withOpacity(0.7),
+              color: Colors.red.withValues(alpha: 0.7),
             ),
             const SizedBox(height: 16),
             Text(
@@ -242,7 +242,7 @@ class _CustomerDetailsScreenState extends ConsumerState<CustomerDetailsScreen>
             Icon(
               Icons.person_off,
               size: 64,
-              color: Colors.grey.withOpacity(0.7),
+              color: Colors.grey.withValues(alpha: 0.7),
             ),
             const SizedBox(height: 16),
             Text(
@@ -293,8 +293,8 @@ class _CustomerDetailsScreenState extends ConsumerState<CustomerDetailsScreen>
                   CircleAvatar(
                     radius: 30,
                     backgroundColor: customer.isActive 
-                        ? Colors.green.withOpacity(0.2)
-                        : Colors.red.withOpacity(0.2),
+                        ? Colors.green.withValues(alpha: 0.2)
+                        : Colors.red.withValues(alpha: 0.2),
                     child: Icon(
                       customer.isActive ? Icons.check : Icons.close,
                       color: customer.isActive ? Colors.green : Colors.red,

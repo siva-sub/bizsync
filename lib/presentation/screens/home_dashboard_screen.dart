@@ -186,7 +186,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen>
             _getGreetingMessage(),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                      Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
                 ),
           ),
           const SizedBox(height: 24),
@@ -725,7 +725,7 @@ class _ActivityTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withValues(alpha: 0.1),
         child: Icon(icon, color: color, size: 20),
       ),
       title: Text(title),

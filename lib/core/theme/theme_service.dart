@@ -37,7 +37,7 @@ class ThemePreferences {
     return {
       'mode': mode.index,
       'useSystemAccentColor': useSystemAccentColor,
-      'customPrimaryColor': customPrimaryColor?.value,
+      'customPrimaryColor': customPrimaryColor?.toARGB32(),
     };
   }
 

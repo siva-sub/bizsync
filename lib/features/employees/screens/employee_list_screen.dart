@@ -245,7 +245,7 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
         workPassType.toUpperCase(),
         style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
       ),
-      backgroundColor: color.withOpacity(0.1),
+      backgroundColor: color.withValues(alpha: 0.1),
       side: BorderSide(color: color),
     );
   }
@@ -257,7 +257,7 @@ class _EmployeeListScreenState extends ConsumerState<EmployeeListScreen> {
         status.toUpperCase(),
         style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
       ),
-      backgroundColor: color.withOpacity(0.1),
+      backgroundColor: color.withValues(alpha: 0.1),
       side: BorderSide(color: color),
     );
   }

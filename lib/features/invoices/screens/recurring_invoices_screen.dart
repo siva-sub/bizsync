@@ -269,8 +269,8 @@ class _RecurringInvoicesScreenState extends State<RecurringInvoicesScreen> {
       child: ExpansionTile(
         leading: CircleAvatar(
           backgroundColor: template.isActive
-              ? Colors.green.withOpacity(0.1)
-              : Colors.grey.withOpacity(0.1),
+              ? Colors.green.withValues(alpha: 0.1)
+              : Colors.grey.withValues(alpha: 0.1),
           child: Icon(
             template.isActive ? Icons.repeat : Icons.pause,
             color: template.isActive ? Colors.green : Colors.grey,

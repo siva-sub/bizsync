@@ -183,10 +183,10 @@ class InventoryOverviewScreen extends ConsumerWidget {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: _getAlertColor(alert.severity).withOpacity(0.1),
+                      color: _getAlertColor(alert.severity).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: _getAlertColor(alert.severity).withOpacity(0.3),
+                        color: _getAlertColor(alert.severity).withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(

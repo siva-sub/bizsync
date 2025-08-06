@@ -245,7 +245,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                           color: Theme.of(context)
                                               .colorScheme
                                               .primary
-                                              .withOpacity(0.3),
+                                              .withValues(alpha: 0.3),
                                           blurRadius: 20,
                                           offset: const Offset(0, 10),
                                         ),
@@ -276,7 +276,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onBackground
-                                        .withOpacity(0.7),
+                                        .withValues(alpha: 0.7),
                                   ),
                           textAlign: TextAlign.center,
                         ),
@@ -352,7 +352,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             color: Theme.of(context)
                                 .colorScheme
                                 .outline
-                                .withOpacity(0.2),
+                                .withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: FractionallySizedBox(
@@ -381,7 +381,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onBackground
-                                        .withOpacity(0.8),
+                                        .withValues(alpha: 0.8),
                                   ),
                         ),
                         const SizedBox(height: 8),
@@ -412,7 +412,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       color: Theme.of(context)
                           .colorScheme
                           .onBackground
-                          .withOpacity(0.5),
+                          .withValues(alpha: 0.5),
                     ),
               ),
             ],

@@ -233,7 +233,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: iconColor?.withOpacity(0.1),
+        color: iconColor?.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(iconData, color: iconColor),
@@ -337,7 +337,7 @@ class PaymentMethodChips extends StatelessWidget {
                 onSelectionChanged(newSelection);
               },
               avatar: _getNetworkIcon(network),
-              selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+              selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
             );
           }).toList(),
         ),

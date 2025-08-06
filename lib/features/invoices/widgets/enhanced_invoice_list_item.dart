@@ -85,7 +85,7 @@ class EnhancedInvoiceListItem extends ConsumerWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -138,7 +138,7 @@ class EnhancedInvoiceListItem extends ConsumerWidget {
                             ),
                             decoration: BoxDecoration(
                               color: _getStatusColor(invoice.status)
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -196,7 +196,7 @@ class EnhancedInvoiceListItem extends ConsumerWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.1),
+                            color: Colors.red.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text(
@@ -434,8 +434,8 @@ class ConnectionStatusIndicator extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: connectionStatus == ConnectionStatus.online
-            ? Colors.orange.withOpacity(0.1)
-            : Colors.red.withOpacity(0.1),
+            ? Colors.orange.withValues(alpha: 0.1)
+            : Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: connectionStatus == ConnectionStatus.online

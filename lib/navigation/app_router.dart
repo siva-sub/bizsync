@@ -451,7 +451,7 @@ class _FunctionalInvoiceListScreenState
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: _getStatusColor(invoice.status)
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                               child: Icon(_getStatusIcon(invoice.status),
                                   color: _getStatusColor(invoice.status)),
                             ),
@@ -479,7 +479,7 @@ class _FunctionalInvoiceListScreenState
                                       horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: _getStatusColor(invoice.status)
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
@@ -749,7 +749,7 @@ class _FunctionalInvoiceDetailScreenState
                                         horizontal: 12, vertical: 6),
                                     decoration: BoxDecoration(
                                       color: _getStatusColor(_invoice!.status)
-                                          .withOpacity(0.1),
+                                          .withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Text(
@@ -1231,7 +1231,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                             leading: CircleAvatar(
                               backgroundColor:
                                   _getWorkPassColor(employee.workPassType)
-                                      .withOpacity(0.1),
+                                      .withValues(alpha: 0.1),
                               child: Text(
                                 employee.name
                                     .split(' ')
@@ -1278,8 +1278,8 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                                       horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: employee.isActive
-                                        ? Colors.green.withOpacity(0.1)
-                                        : Colors.grey.withOpacity(0.1),
+                                        ? Colors.green.withValues(alpha: 0.1)
+                                        : Colors.grey.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(

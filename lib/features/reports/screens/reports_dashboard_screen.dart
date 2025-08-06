@@ -262,7 +262,7 @@ class _ReportsDashboardScreenState
                   .map((report) => ListTile(
                         leading: CircleAvatar(
                           backgroundColor:
-                              _getReportTypeColor(report.type).withOpacity(0.1),
+                              _getReportTypeColor(report.type).withValues(alpha: 0.1),
                           child: Icon(
                             _getReportTypeIcon(report.type),
                             color: _getReportTypeColor(report.type),
@@ -509,7 +509,7 @@ class _StatCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

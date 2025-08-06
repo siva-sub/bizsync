@@ -60,7 +60,7 @@ class MesaRenderingConfig {
     }
     // Reduce opacity for Mesa
     if (isMesaActive) {
-      return color.withOpacity(color.opacity * 0.3);
+      return color.withValues(alpha: color.opacity * 0.3);
     }
     return color;
   }

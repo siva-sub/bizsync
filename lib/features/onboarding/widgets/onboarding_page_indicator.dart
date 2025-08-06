@@ -23,7 +23,7 @@ class OnboardingPageIndicator extends StatelessWidget {
     final theme = Theme.of(context);
     final activeColorFinal = activeColor ?? theme.colorScheme.primary;
     final inactiveColorFinal =
-        inactiveColor ?? theme.colorScheme.outline.withOpacity(0.3);
+        inactiveColor ?? theme.colorScheme.outline.withValues(alpha: 0.3);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -65,7 +65,7 @@ class OnboardingProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final backgroundColorFinal =
-        backgroundColor ?? theme.colorScheme.outline.withOpacity(0.2);
+        backgroundColor ?? theme.colorScheme.outline.withValues(alpha: 0.2);
     final progressColorFinal = progressColor ?? theme.colorScheme.primary;
 
     return Column(
@@ -75,7 +75,7 @@ class OnboardingProgressIndicator extends StatelessWidget {
           Text(
             label!,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onBackground.withOpacity(0.7),
+              color: theme.colorScheme.onBackground.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 8),
@@ -97,7 +97,7 @@ class OnboardingProgressIndicator extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     progressColorFinal,
-                    progressColorFinal.withOpacity(0.8),
+                    progressColorFinal.withValues(alpha: 0.8),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(height / 2),
@@ -141,7 +141,7 @@ class OnboardingStepIndicator extends StatelessWidget {
     final theme = Theme.of(context);
     final activeColorFinal = activeColor ?? theme.colorScheme.primary;
     final inactiveColorFinal =
-        inactiveColor ?? theme.colorScheme.outline.withOpacity(0.3);
+        inactiveColor ?? theme.colorScheme.outline.withValues(alpha: 0.3);
     final completedColorFinal = completedColor ?? theme.colorScheme.tertiary;
 
     return Row(
@@ -206,7 +206,7 @@ class OnboardingStepIndicator extends StatelessWidget {
       child = Text(
         '${stepIndex + 1}',
         style: TextStyle(
-          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.onBackground.withValues(alpha: 0.5),
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),
@@ -225,7 +225,7 @@ class OnboardingStepIndicator extends StatelessWidget {
             border: isInactive
                 ? Border.all(
                     color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                     width: 2,
                   )
                 : null,
@@ -243,7 +243,7 @@ class OnboardingStepIndicator extends StatelessWidget {
                       : Theme.of(context)
                           .colorScheme
                           .onBackground
-                          .withOpacity(0.6),
+                          .withValues(alpha: 0.6),
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                 ),
             textAlign: TextAlign.center,
