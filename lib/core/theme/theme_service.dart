@@ -209,7 +209,7 @@ class ThemeService extends ChangeNotifier {
       ),
 
       // Card Theme
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         elevation: 2,
         shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
@@ -320,7 +320,7 @@ class ThemeService extends ChangeNotifier {
       ),
 
       // Card Theme
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         elevation: 2,
         shadowColor: Colors.black26,
         shape: RoundedRectangleBorder(
