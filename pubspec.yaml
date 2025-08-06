@@ -137,7 +137,7 @@ dependencies:
   desktop_drop: ^0.4.4  # Drag & drop file support
   file_selector: ^1.0.3  # Native file dialogs
   desktop_lifecycle: ^0.1.1  # Desktop lifecycle management
-  desktop_webview_window: ^0.2.3  # Additional window support
+  # desktop_webview_window: ^0.2.3  # Additional window support - removed due to webkit2gtk-4.1 dependency
   watcher: ^1.1.0  # File system watching
   args: ^2.4.2  # Command line argument parsing
   ffi: ^2.1.0  # For native system integrations
