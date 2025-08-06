@@ -34,6 +34,9 @@ jobs:
       - name: Get Flutter Dependencies
         run: flutter pub get
       
+      - name: Generate Code
+        run: flutter pub run build_runner build --delete-conflicting-outputs || true
+      
       - name: Build Linux Release
         run: flutter build linux --release
       
